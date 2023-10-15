@@ -7,18 +7,115 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA063AB32ADC2EC90079BA7A /* a3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A922ADC2EC90079BA7A /* a3.m4a */; };
+		FA063AB42ADC2EC90079BA7A /* a2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A932ADC2EC90079BA7A /* a2.m4a */; };
+		FA063AB52ADC2EC90079BA7A /* a1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A942ADC2EC90079BA7A /* a1.m4a */; };
+		FA063AB62ADC2EC90079BA7A /* f2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A952ADC2EC90079BA7A /* f2.m4a */; };
+		FA063AB72ADC2EC90079BA7A /* f3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A962ADC2EC90079BA7A /* f3.m4a */; };
+		FA063AB82ADC2EC90079BA7A /* f1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A972ADC2EC90079BA7A /* f1.m4a */; };
+		FA063AB92ADC2EC90079BA7A /* g1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A982ADC2EC90079BA7A /* g1.m4a */; };
+		FA063ABA2ADC2EC90079BA7A /* g3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A992ADC2EC90079BA7A /* g3.m4a */; };
+		FA063ABB2ADC2EC90079BA7A /* g2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A9A2ADC2EC90079BA7A /* g2.m4a */; };
+		FA063ABC2ADC2EC90079BA7A /* d3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A9B2ADC2EC90079BA7A /* d3.m4a */; };
+		FA063ABD2ADC2EC90079BA7A /* d2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A9C2ADC2EC90079BA7A /* d2.m4a */; };
+		FA063ABE2ADC2EC90079BA7A /* e2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A9D2ADC2EC90079BA7A /* e2.m4a */; };
+		FA063ABF2ADC2EC90079BA7A /* e3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A9E2ADC2EC90079BA7A /* e3.m4a */; };
+		FA063AC02ADC2EC90079BA7A /* c4.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063A9F2ADC2EC90079BA7A /* c4.m4a */; };
+		FA063AC12ADC2EC90079BA7A /* b1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AA02ADC2EC90079BA7A /* b1.m4a */; };
+		FA063AC22ADC2EC90079BA7A /* b3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AA12ADC2EC90079BA7A /* b3.m4a */; };
+		FA063AC32ADC2EC90079BA7A /* b2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AA22ADC2EC90079BA7A /* b2.m4a */; };
+		FA063AC42ADC2EC90079BA7A /* c2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AA32ADC2EC90079BA7A /* c2.m4a */; };
+		FA063AC52ADC2EC90079BA7A /* c3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AA42ADC2EC90079BA7A /* c3.m4a */; };
+		FA063AC62ADC2EC90079BA7A /* g3s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AA62ADC2EC90079BA7A /* g3s.m4a */; };
+		FA063AC72ADC2EC90079BA7A /* c2s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AA72ADC2EC90079BA7A /* c2s.m4a */; };
+		FA063AC82ADC2EC90079BA7A /* a2s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AA82ADC2EC90079BA7A /* a2s.m4a */; };
+		FA063AC92ADC2EC90079BA7A /* a3s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AA92ADC2EC90079BA7A /* a3s.m4a */; };
+		FA063ACA2ADC2EC90079BA7A /* c3s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AAA2ADC2EC90079BA7A /* c3s.m4a */; };
+		FA063ACB2ADC2EC90079BA7A /* g2s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AAB2ADC2EC90079BA7A /* g2s.m4a */; };
+		FA063ACC2ADC2EC90079BA7A /* d3s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AAC2ADC2EC90079BA7A /* d3s.m4a */; };
+		FA063ACD2ADC2EC90079BA7A /* f3s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AAD2ADC2EC90079BA7A /* f3s.m4a */; };
+		FA063ACE2ADC2EC90079BA7A /* f2s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AAE2ADC2EC90079BA7A /* f2s.m4a */; };
+		FA063ACF2ADC2EC90079BA7A /* d2s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AAF2ADC2EC90079BA7A /* d2s.m4a */; };
+		FA063AD02ADC2EC90079BA7A /* f1s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AB02ADC2EC90079BA7A /* f1s.m4a */; };
+		FA063AD12ADC2EC90079BA7A /* g1s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AB12ADC2EC90079BA7A /* g1s.m4a */; };
+		FA063AD22ADC2EC90079BA7A /* a1s.m4a in Resources */ = {isa = PBXBuildFile; fileRef = FA063AB22ADC2EC90079BA7A /* a1s.m4a */; };
+		FA253C022AD9BC0F00EA8F67 /* BalooDa-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FA253C012AD9BC0F00EA8F67 /* BalooDa-Regular.ttf */; };
+		FA253C072AD9BF5100EA8F67 /* FontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C062AD9BF5100EA8F67 /* FontExtension.swift */; };
+		FA253C092AD9C10E00EA8F67 /* NotationLearnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C082AD9C10E00EA8F67 /* NotationLearnView.swift */; };
+		FA253C0B2AD9C11A00EA8F67 /* NotationQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C0A2AD9C11A00EA8F67 /* NotationQuizView.swift */; };
+		FA253C0D2AD9C24B00EA8F67 /* NotationMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C0C2AD9C24B00EA8F67 /* NotationMenuView.swift */; };
+		FA253C0F2AD9C44600EA8F67 /* SongMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C0E2AD9C44600EA8F67 /* SongMenuView.swift */; };
+		FA253C132AD9C46F00EA8F67 /* SongRepositoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C122AD9C46F00EA8F67 /* SongRepositoryView.swift */; };
+		FA253C152AD9C49E00EA8F67 /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C142AD9C49E00EA8F67 /* ColorExtension.swift */; };
+		FA253C182ADB11B200EA8F67 /* HelpPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C172ADB11B200EA8F67 /* HelpPageView.swift */; };
+		FA253C1C2ADBC8E800EA8F67 /* SoundModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C1B2ADBC8E800EA8F67 /* SoundModel.swift */; };
+		FA253C1E2ADBCCF200EA8F67 /* TilesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C1D2ADBCCF200EA8F67 /* TilesModel.swift */; };
+		FA26D8682AE7C89A004D8443 /* NotationQuizLevelMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26D8672AE7C89A004D8443 /* NotationQuizLevelMenuView.swift */; };
+		FA26D86A2AE7F279004D8443 /* ButtonLevelModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26D8692AE7F279004D8443 /* ButtonLevelModel.swift */; };
+		FAB5DCA02ADBDE2F007FC96A /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB5DC9F2ADBDE2F007FC96A /* ViewExtension.swift */; };
 		FAD89D062AC86E280019A99D /* MelodissimoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D052AC86E280019A99D /* MelodissimoApp.swift */; };
-		FAD89D082AC86E280019A99D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D072AC86E280019A99D /* ContentView.swift */; };
 		FAD89D0A2AC86E2C0019A99D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FAD89D092AC86E2C0019A99D /* Assets.xcassets */; };
 		FAD89D0D2AC86E2C0019A99D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FAD89D0C2AC86E2C0019A99D /* Preview Assets.xcassets */; };
+		FAD89D1D2ACB44DC0019A99D /* SplashscreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D1C2ACB44DC0019A99D /* SplashscreenView.swift */; };
+		FAD89D1F2ACB47D90019A99D /* PreplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D1E2ACB47D90019A99D /* PreplayView.swift */; };
+		FAD89D2F2AD5F85B0019A99D /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D2E2AD5F85B0019A99D /* DashboardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FA063A922ADC2EC90079BA7A /* a3.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = a3.m4a; sourceTree = "<group>"; };
+		FA063A932ADC2EC90079BA7A /* a2.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = a2.m4a; sourceTree = "<group>"; };
+		FA063A942ADC2EC90079BA7A /* a1.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = a1.m4a; sourceTree = "<group>"; };
+		FA063A952ADC2EC90079BA7A /* f2.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = f2.m4a; sourceTree = "<group>"; };
+		FA063A962ADC2EC90079BA7A /* f3.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = f3.m4a; sourceTree = "<group>"; };
+		FA063A972ADC2EC90079BA7A /* f1.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = f1.m4a; sourceTree = "<group>"; };
+		FA063A982ADC2EC90079BA7A /* g1.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = g1.m4a; sourceTree = "<group>"; };
+		FA063A992ADC2EC90079BA7A /* g3.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = g3.m4a; sourceTree = "<group>"; };
+		FA063A9A2ADC2EC90079BA7A /* g2.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = g2.m4a; sourceTree = "<group>"; };
+		FA063A9B2ADC2EC90079BA7A /* d3.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = d3.m4a; sourceTree = "<group>"; };
+		FA063A9C2ADC2EC90079BA7A /* d2.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = d2.m4a; sourceTree = "<group>"; };
+		FA063A9D2ADC2EC90079BA7A /* e2.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = e2.m4a; sourceTree = "<group>"; };
+		FA063A9E2ADC2EC90079BA7A /* e3.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = e3.m4a; sourceTree = "<group>"; };
+		FA063A9F2ADC2EC90079BA7A /* c4.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = c4.m4a; sourceTree = "<group>"; };
+		FA063AA02ADC2EC90079BA7A /* b1.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = b1.m4a; sourceTree = "<group>"; };
+		FA063AA12ADC2EC90079BA7A /* b3.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = b3.m4a; sourceTree = "<group>"; };
+		FA063AA22ADC2EC90079BA7A /* b2.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = b2.m4a; sourceTree = "<group>"; };
+		FA063AA32ADC2EC90079BA7A /* c2.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = c2.m4a; sourceTree = "<group>"; };
+		FA063AA42ADC2EC90079BA7A /* c3.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = c3.m4a; sourceTree = "<group>"; };
+		FA063AA62ADC2EC90079BA7A /* g3s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = g3s.m4a; sourceTree = "<group>"; };
+		FA063AA72ADC2EC90079BA7A /* c2s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = c2s.m4a; sourceTree = "<group>"; };
+		FA063AA82ADC2EC90079BA7A /* a2s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = a2s.m4a; sourceTree = "<group>"; };
+		FA063AA92ADC2EC90079BA7A /* a3s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = a3s.m4a; sourceTree = "<group>"; };
+		FA063AAA2ADC2EC90079BA7A /* c3s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = c3s.m4a; sourceTree = "<group>"; };
+		FA063AAB2ADC2EC90079BA7A /* g2s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = g2s.m4a; sourceTree = "<group>"; };
+		FA063AAC2ADC2EC90079BA7A /* d3s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = d3s.m4a; sourceTree = "<group>"; };
+		FA063AAD2ADC2EC90079BA7A /* f3s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = f3s.m4a; sourceTree = "<group>"; };
+		FA063AAE2ADC2EC90079BA7A /* f2s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = f2s.m4a; sourceTree = "<group>"; };
+		FA063AAF2ADC2EC90079BA7A /* d2s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = d2s.m4a; sourceTree = "<group>"; };
+		FA063AB02ADC2EC90079BA7A /* f1s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = f1s.m4a; sourceTree = "<group>"; };
+		FA063AB12ADC2EC90079BA7A /* g1s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = g1s.m4a; sourceTree = "<group>"; };
+		FA063AB22ADC2EC90079BA7A /* a1s.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = a1s.m4a; sourceTree = "<group>"; };
+		FA253C012AD9BC0F00EA8F67 /* BalooDa-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BalooDa-Regular.ttf"; sourceTree = "<group>"; };
+		FA253C062AD9BF5100EA8F67 /* FontExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontExtension.swift; sourceTree = "<group>"; };
+		FA253C082AD9C10E00EA8F67 /* NotationLearnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationLearnView.swift; sourceTree = "<group>"; };
+		FA253C0A2AD9C11A00EA8F67 /* NotationQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationQuizView.swift; sourceTree = "<group>"; };
+		FA253C0C2AD9C24B00EA8F67 /* NotationMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationMenuView.swift; sourceTree = "<group>"; };
+		FA253C0E2AD9C44600EA8F67 /* SongMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongMenuView.swift; sourceTree = "<group>"; };
+		FA253C122AD9C46F00EA8F67 /* SongRepositoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongRepositoryView.swift; sourceTree = "<group>"; };
+		FA253C142AD9C49E00EA8F67 /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
+		FA253C172ADB11B200EA8F67 /* HelpPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpPageView.swift; sourceTree = "<group>"; };
+		FA253C1B2ADBC8E800EA8F67 /* SoundModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundModel.swift; sourceTree = "<group>"; };
+		FA253C1D2ADBCCF200EA8F67 /* TilesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TilesModel.swift; sourceTree = "<group>"; };
+		FA26D8672AE7C89A004D8443 /* NotationQuizLevelMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationQuizLevelMenuView.swift; sourceTree = "<group>"; };
+		FA26D8692AE7F279004D8443 /* ButtonLevelModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonLevelModel.swift; sourceTree = "<group>"; };
+		FAB5DC9F2ADBDE2F007FC96A /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		FAD89D022AC86E280019A99D /* Melodissimo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Melodissimo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD89D052AC86E280019A99D /* MelodissimoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MelodissimoApp.swift; sourceTree = "<group>"; };
-		FAD89D072AC86E280019A99D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		FAD89D092AC86E2C0019A99D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FAD89D0C2AC86E2C0019A99D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		FAD89D1C2ACB44DC0019A99D /* SplashscreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashscreenView.swift; sourceTree = "<group>"; };
+		FAD89D1E2ACB47D90019A99D /* PreplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreplayView.swift; sourceTree = "<group>"; };
+		FAD89D232AD5E51A0019A99D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FAD89D2E2AD5F85B0019A99D /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +129,103 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FA063A912ADC2EC90079BA7A /* whiteTiles */ = {
+			isa = PBXGroup;
+			children = (
+				FA063A922ADC2EC90079BA7A /* a3.m4a */,
+				FA063A932ADC2EC90079BA7A /* a2.m4a */,
+				FA063A942ADC2EC90079BA7A /* a1.m4a */,
+				FA063A952ADC2EC90079BA7A /* f2.m4a */,
+				FA063A962ADC2EC90079BA7A /* f3.m4a */,
+				FA063A972ADC2EC90079BA7A /* f1.m4a */,
+				FA063A982ADC2EC90079BA7A /* g1.m4a */,
+				FA063A992ADC2EC90079BA7A /* g3.m4a */,
+				FA063A9A2ADC2EC90079BA7A /* g2.m4a */,
+				FA063A9B2ADC2EC90079BA7A /* d3.m4a */,
+				FA063A9C2ADC2EC90079BA7A /* d2.m4a */,
+				FA063A9D2ADC2EC90079BA7A /* e2.m4a */,
+				FA063A9E2ADC2EC90079BA7A /* e3.m4a */,
+				FA063A9F2ADC2EC90079BA7A /* c4.m4a */,
+				FA063AA02ADC2EC90079BA7A /* b1.m4a */,
+				FA063AA12ADC2EC90079BA7A /* b3.m4a */,
+				FA063AA22ADC2EC90079BA7A /* b2.m4a */,
+				FA063AA32ADC2EC90079BA7A /* c2.m4a */,
+				FA063AA42ADC2EC90079BA7A /* c3.m4a */,
+			);
+			path = whiteTiles;
+			sourceTree = "<group>";
+		};
+		FA063AA52ADC2EC90079BA7A /* blackTiles */ = {
+			isa = PBXGroup;
+			children = (
+				FA063AA62ADC2EC90079BA7A /* g3s.m4a */,
+				FA063AA72ADC2EC90079BA7A /* c2s.m4a */,
+				FA063AA82ADC2EC90079BA7A /* a2s.m4a */,
+				FA063AA92ADC2EC90079BA7A /* a3s.m4a */,
+				FA063AAA2ADC2EC90079BA7A /* c3s.m4a */,
+				FA063AAB2ADC2EC90079BA7A /* g2s.m4a */,
+				FA063AAC2ADC2EC90079BA7A /* d3s.m4a */,
+				FA063AAD2ADC2EC90079BA7A /* f3s.m4a */,
+				FA063AAE2ADC2EC90079BA7A /* f2s.m4a */,
+				FA063AAF2ADC2EC90079BA7A /* d2s.m4a */,
+				FA063AB02ADC2EC90079BA7A /* f1s.m4a */,
+				FA063AB12ADC2EC90079BA7A /* g1s.m4a */,
+				FA063AB22ADC2EC90079BA7A /* a1s.m4a */,
+			);
+			path = blackTiles;
+			sourceTree = "<group>";
+		};
+		FA253C052AD9BF3F00EA8F67 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				FA253C062AD9BF5100EA8F67 /* FontExtension.swift */,
+				FA253C142AD9C49E00EA8F67 /* ColorExtension.swift */,
+				FAB5DC9F2ADBDE2F007FC96A /* ViewExtension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		FA253C162ADB11A400EA8F67 /* Help */ = {
+			isa = PBXGroup;
+			children = (
+				FA253C172ADB11B200EA8F67 /* HelpPageView.swift */,
+			);
+			path = Help;
+			sourceTree = "<group>";
+		};
+		FA253C192ADBC88800EA8F67 /* Sound */ = {
+			isa = PBXGroup;
+			children = (
+				FA253C1B2ADBC8E800EA8F67 /* SoundModel.swift */,
+			);
+			path = Sound;
+			sourceTree = "<group>";
+		};
+		FA253C1A2ADBC89800EA8F67 /* TIles */ = {
+			isa = PBXGroup;
+			children = (
+				FA253C1D2ADBCCF200EA8F67 /* TilesModel.swift */,
+			);
+			path = TIles;
+			sourceTree = "<group>";
+		};
+		FA253C1F2ADBD9F100EA8F67 /* Sound */ = {
+			isa = PBXGroup;
+			children = (
+				FA063AA52ADC2EC90079BA7A /* blackTiles */,
+				FA063A912ADC2EC90079BA7A /* whiteTiles */,
+			);
+			path = Sound;
+			sourceTree = "<group>";
+		};
+		FA26D86B2AE7F289004D8443 /* Button */ = {
+			isa = PBXGroup;
+			children = (
+				FA26D8692AE7F279004D8443 /* ButtonLevelModel.swift */,
+			);
+			path = Button;
+			sourceTree = "<group>";
+		};
 		FAD89CF92AC86E280019A99D = {
 			isa = PBXGroup;
 			children = (
@@ -51,8 +245,11 @@
 		FAD89D042AC86E280019A99D /* Melodissimo */ = {
 			isa = PBXGroup;
 			children = (
+				FAD89D232AD5E51A0019A99D /* Info.plist */,
+				FAD89D152ACB43720019A99D /* Data */,
+				FAD89D142ACB43370019A99D /* Models */,
+				FAD89D132ACB432D0019A99D /* Views */,
 				FAD89D052AC86E280019A99D /* MelodissimoApp.swift */,
-				FAD89D072AC86E280019A99D /* ContentView.swift */,
 				FAD89D092AC86E2C0019A99D /* Assets.xcassets */,
 				FAD89D0B2AC86E2C0019A99D /* Preview Content */,
 			);
@@ -65,6 +262,99 @@
 				FAD89D0C2AC86E2C0019A99D /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		FAD89D132ACB432D0019A99D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FA253C162ADB11A400EA8F67 /* Help */,
+				FAD89D1B2ACB44860019A99D /* Splashscreen */,
+				FAD89D1A2ACB43B90019A99D /* Postplay */,
+				FAD89D192ACB43B30019A99D /* Song */,
+				FAD89D182ACB43AC0019A99D /* Notation */,
+				FAD89D172ACB439B0019A99D /* Dashboard */,
+				FAD89D162ACB43900019A99D /* Preplay */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FAD89D142ACB43370019A99D /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FA26D86B2AE7F289004D8443 /* Button */,
+				FA253C1A2ADBC89800EA8F67 /* TIles */,
+				FA253C192ADBC88800EA8F67 /* Sound */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FAD89D152ACB43720019A99D /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				FA253C1F2ADBD9F100EA8F67 /* Sound */,
+				FA253C052AD9BF3F00EA8F67 /* Extensions */,
+				FAD89D202AD5E40E0019A99D /* Font */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		FAD89D162ACB43900019A99D /* Preplay */ = {
+			isa = PBXGroup;
+			children = (
+				FAD89D1E2ACB47D90019A99D /* PreplayView.swift */,
+			);
+			path = Preplay;
+			sourceTree = "<group>";
+		};
+		FAD89D172ACB439B0019A99D /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				FAD89D2E2AD5F85B0019A99D /* DashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		FAD89D182ACB43AC0019A99D /* Notation */ = {
+			isa = PBXGroup;
+			children = (
+				FA253C082AD9C10E00EA8F67 /* NotationLearnView.swift */,
+				FA253C0A2AD9C11A00EA8F67 /* NotationQuizView.swift */,
+				FA253C0C2AD9C24B00EA8F67 /* NotationMenuView.swift */,
+				FA26D8672AE7C89A004D8443 /* NotationQuizLevelMenuView.swift */,
+			);
+			path = Notation;
+			sourceTree = "<group>";
+		};
+		FAD89D192ACB43B30019A99D /* Song */ = {
+			isa = PBXGroup;
+			children = (
+				FA253C0E2AD9C44600EA8F67 /* SongMenuView.swift */,
+				FA253C122AD9C46F00EA8F67 /* SongRepositoryView.swift */,
+			);
+			path = Song;
+			sourceTree = "<group>";
+		};
+		FAD89D1A2ACB43B90019A99D /* Postplay */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Postplay;
+			sourceTree = "<group>";
+		};
+		FAD89D1B2ACB44860019A99D /* Splashscreen */ = {
+			isa = PBXGroup;
+			children = (
+				FAD89D1C2ACB44DC0019A99D /* SplashscreenView.swift */,
+			);
+			path = Splashscreen;
+			sourceTree = "<group>";
+		};
+		FAD89D202AD5E40E0019A99D /* Font */ = {
+			isa = PBXGroup;
+			children = (
+				FA253C012AD9BC0F00EA8F67 /* BalooDa-Regular.ttf */,
+			);
+			path = Font;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,8 +415,41 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA063ACF2ADC2EC90079BA7A /* d2s.m4a in Resources */,
+				FA063ABE2ADC2EC90079BA7A /* e2.m4a in Resources */,
+				FA063AC42ADC2EC90079BA7A /* c2.m4a in Resources */,
+				FA063ABD2ADC2EC90079BA7A /* d2.m4a in Resources */,
+				FA063ACE2ADC2EC90079BA7A /* f2s.m4a in Resources */,
+				FA063ABC2ADC2EC90079BA7A /* d3.m4a in Resources */,
+				FA063AB92ADC2EC90079BA7A /* g1.m4a in Resources */,
+				FA063AC02ADC2EC90079BA7A /* c4.m4a in Resources */,
+				FA063AB52ADC2EC90079BA7A /* a1.m4a in Resources */,
+				FA063AD22ADC2EC90079BA7A /* a1s.m4a in Resources */,
+				FA063AC22ADC2EC90079BA7A /* b3.m4a in Resources */,
+				FA063AB42ADC2EC90079BA7A /* a2.m4a in Resources */,
+				FA063AC12ADC2EC90079BA7A /* b1.m4a in Resources */,
+				FA063AC52ADC2EC90079BA7A /* c3.m4a in Resources */,
 				FAD89D0D2AC86E2C0019A99D /* Preview Assets.xcassets in Resources */,
+				FA063ACA2ADC2EC90079BA7A /* c3s.m4a in Resources */,
+				FA063AC82ADC2EC90079BA7A /* a2s.m4a in Resources */,
+				FA063AC32ADC2EC90079BA7A /* b2.m4a in Resources */,
+				FA063ACD2ADC2EC90079BA7A /* f3s.m4a in Resources */,
+				FA063ACB2ADC2EC90079BA7A /* g2s.m4a in Resources */,
+				FA253C022AD9BC0F00EA8F67 /* BalooDa-Regular.ttf in Resources */,
+				FA063AB32ADC2EC90079BA7A /* a3.m4a in Resources */,
+				FA063AC72ADC2EC90079BA7A /* c2s.m4a in Resources */,
+				FA063ABA2ADC2EC90079BA7A /* g3.m4a in Resources */,
+				FA063AB82ADC2EC90079BA7A /* f1.m4a in Resources */,
+				FA063AB62ADC2EC90079BA7A /* f2.m4a in Resources */,
 				FAD89D0A2AC86E2C0019A99D /* Assets.xcassets in Resources */,
+				FA063AB72ADC2EC90079BA7A /* f3.m4a in Resources */,
+				FA063AC92ADC2EC90079BA7A /* a3s.m4a in Resources */,
+				FA063AD12ADC2EC90079BA7A /* g1s.m4a in Resources */,
+				FA063AC62ADC2EC90079BA7A /* g3s.m4a in Resources */,
+				FA063ABF2ADC2EC90079BA7A /* e3.m4a in Resources */,
+				FA063AD02ADC2EC90079BA7A /* f1s.m4a in Resources */,
+				FA063ABB2ADC2EC90079BA7A /* g2.m4a in Resources */,
+				FA063ACC2ADC2EC90079BA7A /* d3s.m4a in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,8 +460,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAD89D082AC86E280019A99D /* ContentView.swift in Sources */,
+				FA253C072AD9BF5100EA8F67 /* FontExtension.swift in Sources */,
+				FA253C0B2AD9C11A00EA8F67 /* NotationQuizView.swift in Sources */,
+				FA253C182ADB11B200EA8F67 /* HelpPageView.swift in Sources */,
 				FAD89D062AC86E280019A99D /* MelodissimoApp.swift in Sources */,
+				FA253C132AD9C46F00EA8F67 /* SongRepositoryView.swift in Sources */,
+				FAD89D2F2AD5F85B0019A99D /* DashboardView.swift in Sources */,
+				FAD89D1F2ACB47D90019A99D /* PreplayView.swift in Sources */,
+				FA26D8682AE7C89A004D8443 /* NotationQuizLevelMenuView.swift in Sources */,
+				FA253C0D2AD9C24B00EA8F67 /* NotationMenuView.swift in Sources */,
+				FA253C0F2AD9C44600EA8F67 /* SongMenuView.swift in Sources */,
+				FAB5DCA02ADBDE2F007FC96A /* ViewExtension.swift in Sources */,
+				FA253C1C2ADBC8E800EA8F67 /* SoundModel.swift in Sources */,
+				FA26D86A2AE7F279004D8443 /* ButtonLevelModel.swift in Sources */,
+				FAD89D1D2ACB44DC0019A99D /* SplashscreenView.swift in Sources */,
+				FA253C152AD9C49E00EA8F67 /* ColorExtension.swift in Sources */,
+				FA253C092AD9C10E00EA8F67 /* NotationLearnView.swift in Sources */,
+				FA253C1E2ADBCCF200EA8F67 /* TilesModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,11 +608,15 @@
 				DEVELOPMENT_TEAM = AZQ73MXTBD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Melodissimo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Melodissimo;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.educational-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -299,11 +641,15 @@
 				DEVELOPMENT_TEAM = AZQ73MXTBD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Melodissimo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Melodissimo;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.educational-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
