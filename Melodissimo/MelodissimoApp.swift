@@ -11,7 +11,7 @@ import SwiftUI
 struct MelodissimoApp: App {
     var body: some Scene {
         WindowGroup {
-            DashboardView()
+            PreplayView(levelNo: 1)
         }
     }
 }

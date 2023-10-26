@@ -13,10 +13,12 @@ struct NotationQuizView: View {
     
     @State var buttonPressed = false
     
-    
     @State var isPresenting = false
     @State var isPresentingHelp = false
+    
     @Environment(\.dismiss) var dismiss
+    
+    @StateObject var tilesViewModel = TilesViewModel()
     
     var body: some View {
         ZStack {
@@ -62,10 +64,9 @@ struct NotationQuizView: View {
                 
                 Spacer()
                 
-                PianikaStackWithoutLabel()
+//                PianikaStackWithoutLabel(tilesViewModel: tilesViewModel)
                 
                 Spacer()
-                
                 
             }
             .padding()

@@ -59,6 +59,9 @@
 		FAD89D1D2ACB44DC0019A99D /* SplashscreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D1C2ACB44DC0019A99D /* SplashscreenView.swift */; };
 		FAD89D1F2ACB47D90019A99D /* PreplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D1E2ACB47D90019A99D /* PreplayView.swift */; };
 		FAD89D2F2AD5F85B0019A99D /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D2E2AD5F85B0019A99D /* DashboardView.swift */; };
+		FAF7D1FE2AEC2D3900EFD9BA /* TilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7D1FD2AEC2D3900EFD9BA /* TilesViewModel.swift */; };
+		FAF7D2012AEC2D5700EFD9BA /* LevelModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7D2002AEC2D5700EFD9BA /* LevelModel.swift */; };
+		FAF7D2042AEC2DB400EFD9BA /* LevelFeederModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7D2032AEC2DB400EFD9BA /* LevelFeederModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -116,6 +119,9 @@
 		FAD89D1E2ACB47D90019A99D /* PreplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreplayView.swift; sourceTree = "<group>"; };
 		FAD89D232AD5E51A0019A99D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FAD89D2E2AD5F85B0019A99D /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		FAF7D1FD2AEC2D3900EFD9BA /* TilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TilesViewModel.swift; sourceTree = "<group>"; };
+		FAF7D2002AEC2D5700EFD9BA /* LevelModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelModel.swift; sourceTree = "<group>"; };
+		FAF7D2032AEC2DB400EFD9BA /* LevelFeederModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelFeederModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,6 +211,7 @@
 			isa = PBXGroup;
 			children = (
 				FA253C1D2ADBCCF200EA8F67 /* TilesModel.swift */,
+				FAF7D1FD2AEC2D3900EFD9BA /* TilesViewModel.swift */,
 			);
 			path = TIles;
 			sourceTree = "<group>";
@@ -281,6 +288,7 @@
 		FAD89D142ACB43370019A99D /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				FAF7D1FF2AEC2D4200EFD9BA /* Level */,
 				FA26D86B2AE7F289004D8443 /* Button */,
 				FA253C1A2ADBC89800EA8F67 /* TIles */,
 				FA253C192ADBC88800EA8F67 /* Sound */,
@@ -317,10 +325,9 @@
 		FAD89D182ACB43AC0019A99D /* Notation */ = {
 			isa = PBXGroup;
 			children = (
+				FAF7D1FC2AEAE23900EFD9BA /* Quiz */,
 				FA253C082AD9C10E00EA8F67 /* NotationLearnView.swift */,
-				FA253C0A2AD9C11A00EA8F67 /* NotationQuizView.swift */,
 				FA253C0C2AD9C24B00EA8F67 /* NotationMenuView.swift */,
-				FA26D8672AE7C89A004D8443 /* NotationQuizLevelMenuView.swift */,
 			);
 			path = Notation;
 			sourceTree = "<group>";
@@ -355,6 +362,24 @@
 				FA253C012AD9BC0F00EA8F67 /* BalooDa-Regular.ttf */,
 			);
 			path = Font;
+			sourceTree = "<group>";
+		};
+		FAF7D1FC2AEAE23900EFD9BA /* Quiz */ = {
+			isa = PBXGroup;
+			children = (
+				FA26D8672AE7C89A004D8443 /* NotationQuizLevelMenuView.swift */,
+				FA253C0A2AD9C11A00EA8F67 /* NotationQuizView.swift */,
+			);
+			path = Quiz;
+			sourceTree = "<group>";
+		};
+		FAF7D1FF2AEC2D4200EFD9BA /* Level */ = {
+			isa = PBXGroup;
+			children = (
+				FAF7D2002AEC2D5700EFD9BA /* LevelModel.swift */,
+				FAF7D2032AEC2DB400EFD9BA /* LevelFeederModel.swift */,
+			);
+			path = Level;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -462,14 +487,17 @@
 			files = (
 				FA253C072AD9BF5100EA8F67 /* FontExtension.swift in Sources */,
 				FA253C0B2AD9C11A00EA8F67 /* NotationQuizView.swift in Sources */,
+				FAF7D2012AEC2D5700EFD9BA /* LevelModel.swift in Sources */,
 				FA253C182ADB11B200EA8F67 /* HelpPageView.swift in Sources */,
 				FAD89D062AC86E280019A99D /* MelodissimoApp.swift in Sources */,
+				FAF7D2042AEC2DB400EFD9BA /* LevelFeederModel.swift in Sources */,
 				FA253C132AD9C46F00EA8F67 /* SongRepositoryView.swift in Sources */,
 				FAD89D2F2AD5F85B0019A99D /* DashboardView.swift in Sources */,
 				FAD89D1F2ACB47D90019A99D /* PreplayView.swift in Sources */,
 				FA26D8682AE7C89A004D8443 /* NotationQuizLevelMenuView.swift in Sources */,
 				FA253C0D2AD9C24B00EA8F67 /* NotationMenuView.swift in Sources */,
 				FA253C0F2AD9C44600EA8F67 /* SongMenuView.swift in Sources */,
+				FAF7D1FE2AEC2D3900EFD9BA /* TilesViewModel.swift in Sources */,
 				FAB5DCA02ADBDE2F007FC96A /* ViewExtension.swift in Sources */,
 				FA253C1C2ADBC8E800EA8F67 /* SoundModel.swift in Sources */,
 				FA26D86A2AE7F279004D8443 /* ButtonLevelModel.swift in Sources */,

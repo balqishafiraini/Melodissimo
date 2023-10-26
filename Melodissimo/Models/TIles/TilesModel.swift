@@ -35,12 +35,20 @@ struct BlackTilesStyle: ButtonStyle {
 //button white tiles
 struct WhiteTilesButton: View {
     
+    @EnvironmentObject var viewModel: TilesViewModel
+    
     @State var buttonPressed = false
     var keySound: String
     var labelNot: String?
+    var id: Int?
     
     var body: some View {
-        Button(action: {stopSound()},
+        Button(action: {
+            stopSound()
+            
+            print("Button ID: \(id ?? -1) is pressed")
+            viewModel.addAnswer(id ?? -1)
+        },
                label: {
             Text(labelNot ?? "")
                 .font(.subheadline)
@@ -57,11 +65,21 @@ struct WhiteTilesButton: View {
 
 //button black tiles
 struct BlackTilesButton: View {
+    
+    @EnvironmentObject var viewModel: TilesViewModel
+    
     var keySound: String
     var labelNot: String?
+    var id: Int?
+
     
     var body: some View {
-        Button(action: {stopSound()},
+        Button(action: {
+            stopSound()
+            
+            print("Button ID: \(id ?? -1) is pressed")
+            viewModel.addAnswer(id ?? -1)
+        },
                label: {
             Text(labelNot ?? "")
                 .font(.subheadline)
@@ -159,8 +177,6 @@ struct PianikaStackWithLabel: View {
         }
         .frame(width: UIScreen.main.bounds.size.width, height: 450, alignment: .topLeading)
         .padding()
-
-        
     }
     
     
@@ -168,6 +184,8 @@ struct PianikaStackWithLabel: View {
 
 struct PianikaStackWithoutLabel: View {
     
+    @ObservedObject var viewModel: TilesViewModel
+
     var body: some View {
         
         ZStack {
@@ -180,33 +198,33 @@ struct PianikaStackWithoutLabel: View {
             HStack (spacing: 2){
                 
                 Group {
-                    WhiteTilesButton (keySound: "f1")
-                    WhiteTilesButton (keySound: "g1")
-                    WhiteTilesButton (keySound: "a1")
-                    WhiteTilesButton (keySound: "b1")
+                    WhiteTilesButton (keySound: "f1", id: 1)
+                    WhiteTilesButton (keySound: "g1", id: 2)
+                    WhiteTilesButton (keySound: "a1", id: 3)
+                    WhiteTilesButton (keySound: "b1", id: 4)
                 }
                 
                 Group {
-                    WhiteTilesButton (keySound: "c2")
-                    WhiteTilesButton (keySound: "d2")
-                    WhiteTilesButton (keySound: "e2")
-                    WhiteTilesButton (keySound: "f2")
-                    WhiteTilesButton (keySound: "g2")
-                    WhiteTilesButton (keySound: "a2")
-                    WhiteTilesButton (keySound: "b2")
+                    WhiteTilesButton (keySound: "c2", id: 5)
+                    WhiteTilesButton (keySound: "d2", id: 6)
+                    WhiteTilesButton (keySound: "e2", id: 7)
+                    WhiteTilesButton (keySound: "f2", id: 8)
+                    WhiteTilesButton (keySound: "g2", id: 9)
+                    WhiteTilesButton (keySound: "a2", id: 10)
+                    WhiteTilesButton (keySound: "b2", id: 11)
                 }
                 
                 Group {
-                    WhiteTilesButton (keySound: "c3")
-                    WhiteTilesButton (keySound: "d3")
-                    WhiteTilesButton (keySound: "e3")
-                    WhiteTilesButton (keySound: "f3")
-                    WhiteTilesButton (keySound: "g3")
-                    WhiteTilesButton (keySound: "a3")
-                    WhiteTilesButton (keySound: "b3")
+                    WhiteTilesButton (keySound: "c3", id: 12)
+                    WhiteTilesButton (keySound: "d3", id: 13)
+                    WhiteTilesButton (keySound: "e3", id: 14)
+                    WhiteTilesButton (keySound: "f3", id: 15)
+                    WhiteTilesButton (keySound: "g3", id: 16)
+                    WhiteTilesButton (keySound: "a3", id: 17)
+                    WhiteTilesButton (keySound: "b3", id: 18)
                 }
                 
-                WhiteTilesButton (keySound: "c4")
+                WhiteTilesButton (keySound: "c4", id: 19)
                 
             }
             .frame(width: UIScreen.main.bounds.size.width, height: 450)
@@ -216,31 +234,31 @@ struct PianikaStackWithoutLabel: View {
             HStack{
                 HStack(spacing: UIScreen.main.bounds.width*0.06) {
                     HStack {
-                        BlackTilesButton (keySound: "f1s")
-                        BlackTilesButton (keySound: "g1s")
-                        BlackTilesButton (keySound: "a1s")
+                        BlackTilesButton (keySound: "f1s", id: 20)
+                        BlackTilesButton (keySound: "g1s", id: 21)
+                        BlackTilesButton (keySound: "a1s", id: 22)
                     }
                     
                     HStack {
-                        BlackTilesButton (keySound: "c2s")
-                        BlackTilesButton (keySound: "d2s")
+                        BlackTilesButton (keySound: "c2s", id: 23)
+                        BlackTilesButton (keySound: "d2s", id: 24)
                     }
                     
                     HStack {
-                        BlackTilesButton (keySound: "f2s")
-                        BlackTilesButton (keySound: "g2s")
-                        BlackTilesButton (keySound: "a2s")
+                        BlackTilesButton (keySound: "f2s", id: 25)
+                        BlackTilesButton (keySound: "g2s", id: 26)
+                        BlackTilesButton (keySound: "a2s", id: 27)
                     }
                     
                     HStack {
-                        BlackTilesButton (keySound: "c3s")
-                        BlackTilesButton (keySound: "d3s")
+                        BlackTilesButton (keySound: "c3s", id: 28)
+                        BlackTilesButton (keySound: "d3s", id: 29)
                     }
                     
                     HStack {
-                        BlackTilesButton (keySound: "f3s")
-                        BlackTilesButton (keySound: "g3s")
-                        BlackTilesButton (keySound: "a3s")
+                        BlackTilesButton (keySound: "f3s", id: 30)
+                        BlackTilesButton (keySound: "g3s", id: 31)
+                        BlackTilesButton (keySound: "a3s", id: 32)
                     }
                 }
             }
@@ -248,7 +266,7 @@ struct PianikaStackWithoutLabel: View {
         }
         .frame(width: UIScreen.main.bounds.size.width, height: 450, alignment: .topLeading)
         .padding()
-
+        .environmentObject(viewModel)
         
     }
     
