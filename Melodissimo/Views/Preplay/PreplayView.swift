@@ -30,10 +30,12 @@ struct PreplayView: View {
             VStack{
                 
                 ZStack {
-                    Text("Question: \(tilesViewModel.currentLevel?.question.description ?? "N/A")")
-                        .font(.title2)
-                        .padding()
-                        .background(.white)
+                    Text("\(tilesViewModel.currentLevel?.question[tilesViewModel.currentQuestionIndex] ?? "N/A")")
+                        .foregroundStyle(.black)
+                        .font(.title)
+                        .frame(width: UIScreen.main.bounds.width * 0.8, height: 150)
+                        .background(RoundedRectangle(cornerRadius: 40).fill(.white))
+                    
                     
                 }
                 

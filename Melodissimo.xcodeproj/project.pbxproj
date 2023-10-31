@@ -53,6 +53,7 @@
 		FA26D8682AE7C89A004D8443 /* NotationQuizLevelMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26D8672AE7C89A004D8443 /* NotationQuizLevelMenuView.swift */; };
 		FA26D86A2AE7F279004D8443 /* ButtonLevelModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26D8692AE7F279004D8443 /* ButtonLevelModel.swift */; };
 		FAB5DCA02ADBDE2F007FC96A /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB5DC9F2ADBDE2F007FC96A /* ViewExtension.swift */; };
+		FABE77FE2AF16479002FB1DC /* AfterQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE77FD2AF16479002FB1DC /* AfterQuizView.swift */; };
 		FAD89D062AC86E280019A99D /* MelodissimoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D052AC86E280019A99D /* MelodissimoApp.swift */; };
 		FAD89D0A2AC86E2C0019A99D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FAD89D092AC86E2C0019A99D /* Assets.xcassets */; };
 		FAD89D0D2AC86E2C0019A99D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FAD89D0C2AC86E2C0019A99D /* Preview Assets.xcassets */; };
@@ -111,6 +112,7 @@
 		FA26D8672AE7C89A004D8443 /* NotationQuizLevelMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationQuizLevelMenuView.swift; sourceTree = "<group>"; };
 		FA26D8692AE7F279004D8443 /* ButtonLevelModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonLevelModel.swift; sourceTree = "<group>"; };
 		FAB5DC9F2ADBDE2F007FC96A /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
+		FABE77FD2AF16479002FB1DC /* AfterQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterQuizView.swift; sourceTree = "<group>"; };
 		FAD89D022AC86E280019A99D /* Melodissimo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Melodissimo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD89D052AC86E280019A99D /* MelodissimoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MelodissimoApp.swift; sourceTree = "<group>"; };
 		FAD89D092AC86E2C0019A99D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -281,6 +283,7 @@
 				FAD89D182ACB43AC0019A99D /* Notation */,
 				FAD89D172ACB439B0019A99D /* Dashboard */,
 				FAD89D162ACB43900019A99D /* Preplay */,
+				FABE77FD2AF16479002FB1DC /* AfterQuizView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -499,6 +502,7 @@
 				FA253C0F2AD9C44600EA8F67 /* SongMenuView.swift in Sources */,
 				FAF7D1FE2AEC2D3900EFD9BA /* TilesViewModel.swift in Sources */,
 				FAB5DCA02ADBDE2F007FC96A /* ViewExtension.swift in Sources */,
+				FABE77FE2AF16479002FB1DC /* AfterQuizView.swift in Sources */,
 				FA253C1C2ADBC8E800EA8F67 /* SoundModel.swift in Sources */,
 				FA26D86A2AE7F279004D8443 /* ButtonLevelModel.swift in Sources */,
 				FAD89D1D2ACB44DC0019A99D /* SplashscreenView.swift in Sources */,

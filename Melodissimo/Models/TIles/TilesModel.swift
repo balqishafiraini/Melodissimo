@@ -188,6 +188,10 @@ struct PianikaStackWithoutLabel: View {
 
     var body: some View {
         
+        NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers), isActive: $viewModel.canNavigateToAfterQuizPage) {
+            Text("")
+        }
+        
         ZStack {
             RoundedRectangle(cornerRadius: 30)
                 .fill(Color.navy)
