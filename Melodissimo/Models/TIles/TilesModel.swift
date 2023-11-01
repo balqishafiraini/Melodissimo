@@ -236,7 +236,7 @@ struct PianikaStackQuiz: View {
 
     var body: some View {
         
-        NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers).navigationBarBackButtonHidden(true), isActive: $viewModel.canNavigateToAfterQuizPage) {
+        NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers, userScore: viewModel.score).navigationBarBackButtonHidden(true), isActive: $viewModel.canNavigateToAfterQuizPage) {
             Text("")
         }
         

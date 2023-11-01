@@ -15,6 +15,9 @@ class TilesViewModel: ObservableObject {
     @Published var currentQuestionIndex: Int = 0
     @Published var canNavigateToAfterQuizPage = false
     
+    @Published var score: Int = 0
+    
+    
     func addAnswer(_ id: Int) {
         answers.append(id)
         print("ViewModel answers now: \(answers)")
@@ -22,6 +25,7 @@ class TilesViewModel: ObservableObject {
             currentQuestionIndex += 1
         } else {
             canNavigateToAfterQuizPage = true
+            calculateScore()
         }
     }
     
@@ -31,6 +35,18 @@ class TilesViewModel: ObservableObject {
         } else {
             print("Answer incorrect!")
         }
+    }
+    
+    func calculateScore() {
+        var totalCorrectAnswer = 0
+        
+        for index in 0..<answers.count {
+            if answers[index] == currentLevel?.answer[index] {
+                totalCorrectAnswer += 1
+            }
+        }
+        let floatScore = Float(totalCorrectAnswer) / Float(currentLevel?.answer.count ?? 1) * 100
+        score = Int(floatScore)
     }
     
     func resetAll() {

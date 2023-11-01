@@ -87,8 +87,6 @@ struct NotationQuizLevelMenuView: View {
                             }
                         }
                         .frame(width: UIScreen.main.bounds.width*0.9, height: 350)
-//                        .clipped()
-
                         
                         
                     }.padding()

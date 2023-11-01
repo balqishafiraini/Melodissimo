@@ -21,5 +21,11 @@ struct LevelFeederModel {
             question: ["1",
                        "2",],
             answer: [2, 1]),
+        LevelModel(
+            levelCategory: "quiz",
+            levelNo: 2,
+            question: ["1",
+                       "2",],
+            answer: [2, 1]),
     ]
 }

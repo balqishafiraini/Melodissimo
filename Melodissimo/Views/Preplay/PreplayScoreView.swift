@@ -12,8 +12,10 @@ struct PreplayScoreView: View {
     @State var isPresenting = false
     @State var isPresentingHelp = false
     
+    var score: Int
+    
     @Environment(\.dismiss) var dismiss
-
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -47,16 +49,28 @@ struct PreplayScoreView: View {
                     .padding()
                     
                     Spacer()
-                                                                    
+                    
                     HStack{
                         Spacer()
-                        VStack {
-                            Spacer()
+                        VStack (spacing: 10) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.yellow)
+                                    .frame(width: 200, height: 200)
+                                VStack{
+                                    Text("Score:")
+                                        .font(.subheadline)
+                                    Text("\(score)")
+                                        .font(.custom("BalooDa-Regular", size: 80))
+                                }
+                                
+                            }
                             Text("Thank you! After learn with us, see your current score test your skill again in Post-Play Menu 😆")
+                                .multilineTextAlignment(.center)
                                 .padding()
                                 .foregroundStyle(.black)
                                 .font(.headline)
-                                .frame(width: UIScreen.main.bounds.width * 0.5, height: 300)
+                                .frame(width: UIScreen.main.bounds.width * 0.5, height: 200)
                                 .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                             
                             Spacer()
@@ -64,7 +78,8 @@ struct PreplayScoreView: View {
                             Button {
                                 isPresenting = true
                                 UserDefaults.standard.set(true, forKey: "isPreplayDone")
-
+                                UserDefaults.standard.set(score, forKey: "preplayScore")
+                                
                             } label: {
                                 Text("Menu")
                                     .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
@@ -89,7 +104,7 @@ struct PreplayScoreView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
-
+                
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())

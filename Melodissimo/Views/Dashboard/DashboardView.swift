@@ -27,7 +27,8 @@ struct DashboardView: View {
                     Text("Hello! What do you want to learn today?")
                         .font(.largeTitle)
                         .foregroundColor(.white)
-
+                    
+                    Text("Your final score is: \(UserDefaults.standard.integer(forKey: "preplayScore"))")
                     
                     HStack{
                         Spacer()
