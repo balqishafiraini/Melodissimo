@@ -14,7 +14,7 @@ struct AfterQuizView: View {
     var body: some View {
         Group {
             if level?.levelCategory == "preplay" {
-                HelpPageView()
+                PreplayScoreView()
             } else if level?.levelCategory == "quiz" && level?.answer == userAnswer {
                 CorrectAnswerView(level: level, userAnswer: userAnswer)
             } else if level?.levelCategory == "quiz" && level?.answer != userAnswer {

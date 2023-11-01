@@ -12,9 +12,3 @@ struct HelpPageView: View {
         Text("Ini menu help page")
     }
 }
-
-struct HelpPageView_Previews: PreviewProvider {
-    static var previews: some View {
-        HelpPageView()
-    }
-}

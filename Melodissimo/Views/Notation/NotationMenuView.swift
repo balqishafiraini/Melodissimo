@@ -97,9 +97,3 @@ struct NotationMenuView: View {
     }
     
 }
-
-struct NotationMenuView_Previews: PreviewProvider {
-    static var previews: some View {
-        NotationMenuView()
-    }
-}

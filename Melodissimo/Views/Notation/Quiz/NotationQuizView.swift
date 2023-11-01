@@ -20,6 +20,8 @@ struct NotationQuizView: View {
     
     @StateObject var tilesViewModel = TilesViewModel()
     
+    var levelNo: Int
+    
     var body: some View {
         ZStack {
             Rectangle()
@@ -60,17 +62,25 @@ struct NotationQuizView: View {
                         }
                     
                 }
-                .padding()
+                .padding([.leading, .trailing])
                 
-                Spacer()
+                ZStack {
+                    Text("\(tilesViewModel.currentLevel?.question[tilesViewModel.currentQuestionIndex] ?? "N/A")")
+                        .foregroundStyle(.black)
+                        .font(.title)
+                        .frame(width: UIScreen.main.bounds.width * 0.8, height: UIScreen.main.bounds.height*0.15)
+                        .background(RoundedRectangle(cornerRadius: 40).fill(.white))
+                }
                 
-//                PianikaStackWithoutLabel(tilesViewModel: tilesViewModel)
-                
-                Spacer()
-                
+                                
+                PianikaStackQuiz(viewModel: tilesViewModel)
+                                
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
+        }
+        .onAppear {
+            tilesViewModel.getLevel(currentLevelNo: levelNo, currentLevelCat: "quiz")
         }
     }
 }

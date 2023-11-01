@@ -10,6 +10,8 @@ import SwiftUI
 struct NotationQuizLevelMenuView: View {
     
     @State var isPresentingHelp = false
+    @State var isPresentingLevel = false
+    @State var selectedLevel = -1
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -64,15 +66,22 @@ struct NotationQuizLevelMenuView: View {
                         
                         ScrollView(.horizontal) {
                             HStack {
-                                ForEach(1..<101) { index in
-                                    Button(action: {
-                                        print("Level \(index) tapped")
-                                    }) {
+                                ForEach(1..<101, id: \.self) { index in
+                                    Button {
+                                        selectedLevel = index
+                                        isPresentingLevel = true
+                                    } label: {
                                         Text("Level \(index)")
                                             .foregroundStyle(Color.darkGreen)
                                             .font(.largeTitle)
                                             .frame(width: UIScreen.main.bounds.width * 0.2, height: 250)
                                             .background(RoundedRectangle(cornerRadius: 40).fill(Color.yellow))
+                                    }
+                                    .padding(10) // Add padding to create space between buttons
+
+                                    NavigationLink(destination: NotationQuizView(levelNo: selectedLevel)
+                                        .navigationBarBackButtonHidden(true), isActive: $isPresentingLevel) {
+                                        EmptyView()
                                     }
                                 }
                             }

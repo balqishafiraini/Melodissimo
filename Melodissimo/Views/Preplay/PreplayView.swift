@@ -29,19 +29,19 @@ struct PreplayView: View {
             
             VStack{
                 
+                Spacer()
+                
                 ZStack {
                     Text("\(tilesViewModel.currentLevel?.question[tilesViewModel.currentQuestionIndex] ?? "N/A")")
                         .foregroundStyle(.black)
                         .font(.title)
                         .frame(width: UIScreen.main.bounds.width * 0.8, height: 150)
                         .background(RoundedRectangle(cornerRadius: 40).fill(.white))
-                    
-                    
                 }
                 
                 Spacer()
                 
-                PianikaStackWithoutLabel(viewModel: tilesViewModel)
+                PianikaStackQuiz(viewModel: tilesViewModel)
                 
                 Spacer()
                 
@@ -53,4 +53,6 @@ struct PreplayView: View {
             tilesViewModel.getLevel(currentLevelNo: levelNo, currentLevelCat: "preplay")
         }
     }
+    
 }
+

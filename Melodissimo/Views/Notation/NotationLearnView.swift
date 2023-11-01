@@ -60,7 +60,7 @@ struct NotationLearnView: View {
                 
                 Spacer()
                 
-                PianikaStackWithLabel()
+                PianikaStackLearning()
                 
                 Spacer()
                 

@@ -12,8 +12,14 @@ struct LevelFeederModel {
         LevelModel(
             levelCategory: "preplay",
             levelNo: 1,
-            question: ["Which tiles that belongs to (5.)?",
-                       "Which tiles that belongs to (4˙)?",],
+            question: ["5.",
+                       "4˙",],
+            answer: [2, 1]),
+        LevelModel(
+            levelCategory: "quiz",
+            levelNo: 1,
+            question: ["1",
+                       "2",],
             answer: [2, 1]),
     ]
 }

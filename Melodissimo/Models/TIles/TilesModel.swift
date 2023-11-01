@@ -33,7 +33,7 @@ struct BlackTilesStyle: ButtonStyle {
 }
 
 //button white tiles
-struct WhiteTilesButton: View {
+struct WhiteTilesQuizButton: View {
     
     @EnvironmentObject var viewModel: TilesViewModel
     
@@ -63,8 +63,33 @@ struct WhiteTilesButton: View {
     }
 }
 
+struct WhiteTilesButton: View {
+    
+    
+    @State var buttonPressed = false
+    var keySound: String
+    var labelNot: String?
+    
+    var body: some View {
+        Button(action: {
+            stopSound()
+        },
+               label: {
+            Text(labelNot ?? "")
+                .font(.subheadline)
+        })
+        .buttonStyle(WhiteTilesStyle())
+        .onLongPressGesture(minimumDuration: 0, perform: {}) {
+            pressing in
+            if pressing {
+                playSound(key: keySound)
+            }
+        }
+    }
+}
+
 //button black tiles
-struct BlackTilesButton: View {
+struct BlackTilesQuizButton: View {
     
     @EnvironmentObject var viewModel: TilesViewModel
     
@@ -94,8 +119,31 @@ struct BlackTilesButton: View {
     }
 }
 
+struct BlackTilesButton: View {
+        
+    var keySound: String
+    var labelNot: String?
+    
+    var body: some View {
+        Button(action: {
+            stopSound()
+        },
+               label: {
+            Text(labelNot ?? "")
+                .font(.subheadline)
+        })
+        .buttonStyle(BlackTilesStyle())
+        .onLongPressGesture(minimumDuration: 0, perform: {}) {
+            pressing in
+            if pressing {
+                playSound(key: keySound)
+            }
+        }
+    }
+}
 
-struct PianikaStackWithLabel: View {
+
+struct PianikaStackLearning: View {
     
     var body: some View {
         
@@ -182,13 +230,13 @@ struct PianikaStackWithLabel: View {
     
 }
 
-struct PianikaStackWithoutLabel: View {
+struct PianikaStackQuiz: View {
     
     @ObservedObject var viewModel: TilesViewModel
 
     var body: some View {
         
-        NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers), isActive: $viewModel.canNavigateToAfterQuizPage) {
+        NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers).navigationBarBackButtonHidden(true), isActive: $viewModel.canNavigateToAfterQuizPage) {
             Text("")
         }
         
@@ -202,33 +250,33 @@ struct PianikaStackWithoutLabel: View {
             HStack (spacing: 2){
                 
                 Group {
-                    WhiteTilesButton (keySound: "f1", id: 1)
-                    WhiteTilesButton (keySound: "g1", id: 2)
-                    WhiteTilesButton (keySound: "a1", id: 3)
-                    WhiteTilesButton (keySound: "b1", id: 4)
+                    WhiteTilesQuizButton (keySound: "f1", id: 1)
+                    WhiteTilesQuizButton (keySound: "g1", id: 2)
+                    WhiteTilesQuizButton (keySound: "a1", id: 3)
+                    WhiteTilesQuizButton (keySound: "b1", id: 4)
                 }
                 
                 Group {
-                    WhiteTilesButton (keySound: "c2", id: 5)
-                    WhiteTilesButton (keySound: "d2", id: 6)
-                    WhiteTilesButton (keySound: "e2", id: 7)
-                    WhiteTilesButton (keySound: "f2", id: 8)
-                    WhiteTilesButton (keySound: "g2", id: 9)
-                    WhiteTilesButton (keySound: "a2", id: 10)
-                    WhiteTilesButton (keySound: "b2", id: 11)
+                    WhiteTilesQuizButton (keySound: "c2", id: 5)
+                    WhiteTilesQuizButton (keySound: "d2", id: 6)
+                    WhiteTilesQuizButton (keySound: "e2", id: 7)
+                    WhiteTilesQuizButton (keySound: "f2", id: 8)
+                    WhiteTilesQuizButton (keySound: "g2", id: 9)
+                    WhiteTilesQuizButton (keySound: "a2", id: 10)
+                    WhiteTilesQuizButton (keySound: "b2", id: 11)
                 }
                 
                 Group {
-                    WhiteTilesButton (keySound: "c3", id: 12)
-                    WhiteTilesButton (keySound: "d3", id: 13)
-                    WhiteTilesButton (keySound: "e3", id: 14)
-                    WhiteTilesButton (keySound: "f3", id: 15)
-                    WhiteTilesButton (keySound: "g3", id: 16)
-                    WhiteTilesButton (keySound: "a3", id: 17)
-                    WhiteTilesButton (keySound: "b3", id: 18)
+                    WhiteTilesQuizButton (keySound: "c3", id: 12)
+                    WhiteTilesQuizButton (keySound: "d3", id: 13)
+                    WhiteTilesQuizButton (keySound: "e3", id: 14)
+                    WhiteTilesQuizButton (keySound: "f3", id: 15)
+                    WhiteTilesQuizButton (keySound: "g3", id: 16)
+                    WhiteTilesQuizButton (keySound: "a3", id: 17)
+                    WhiteTilesQuizButton (keySound: "b3", id: 18)
                 }
                 
-                WhiteTilesButton (keySound: "c4", id: 19)
+                WhiteTilesQuizButton (keySound: "c4", id: 19)
                 
             }
             .frame(width: UIScreen.main.bounds.size.width, height: 450)
@@ -238,31 +286,31 @@ struct PianikaStackWithoutLabel: View {
             HStack{
                 HStack(spacing: UIScreen.main.bounds.width*0.06) {
                     HStack {
-                        BlackTilesButton (keySound: "f1s", id: 20)
-                        BlackTilesButton (keySound: "g1s", id: 21)
-                        BlackTilesButton (keySound: "a1s", id: 22)
+                        BlackTilesQuizButton (keySound: "f1s", id: 20)
+                        BlackTilesQuizButton (keySound: "g1s", id: 21)
+                        BlackTilesQuizButton (keySound: "a1s", id: 22)
                     }
                     
                     HStack {
-                        BlackTilesButton (keySound: "c2s", id: 23)
-                        BlackTilesButton (keySound: "d2s", id: 24)
+                        BlackTilesQuizButton (keySound: "c2s", id: 23)
+                        BlackTilesQuizButton (keySound: "d2s", id: 24)
                     }
                     
                     HStack {
-                        BlackTilesButton (keySound: "f2s", id: 25)
-                        BlackTilesButton (keySound: "g2s", id: 26)
-                        BlackTilesButton (keySound: "a2s", id: 27)
+                        BlackTilesQuizButton (keySound: "f2s", id: 25)
+                        BlackTilesQuizButton (keySound: "g2s", id: 26)
+                        BlackTilesQuizButton (keySound: "a2s", id: 27)
                     }
                     
                     HStack {
-                        BlackTilesButton (keySound: "c3s", id: 28)
-                        BlackTilesButton (keySound: "d3s", id: 29)
+                        BlackTilesQuizButton (keySound: "c3s", id: 28)
+                        BlackTilesQuizButton (keySound: "d3s", id: 29)
                     }
                     
                     HStack {
-                        BlackTilesButton (keySound: "f3s", id: 30)
-                        BlackTilesButton (keySound: "g3s", id: 31)
-                        BlackTilesButton (keySound: "a3s", id: 32)
+                        BlackTilesQuizButton (keySound: "f3s", id: 30)
+                        BlackTilesQuizButton (keySound: "g3s", id: 31)
+                        BlackTilesQuizButton (keySound: "a3s", id: 32)
                     }
                 }
             }

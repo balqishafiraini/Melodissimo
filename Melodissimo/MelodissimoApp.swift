@@ -9,10 +9,16 @@ import SwiftUI
 
 @main
 struct MelodissimoApp: App {
+    let isPreplayDone = UserDefaults.standard.bool(forKey: "isPreplayDone")
+    
     var body: some Scene {
         WindowGroup {
-            DashboardView()
-
+            if isPreplayDone {
+                DashboardView()
+            } else {
+                FirstLaunchView()
+            }
         }
     }
 }
+
