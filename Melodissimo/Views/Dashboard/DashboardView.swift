@@ -18,7 +18,7 @@ struct DashboardView: View {
     var body: some View {
         NavigationView {
             ZStack{
-                Image("dashboardFix")
+                Image("dashboard")
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
@@ -36,7 +36,7 @@ struct DashboardView: View {
                         Button {
                             isPresentingNotation = true
                         } label: {
-                            Image("notationButton")
+                            Image("notationMenuButton")
                         }
                         NavigationLink(destination: NotationMenuView()
                             .navigationBarBackButtonHidden(true), isActive: $isPresentingNotation) {
@@ -48,7 +48,7 @@ struct DashboardView: View {
                         Button {
                             print("buttontapped")
                         } label: {
-                            Image("songButton")
+                            Image("songMenuButton")
                         }
                         
                         Spacer()
@@ -56,7 +56,7 @@ struct DashboardView: View {
                         Button {
                             print("buttontapped")
                         } label: {
-                            Image("postPlayButton")
+                            Image("postplayMenuButton")
                         }
                         
                         Spacer()

@@ -56,6 +56,9 @@
 		FABE77FE2AF16479002FB1DC /* AfterQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE77FD2AF16479002FB1DC /* AfterQuizView.swift */; };
 		FABE78042AF192BE002FB1DC /* FirstLaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE78032AF192BE002FB1DC /* FirstLaunchView.swift */; };
 		FABE78062AF234EF002FB1DC /* PreplayScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE78052AF234EF002FB1DC /* PreplayScoreView.swift */; };
+		FABE780B2AF38E60002FB1DC /* QuizCorrectAnswerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE780A2AF38E60002FB1DC /* QuizCorrectAnswerView.swift */; };
+		FABE780D2AF38E73002FB1DC /* QuizIncorrectAnswerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE780C2AF38E73002FB1DC /* QuizIncorrectAnswerView.swift */; };
+		FABE780F2AF3A34D002FB1DC /* CoordinatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE780E2AF3A34D002FB1DC /* CoordinatorView.swift */; };
 		FAD89D062AC86E280019A99D /* MelodissimoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D052AC86E280019A99D /* MelodissimoApp.swift */; };
 		FAD89D0A2AC86E2C0019A99D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FAD89D092AC86E2C0019A99D /* Assets.xcassets */; };
 		FAD89D0D2AC86E2C0019A99D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FAD89D0C2AC86E2C0019A99D /* Preview Assets.xcassets */; };
@@ -117,6 +120,9 @@
 		FABE77FD2AF16479002FB1DC /* AfterQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterQuizView.swift; sourceTree = "<group>"; };
 		FABE78032AF192BE002FB1DC /* FirstLaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstLaunchView.swift; sourceTree = "<group>"; };
 		FABE78052AF234EF002FB1DC /* PreplayScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreplayScoreView.swift; sourceTree = "<group>"; };
+		FABE780A2AF38E60002FB1DC /* QuizCorrectAnswerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizCorrectAnswerView.swift; sourceTree = "<group>"; };
+		FABE780C2AF38E73002FB1DC /* QuizIncorrectAnswerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizIncorrectAnswerView.swift; sourceTree = "<group>"; };
+		FABE780E2AF3A34D002FB1DC /* CoordinatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinatorView.swift; sourceTree = "<group>"; };
 		FAD89D022AC86E280019A99D /* Melodissimo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Melodissimo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD89D052AC86E280019A99D /* MelodissimoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MelodissimoApp.swift; sourceTree = "<group>"; };
 		FAD89D092AC86E2C0019A99D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -239,6 +245,16 @@
 			path = Button;
 			sourceTree = "<group>";
 		};
+		FABE78092AF38E30002FB1DC /* QuizAnswer */ = {
+			isa = PBXGroup;
+			children = (
+				FABE77FD2AF16479002FB1DC /* AfterQuizView.swift */,
+				FABE780A2AF38E60002FB1DC /* QuizCorrectAnswerView.swift */,
+				FABE780C2AF38E73002FB1DC /* QuizIncorrectAnswerView.swift */,
+			);
+			path = QuizAnswer;
+			sourceTree = "<group>";
+		};
 		FAD89CF92AC86E280019A99D = {
 			isa = PBXGroup;
 			children = (
@@ -280,14 +296,14 @@
 		FAD89D132ACB432D0019A99D /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				FABE78092AF38E30002FB1DC /* QuizAnswer */,
 				FA253C162ADB11A400EA8F67 /* Help */,
-				FAD89D1B2ACB44860019A99D /* Splashscreen */,
+				FAD89D1B2ACB44860019A99D /* Onboarding */,
 				FAD89D1A2ACB43B90019A99D /* Postplay */,
 				FAD89D192ACB43B30019A99D /* Song */,
 				FAD89D182ACB43AC0019A99D /* Notation */,
 				FAD89D172ACB439B0019A99D /* Dashboard */,
 				FAD89D162ACB43900019A99D /* Preplay */,
-				FABE77FD2AF16479002FB1DC /* AfterQuizView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -357,12 +373,13 @@
 			path = Postplay;
 			sourceTree = "<group>";
 		};
-		FAD89D1B2ACB44860019A99D /* Splashscreen */ = {
+		FAD89D1B2ACB44860019A99D /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
 				FAD89D1C2ACB44DC0019A99D /* SplashscreenView.swift */,
+				FABE780E2AF3A34D002FB1DC /* CoordinatorView.swift */,
 			);
-			path = Splashscreen;
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		FAD89D202AD5E40E0019A99D /* Font */ = {
@@ -498,13 +515,16 @@
 				FA253C0B2AD9C11A00EA8F67 /* NotationQuizView.swift in Sources */,
 				FAF7D2012AEC2D5700EFD9BA /* LevelModel.swift in Sources */,
 				FA253C182ADB11B200EA8F67 /* HelpPageView.swift in Sources */,
+				FABE780B2AF38E60002FB1DC /* QuizCorrectAnswerView.swift in Sources */,
 				FAD89D062AC86E280019A99D /* MelodissimoApp.swift in Sources */,
 				FAF7D2042AEC2DB400EFD9BA /* LevelFeederModel.swift in Sources */,
 				FA253C132AD9C46F00EA8F67 /* SongRepositoryView.swift in Sources */,
 				FABE78062AF234EF002FB1DC /* PreplayScoreView.swift in Sources */,
+				FABE780F2AF3A34D002FB1DC /* CoordinatorView.swift in Sources */,
 				FAD89D2F2AD5F85B0019A99D /* DashboardView.swift in Sources */,
 				FAD89D1F2ACB47D90019A99D /* PreplayView.swift in Sources */,
 				FA26D8682AE7C89A004D8443 /* NotationQuizLevelMenuView.swift in Sources */,
+				FABE780D2AF38E73002FB1DC /* QuizIncorrectAnswerView.swift in Sources */,
 				FA253C0D2AD9C24B00EA8F67 /* NotationMenuView.swift in Sources */,
 				FA253C0F2AD9C44600EA8F67 /* SongMenuView.swift in Sources */,
 				FAF7D1FE2AEC2D3900EFD9BA /* TilesViewModel.swift in Sources */,

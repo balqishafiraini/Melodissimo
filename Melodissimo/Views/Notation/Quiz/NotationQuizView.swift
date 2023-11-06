@@ -46,6 +46,15 @@ struct NotationQuizView: View {
                     
                     Spacer()
                     
+                    Text("Level: \(levelNo)")
+//                        .frame(width: 120, height: 80)
+//                        .background(.white)
+                        .foregroundColor(.white)
+                        .cornerRadius(20)
+                        .font(Font.headline)
+                    
+                    Spacer()
+                    
                     Button {
                         isPresentingHelp = true
                     } label: {

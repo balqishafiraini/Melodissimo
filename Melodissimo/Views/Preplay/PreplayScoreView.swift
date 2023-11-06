@@ -98,6 +98,7 @@ struct PreplayScoreView: View {
                         }
                         Spacer()
                         Image("alpanicaGlasses")
+                            .resizable()
                             .scaledToFit()
                         Spacer()
                     }

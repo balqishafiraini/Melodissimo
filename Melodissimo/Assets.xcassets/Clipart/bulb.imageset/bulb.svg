@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Created with Vectornator (http://vectornator.io/) -->
+<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 1582.94 2384.23" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="1647.51" id="Filter" width="1137.7" x="201.602" y="325.907">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="0.687928"/>
+</filter>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="119.371" id="Filter_2" width="225.514" x="8.973" y="543.44">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="0.687928"/>
+</filter>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="165.234" id="Filter_3" width="209.387" x="217.833" y="274.574">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="0.687928"/>
+</filter>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="193.904" id="Filter_4" width="130.146" x="539.522" y="99.4821">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="0.687928"/>
+</filter>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="214.038" id="Filter_5" width="140.754" x="899.742" y="79.3478">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="0.687928"/>
+</filter>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="206.597" id="Filter_6" width="167.071" x="1165.42" y="233.211">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="0.687928"/>
+</filter>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="174.455" id="Filter_7" width="197.506" x="1310.02" y="456.234">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="0.687928"/>
+</filter>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="419.763" id="Filter_8" width="519.98" x="587.17" y="1871.92">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="0.687928"/>
+</filter>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="67.2836" id="Filter_9" width="520.108" x="587.041" y="1968.53">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="0.687928"/>
+</filter>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="59.707" id="Filter_10" width="520.108" x="587.041" y="2100.67">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="0.687928"/>
+</filter>
+</defs>
+<g id="Layer-1" vectornator:layerName="Layer 1">
+<path d="M598.855 1744.5C617.778 1554.58 394.641 1431.11 322.526 1318.89C271.66 1239.74 271.583 1192.31 245.396 1139C206.924 1060.67 196.985 985.093 206.924 880.491C279.918 112.233 1305.17 164.587 1336.44 913.673C1344.86 1115.22 1307.84 1235.17 1184.69 1380.43C1163.81 1405.06 1065.95 1538.18 1059.04 1568.26C1030.64 1691.95 1127.29 1860.21 1030.39 1939.56C960.166 1997.06 889.51 1960.22 810.922 1958.54C772.014 1957.7 661.324 1974.3 616.314 1937.87C577.835 1906.72 599.916 1904.44 601.417 1839.71C602.345 1799.64 597.48 1758.3 598.855 1744.5Z" fill="#f0c46d" fill-rule="nonzero" filter="url(#Filter)" opacity="1" stroke="none" vectornator:blur="1.37586" vectornator:layerName="Curve 1"/>
+<path d="M359.744 717.016C345.29 717.016 338.692 765.331 336.61 775.74C303.893 939.326 323.744 1143.69 443.382 1263.33" fill="none" opacity="1" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="51.6867" vectornator:layerName="Curve 2"/>
+<path d="M36.5362 571.003C89.2197 571.003 148.327 627.923 206.924 635.247" fill="none" filter="url(#Filter_2)" opacity="1" stroke="#f0c46d" stroke-linecap="round" stroke-linejoin="round" stroke-width="51.6867" vectornator:blur="1.37586" vectornator:layerName="Curve 3"/>
+<path d="M246.029 302.852C234.599 291.422 381.505 420.864 399.657 411.789" fill="none" filter="url(#Filter_3)" opacity="1" stroke="#f0c46d" stroke-linecap="round" stroke-linejoin="round" stroke-width="51.6867" vectornator:blur="1.37586" vectornator:layerName="Curve 4"/>
+<path d="M571.545 134.655C557.795 109.981 579.217 151.005 590.306 176.693C599.916 198.953 608.252 205.597 617.932 224.194C628.896 245.256 647.921 275.435 640.386 262.855" fill="none" filter="url(#Filter_4)" opacity="1" stroke="#f0c46d" stroke-linecap="round" stroke-linejoin="round" stroke-width="51.6867" vectornator:blur="1.37586" vectornator:layerName="Curve 5"/>
+<path d="M1012.93 106.911C1002.21 120.286 998.883 131.361 988.294 148.192C957.482 197.168 916.665 288.209 929.852 260.774" fill="none" filter="url(#Filter_5)" opacity="1" stroke="#f0c46d" stroke-linecap="round" stroke-linejoin="round" stroke-width="51.6867" vectornator:blur="1.37586" vectornator:layerName="Curve 6"/>
+<path d="M1304.93 260.774C1260.26 289.689 1174.3 437.417 1196.62 408.517" fill="none" filter="url(#Filter_6)" opacity="1" stroke="#f0c46d" stroke-linecap="round" stroke-linejoin="round" stroke-width="51.6867" vectornator:blur="1.37586" vectornator:layerName="Curve 7"/>
+<path d="M1478.66 484.187C1496.49 475.472 1324.36 615.903 1338.4 602.18" fill="none" filter="url(#Filter_7)" opacity="1" stroke="#f0c46d" stroke-linecap="round" stroke-linejoin="round" stroke-width="51.6867" vectornator:blur="1.37586" vectornator:layerName="Curve 8"/>
+<path d="M616.244 1969.61C614.856 1879.01 678.825 1911.96 728.59 1907.52C804.243 1900.77 950.042 1918.56 1037.95 1899.97C1091.66 1888.61 1086.96 2079.29 1060.03 2211.22C1058.07 2220.78 636.787 2355.73 617.112 2153.36C611.95 2100.26 616.895 2012.12 616.244 1969.61Z" fill="#948a76" fill-rule="nonzero" filter="url(#Filter_8)" opacity="1" stroke="#948a76" stroke-linecap="round" stroke-linejoin="round" stroke-width="51.6867" vectornator:blur="1.37586" vectornator:layerName="Curve 9"/>
+<path d="M626.96 2007.12C574.13 2007.12 704.576 2008.25 757.405 2008.25C842.276 2008.25 1002.88 2007.12 1079.59 1996.1" fill="none" filter="url(#Filter_9)" opacity="1" stroke="#433823" stroke-linecap="round" stroke-linejoin="round" stroke-width="51.6867" vectornator:blur="1.37586" vectornator:layerName="Curve 10"/>
+<path d="M614.605 2128.24C775.341 2128.24 922.437 2132.82 1079.59 2132.82" fill="none" filter="url(#Filter_10)" opacity="1" stroke="#433823" stroke-linecap="round" stroke-linejoin="round" stroke-width="51.6867" vectornator:blur="1.37586" vectornator:layerName="Curve 11"/>
+</g>
+</svg>
