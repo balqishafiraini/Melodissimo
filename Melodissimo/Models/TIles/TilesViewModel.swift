@@ -20,7 +20,7 @@ class TilesViewModel: ObservableObject {
     
     func addAnswer(_ id: Int) {
         answers.append(id)
-        print("ViewModel answers now: \(answers)")
+//        print("ViewModel answers now: \(answers)")
         if currentQuestionIndex+1 < currentLevel?.question.count ?? 0 {
             currentQuestionIndex += 1
         } else {
@@ -58,7 +58,7 @@ class TilesViewModel: ObservableObject {
     func getLevel(currentLevelNo: Int, currentLevelCat: String) {
         //cara 1
         currentLevel = LevelFeederModel().levels.first(where: {$0.levelNo == currentLevelNo && $0.levelCategory == currentLevelCat})
-        print("Current Level: \(String(describing: currentLevel))")
+//        print("Current Level: \(String(describing: currentLevel))")
         
         resetAll()
     }

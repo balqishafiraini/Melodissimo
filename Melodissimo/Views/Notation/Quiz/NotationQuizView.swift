@@ -31,7 +31,7 @@ struct NotationQuizView: View {
             Image("bgMusic")
                 .scaledToFit()
             
-            VStack{
+            VStack (spacing: 1){
                 HStack{
                     Button {
                         dismiss()
@@ -47,8 +47,6 @@ struct NotationQuizView: View {
                     Spacer()
                     
                     Text("Level: \(levelNo)")
-//                        .frame(width: 120, height: 80)
-//                        .background(.white)
                         .foregroundColor(.white)
                         .cornerRadius(20)
                         .font(Font.headline)
@@ -64,7 +62,8 @@ struct NotationQuizView: View {
                             .foregroundColor(.white)
                             .cornerRadius(20)
                             .font(Font.title)
-                    }.padding()
+                    }
+                    .padding()
                     NavigationLink(destination: HelpPageView()
                         .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
                             EmptyView()
@@ -76,8 +75,8 @@ struct NotationQuizView: View {
                 ZStack {
                     Text("\(tilesViewModel.currentLevel?.question[tilesViewModel.currentQuestionIndex] ?? "N/A")")
                         .foregroundStyle(.black)
-                        .font(.title)
-                        .frame(width: UIScreen.main.bounds.width * 0.8, height: UIScreen.main.bounds.height*0.15)
+                        .font(.largeTitle)
+                        .frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height*0.15)
                         .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                 }
                 

@@ -46,7 +46,7 @@ struct WhiteTilesQuizButton: View {
         Button(action: {
             stopSound()
             
-            print("Button ID: \(id ?? -1) is pressed")
+//            print("Button ID: \(id ?? -1) is pressed")
             viewModel.addAnswer(id ?? -1)
         },
                label: {
@@ -102,7 +102,7 @@ struct BlackTilesQuizButton: View {
         Button(action: {
             stopSound()
             
-            print("Button ID: \(id ?? -1) is pressed")
+//            print("Button ID: \(id ?? -1) is pressed")
             viewModel.addAnswer(id ?? -1)
         },
                label: {

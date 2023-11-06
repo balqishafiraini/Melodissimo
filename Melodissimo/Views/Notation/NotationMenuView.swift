@@ -78,7 +78,7 @@ struct NotationMenuView: View {
                                     .font(.custom("BalooDa-Regular", size: 30))
                                     .foregroundColor(.white)
                                 Text("LEARN")
-                                    .font(.custom("BalooDa-Regular", size: 48))
+                                    .font(.custom("BalooDa-Regular", size: 55))
                                     .foregroundColor(.white)
                                 
                             }
