@@ -66,13 +66,14 @@ struct NotationMenuView: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 30)
                             .fill(Color.softBlue)
-                            .frame(width: UIScreen.main.bounds.width*0.3, height: UIScreen.main.bounds.height*0.3)
+                            .frame(width: UIScreen.main.bounds.width*0.4, height: UIScreen.main.bounds.height*0.3)
                         HStack {
-                            Image("bulb")
+                            Image("paper")
                                 .resizable()
                                 .padding()
                                 .scaledToFit()
-                                .frame(height: UIScreen.main.bounds.height*0.3, alignment: .topLeading)
+                                .frame(height: UIScreen.main.bounds.height*0.23, alignment: .topLeading)
+                                
                             VStack(alignment: .leading) {
                                 Text("NOTATION")
                                     .font(.custom("BalooDa-Regular", size: 30))
@@ -100,13 +101,13 @@ struct NotationMenuView: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 30)
                             .fill(Color.softBlue)
-                            .frame(width: UIScreen.main.bounds.width*0.3, height: UIScreen.main.bounds.height*0.3)
+                            .frame(width: UIScreen.main.bounds.width*0.4, height: UIScreen.main.bounds.height*0.3)
                         HStack {
-                            Image("paper")
+                            Image("bulb")
                                 .resizable()
                                 .padding()
                                 .scaledToFit()
-                                .frame(height: UIScreen.main.bounds.height*0.23, alignment: .topLeading)
+                                .frame(height: UIScreen.main.bounds.height*0.3, alignment: .topLeading)
                             VStack(alignment: .leading) {
                                 Text("NOTATION")
                                     .font(.custom("BalooDa-Regular", size: 30))

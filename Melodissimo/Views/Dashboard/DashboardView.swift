@@ -46,10 +46,14 @@ struct DashboardView: View {
                         Spacer()
                         
                         Button {
-                            print("buttontapped")
+                            isPresentingSong = true
                         } label: {
                             Image("songMenuButton")
                         }
+                        NavigationLink(destination: SongMenuView()
+                            .navigationBarBackButtonHidden(true), isActive: $isPresentingSong) {
+                                EmptyView()
+                            }
                         
                         Spacer()
                         

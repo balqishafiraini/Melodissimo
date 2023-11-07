@@ -1,38 +1,35 @@
 //
-//  LearnNotationView.swift
+//  SongQuizView.swift
 //  Melodissimo
 //
-//  Created by Balqis on 14/10/23.
+//  Created by Balqis on 07/11/23.
 //
 
 import SwiftUI
 import AVFoundation
 import Foundation
 
-struct NotationQuizView: View {
-    
-    @State var buttonPressed = false
-    
-    @State var isPresenting = false
-    @State var isPresentingHelp = false
-    
+struct SongQuizView: View {
+    @State private var isPresentingHelp = false
     @Environment(\.dismiss) var dismiss
+    @StateObject private var tilesViewModel = TilesViewModel()
     
-    @StateObject var tilesViewModel = TilesViewModel()
+    var songTitle: String
     
-    var levelNo: Int
+    @State private var isPresentingLevel = false
+
     
     var body: some View {
         ZStack {
             Rectangle()
-                .fill(Color.red)
+                .fill(Color.yellow)
                 .scaledToFill()
             
             Image("bgMusic")
                 .scaledToFit()
             
-            VStack (spacing: 1){
-                HStack{
+            VStack(spacing: 1) {
+                HStack {
                     Button {
                         dismiss()
                     } label: {
@@ -46,7 +43,7 @@ struct NotationQuizView: View {
                     
                     Spacer()
                     
-                    Text("Level: \(levelNo)")
+                    Text(songTitle) // Display the songTitle
                         .foregroundColor(.white)
                         .cornerRadius(20)
                         .font(Font.headline)
@@ -63,7 +60,6 @@ struct NotationQuizView: View {
                             .cornerRadius(20)
                             .font(Font.title)
                     }
-                    .padding()
                     NavigationLink(destination: HelpPageView()
                         .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
                             EmptyView()
@@ -76,19 +72,23 @@ struct NotationQuizView: View {
                     Text("\(tilesViewModel.currentLevel?.question[tilesViewModel.currentQuestionIndex] ?? "N/A")")
                         .foregroundStyle(.black)
                         .font(.largeTitle)
-                        .frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height*0.15)
+                        .frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height * 0.15)
                         .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                 }
                 
-                                
                 PianikaStackQuiz(viewModel: tilesViewModel)
-                                
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
         }
         .onAppear {
-            tilesViewModel.getLevel(currentLevelNo: levelNo, currentLevelCat: "notation")
+            print("Received Song Title: \(songTitle)")
+            // Customize the function behavior based on songTitle
+            tilesViewModel.getSongTitle(songTitle: songTitle)
         }
+        .onDisappear {
+            isPresentingLevel = false
+        }
+
     }
 }

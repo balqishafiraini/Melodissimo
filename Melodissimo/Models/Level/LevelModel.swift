@@ -7,10 +7,13 @@
 
 import Foundation
 
-struct LevelModel {
+struct LevelModel: Identifiable, Hashable {
+    let id = UUID()
     var levelCategory: String
     var levelNo: Int
     var question: [String]
     var answer: [Int]
+    var songTitle: String?
+    var songNotImg: String?
 }
 

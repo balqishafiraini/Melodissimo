@@ -63,9 +63,75 @@ struct WhiteTilesQuizButton: View {
     }
 }
 
+struct WhiteTilesStyleMini: ButtonStyle {
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .frame(width: UIScreen.main.bounds.width*0.048, height: 200, alignment: .bottom)
+            .background(configuration.isPressed ? .gray : .white)
+            .foregroundColor(!configuration.isPressed ? .black : .white)
+            .cornerRadius(radius: 12, corners: [.bottomLeft, .bottomRight])
+
+    }
+}
+
+struct BlackTilesStyleMini: ButtonStyle {
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .frame(width: UIScreen.main.bounds.width*0.042, height: 120, alignment: .bottom)
+            .background(configuration.isPressed ? .gray : .black)
+            .foregroundColor(!configuration.isPressed ? .white : .black)
+            .cornerRadius(radius: 12, corners: [.bottomLeft, .bottomRight])
+
+    }
+}
+
+struct WhiteTilesButtonMini: View {
+    @State var buttonPressed = false
+    var keySound: String
+    var labelNot: String?
+    
+    var body: some View {
+        Button(action: {
+            stopSound()
+        },
+               label: {
+            Text(labelNot ?? "")
+                .font(.subheadline)
+        })
+        .buttonStyle(WhiteTilesStyleMini())
+        .onLongPressGesture(minimumDuration: 0, perform: {}) {
+            pressing in
+            if pressing {
+                playSound(key: keySound)
+            }
+        }
+    }
+}
+
+struct BlackTilesButtonMini: View {
+        
+    var keySound: String
+    var labelNot: String?
+    
+    var body: some View {
+        Button(action: {
+            stopSound()
+        },
+               label: {
+            Text(labelNot ?? "")
+                .font(.subheadline)
+        })
+        .buttonStyle(BlackTilesStyleMini())
+        .onLongPressGesture(minimumDuration: 0, perform: {}) {
+            pressing in
+            if pressing {
+                playSound(key: keySound)
+            }
+        }
+    }
+}
+
 struct WhiteTilesButton: View {
-    
-    
     @State var buttonPressed = false
     var keySound: String
     var labelNot: String?
@@ -224,6 +290,93 @@ struct PianikaStackLearning: View {
             .frame(width: UIScreen.main.bounds.size.width*0.88, height: 350, alignment: .topLeading)
         }
         .frame(width: UIScreen.main.bounds.size.width, height: 450, alignment: .topLeading)
+        .padding()
+    }
+    
+    
+}
+
+struct PianikaStackLearningMini: View {
+    
+    var body: some View {
+        
+        ZStack {
+            RoundedRectangle(cornerRadius: 30)
+                .fill(Color.navy)
+                .padding()
+                .frame(width: UIScreen.main.bounds.size.width, height: 300)
+                .cornerRadius(50)
+            
+            HStack (spacing: 2){
+                
+                Group {
+                    WhiteTilesButtonMini (keySound: "f1", labelNot: "4.")
+                    WhiteTilesButtonMini (keySound: "g1", labelNot: "5.")
+                    WhiteTilesButtonMini (keySound: "a1", labelNot: "6.")
+                    WhiteTilesButtonMini (keySound: "b1", labelNot: "7.")
+                }
+                
+                Group {
+                    WhiteTilesButtonMini (keySound: "c2", labelNot: "1")
+                    WhiteTilesButtonMini (keySound: "d2", labelNot: "2")
+                    WhiteTilesButtonMini (keySound: "e2", labelNot: "3")
+                    WhiteTilesButtonMini (keySound: "f2", labelNot: "4")
+                    WhiteTilesButtonMini (keySound: "g2", labelNot: "5")
+                    WhiteTilesButtonMini (keySound: "a2", labelNot: "6")
+                    WhiteTilesButtonMini (keySound: "b2", labelNot: "7")
+                }
+                
+                Group {
+                    WhiteTilesButtonMini (keySound: "c3", labelNot: "1˙")
+                    WhiteTilesButtonMini (keySound: "d3", labelNot: "2˙")
+                    WhiteTilesButtonMini (keySound: "e3", labelNot: "3˙")
+                    WhiteTilesButtonMini (keySound: "f3", labelNot: "4˙")
+                    WhiteTilesButtonMini (keySound: "g3", labelNot: "5˙")
+                    WhiteTilesButtonMini (keySound: "a3", labelNot: "6˙")
+                    WhiteTilesButtonMini (keySound: "b3", labelNot: "7˙")
+                }
+                
+                WhiteTilesButtonMini (keySound: "c4", labelNot: "1˙'")
+                
+            }
+            .frame(width: UIScreen.main.bounds.size.width, height: 300)
+            
+            
+            
+            HStack{
+                HStack(spacing: UIScreen.main.bounds.width*0.06) {
+                    HStack {
+                        BlackTilesButtonMini (keySound: "f1s", labelNot: "4.#")
+                        BlackTilesButtonMini (keySound: "g1s", labelNot: "5.#")
+                        BlackTilesButtonMini (keySound: "a1s", labelNot: "6.#")
+                    }
+                    
+                    HStack {
+                        BlackTilesButtonMini (keySound: "c2s", labelNot: "1#")
+                        BlackTilesButtonMini (keySound: "d2s", labelNot: "2#")
+                    }
+                    
+                    HStack {
+                        BlackTilesButtonMini (keySound: "f2s", labelNot: "4#")
+                        BlackTilesButtonMini (keySound: "g2s", labelNot: "5#")
+                        BlackTilesButtonMini (keySound: "a2s", labelNot: "6#")
+                    }
+                    
+                    HStack {
+                        BlackTilesButtonMini (keySound: "c3s", labelNot: "1˙#")
+                        BlackTilesButtonMini (keySound: "d3s", labelNot: "2˙#")
+                    }
+                    
+                    HStack {
+                        BlackTilesButtonMini (keySound: "f3s", labelNot: "4˙#")
+                        BlackTilesButtonMini (keySound: "g3s", labelNot: "5˙#")
+                        BlackTilesButtonMini (keySound: "a3s", labelNot: "6˙#")
+                    }
+                }
+            }
+            .frame(width: UIScreen.main.bounds.size.width*0.88, height: 200, alignment: .topLeading)
+        }
+        .frame(width: UIScreen.main.bounds.size.width, height: 300, alignment: .topLeading)
         .padding()
     }
     

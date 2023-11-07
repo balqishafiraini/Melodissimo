@@ -18,9 +18,9 @@ struct AfterQuizView: View {
         Group {
             if level?.levelCategory == "preplay" {
                 PreplayScoreView(score: userScore)
-            } else if level?.levelCategory == "quiz" && level?.answer == userAnswer {
+            } else if level?.levelCategory == "notation" && level?.answer == userAnswer {
                 QuizCorrectAnswerView(level: level)
-            } else if level?.levelCategory == "quiz" && level?.answer != userAnswer {
+            } else if level?.levelCategory == "notation" && level?.answer != userAnswer {
                 QuizIncorrectAnswerView(level: level)
             }
         }

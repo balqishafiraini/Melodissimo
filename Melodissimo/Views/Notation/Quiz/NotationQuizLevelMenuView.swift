@@ -13,9 +13,8 @@ struct NotationQuizLevelMenuView: View {
     @State private var isPresentingMenu = false
     @State private var selectedLevel = -1
     @Environment(\.dismiss) var dismiss
-    @State private var currentLevel = 0 // Initialize with the first level
+    @State private var currentLevel = 0
     
-    // Function to retrieve user's current progress from UserDefaults
     func getCurrentLevelProgress() -> Int {
         return UserDefaults.standard.integer(forKey: "currentLevel")
     }
@@ -45,6 +44,13 @@ struct NotationQuizLevelMenuView: View {
 
                         Spacer()
                         
+                        Text("Menu Level")
+                            .foregroundColor(.white)
+                            .cornerRadius(20)
+                            .font(Font.largeTitle)
+                        
+                        Spacer()
+                        
                         Button {
                             isPresentingHelp = true
                         } label: {
@@ -67,7 +73,7 @@ struct NotationQuizLevelMenuView: View {
                         RoundedRectangle(cornerRadius: 50)
                             .fill(.white)
                             .padding()
-                            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height*0.6)
+                            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height*0.8)
                         
                         ScrollView {
                             LazyVGrid(
@@ -100,10 +106,9 @@ struct NotationQuizLevelMenuView: View {
                                 }
                             }
                             .padding(10)
-                            .background(Color.clear) // Use a clear background to avoid extra spacing
+                            .background(Color.clear)
                         }
-
-                        .frame(width: UIScreen.main.bounds.width * 0.95, height: UIScreen.main.bounds.height*0.55)
+                        .frame(width: UIScreen.main.bounds.width * 0.95, height: UIScreen.main.bounds.height*0.75)
                         
                     }.padding()
                     
@@ -112,7 +117,6 @@ struct NotationQuizLevelMenuView: View {
             }
         }
         .onAppear {
-            // Initialize currentLevel on view appear
             currentLevel = getCurrentLevelProgress()
         }
         .ignoresSafeArea()
