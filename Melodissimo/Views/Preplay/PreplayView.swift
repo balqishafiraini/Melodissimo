@@ -9,9 +9,6 @@ import SwiftUI
 import Foundation
 
 struct PreplayView: View {
-    
-    @State var buttonPressed = false
-    
     @State var isPresenting = false
     @State var isPresentingHelp = false
     
