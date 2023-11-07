@@ -60,6 +60,7 @@ struct SongQuizView: View {
                             .cornerRadius(20)
                             .font(Font.title)
                     }
+                    .padding()
                     NavigationLink(destination: HelpPageView()
                         .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
                             EmptyView()
@@ -68,12 +69,16 @@ struct SongQuizView: View {
                 }
                 .padding([.leading, .trailing])
                 
-                ZStack {
-                    Text("\(tilesViewModel.currentLevel?.question[tilesViewModel.currentQuestionIndex] ?? "N/A")")
-                        .foregroundStyle(.black)
-                        .font(.largeTitle)
-                        .frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height * 0.15)
-                        .background(RoundedRectangle(cornerRadius: 40).fill(.white))
+                ScrollView {
+                    ZStack {
+                        if let songNotImg = tilesViewModel.currentLevel?.songNotImg {
+                            Image(songNotImg)
+                                .resizable()
+                                .padding()
+                                .scaledToFit()
+                                .frame(width: UIScreen.main.bounds.width)
+                        }
+                    }
                 }
                 
                 PianikaStackQuiz(viewModel: tilesViewModel)
