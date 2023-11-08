@@ -11,23 +11,29 @@ import Foundation
 struct AfterQuizView: View {
     var level: LevelModel?
     var userAnswer: [Int]
-    
     var userScore: Int
 
     var body: some View {
-        Group {
-            if level?.levelCategory == "preplay" {
-                PreplayScoreView(score: userScore)
-            } else if level?.levelCategory == "notation" && level?.answer == userAnswer {
-                QuizCorrectAnswerView(level: level)
-            } else if level?.levelCategory == "notation" && level?.answer != userAnswer {
-                QuizIncorrectAnswerView(level: level)
-            } else if level?.levelCategory == "song" {
-                SongQuizScoreView(score: userScore, songTitle: level?.songTitle ?? "")
+        if level?.levelCategory == "preplay" {
+            return AnyView(PreplayScoreView(score: userScore))
+        } else if level?.levelCategory == "notation" {
+            if level?.answer == userAnswer {
+                if (level?.levelNo ?? 0) % 5 == 0 {
+                    return AnyView(FiveLevelPassedView())
+                } else {
+                    return AnyView(NotationQuizCorrectAnswerView(level: level))
+                }
+            } else {
+                return AnyView(NotationQuizIncorrectAnswerView(level: level))
             }
+        } else if level?.levelCategory == "song" {
+            return AnyView(SongQuizScoreView(score: userScore, songTitle: level?.songTitle ?? ""))
+        } else {
+            return AnyView(EmptyView())
         }
     }
 }
+
 
 
 

@@ -13,7 +13,7 @@ struct NotationQuizLevelMenuView: View {
     @State private var isPresentingMenu = false
     @State private var selectedLevel = -1
     @Environment(\.dismiss) var dismiss
-    @State private var currentLevel = 0
+    @State private var currentLevel = UserDefaults.standard.integer(forKey: "currentLevel") // Use UserDefaults to track current level
     
     func getCurrentLevelProgress() -> Int {
         return UserDefaults.standard.integer(forKey: "currentLevel")
@@ -40,15 +40,17 @@ struct NotationQuizLevelMenuView: View {
                                 .foregroundColor(.white)
                                 .cornerRadius(20)
                                 .font(Font.headline)
-                        }.padding()
+                        }
+                        .padding(.init(top: 30, leading: 30, bottom: 0, trailing: 0))
                         NavigationLink(destination: NotationMenuView()
                             .navigationBarBackButtonHidden(true), isActive: $isPresentingMenu) {
                                 EmptyView()
                             }
-
+                        
                         Spacer()
                         
                         Text("Menu Level")
+                            .padding(.init(top: 30, leading: 0, bottom: 0, trailing: 0))
                             .foregroundColor(.white)
                             .cornerRadius(20)
                             .font(Font.largeTitle)
@@ -64,12 +66,14 @@ struct NotationQuizLevelMenuView: View {
                                 .foregroundColor(.white)
                                 .cornerRadius(20)
                                 .font(Font.title)
-                        }.padding()
+                        }
+                        .padding(.init(top: 30, leading: 0, bottom: 0, trailing: 30))
                         NavigationLink(destination: HelpPageView()
                             .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
                                 EmptyView()
                             }
-                    }.padding()
+                    }
+                    .padding()
                     
                     Spacer()
                     
@@ -91,9 +95,11 @@ struct NotationQuizLevelMenuView: View {
                                     Button {
                                         if isLevelEnabled {
                                             selectedLevel = index
+                                            // Update currentLevel in UserDefaults
+                                            UserDefaults.standard.set(selectedLevel, forKey: "currentLevel")
                                             isPresentingLevel = true
                                         }
-                                    } label: {
+                                    }label: {
                                         Text("Level \(index)")
                                             .foregroundStyle(Color.darkGreen)
                                             .font(.largeTitle)

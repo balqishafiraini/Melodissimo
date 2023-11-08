@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct QuizIncorrectAnswerView: View {
+struct NotationQuizIncorrectAnswerView: View {
     @State var isPresenting = false
     @State var isPresentingHelp = false
     @State var isPresentingMenu = false

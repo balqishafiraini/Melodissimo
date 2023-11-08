@@ -13,6 +13,7 @@ struct MelodissimoApp: App {
     var body: some Scene {
         WindowGroup {
             CoordinatorView()
+//            NotationGeneratorView()
         }
     }
 }
