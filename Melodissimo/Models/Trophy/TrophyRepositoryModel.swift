@@ -13,12 +13,15 @@ class TrophyRepository: ObservableObject {
     
     init() {
         // Initialize with your available trophies
-        trophies.append(Trophy(name: "100% Quiz Score", description: "Earned when you score 100% in a song quiz", isEarned: false))
-        // Load user's earned trophies from UserDefaults or another storage mechanism
-        // You can use UserDefaults or CoreData to store user's progress.
-        // For simplicity, we'll use UserDefaults in this example.
-        if UserDefaults.standard.bool(forKey: "100% Quiz Score") {
-            setTrophyEarned("100% Quiz Score", isEarned: true)
+        trophies = LevelFeederModel().levels
+            .filter({ $0.levelCategory == "song" })
+            .map({ Trophy(name: $0.songTitle ?? "", isEarned: false) })
+        
+        //Get saved value from userDefault and set the trophy isEarned value based on it
+        for trophy in trophies {
+            if UserDefaults.standard.bool(forKey: trophy.name) {
+                setTrophyEarned(trophy.name, isEarned: true)
+            }
         }
     }
     
@@ -29,5 +32,8 @@ class TrophyRepository: ObservableObject {
             UserDefaults.standard.set(isEarned, forKey: name)
         }
     }
+    
+    func isTrophyEarned(songTitle: String) -> Bool {
+        return trophies.filter({ $0.name == songTitle }).first?.isEarned ?? false
+    }
 }
-

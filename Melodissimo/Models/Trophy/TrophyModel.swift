@@ -10,6 +10,5 @@ import SwiftUI
 
 struct Trophy {
     var name: String
-    var description: String
     var isEarned: Bool
 }

@@ -13,6 +13,8 @@ struct SongQuizScoreView: View {
     
     var score: Int
     
+    var songTitle: String
+    
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -64,7 +66,7 @@ struct SongQuizScoreView: View {
                                 }
                                 
                             }
-                            Text("Thank you! After learn with us, see your current score test your skill again in Post-Play Menu 😆")
+                            Text("Great job for finishing the song! If you are hit 100% score, you'll see a trophy in the repository shelf")
                                 .multilineTextAlignment(.center)
                                 .padding()
                                 .foregroundStyle(.black)
@@ -76,8 +78,6 @@ struct SongQuizScoreView: View {
                             
                             Button {
                                 isPresenting = true
-                                UserDefaults.standard.set(true, forKey: "isPreplayDone")
-                                UserDefaults.standard.set(score, forKey: "preplayScore")
                                 
                             } label: {
                                 Text("Menu")
@@ -108,7 +108,11 @@ struct SongQuizScoreView: View {
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        
+        .onAppear {
+            if score == 100 {
+                UserDefaults.standard.set(true, forKey: songTitle)
+            }
+        }
         
     }
 }

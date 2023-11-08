@@ -249,7 +249,7 @@ struct PianikaStackLearning: View {
                     WhiteTilesButton (keySound: "b3", labelNot: "7˙")
                 }
                 
-                WhiteTilesButton (keySound: "c4", labelNot: "1˙'")
+                WhiteTilesButton (keySound: "c4", labelNot: "1˙˙")
                 
             }
             .frame(width: UIScreen.main.bounds.size.width, height: 450)
@@ -336,7 +336,7 @@ struct PianikaStackLearningMini: View {
                     WhiteTilesButtonMini (keySound: "b3", labelNot: "7˙")
                 }
                 
-                WhiteTilesButtonMini (keySound: "c4", labelNot: "1˙'")
+                WhiteTilesButtonMini (keySound: "c4", labelNot: "1˙˙")
                 
             }
             .frame(width: UIScreen.main.bounds.size.width, height: 300)

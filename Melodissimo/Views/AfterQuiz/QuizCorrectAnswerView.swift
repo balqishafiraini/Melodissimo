@@ -59,7 +59,7 @@ struct QuizCorrectAnswerView: View {
                         Spacer()
                         VStack {
                             Spacer()
-                            Text("Congratulations! Great job for passing this level! 🥳")
+                            Text("Congratulations! Great job for passing this level!")
                                 .padding()
                                 .foregroundStyle(.black)
                                 .font(.headline)

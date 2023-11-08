@@ -23,7 +23,7 @@ struct AfterQuizView: View {
             } else if level?.levelCategory == "notation" && level?.answer != userAnswer {
                 QuizIncorrectAnswerView(level: level)
             } else if level?.levelCategory == "song" {
-                SongQuizScoreView(score: userScore)
+                SongQuizScoreView(score: userScore, songTitle: level?.songTitle ?? "")
             }
         }
     }

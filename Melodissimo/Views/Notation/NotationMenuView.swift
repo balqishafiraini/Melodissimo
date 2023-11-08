@@ -28,15 +28,19 @@ struct NotationMenuView: View {
             VStack{
                 HStack{
                     Button {
-                        dismiss()
+                        isPresenting = true
                     } label: {
-                        Text("Back")
+                        Text("Menu")
                             .frame(width: 120, height: 80)
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
                             .cornerRadius(20)
                             .font(Font.headline)
                     }
+                    NavigationLink(destination: DashboardView()
+                        .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
+                            EmptyView()
+                        }
                     
                     Spacer()
                     
@@ -76,10 +80,10 @@ struct NotationMenuView: View {
                                 
                             VStack(alignment: .leading) {
                                 Text("NOTATION")
-                                    .font(.custom("BalooDa-Regular", size: 30))
+                                    .font(.custom("BalooDa-Regular", size: 20))
                                     .foregroundColor(.white)
                                 Text("LEARN")
-                                    .font(.custom("BalooDa-Regular", size: 55))
+                                    .font(.custom("BalooDa-Regular", size: 50))
                                     .foregroundColor(.white)
                                 
                             }
@@ -110,10 +114,10 @@ struct NotationMenuView: View {
                                 .frame(height: UIScreen.main.bounds.height*0.3, alignment: .topLeading)
                             VStack(alignment: .leading) {
                                 Text("NOTATION")
-                                    .font(.custom("BalooDa-Regular", size: 30))
+                                    .font(.custom("BalooDa-Regular", size: 20))
                                     .foregroundColor(.white)
                                 Text("QUIZ")
-                                    .font(.custom("BalooDa-Regular", size: 55))
+                                    .font(.custom("BalooDa-Regular", size: 50))
                                     .foregroundColor(.white)
                                 
                             }

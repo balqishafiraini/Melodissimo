@@ -16,6 +16,7 @@ struct SongRepositoryQuizView: View {
     @State private var selectedSongTitle: String?
     
     var levelFeeder = LevelFeederModel()
+    var trophyRepository = TrophyRepository()
     
     @Environment(\.dismiss) var dismiss
     
@@ -31,15 +32,19 @@ struct SongRepositoryQuizView: View {
             VStack{
                 HStack{
                     Button {
-                        dismiss()
+                        isPresenting = true
                     } label: {
-                        Text("Back")
+                        Text("Menu")
                             .frame(width: 120, height: 80)
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
                             .cornerRadius(20)
                             .font(Font.headline)
                     }
+                    NavigationLink(destination: SongMenuView()
+                        .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
+                            EmptyView()
+                        }
                     
                     Spacer()
                     
@@ -80,18 +85,29 @@ struct SongRepositoryQuizView: View {
                                 selectedSongTitle = level.songTitle
                                 isPresentingLevel = true
                             } label: {
-                                Text(level.songTitle ?? "")
-                                    .foregroundStyle(.white)
-                                    .font(.largeTitle)
-                                    .frame(width: UIScreen.main.bounds.width * 0.45, height: 150)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 40)
-                                            .fill(Color.green)
-                                    )
+                                VStack(spacing: 1) {
+                                    if trophyRepository.isTrophyEarned(songTitle: level.songTitle ?? "") {
+                                        Image("trophy")
+                                    }
+                                    
+                                    Text(level.songTitle ?? "")
+                                    
+                                    
+                                }
+                                .foregroundStyle(.white)
+                                .font(.largeTitle)
+                                .frame(width: UIScreen.main.bounds.width * 0.45, height: 250)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 40)
+                                        .fill(Color.green)
+                                )
                             }
                             .background(
                                 NavigationLink("", destination: SongQuizView(songTitle: selectedSongTitle ?? "").navigationBarBackButtonHidden(true), isActive: $isPresentingLevel)
-                                    
+                                    .background(
+                                        NavigationLink("", destination: SongQuizView(songTitle: selectedSongTitle ?? "").navigationBarBackButtonHidden(true), isActive: $isPresentingLevel)
+                                        
+                                    )
                             )
                         }
                     }
@@ -108,4 +124,3 @@ struct SongRepositoryQuizView: View {
     }
     
 }
-

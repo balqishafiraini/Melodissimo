@@ -7,8 +7,7 @@
 
 import Foundation
 
-struct LevelModel: Identifiable, Hashable {
-    let id = UUID()
+struct LevelModel: Hashable {
     var levelCategory: String
     var levelNo: Int
     var question: [String]

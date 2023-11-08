@@ -65,7 +65,7 @@ struct PreplayScoreView: View {
                                 }
                                 
                             }
-                            Text("Thank you! After learn with us, see your current score test your skill again in Post-Play Menu 😆")
+                            Text("Thank you! After learn with us, see your current score test your skill again in Post-Play Menu")
                                 .multilineTextAlignment(.center)
                                 .padding()
                                 .foregroundStyle(.black)

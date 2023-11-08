@@ -32,15 +32,19 @@ struct NotationQuizLevelMenuView: View {
                 VStack {
                     HStack {
                         Button {
-                            dismiss()
+                            isPresentingMenu = true
                         } label: {
-                            Text("Back")
+                            Text("Menu")
                                 .frame(width: 120, height: 80)
                                 .background(Color.darkGreen)
                                 .foregroundColor(.white)
                                 .cornerRadius(20)
                                 .font(Font.headline)
                         }.padding()
+                        NavigationLink(destination: NotationMenuView()
+                            .navigationBarBackButtonHidden(true), isActive: $isPresentingMenu) {
+                                EmptyView()
+                            }
 
                         Spacer()
                         
