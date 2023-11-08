@@ -63,6 +63,36 @@ struct WhiteTilesQuizButton: View {
     }
 }
 
+struct WhiteTilesQuizButtonMini: View {
+    
+    @EnvironmentObject var viewModel: TilesViewModel
+    
+    @State var buttonPressed = false
+    var keySound: String
+    var labelNot: String?
+    var id: Int?
+    
+    var body: some View {
+        Button(action: {
+            stopSound()
+            
+//            print("Button ID: \(id ?? -1) is pressed")
+            viewModel.addAnswer(id ?? -1)
+        },
+               label: {
+            Text(labelNot ?? "")
+                .font(.subheadline)
+        })
+        .buttonStyle(WhiteTilesStyleMini())
+        .onLongPressGesture(minimumDuration: 0, perform: {}) {
+            pressing in
+            if pressing {
+                playSound(key: keySound)
+            }
+        }
+    }
+}
+
 struct WhiteTilesStyleMini: ButtonStyle {
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
@@ -176,6 +206,36 @@ struct BlackTilesQuizButton: View {
                 .font(.subheadline)
         })
         .buttonStyle(BlackTilesStyle())
+        .onLongPressGesture(minimumDuration: 0, perform: {}) {
+            pressing in
+            if pressing {
+                playSound(key: keySound)
+            }
+        }
+    }
+}
+
+struct BlackTilesQuizButtonMini: View {
+    
+    @EnvironmentObject var viewModel: TilesViewModel
+    
+    var keySound: String
+    var labelNot: String?
+    var id: Int?
+
+    
+    var body: some View {
+        Button(action: {
+            stopSound()
+            
+//            print("Button ID: \(id ?? -1) is pressed")
+            viewModel.addAnswer(id ?? -1)
+        },
+               label: {
+            Text(labelNot ?? "")
+                .font(.subheadline)
+        })
+        .buttonStyle(BlackTilesStyleMini())
         .onLongPressGesture(minimumDuration: 0, perform: {}) {
             pressing in
             if pressing {
@@ -471,6 +531,99 @@ struct PianikaStackQuiz: View {
         }
         .frame(width: UIScreen.main.bounds.size.width, height: 450, alignment: .topLeading)
         .padding()
+        .environmentObject(viewModel)
+        
+    }
+    
+    
+}
+struct PianikaStackQuizMini: View {
+    
+    @ObservedObject var viewModel: TilesViewModel
+
+    var body: some View {
+        
+        NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers, userScore: viewModel.score).navigationBarBackButtonHidden(true), isActive: $viewModel.canNavigateToAfterQuizPage) {
+            Text("")
+        }
+        
+        ZStack {
+            RoundedRectangle(cornerRadius: 30)
+                .fill(Color.navy)
+                .padding()
+                .frame(width: UIScreen.main.bounds.size.width, height: 300)
+                .cornerRadius(50)
+            
+            HStack (spacing: 2){
+                
+                Group {
+                    WhiteTilesQuizButtonMini (keySound: "f1", id: 1)
+                    WhiteTilesQuizButtonMini (keySound: "g1", id: 2)
+                    WhiteTilesQuizButtonMini (keySound: "a1", id: 3)
+                    WhiteTilesQuizButtonMini (keySound: "b1", id: 4)
+                }
+                
+                Group {
+                    WhiteTilesQuizButtonMini (keySound: "c2", id: 5)
+                    WhiteTilesQuizButtonMini (keySound: "d2", id: 6)
+                    WhiteTilesQuizButtonMini (keySound: "e2", id: 7)
+                    WhiteTilesQuizButtonMini (keySound: "f2", id: 8)
+                    WhiteTilesQuizButtonMini (keySound: "g2", id: 9)
+                    WhiteTilesQuizButtonMini (keySound: "a2", id: 10)
+                    WhiteTilesQuizButtonMini (keySound: "b2", id: 11)
+                }
+                
+                Group {
+                    WhiteTilesQuizButtonMini (keySound: "c3", id: 12)
+                    WhiteTilesQuizButtonMini (keySound: "d3", id: 13)
+                    WhiteTilesQuizButtonMini (keySound: "e3", id: 14)
+                    WhiteTilesQuizButtonMini (keySound: "f3", id: 15)
+                    WhiteTilesQuizButtonMini (keySound: "g3", id: 16)
+                    WhiteTilesQuizButtonMini (keySound: "a3", id: 17)
+                    WhiteTilesQuizButtonMini (keySound: "b3", id: 18)
+                }
+                
+                WhiteTilesQuizButtonMini (keySound: "c4", id: 19)
+                
+            }
+            .frame(width: UIScreen.main.bounds.size.width, height: 300)
+            
+            
+            
+            HStack{
+                HStack(spacing: UIScreen.main.bounds.width*0.06) {
+                    HStack {
+                        BlackTilesQuizButtonMini (keySound: "f1s", id: 20)
+                        BlackTilesQuizButtonMini (keySound: "g1s", id: 21)
+                        BlackTilesQuizButtonMini (keySound: "a1s", id: 22)
+                    }
+                    
+                    HStack {
+                        BlackTilesQuizButtonMini (keySound: "c2s", id: 23)
+                        BlackTilesQuizButtonMini (keySound: "d2s", id: 24)
+                    }
+                    
+                    HStack {
+                        BlackTilesQuizButtonMini (keySound: "f2s", id: 25)
+                        BlackTilesQuizButtonMini (keySound: "g2s", id: 26)
+                        BlackTilesQuizButtonMini (keySound: "a2s", id: 27)
+                    }
+                    
+                    HStack {
+                        BlackTilesQuizButtonMini (keySound: "c3s", id: 28)
+                        BlackTilesQuizButtonMini (keySound: "d3s", id: 29)
+                    }
+                    
+                    HStack {
+                        BlackTilesQuizButtonMini (keySound: "f3s", id: 30)
+                        BlackTilesQuizButtonMini (keySound: "g3s", id: 31)
+                        BlackTilesQuizButtonMini (keySound: "a3s", id: 32)
+                    }
+                }
+            }
+            .frame(width: UIScreen.main.bounds.size.width*0.88, height: 200, alignment: .topLeading)
+        }
+        .frame(width: UIScreen.main.bounds.size.width, height: 300, alignment: .topLeading)
         .environmentObject(viewModel)
         
     }

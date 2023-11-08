@@ -44,7 +44,7 @@ struct SongQuizView: View {
                     Spacer()
                     
                     Text(songTitle) // Display the songTitle
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.darkGreen)
                         .cornerRadius(20)
                         .font(Font.headline)
                     
@@ -81,7 +81,20 @@ struct SongQuizView: View {
                     }
                 }
                 
-                PianikaStackQuiz(viewModel: tilesViewModel)
+                Spacer()
+                
+                Button {
+                    tilesViewModel.resetAll()
+                }label: {
+                    Text("Reset")
+                        .frame(width: 80, height: 30)
+                        .background(Color.darkGreen)
+                        .foregroundColor(Color.white)
+                        .cornerRadius(20)
+                        .font(Font.body)
+                }
+                
+                PianikaStackQuizMini(viewModel: tilesViewModel)
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)

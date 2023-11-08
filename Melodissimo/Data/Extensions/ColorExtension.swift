@@ -20,5 +20,7 @@ extension Color {
     static let softBlue = Color("softBlue")
     static let softGreen = Color("softGreen")
     static let yellow = Color("yellow")
+    static let vanila = Color("vanila")
+
     
 }

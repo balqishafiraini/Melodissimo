@@ -61,6 +61,7 @@
 		FAA92C4A2AFBD8F000C35C7B /* NotationGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA92C492AFBD8F000C35C7B /* NotationGenerator.swift */; };
 		FAA92C4C2AFBD92B00C35C7B /* NotationGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA92C4B2AFBD92B00C35C7B /* NotationGeneratorView.swift */; };
 		FAB5DCA02ADBDE2F007FC96A /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB5DC9F2ADBDE2F007FC96A /* ViewExtension.swift */; };
+		FAB6CE782AFC171C00C145AD /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = FAB6CE772AFC171C00C145AD /* ConfettiSwiftUI */; };
 		FABE77FE2AF16479002FB1DC /* AfterQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE77FD2AF16479002FB1DC /* AfterQuizView.swift */; };
 		FABE78042AF192BE002FB1DC /* FirstLaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE78032AF192BE002FB1DC /* FirstLaunchView.swift */; };
 		FABE78062AF234EF002FB1DC /* PreplayScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE78052AF234EF002FB1DC /* PreplayScoreView.swift */; };
@@ -157,6 +158,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAB6CE782AFC171C00C145AD /* ConfettiSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,6 +466,9 @@
 			dependencies = (
 			);
 			name = Melodissimo;
+			packageProductDependencies = (
+				FAB6CE772AFC171C00C145AD /* ConfettiSwiftUI */,
+			);
 			productName = Melodissimo;
 			productReference = FAD89D022AC86E280019A99D /* Melodissimo.app */;
 			productType = "com.apple.product-type.application";
@@ -492,6 +497,9 @@
 				Base,
 			);
 			mainGroup = FAD89CF92AC86E280019A99D;
+			packageReferences = (
+				FAB6CE762AFC171B00C145AD /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
+			);
 			productRefGroup = FAD89D032AC86E280019A99D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -732,9 +740,11 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.balqishafiraini.Melodissimo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
 		};
@@ -765,9 +775,11 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.balqishafiraini.Melodissimo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
 		};
@@ -793,6 +805,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FAB6CE762AFC171B00C145AD /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FAB6CE772AFC171C00C145AD /* ConfettiSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAB6CE762AFC171B00C145AD /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
+			productName = ConfettiSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FAD89CFA2AC86E280019A99D /* Project object */;
 }
