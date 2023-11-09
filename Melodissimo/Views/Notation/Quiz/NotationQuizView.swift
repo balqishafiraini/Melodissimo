@@ -36,7 +36,7 @@ struct NotationQuizView: View {
                     Button {
                         dismiss()
                     } label: {
-                        Text("Back")
+                        Text("< Back")
                             .frame(width: 120, height: 80)
                             .background(Color.darkGreen)
                             .foregroundColor(.white)

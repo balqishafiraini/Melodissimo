@@ -1,19 +1,19 @@
 //
-//  SongQuizScoreView.swift
+//  PostplayScoreView.swift
 //  Melodissimo
 //
-//  Created by Balqis on 08/11/23.
+//  Created by Balqis on 09/11/23.
 //
+
 
 import SwiftUI
 
-struct SongQuizScoreView: View {
+struct PostplayScoreView: View {
+    
     @State var isPresenting = false
     @State var isPresentingHelp = false
     
     var score: Int
-    
-    var songTitle: String
     
     @Environment(\.dismiss) var dismiss
     
@@ -21,7 +21,7 @@ struct SongQuizScoreView: View {
         NavigationView {
             ZStack {
                 Rectangle()
-                    .fill(Color.softGreen)
+                    .fill(Color.softBlue)
                     .scaledToFill()
                 
                 Image("bgMusic")
@@ -66,7 +66,7 @@ struct SongQuizScoreView: View {
                                 }
                                 
                             }
-                            Text("Great job for finishing the song! If you are hit 100% score, you'll see a trophy in the repository shelf")
+                            Text("Thank you! After learn with us, see your current score test your skill again in Post-Play Menu")
                                 .multilineTextAlignment(.center)
                                 .padding()
                                 .foregroundStyle(.black)
@@ -78,6 +78,7 @@ struct SongQuizScoreView: View {
                             
                             Button {
                                 isPresenting = true
+                                UserDefaults.standard.set(score, forKey: "postplayScore")
                                 
                             } label: {
                                 Text("Menu")
@@ -108,11 +109,8 @@ struct SongQuizScoreView: View {
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .onAppear {
-            if score == 100 {
-                UserDefaults.standard.set(true, forKey: songTitle)
-            }
-        }
+        
         
     }
+    
 }

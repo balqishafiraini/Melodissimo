@@ -18,6 +18,10 @@ struct SongRepositoryQuizView: View {
     var levelFeeder = LevelFeederModel()
     var trophyRepository = TrophyRepository()
     
+    var filteredSongLevels: [LevelModel] {
+        return levelFeeder.levels.filter { $0.levelCategory == "song" }
+    }
+    
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -80,19 +84,16 @@ struct SongRepositoryQuizView: View {
                         ],
                         spacing: 20
                     ) {
-                        ForEach(levelFeeder.levels.filter { $0.levelCategory == "song" }, id: \.self) { level in
+                        ForEach(filteredSongLevels) { level in
                             Button {
-                                selectedSongTitle = level.songTitle
+                                selectedSongTitle = level.songTitle ?? ""
                                 isPresentingLevel = true
                             } label: {
                                 VStack(spacing: 1) {
                                     if trophyRepository.isTrophyEarned(songTitle: level.songTitle ?? "") {
                                         Image("trophy")
                                     }
-                                    
-                                    Text(level.songTitle ?? "")
-                                    
-                                    
+                                    Text(level.songTitle ?? "Unknown Song Title")
                                 }
                                 .foregroundStyle(.white)
                                 .font(.largeTitle)
@@ -104,11 +105,8 @@ struct SongRepositoryQuizView: View {
                             }
                             .background(
                                 NavigationLink("", destination: SongQuizView(songTitle: selectedSongTitle ?? "").navigationBarBackButtonHidden(true), isActive: $isPresentingLevel)
-                                    .background(
-                                        NavigationLink("", destination: SongQuizView(songTitle: selectedSongTitle ?? "").navigationBarBackButtonHidden(true), isActive: $isPresentingLevel)
-                                        
-                                    )
                             )
+                            .id(level.songTitle ?? "")
                         }
                     }
                     .padding(10)

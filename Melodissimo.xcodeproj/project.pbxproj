@@ -57,11 +57,16 @@
 		FA41AB1A2AFAC573001B537B /* TrophyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA41AB192AFAC573001B537B /* TrophyModel.swift */; };
 		FA9273752AFA4E7800B47D50 /* SongQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9273742AFA4E7800B47D50 /* SongQuizView.swift */; };
 		FA92737B2AFA69EB00B47D50 /* SongLearnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA92737A2AFA69EB00B47D50 /* SongLearnView.swift */; };
-		FAA92C482AFBB7C300C35C7B /* FiveLevelPassedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA92C472AFBB7C300C35C7B /* FiveLevelPassedView.swift */; };
+		FAA92C482AFBB7C300C35C7B /* NotationQuizFiveLevelPassedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA92C472AFBB7C300C35C7B /* NotationQuizFiveLevelPassedView.swift */; };
 		FAA92C4A2AFBD8F000C35C7B /* NotationGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA92C492AFBD8F000C35C7B /* NotationGenerator.swift */; };
 		FAA92C4C2AFBD92B00C35C7B /* NotationGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA92C4B2AFBD92B00C35C7B /* NotationGeneratorView.swift */; };
 		FAB5DCA02ADBDE2F007FC96A /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB5DC9F2ADBDE2F007FC96A /* ViewExtension.swift */; };
 		FAB6CE782AFC171C00C145AD /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = FAB6CE772AFC171C00C145AD /* ConfettiSwiftUI */; };
+		FAB6CE7A2AFC348100C145AD /* PostplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6CE792AFC348100C145AD /* PostplayView.swift */; };
+		FAB6CE832AFD09D900C145AD /* ExpandableSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6CE822AFD09D900C145AD /* ExpandableSectionViewModel.swift */; };
+		FAB6CE882AFD0A8900C145AD /* OnboardPostplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6CE872AFD0A8900C145AD /* OnboardPostplayView.swift */; };
+		FAB6CE8A2AFD0AAA00C145AD /* PostplayScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6CE892AFD0AAA00C145AD /* PostplayScoreView.swift */; };
+		FAB6CE8D2AFD0C7A00C145AD /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6CE8C2AFD0C7A00C145AD /* TutorialView.swift */; };
 		FABE77FE2AF16479002FB1DC /* AfterQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE77FD2AF16479002FB1DC /* AfterQuizView.swift */; };
 		FABE78042AF192BE002FB1DC /* FirstLaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE78032AF192BE002FB1DC /* FirstLaunchView.swift */; };
 		FABE78062AF234EF002FB1DC /* PreplayScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABE78052AF234EF002FB1DC /* PreplayScoreView.swift */; };
@@ -130,10 +135,15 @@
 		FA41AB192AFAC573001B537B /* TrophyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrophyModel.swift; sourceTree = "<group>"; };
 		FA9273742AFA4E7800B47D50 /* SongQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongQuizView.swift; sourceTree = "<group>"; };
 		FA92737A2AFA69EB00B47D50 /* SongLearnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongLearnView.swift; sourceTree = "<group>"; };
-		FAA92C472AFBB7C300C35C7B /* FiveLevelPassedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiveLevelPassedView.swift; sourceTree = "<group>"; };
+		FAA92C472AFBB7C300C35C7B /* NotationQuizFiveLevelPassedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationQuizFiveLevelPassedView.swift; sourceTree = "<group>"; };
 		FAA92C492AFBD8F000C35C7B /* NotationGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationGenerator.swift; sourceTree = "<group>"; };
 		FAA92C4B2AFBD92B00C35C7B /* NotationGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationGeneratorView.swift; sourceTree = "<group>"; };
 		FAB5DC9F2ADBDE2F007FC96A /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
+		FAB6CE792AFC348100C145AD /* PostplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostplayView.swift; sourceTree = "<group>"; };
+		FAB6CE822AFD09D900C145AD /* ExpandableSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableSectionViewModel.swift; sourceTree = "<group>"; };
+		FAB6CE872AFD0A8900C145AD /* OnboardPostplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardPostplayView.swift; sourceTree = "<group>"; };
+		FAB6CE892AFD0AAA00C145AD /* PostplayScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostplayScoreView.swift; sourceTree = "<group>"; };
+		FAB6CE8C2AFD0C7A00C145AD /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
 		FABE77FD2AF16479002FB1DC /* AfterQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterQuizView.swift; sourceTree = "<group>"; };
 		FABE78032AF192BE002FB1DC /* FirstLaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstLaunchView.swift; sourceTree = "<group>"; };
 		FABE78052AF234EF002FB1DC /* PreplayScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreplayScoreView.swift; sourceTree = "<group>"; };
@@ -243,7 +253,6 @@
 			isa = PBXGroup;
 			children = (
 				FA253C1D2ADBCCF200EA8F67 /* TilesModel.swift */,
-				FAF7D1FD2AEC2D3900EFD9BA /* TilesViewModel.swift */,
 			);
 			path = TIles;
 			sourceTree = "<group>";
@@ -269,8 +278,9 @@
 		FA9273732AFA449E00B47D50 /* Quiz */ = {
 			isa = PBXGroup;
 			children = (
-				FA9273742AFA4E7800B47D50 /* SongQuizView.swift */,
 				FA41AB102AFAB654001B537B /* SongRepositoryQuizView.swift */,
+				FA9273742AFA4E7800B47D50 /* SongQuizView.swift */,
+				FA41AB142AFABADB001B537B /* SongQuizScoreView.swift */,
 			);
 			path = Quiz;
 			sourceTree = "<group>";
@@ -278,21 +288,41 @@
 		FA9273792AFA69C200B47D50 /* Learn */ = {
 			isa = PBXGroup;
 			children = (
-				FA92737A2AFA69EB00B47D50 /* SongLearnView.swift */,
 				FA41AB122AFAB66E001B537B /* SongRepositoryLearnView.swift */,
+				FA92737A2AFA69EB00B47D50 /* SongLearnView.swift */,
 			);
 			path = Learn;
+			sourceTree = "<group>";
+		};
+		FAB6CE842AFD09E000C145AD /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				FAB6CE862AFD09F200C145AD /* ExpandableSection */,
+				FAB6CE852AFD09EB00C145AD /* Tiles */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		FAB6CE852AFD09EB00C145AD /* Tiles */ = {
+			isa = PBXGroup;
+			children = (
+				FAF7D1FD2AEC2D3900EFD9BA /* TilesViewModel.swift */,
+			);
+			path = Tiles;
+			sourceTree = "<group>";
+		};
+		FAB6CE862AFD09F200C145AD /* ExpandableSection */ = {
+			isa = PBXGroup;
+			children = (
+				FAB6CE822AFD09D900C145AD /* ExpandableSectionViewModel.swift */,
+			);
+			path = ExpandableSection;
 			sourceTree = "<group>";
 		};
 		FABE78092AF38E30002FB1DC /* AfterQuiz */ = {
 			isa = PBXGroup;
 			children = (
 				FABE77FD2AF16479002FB1DC /* AfterQuizView.swift */,
-				FABE78052AF234EF002FB1DC /* PreplayScoreView.swift */,
-				FABE780A2AF38E60002FB1DC /* NotationQuizCorrectAnswerView.swift */,
-				FABE780C2AF38E73002FB1DC /* NotationQuizIncorrectAnswerView.swift */,
-				FAA92C472AFBB7C300C35C7B /* FiveLevelPassedView.swift */,
-				FA41AB142AFABADB001B537B /* SongQuizScoreView.swift */,
 			);
 			path = AfterQuiz;
 			sourceTree = "<group>";
@@ -316,6 +346,7 @@
 		FAD89D042AC86E280019A99D /* Melodissimo */ = {
 			isa = PBXGroup;
 			children = (
+				FAB6CE842AFD09E000C145AD /* ViewModels */,
 				FAD89D232AD5E51A0019A99D /* Info.plist */,
 				FAD89D152ACB43720019A99D /* Data */,
 				FAD89D142ACB43370019A99D /* Models */,
@@ -375,7 +406,7 @@
 			isa = PBXGroup;
 			children = (
 				FAD89D1E2ACB47D90019A99D /* PreplayView.swift */,
-				FABE78032AF192BE002FB1DC /* FirstLaunchView.swift */,
+				FABE78052AF234EF002FB1DC /* PreplayScoreView.swift */,
 			);
 			path = Preplay;
 			sourceTree = "<group>";
@@ -411,6 +442,9 @@
 		FAD89D1A2ACB43B90019A99D /* Postplay */ = {
 			isa = PBXGroup;
 			children = (
+				FAB6CE872AFD0A8900C145AD /* OnboardPostplayView.swift */,
+				FAB6CE792AFC348100C145AD /* PostplayView.swift */,
+				FAB6CE892AFD0AAA00C145AD /* PostplayScoreView.swift */,
 			);
 			path = Postplay;
 			sourceTree = "<group>";
@@ -418,8 +452,10 @@
 		FAD89D1B2ACB44860019A99D /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
-				FAD89D1C2ACB44DC0019A99D /* SplashscreenView.swift */,
 				FABE780E2AF3A34D002FB1DC /* CoordinatorView.swift */,
+				FAD89D1C2ACB44DC0019A99D /* SplashscreenView.swift */,
+				FABE78032AF192BE002FB1DC /* FirstLaunchView.swift */,
+				FAB6CE8C2AFD0C7A00C145AD /* TutorialView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -437,6 +473,9 @@
 			children = (
 				FA26D8672AE7C89A004D8443 /* NotationQuizLevelMenuView.swift */,
 				FA253C0A2AD9C11A00EA8F67 /* NotationQuizView.swift */,
+				FABE780A2AF38E60002FB1DC /* NotationQuizCorrectAnswerView.swift */,
+				FABE780C2AF38E73002FB1DC /* NotationQuizIncorrectAnswerView.swift */,
+				FAA92C472AFBB7C300C35C7B /* NotationQuizFiveLevelPassedView.swift */,
 			);
 			path = Quiz;
 			sourceTree = "<group>";
@@ -495,6 +534,7 @@
 			knownRegions = (
 				en,
 				Base,
+				id,
 			);
 			mainGroup = FAD89CF92AC86E280019A99D;
 			packageReferences = (
@@ -559,6 +599,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAB6CE7A2AFC348100C145AD /* PostplayView.swift in Sources */,
 				FA253C072AD9BF5100EA8F67 /* FontExtension.swift in Sources */,
 				FA253C0B2AD9C11A00EA8F67 /* NotationQuizView.swift in Sources */,
 				FAF7D2012AEC2D5700EFD9BA /* LevelModel.swift in Sources */,
@@ -575,8 +616,9 @@
 				FA41AB112AFAB654001B537B /* SongRepositoryQuizView.swift in Sources */,
 				FA26D8682AE7C89A004D8443 /* NotationQuizLevelMenuView.swift in Sources */,
 				FA41AB1A2AFAC573001B537B /* TrophyModel.swift in Sources */,
+				FAB6CE8A2AFD0AAA00C145AD /* PostplayScoreView.swift in Sources */,
 				FABE780D2AF38E73002FB1DC /* NotationQuizIncorrectAnswerView.swift in Sources */,
-				FAA92C482AFBB7C300C35C7B /* FiveLevelPassedView.swift in Sources */,
+				FAA92C482AFBB7C300C35C7B /* NotationQuizFiveLevelPassedView.swift in Sources */,
 				FA253C0D2AD9C24B00EA8F67 /* NotationMenuView.swift in Sources */,
 				FA253C0F2AD9C44600EA8F67 /* SongMenuView.swift in Sources */,
 				FAF7D1FE2AEC2D3900EFD9BA /* TilesViewModel.swift in Sources */,
@@ -587,10 +629,13 @@
 				FA41AB132AFAB66E001B537B /* SongRepositoryLearnView.swift in Sources */,
 				FABE77FE2AF16479002FB1DC /* AfterQuizView.swift in Sources */,
 				FA253C1C2ADBC8E800EA8F67 /* SoundModel.swift in Sources */,
+				FAB6CE8D2AFD0C7A00C145AD /* TutorialView.swift in Sources */,
 				FAA92C4C2AFBD92B00C35C7B /* NotationGeneratorView.swift in Sources */,
 				FABE78042AF192BE002FB1DC /* FirstLaunchView.swift in Sources */,
 				FAD89D1D2ACB44DC0019A99D /* SplashscreenView.swift in Sources */,
+				FAB6CE832AFD09D900C145AD /* ExpandableSectionViewModel.swift in Sources */,
 				FA253C152AD9C49E00EA8F67 /* ColorExtension.swift in Sources */,
+				FAB6CE882AFD0A8900C145AD /* OnboardPostplayView.swift in Sources */,
 				FA253C092AD9C10E00EA8F67 /* NotationLearnView.swift in Sources */,
 				FA253C1E2ADBCCF200EA8F67 /* TilesModel.swift in Sources */,
 			);

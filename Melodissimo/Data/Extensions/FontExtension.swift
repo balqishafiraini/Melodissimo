@@ -52,16 +52,6 @@ extension Font {
 
     public static func system(size: CGFloat, weight: Font.Weight = .regular, design: Font.Design = .default) -> Font {
         let font = "BalooDa-Regular"
-//        switch weight {
-//        case .bold: font = "OpenSans-Bold"
-//        case .heavy: font = "OpenSans-ExtraBold"
-//        case .light: font = "OpenSans-Light"
-//        case .medium: font = "OpenSans-Regular"
-//        case .semibold: font = "OpenSans-SemiBold"
-//        case .thin: font = "OpenSans-Light"
-//        case .ultraLight: font = "OpenSans-Light"
-//        default: break
-//        }
         return Font.custom(font, size: size)
     }
 }

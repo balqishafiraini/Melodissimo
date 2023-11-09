@@ -25,6 +25,27 @@ struct PreplayView: View {
                 .scaledToFit()
             
             VStack{
+                HStack{
+                    Spacer()
+                    
+                    Button {
+                        isPresentingHelp = true
+                    } label: {
+                        Text("?")
+                            .frame(width: 80, height: 80)
+                            .background(Color.darkGreen)
+                            .foregroundColor(.white)
+                            .cornerRadius(20)
+                            .font(Font.title)
+                    }
+                    .padding()
+                    NavigationLink(destination: HelpPageView()
+                        .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
+                            EmptyView()
+                        }
+                    
+                }
+                .padding(.trailing)
                 
                 Spacer()
                 

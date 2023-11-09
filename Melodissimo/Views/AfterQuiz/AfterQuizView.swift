@@ -19,7 +19,7 @@ struct AfterQuizView: View {
         } else if level?.levelCategory == "notation" {
             if level?.answer == userAnswer {
                 if (level?.levelNo ?? 0) % 5 == 0 {
-                    return AnyView(FiveLevelPassedView())
+                    return AnyView(NotationQuizFiveLevelPassedView())
                 } else {
                     return AnyView(NotationQuizCorrectAnswerView(level: level))
                 }
@@ -28,6 +28,8 @@ struct AfterQuizView: View {
             }
         } else if level?.levelCategory == "song" {
             return AnyView(SongQuizScoreView(score: userScore, songTitle: level?.songTitle ?? ""))
+        }else if level?.levelCategory == "postplay" {
+            return AnyView(PostplayScoreView(score: userScore))
         } else {
             return AnyView(EmptyView())
         }

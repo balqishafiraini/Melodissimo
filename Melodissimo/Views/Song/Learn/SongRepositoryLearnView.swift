@@ -33,7 +33,7 @@ struct SongRepositoryLearnView: View {
                     Button {
                         dismiss()
                     } label: {
-                        Text("Back")
+                        Text("< Back")
                             .frame(width: 120, height: 80)
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
@@ -83,7 +83,7 @@ struct SongRepositoryLearnView: View {
                                 Text(level.songTitle ?? "")
                                     .foregroundStyle(.white)
                                     .font(.largeTitle)
-                                    .frame(width: UIScreen.main.bounds.width * 0.45, height: 150)
+                                    .frame(width: UIScreen.main.bounds.width * 0.45, height: 250)
                                     .background(
                                         RoundedRectangle(cornerRadius: 40)
                                             .fill(Color.green)

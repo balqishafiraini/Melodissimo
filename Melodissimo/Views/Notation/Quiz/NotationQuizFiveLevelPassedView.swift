@@ -1,5 +1,5 @@
 //
-//  FiveLevelPassedView.swift
+//  NotationQuizFiveLevelPassedView.swift
 //  Melodissimo
 //
 //  Created by Balqis on 08/11/23.
@@ -9,18 +9,7 @@ import Foundation
 import SwiftUI
 import ConfettiSwiftUI
 
-//
-//  FiveLevelPassedView.swift
-//  Melodissimo
-//
-//  Created by Balqis on 08/11/23.
-//
-
-import Foundation
-import SwiftUI
-import ConfettiSwiftUI
-
-struct FiveLevelPassedView: View {
+struct NotationQuizFiveLevelPassedView: View {
     
     var level: LevelModel?
     
@@ -41,7 +30,7 @@ struct FiveLevelPassedView: View {
         NavigationView {
             ZStack {
                 Rectangle()
-                    .fill(LinearGradient(gradient: Gradient(colors: [Color.green, Color.white]), startPoint: .top, endPoint: .bottom))
+                    .fill(LinearGradient(gradient: Gradient(colors: [Color.green, Color.gray]), startPoint: .top, endPoint: .bottom))
                     .scaledToFill()
                 
                 Image("bgMusic")
@@ -126,7 +115,7 @@ struct FiveLevelPassedView: View {
                                     .resizable()
                                     .scaledToFit()
                             }
-                            .confettiCannon(counter: $counter, num: 100, confettiSize: 20.0, radius: 500.0, repetitions: 50 )
+                            .confettiCannon(counter: $counter, num: 30, confettiSize: 20.0, radius: 650.0, repetitions: 30 )
                         }
                         
                         Spacer()

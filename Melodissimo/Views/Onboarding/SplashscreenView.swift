@@ -18,10 +18,9 @@ struct SplashscreenView: View {
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
-                //                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
             }
             .onAppear{
-                withAnimation(.easeIn(duration: 0.7)) {
+                withAnimation(.easeInOut(duration: 3.0)) {
                     self.scale = 0.9
                 }
             }
