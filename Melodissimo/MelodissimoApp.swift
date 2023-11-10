@@ -13,7 +13,6 @@ struct MelodissimoApp: App {
     var body: some Scene {
         WindowGroup {
             CoordinatorView()
-                .environment(\.locale, .init(identifier: "id"))
         }
     }
 }
