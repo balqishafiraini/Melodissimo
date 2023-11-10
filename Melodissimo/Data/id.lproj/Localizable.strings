@@ -1,0 +1,43 @@
+/* 
+  Localizable.strings
+  Melodissimo
+
+  Created by Balqis on 10/11/23.
+  
+*/
+
+"Hello, World!" = "Halo, Dunia!";
+"Hello! Welcome to Melodissimo. Before learn more with us, let’s do some test to measure your skill~" = "Halo! Selamat datang di Melodissimo. Sebelum belajar lebih lanjut, ayo kita lakukan beberapa tes untuk melihat kemampuanmu~";
+"Congratulations! Great job for passing this level!" = "Selamat! Kerja bagus karena sudah berhasil melewati level ini!";
+"Sorry, wrong answer! Let’s try again or learn some more in Learn Menu" = "Maaf, jawabanmu masih salah! Ayo coba lagi atau belajar kembali di menu Belajar";
+"WOHOO! Congratulations, 5 levels passed. After this, you will step up to another 5 levels with +1 question each from your previous levels. Good luck!" = "WOHOO! Selamat, 5 level sudah kamu lewati. Setelah ini, kamu akan menuju ke 5 level selanjutnya yang berisi +1 pertanyaan masing-masing dari level sebelumnya. Semoga berhasil!";
+"Great job for finishing the song! If you are hit 100% score, you'll see a trophy in the repository shelf" = "Kerja bagus karena sudah menyelesaikan lagu ini! Jika kamu memperoleh skor 100%, kamu akan melihat ada piala pada repository lagu";
+"Thank you! After learn with us, see your current score, and you can test your skill again in Post-Play Menu" = "Terima kasih! Setelah belajar di Melodissimo, kamu dapat melihat skor dari Pre-Play tes ini, dan dapat melakukan tes lagi pada menu Post-Play";
+"" = "";
+"You'll go to Pre-Play Quiz like shown image above, but the melodica tiles will come WITHOUT any label. So remember the numeral notation. You must press the tiles that belong to the numeral notation that's shown in the question box." = "Kamu akan menuju halaman Pre-Play Quiz seperti gambar di atas, tapi saat quiz tidak akan ada tuts pianikanya. Jadi, ingat posisi label notasi angkanya. Kamu harus mengeklik tombol dari tuts pianika yang menjadi jawaban sesuai pertanyaan yang ada pada kotak putih.";
+"The questions will appear only ONCE and change automatically once you pressed the answer tiles. Please make sure your pressed tiles are at least 2 seconds and the color will change to grey." = "Pertanyaan hanya muncul SEKALI dan akan berubah otomatis saat kamu mengeklik tuts pianika sebagai jawaban. Pastikan tuts yang kamu klik berubah warna menjadi abu-abu.";
+" Now are you ready? Let the adventure begin!" = "Ingat, kamu TIDAK DAPAT merubah jawaban kamu sekali kamu mengekliknya. Pastikan baik-baik. Sekarang, kamu siap? Ayo mulai petualangannya!";
+"Hello! What do you want to learn today?" = "Halo! Apa yang kamu ingin pelajari hari ini?";
+"How to play quiz feature?" = "Bagaimana cara memainkan fitur quiz?";
+"- In the quiz feature,  You must press the tiles that belong to the numeral notation that's shown in the question box." = "- Dalam fitur quiz, kamu harus mengeklik tombol dari tuts pianika yang menjadi jawaban sesuai pertanyaan yang ada pada kotak putih.";
+"- The questions will appear only ONCE and change automatically once you pressed the answer tiles." = "- Pertanyaan hanya muncul SEKALI dan akan berubah otomatis saat kamu mengeklik tuts pianika sebagai jawaban.";
+"- Please make sure your pressed tiles are at least 2 seconds and the color will change to grey." = "- Pastikan tuts yang kamu klik berubah warna menjadi abu-abu.";
+"- Remember, you CAN'T undo the answer." = "- Ingat, kamu TIDAK DAPAT merubah jawaban kamu sekali kamu mengekliknya.";
+"- For Song Quiz feature, you must pressed the button SEQUENTIALLY from the numeral notation song from the song you've selected. If you're not sure about what button you've pressed, click 'Reset' button and you must start it all over again." = "- Untuk fitur Song Quiz, kamu harus menekan tombol BERURUTAN dari notasi angka lagu dari lagu yang kamu pilih. Jika kamu tidak yakin dengan tombol apa yang telah kamu tekan, klik tombol 'Reset' dan kamu harus memulainya dari awal lagi.";
+"Why my tiles won’t make sound?" = "Kenapa tuts saya tidak dapat keluar suara?";
+"Make sure you've pressed it at least 2 seconds." = "Pastikan kamu menekan tombolnya minimal selama 2 detik";
+"Can I pressed more than one tiles in one time?" = "Bisakah saya mengeklik lebih dari satu tuts secara bersamaan?";
+"Unfortunately, you can't do that right now. But we will make sure to update that feature in the future app update. Please stay tune with us." = "Sayangnya, kamu tidak dapat melakukan itu saat ini. Namun kami akan memastikan untuk memperbarui fitur tersebut pada pembaruan aplikasi mendatang. Tolong terus bersama kami.";
+"How to read the numeral notation in Song feature?" = "Bagaimana cara membaca notasi angka pada fitur Song?";
+"Almost all of the number that shown in numeral notation song is same with the keyboard. However, you'll see some differences, there are:" = "Hampir semua angka yang ditampilkan dalam notasi angka lagu sama dengan tuts pianika. Namun, kamu akan melihat beberapa perbedaan, antara lain:";
+"- If you see '0' notation, just ignore it. The 0 notation means is tone beat." = "- Jika kamu melihat notassi '0', abaikan saja. Notasi itu merupakan beat nada.";
+"- If you see 2 notation number that connected by a wave line above it, only pay attention to the first number, ignore the second number." = "- Jika kamu melihat 2 notasi angka yang menyambung dengan garis gelombang di atasnya, perhatikan hanya angka pertamanya saja, abaikan angka kedua.";
+"- If you see the number that has diagona strikethrough, it means # (in major chord). Example: '4̷' means '4#'" = "- Jika kamu melihat notasi angka yang memiliki coretan miri, itu artinya nada # (tangga nada mayor). Contoh: '4̷' artinya '4#'";
+"If I move to another iPad, will my progress saved?" = "Jika aku pindah ke iPad lain, apakah progressku akan tersimpan?";
+"Unfortunately, you'll lose your progress because we didn't do any cloud system. But we will make sure to update that feature in the future app update. Please stay tune with us." = "Sayangnya, kamu akan kehilangan progress permainan kamu, karena sistem kami tidak menggunakan cloud. Namun kami akan memastikan untuk memperbarui fitur tersebut pada pembaruan aplikasi mendatang. Tolong terus bersama kami.";
+"Contact us for further assist!" = "Hubungi kami untuk bantuan lebih lanjut!";
+"Learn melodica (pianika) in more fun way with Melodissimo! Download it on App Store (only available on iPad)https://s.id/GetMelodissimo" = "Belajar Pianika lebih menyenangkan dengan game Melodissimo! Ayo download di App Store (hanya tersedia pada iPad) https://s.id/GetMelodissimo";
+"Share" = "Bagikan";
+"Help" = "Bantuan";
+"Thank you for learn with Melodissimo! Now, let's test your skill again in Post-Play Quiz, it's similar when you do it on Pre-Play Quiz~" = "Terima kasih telah belajar bersama Melodissimo! Sekarang, ayo tes kemampuanmu lagi di Post-Play Quiz, bentukannya sama seperti saat kamu mengerjakan Pre-Play Quiz~";
+"Thank you! Great job for finishing it and congratulations on your score!" = "Terima kasih! Kerja bagus dalam menyelesaikannya dan selamat atas skor yang kamu dapatkan!";

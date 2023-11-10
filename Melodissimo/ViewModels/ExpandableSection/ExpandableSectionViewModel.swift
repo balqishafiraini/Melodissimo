@@ -51,16 +51,9 @@ struct ExpandableSectionView: View {
                         let item = data.items[index]
                         switch item {
                         case .text(let text):
-                            if text.contains("@") {
-                                Link(destination: URL(string: "mailto:\(text)")!) {
-                                    Text(text)
-                                        .font(Font.subheadline)
-                                        .foregroundColor(Color.darkGreen)
-                                }
-                            } else {
                                 Text(text)
-                                    .font(Font.subheadline)
-                            }
+                                    .font(Font.headline)
+                            
                         case .image(let imageName):
                             Image(imageName)
                                 .resizable()

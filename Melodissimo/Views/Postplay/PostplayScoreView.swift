@@ -21,7 +21,7 @@ struct PostplayScoreView: View {
         NavigationView {
             ZStack {
                 Rectangle()
-                    .fill(Color.softBlue)
+                    .fill(Color.softGreen)
                     .scaledToFill()
                 
                 Image("bgMusic")
@@ -66,12 +66,12 @@ struct PostplayScoreView: View {
                                 }
                                 
                             }
-                            Text("Thank you! After learn with us, see your current score test your skill again in Post-Play Menu")
+                            Text("Thank you! Great job for finishing it and congratulations on your score!")
                                 .multilineTextAlignment(.center)
                                 .padding()
                                 .foregroundStyle(.black)
                                 .font(.headline)
-                                .frame(width: UIScreen.main.bounds.width * 0.5, height: 200)
+                                .frame(width: UIScreen.main.bounds.width * 0.5, height: 300)
                                 .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                             
                             Spacer()

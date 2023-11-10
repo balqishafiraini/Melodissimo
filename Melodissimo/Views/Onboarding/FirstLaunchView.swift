@@ -52,7 +52,7 @@ struct FirstLaunchView: View {
                         Spacer()
                         VStack {
                             Spacer()
-                            Text("Hello! Welcome to Melodissimo. Before learn more with us, let’s do some test to measure your skill 🥰")
+                            Text("Hello! Welcome to Melodissimo. Before learn more with us, let’s do some test to measure your skill~")
                                 .padding()
                                 .foregroundStyle(.black)
                                 .font(.headline)
@@ -72,7 +72,7 @@ struct FirstLaunchView: View {
                                     .cornerRadius(20)
                                     .font(Font.title)
                             }
-                            NavigationLink(destination: PreplayView(levelNo: 1)
+                            NavigationLink(destination: TutorialView()
                                 .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
                                     EmptyView()
                                 }

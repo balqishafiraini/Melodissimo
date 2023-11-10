@@ -16,8 +16,8 @@ struct DashboardView: View {
     @State var isPresentingHelp = false
     
     var body: some View {
-        let shareText = "Belajar Pianika lebih menyenangkan dengan game Melodissimo! Ayo download di App Store (hanya tersedia pada iPad) https://s.id/DownloadMelodissimo"
-        
+        let shareText = NSLocalizedString("Learn melodica (pianika) in a more fun way with Melodissimo! Download it on the App Store (only available on iPad) https://s.id/GetMelodissimo", comment: "")
+
         NavigationView {
             ZStack{
                 Image("dashboard")
@@ -61,18 +61,17 @@ struct DashboardView: View {
                                 .cornerRadius(20)
                                 .font(Font.headline)
                         }
-                        .padding()
+                        .padding(.trailing)
                         NavigationLink(destination: HelpPageView()
                             .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
                                 EmptyView()
                             }
                     }
+                    .padding()
                     Text("Hello! What do you want to learn today?")
                         .font(.largeTitle)
                         .foregroundColor(.white)
-                    
-//                    Text("Your final score is: \(UserDefaults.standard.integer(forKey: "preplayScore"))")
-                    
+                                        
                     Spacer()
                     
                     HStack{
@@ -107,7 +106,7 @@ struct DashboardView: View {
                         } label: {
                             Image("postplayMenuButton")
                         }
-                        NavigationLink(destination: PostplayView(levelNo:1)
+                        NavigationLink(destination: OnboardPostplayView()
                             .navigationBarBackButtonHidden(true), isActive: $isPresentingPostPlay) {
                                 EmptyView()
                             }

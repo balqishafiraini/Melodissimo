@@ -75,8 +75,8 @@ struct NotationQuizView: View {
                 ZStack {
                     Text("\(tilesViewModel.currentLevel?.question[tilesViewModel.currentQuestionIndex] ?? "N/A")")
                         .foregroundStyle(.black)
-                        .font(.largeTitle)
-                        .frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height*0.15)
+                        .font(.custom("BalooDa-Regular", size: 70))
+                        .frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height * 0.15)
                         .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                 }
                 
