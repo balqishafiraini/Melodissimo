@@ -56,7 +56,7 @@ struct PostplayView: View {
                             EmptyView()
                         }
                     
-                }.padding(.trailing)
+                }.padding(.horizontal, 10)
                 
                 Spacer()
                 
