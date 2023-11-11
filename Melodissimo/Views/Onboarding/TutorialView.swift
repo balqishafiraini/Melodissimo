@@ -18,7 +18,7 @@ struct TutorialView: View {
                 NSLocalizedString("", comment: ""),
                 NSLocalizedString("You'll go to Pre-Play Quiz like shown image above, but the melodica tiles will come WITHOUT any label. So remember the numeral notation. You must press the tiles that belong to the numeral notation that's shown in the question box.", comment: ""),
                 NSLocalizedString("The questions will appear only ONCE and change automatically once you pressed the answer tiles. Please make sure your pressed tiles are at least 2 seconds and the color will change to grey.", comment: ""),
-                NSLocalizedString("Remember, you CAN'T undo the answer. Now are you ready? Let the adventure begin!", comment: "")
+                NSLocalizedString("Remember, you CAN'T undo the answer. Make sure you are sure of your answer before clicking, okay? Now are you ready? Let the adventure begin!", comment: "")
             ]
         }
     
