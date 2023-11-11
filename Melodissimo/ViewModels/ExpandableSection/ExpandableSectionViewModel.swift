@@ -35,6 +35,7 @@ struct ExpandableSectionView: View {
                         .font(.title)
                         .padding(.horizontal)
                         .foregroundColor(.black)
+                        .multilineTextAlignment(.leading)
                     
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(.title)
@@ -42,7 +43,7 @@ struct ExpandableSectionView: View {
                 }
             }
             .padding()
-            .frame(width: UIScreen.main.bounds.width, height: 100, alignment: .leading)
+            .frame(width: UIScreen.main.bounds.width, alignment: .leading)
             .background(Color.white)
             
             if isExpanded {

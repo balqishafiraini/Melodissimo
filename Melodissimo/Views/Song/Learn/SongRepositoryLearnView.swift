@@ -43,7 +43,7 @@ struct SongRepositoryLearnView: View {
                     
                     Spacer()
                     
-                    Text("Quiz Learn Notation Repository")
+                    Text("Learn Song Notation Repository")
                         .foregroundColor(Color.darkGreen)
                         .cornerRadius(20)
                         .font(Font.largeTitle)
