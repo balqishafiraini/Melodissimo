@@ -47,7 +47,7 @@ struct TutorialView: View {
                                         .padding()
                                         .font(.headline)
                                         .foregroundColor(.black)
-                                        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height*0.2, alignment: .center)
+                                        .frame(maxWidth: .infinity, alignment: .center)
                                         .padding()
                                         .background(Color.white)
                                         .cornerRadius(50)

@@ -67,7 +67,7 @@ struct OnboardPostplayView: View {
                                 .padding()
                                 .foregroundStyle(.black)
                                 .font(.headline)
-                                .frame(width: UIScreen.main.bounds.width * 0.5, height: 250)
+                                .frame(width: UIScreen.main.bounds.width * 0.5)
                                 .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                             
                             Spacer()
@@ -76,7 +76,7 @@ struct OnboardPostplayView: View {
                                 .padding()
                                 .foregroundStyle(.black)
                                 .font(.headline)
-                                .frame(width: UIScreen.main.bounds.width * 0.5, height: 150, alignment: .leading)
+                                .frame(width: UIScreen.main.bounds.width * 0.5, alignment: .leading)
                                 .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                             
                             Spacer()

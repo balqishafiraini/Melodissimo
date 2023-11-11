@@ -11,6 +11,7 @@ import Foundation
 struct PostplayView: View {
     @State var isPresenting = false
     @State var isPresentingHelp = false
+    @Environment(\.dismiss) var dismiss
     
     var levelNo: Int
     @StateObject var tilesViewModel = TilesViewModel()
@@ -26,6 +27,17 @@ struct PostplayView: View {
             
             VStack{
                 HStack{
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("< Back")
+                            .frame(width: 120, height: 80)
+                            .background(Color.darkGreen)
+                            .foregroundColor(.white)
+                            .cornerRadius(20)
+                            .font(Font.headline)
+                    }.padding()
+
                     Spacer()
                     
                     Button {

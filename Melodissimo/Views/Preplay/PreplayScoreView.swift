@@ -70,7 +70,7 @@ struct PreplayScoreView: View {
                                 .padding()
                                 .foregroundStyle(.black)
                                 .font(.headline)
-                                .frame(width: UIScreen.main.bounds.width * 0.5, height: 300)
+                                .frame(width: UIScreen.main.bounds.width * 0.5)
                                 .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                             
                             Spacer()
