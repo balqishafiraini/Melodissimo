@@ -95,8 +95,6 @@ struct NotationQuizLevelMenuView: View {
                                     Button {
                                         if isLevelEnabled {
                                             selectedLevel = index
-                                            // Update currentLevel in UserDefaults
-                                            UserDefaults.standard.set(selectedLevel, forKey: "currentLevel")
                                             isPresentingLevel = true
                                         }
                                     }label: {

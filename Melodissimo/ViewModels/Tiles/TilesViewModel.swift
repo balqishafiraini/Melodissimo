@@ -29,6 +29,44 @@ class TilesViewModel: ObservableObject {
         }
     }
     
+    func getStringRepresentation(for answer: Int) -> String {
+            switch answer {
+            case 1: return "4."
+            case 2: return "5."
+            case 3: return "6."
+            case 4: return "7."
+            case 5: return "1"
+            case 6: return "2"
+            case 7: return "3"
+            case 8: return "4"
+            case 9: return "5"
+            case 10: return "6"
+            case 11: return "7"
+            case 12: return "1˙"
+            case 13: return "2˙"
+            case 14: return "3˙"
+            case 15: return "4˙"
+            case 16: return "5˙"
+            case 17: return "6˙"
+            case 18: return "7˙"
+            case 19: return "1˙˙"
+            case 20: return "4.#"
+            case 21: return "5.#"
+            case 22: return "6.#"
+            case 23: return "1#"
+            case 24: return "2#"
+            case 25: return "4#"
+            case 26: return "5#"
+            case 27: return "6#"
+            case 28: return "1˙#"
+            case 29: return "2˙#"
+            case 30: return "4˙#"
+            case 31: return "5˙#"
+            case 32: return "6˙#"
+            default: return ""
+            }
+        }
+    
     func checkAnswer() {
         if answers == currentLevel?.answer {
             print("Answer correct!")

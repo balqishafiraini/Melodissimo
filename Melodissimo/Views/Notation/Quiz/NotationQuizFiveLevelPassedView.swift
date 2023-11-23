@@ -76,25 +76,25 @@ struct NotationQuizFiveLevelPassedView: View {
                             Spacer()
                             
                             if showCelebration {
-                                Button {
-                                    isPresenting = true
-                                    if let unwrappedLevelNo = level?.levelNo {
-                                        setCurrentLevelProgress(unwrappedLevelNo)
+                                    Button {
+                                        if let unwrappedLevelNo = level?.levelNo {
+                                            setCurrentLevelProgress(unwrappedLevelNo)
+                                        }
+                                        isPresenting = true
+                                    } label: {
+                                        Text("Next")
+                                            .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
+                                            .background(Color.yellow)
+                                            .foregroundColor(Color.darkGreen)
+                                            .cornerRadius(20)
+                                            .font(Font.title)
                                     }
-                                    
-                                } label: {
-                                    Text("Next")
-                                        .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
-                                        .background(Color.yellow)
-                                        .foregroundColor(Color.darkGreen)
-                                        .cornerRadius(20)
-                                        .font(Font.title)
                                 }
+                                
                                 NavigationLink(destination: NotationQuizLevelMenuView()
                                     .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
                                         EmptyView()
-                                    }
-                            }
+                                }
                             
                             Spacer()
                             

@@ -19,7 +19,7 @@ struct AfterQuizView: View {
         } else if level?.levelCategory == "notation" {
             if level?.answer == userAnswer {
                 if (level?.levelNo ?? 0) % 5 == 0 {
-                    return AnyView(NotationQuizFiveLevelPassedView())
+                    return AnyView(NotationQuizFiveLevelPassedView(level: level))
                 } else {
                     return AnyView(NotationQuizCorrectAnswerView(level: level))
                 }

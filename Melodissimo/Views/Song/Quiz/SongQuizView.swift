@@ -81,7 +81,25 @@ struct SongQuizView: View {
                     }
                 }
                 
-                Spacer()
+                ScrollViewReader { scrollViewProxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(tilesViewModel.answers.indices, id: \.self) { index in
+                                Text(tilesViewModel.getStringRepresentation(for: tilesViewModel.answers[index]))
+                                    .foregroundColor(Color.darkGreen)
+                                    .cornerRadius(20)
+                                    .font(Font.subheadline)
+                            }
+                            .onChange(of: tilesViewModel.answers.count) { _ in
+                                withAnimation {
+                                    scrollViewProxy.scrollTo(tilesViewModel.answers.count - 1)
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                    .frame(minWidth: UIScreen.main.bounds.width)
+                }
                 
                 Button {
                     tilesViewModel.resetAll()

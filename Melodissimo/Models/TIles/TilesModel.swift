@@ -10,11 +10,12 @@ import SwiftUI
 
 //style white tiles
 struct WhiteTilesStyle: ButtonStyle {
+    @Binding var isPressed: Bool
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
             .frame(width: UIScreen.main.bounds.width*0.048, height: 350, alignment: .bottom)
-            .background(configuration.isPressed ? .gray : .white)
-            .foregroundColor(!configuration.isPressed ? .black : .white)
+            .background(isPressed ? .gray : .white)
+            .foregroundColor(!isPressed ? .black : .white)
             .cornerRadius(radius: 12, corners: [.bottomLeft, .bottomRight])
 
     }
@@ -22,11 +23,12 @@ struct WhiteTilesStyle: ButtonStyle {
 
 //style black tiles
 struct BlackTilesStyle: ButtonStyle {
+    @Binding var isPressed: Bool
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
             .frame(width: UIScreen.main.bounds.width*0.042, height: 220, alignment: .bottom)
-            .background(configuration.isPressed ? .gray : .black)
-            .foregroundColor(!configuration.isPressed ? .white : .black)
+            .background(isPressed ? .gray : .black)
+            .foregroundColor(!isPressed ? .white : .black)
             .cornerRadius(radius: 12, corners: [.bottomLeft, .bottomRight])
 
     }
@@ -47,21 +49,31 @@ struct WhiteTilesQuizButton: View {
             stopSound()
             
 //            print("Button ID: \(id ?? -1) is pressed")
-            viewModel.addAnswer(id ?? -1)
         },
                label: {
             Text(labelNot ?? "")
                 .font(.subheadline)
         })
-        .buttonStyle(WhiteTilesStyle())
-        .onLongPressGesture(minimumDuration: 0, perform: {}) {
-            pressing in
-            if pressing {
-                playSound(key: keySound)
+        .buttonStyle(WhiteTilesStyle(isPressed: $buttonPressed))
+        .onTouch(limitToBounds: false) { loc in
+            //Using UIScreen.main.bound.width bcs the width is dynamic
+            if loc.x > UIScreen.main.bounds.width*0.048 || loc.x < 0 || loc.y > 350 || loc.y < 0 {
+                buttonPressed = false
+            } else {
+                buttonPressed = true
             }
         }
+        .onChange(of: buttonPressed, perform: { isPressed in
+            if isPressed {
+                playSound(key: keySound)
+            } else {
+                stopSound()
+                viewModel.addAnswer(id ?? -1)
+            }
+        })
     }
 }
+
 
 struct WhiteTilesQuizButtonMini: View {
     
@@ -75,41 +87,50 @@ struct WhiteTilesQuizButtonMini: View {
     var body: some View {
         Button(action: {
             stopSound()
-            
-//            print("Button ID: \(id ?? -1) is pressed")
-            viewModel.addAnswer(id ?? -1)
         },
                label: {
             Text(labelNot ?? "")
                 .font(.subheadline)
         })
-        .buttonStyle(WhiteTilesStyleMini())
-        .onLongPressGesture(minimumDuration: 0, perform: {}) {
-            pressing in
-            if pressing {
-                playSound(key: keySound)
+        .buttonStyle(WhiteTilesStyleMini(isPressed: $buttonPressed))
+        .onTouch(limitToBounds: false) { loc in
+            //Using UIScreen.main.bound.width bcs the width is dynamic
+            if loc.x > UIScreen.main.bounds.width*0.048 || loc.x < 0 || loc.y > 200 || loc.y < 0 {
+                buttonPressed = false
+            } else {
+                buttonPressed = true
             }
         }
+        .onChange(of: buttonPressed, perform: { isPressed in
+            if isPressed {
+                playSound(key: keySound)
+            } else {
+                stopSound()
+                viewModel.addAnswer(id ?? -1)
+            }
+        })
     }
 }
 
 struct WhiteTilesStyleMini: ButtonStyle {
+    @Binding var isPressed: Bool
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
             .frame(width: UIScreen.main.bounds.width*0.048, height: 200, alignment: .bottom)
-            .background(configuration.isPressed ? .gray : .white)
-            .foregroundColor(!configuration.isPressed ? .black : .white)
+            .background(isPressed ? .gray : .white)
+            .foregroundColor(!isPressed ? .black : .white)
             .cornerRadius(radius: 12, corners: [.bottomLeft, .bottomRight])
 
     }
 }
 
 struct BlackTilesStyleMini: ButtonStyle {
+    @Binding var isPressed: Bool
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
             .frame(width: UIScreen.main.bounds.width*0.042, height: 120, alignment: .bottom)
-            .background(configuration.isPressed ? .gray : .black)
-            .foregroundColor(!configuration.isPressed ? .white : .black)
+            .background(isPressed ? .gray : .black)
+            .foregroundColor(!isPressed ? .white : .black)
             .cornerRadius(radius: 12, corners: [.bottomLeft, .bottomRight])
 
     }
@@ -128,18 +149,27 @@ struct WhiteTilesButtonMini: View {
             Text(labelNot ?? "")
                 .font(.subheadline)
         })
-        .buttonStyle(WhiteTilesStyleMini())
-        .onLongPressGesture(minimumDuration: 0, perform: {}) {
-            pressing in
-            if pressing {
-                playSound(key: keySound)
+        .buttonStyle(WhiteTilesStyleMini(isPressed: $buttonPressed))
+        .onTouch(limitToBounds: false) { loc in
+            //Using UIScreen.main.bound.width bcs the width is dynamic
+            if loc.x > UIScreen.main.bounds.width*0.048 || loc.x < 0 || loc.y > 200 || loc.y < 0 {
+                buttonPressed = false
+            } else {
+                buttonPressed = true
             }
         }
+        .onChange(of: buttonPressed, perform: { isPressed in
+            if isPressed {
+                playSound(key: keySound)
+            } else {
+                stopSound()
+            }
+        })
     }
 }
 
 struct BlackTilesButtonMini: View {
-        
+    @State var buttonPressed = false
     var keySound: String
     var labelNot: String?
     
@@ -151,13 +181,22 @@ struct BlackTilesButtonMini: View {
             Text(labelNot ?? "")
                 .font(.subheadline)
         })
-        .buttonStyle(BlackTilesStyleMini())
-        .onLongPressGesture(minimumDuration: 0, perform: {}) {
-            pressing in
-            if pressing {
-                playSound(key: keySound)
+        .buttonStyle(BlackTilesStyleMini(isPressed: $buttonPressed))
+        .onTouch(limitToBounds: false) { loc in
+            //Using UIScreen.main.bound.width bcs the width is dynamic
+            if loc.x > UIScreen.main.bounds.width*0.048 || loc.x < 0 || loc.y > 200 || loc.y < 0 {
+                buttonPressed = false
+            } else {
+                buttonPressed = true
             }
         }
+        .onChange(of: buttonPressed, perform: { isPressed in
+            if isPressed {
+                playSound(key: keySound)
+            } else {
+                stopSound()
+            }
+        })
     }
 }
 
@@ -174,13 +213,22 @@ struct WhiteTilesButton: View {
             Text(labelNot ?? "")
                 .font(.subheadline)
         })
-        .buttonStyle(WhiteTilesStyle())
-        .onLongPressGesture(minimumDuration: 0, perform: {}) {
-            pressing in
-            if pressing {
-                playSound(key: keySound)
+        .buttonStyle(WhiteTilesStyle(isPressed: $buttonPressed))
+        .onTouch(limitToBounds: false) { loc in
+            //Using UIScreen.main.bound.width bcs the width is dynamic
+            if loc.x > UIScreen.main.bounds.width*0.048 || loc.x < 0 || loc.y > 350 || loc.y < 0 {
+                buttonPressed = false
+            } else {
+                buttonPressed = true
             }
         }
+        .onChange(of: buttonPressed, perform: { isPressed in
+            if isPressed {
+                playSound(key: keySound)
+            } else {
+                stopSound()
+            }
+        })
     }
 }
 
@@ -189,34 +237,42 @@ struct BlackTilesQuizButton: View {
     
     @EnvironmentObject var viewModel: TilesViewModel
     
+    @State var buttonPressed = false
     var keySound: String
     var labelNot: String?
     var id: Int?
-
     
     var body: some View {
         Button(action: {
             stopSound()
-            
-//            print("Button ID: \(id ?? -1) is pressed")
-            viewModel.addAnswer(id ?? -1)
         },
                label: {
             Text(labelNot ?? "")
                 .font(.subheadline)
         })
-        .buttonStyle(BlackTilesStyle())
-        .onLongPressGesture(minimumDuration: 0, perform: {}) {
-            pressing in
-            if pressing {
-                playSound(key: keySound)
+        .buttonStyle(BlackTilesStyle(isPressed: $buttonPressed))
+        .onTouch(limitToBounds: false) { loc in
+            //Using UIScreen.main.bound.width bcs the width is dynamic
+            if loc.x > UIScreen.main.bounds.width*0.042 || loc.x < 0 || loc.y > 220 || loc.y < 0 {
+                buttonPressed = false
+            } else {
+                buttonPressed = true
             }
         }
+        .onChange(of: buttonPressed, perform: { isPressed in
+            if isPressed {
+                playSound(key: keySound)
+            } else {
+                stopSound()
+                viewModel.addAnswer(id ?? -1)
+
+            }
+        })
     }
 }
-
 struct BlackTilesQuizButtonMini: View {
-    
+    @State var buttonPressed = false
+
     @EnvironmentObject var viewModel: TilesViewModel
     
     var keySound: String
@@ -227,26 +283,34 @@ struct BlackTilesQuizButtonMini: View {
     var body: some View {
         Button(action: {
             stopSound()
-            
-//            print("Button ID: \(id ?? -1) is pressed")
-            viewModel.addAnswer(id ?? -1)
         },
                label: {
             Text(labelNot ?? "")
                 .font(.subheadline)
         })
-        .buttonStyle(BlackTilesStyleMini())
-        .onLongPressGesture(minimumDuration: 0, perform: {}) {
-            pressing in
-            if pressing {
-                playSound(key: keySound)
+        .buttonStyle(BlackTilesStyleMini(isPressed: $buttonPressed))
+        .onTouch(limitToBounds: false) { loc in
+            //Using UIScreen.main.bound.width bcs the width is dynamic
+            if loc.x > UIScreen.main.bounds.width*0.042 || loc.x < 0 || loc.y > 120 || loc.y < 0 {
+                buttonPressed = false
+            } else {
+                buttonPressed = true
             }
         }
+        .onChange(of: buttonPressed, perform: { isPressed in
+            if isPressed {
+                playSound(key: keySound)
+            } else {
+                stopSound()
+                viewModel.addAnswer(id ?? -1)
+
+            }
+        })
     }
 }
 
 struct BlackTilesButton: View {
-        
+    @State var buttonPressed = false
     var keySound: String
     var labelNot: String?
     
@@ -258,13 +322,22 @@ struct BlackTilesButton: View {
             Text(labelNot ?? "")
                 .font(.subheadline)
         })
-        .buttonStyle(BlackTilesStyle())
-        .onLongPressGesture(minimumDuration: 0, perform: {}) {
-            pressing in
-            if pressing {
-                playSound(key: keySound)
+        .buttonStyle(BlackTilesStyle(isPressed: $buttonPressed))
+        .onTouch(limitToBounds: false) { loc in
+            //Using UIScreen.main.bound.width bcs the width is dynamic
+            if loc.x > UIScreen.main.bounds.width*0.042 || loc.x < 0 || loc.y > 220 || loc.y < 0 {
+                buttonPressed = false
+            } else {
+                buttonPressed = true
             }
         }
+        .onChange(of: buttonPressed, perform: { isPressed in
+            if isPressed {
+                playSound(key: keySound)
+            } else {
+                stopSound()
+            }
+        })
     }
 }
 
