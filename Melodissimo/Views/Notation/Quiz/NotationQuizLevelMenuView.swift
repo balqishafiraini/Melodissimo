@@ -13,7 +13,7 @@ struct NotationQuizLevelMenuView: View {
     @State private var isPresentingMenu = false
     @State private var selectedLevel = -1
     @Environment(\.dismiss) var dismiss
-    @State private var currentLevel = UserDefaults.standard.integer(forKey: "currentLevel") // Use UserDefaults to track current level
+    @State private var currentLevel = UserDefaults.standard.integer(forKey: "currentLevel")
     
     func getCurrentLevelProgress() -> Int {
         return UserDefaults.standard.integer(forKey: "currentLevel")

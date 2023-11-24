@@ -20,8 +20,11 @@ struct NotationQuizFiveLevelPassedView: View {
     @Environment(\.dismiss) var dismiss
     
     func setCurrentLevelProgress(_ level: Int) {
-        UserDefaults.standard.set(level, forKey: "currentLevel")
-    }
+            let highestLevelUnlocked = UserDefaults.standard.integer(forKey: "currentLevel")
+            if level > highestLevelUnlocked {
+                UserDefaults.standard.set(level, forKey: "currentLevel")
+            }
+        }
     
     @State var isPresenting = false
     @State var isPresentingHelp = false
