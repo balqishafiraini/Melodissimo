@@ -20,7 +20,6 @@ class TilesViewModel: ObservableObject {
     
     func addAnswer(_ id: Int) {
         answers.append(id)
-        //        print("ViewModel answers now: \(answers)")
         if currentQuestionIndex+1 < currentLevel?.question.count ?? 0 {
             currentQuestionIndex += 1
         } else {

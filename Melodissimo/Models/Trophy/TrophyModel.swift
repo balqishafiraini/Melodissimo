@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct Trophy {
+struct TrophyModel {
     var name: String
     var isEarned: Bool
 }

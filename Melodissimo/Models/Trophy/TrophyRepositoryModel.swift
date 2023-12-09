@@ -8,14 +8,14 @@
 import Foundation
 import SwiftUI
 
-class TrophyRepository: ObservableObject {
-    @Published var trophies: [Trophy] = []
+class TrophyRepositoryModel: ObservableObject {
+    @Published var trophies: [TrophyModel] = []
     
     init() {
         // Initialize with your available trophies
         trophies = LevelFeederModel().levels
             .filter({ $0.levelCategory == "song" })
-            .map({ Trophy(name: $0.songTitle ?? "", isEarned: false) })
+            .map({ TrophyModel(name: $0.songTitle ?? "", isEarned: false) })
         
         //Get saved value from userDefault and set the trophy isEarned value based on it
         for trophy in trophies {

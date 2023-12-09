@@ -16,7 +16,7 @@ struct SongRepositoryQuizView: View {
     @State private var selectedSongTitle: String?
     
     var levelFeeder = LevelFeederModel()
-    var trophyRepository = TrophyRepository()
+    var trophyRepository = TrophyRepositoryModel()
     
     var filteredSongLevels: [LevelModel] {
         return levelFeeder.levels.filter { $0.levelCategory == "song" }

@@ -48,7 +48,6 @@
 		FA253C152AD9C49E00EA8F67 /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C142AD9C49E00EA8F67 /* ColorExtension.swift */; };
 		FA253C182ADB11B200EA8F67 /* HelpPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C172ADB11B200EA8F67 /* HelpPageView.swift */; };
 		FA253C1C2ADBC8E800EA8F67 /* SoundModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C1B2ADBC8E800EA8F67 /* SoundModel.swift */; };
-		FA253C1E2ADBCCF200EA8F67 /* TilesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA253C1D2ADBCCF200EA8F67 /* TilesModel.swift */; };
 		FA26D8682AE7C89A004D8443 /* NotationQuizLevelMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26D8672AE7C89A004D8443 /* NotationQuizLevelMenuView.swift */; };
 		FA41AB112AFAB654001B537B /* SongRepositoryQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA41AB102AFAB654001B537B /* SongRepositoryQuizView.swift */; };
 		FA41AB132AFAB66E001B537B /* SongRepositoryLearnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA41AB122AFAB66E001B537B /* SongRepositoryLearnView.swift */; };
@@ -62,7 +61,7 @@
 		FAB5DCA02ADBDE2F007FC96A /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB5DC9F2ADBDE2F007FC96A /* ViewExtension.swift */; };
 		FAB6CE782AFC171C00C145AD /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = FAB6CE772AFC171C00C145AD /* ConfettiSwiftUI */; };
 		FAB6CE7A2AFC348100C145AD /* PostplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6CE792AFC348100C145AD /* PostplayView.swift */; };
-		FAB6CE832AFD09D900C145AD /* ExpandableSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6CE822AFD09D900C145AD /* ExpandableSectionViewModel.swift */; };
+		FAB6CE832AFD09D900C145AD /* ExpandableSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6CE822AFD09D900C145AD /* ExpandableSectionView.swift */; };
 		FAB6CE882AFD0A8900C145AD /* OnboardPostplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6CE872AFD0A8900C145AD /* OnboardPostplayView.swift */; };
 		FAB6CE8A2AFD0AAA00C145AD /* PostplayScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6CE892AFD0AAA00C145AD /* PostplayScoreView.swift */; };
 		FAB6CE8D2AFD0C7A00C145AD /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6CE8C2AFD0C7A00C145AD /* TutorialView.swift */; };
@@ -78,6 +77,8 @@
 		FAD89D1D2ACB44DC0019A99D /* SplashscreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D1C2ACB44DC0019A99D /* SplashscreenView.swift */; };
 		FAD89D1F2ACB47D90019A99D /* PreplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D1E2ACB47D90019A99D /* PreplayView.swift */; };
 		FAD89D2F2AD5F85B0019A99D /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD89D2E2AD5F85B0019A99D /* DashboardView.swift */; };
+		FAE695A62B239DB8000D3C0C /* ButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE695A52B239DB8000D3C0C /* ButtonExtension.swift */; };
+		FAE695A82B239E7B000D3C0C /* TilesComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE695A72B239E7B000D3C0C /* TilesComponentView.swift */; };
 		FAF7D1FE2AEC2D3900EFD9BA /* TilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7D1FD2AEC2D3900EFD9BA /* TilesViewModel.swift */; };
 		FAF7D2012AEC2D5700EFD9BA /* LevelModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7D2002AEC2D5700EFD9BA /* LevelModel.swift */; };
 		FAF7D2042AEC2DB400EFD9BA /* LevelFeederModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7D2032AEC2DB400EFD9BA /* LevelFeederModel.swift */; };
@@ -125,7 +126,6 @@
 		FA253C142AD9C49E00EA8F67 /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
 		FA253C172ADB11B200EA8F67 /* HelpPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpPageView.swift; sourceTree = "<group>"; };
 		FA253C1B2ADBC8E800EA8F67 /* SoundModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundModel.swift; sourceTree = "<group>"; };
-		FA253C1D2ADBCCF200EA8F67 /* TilesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TilesModel.swift; sourceTree = "<group>"; };
 		FA26D8672AE7C89A004D8443 /* NotationQuizLevelMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationQuizLevelMenuView.swift; sourceTree = "<group>"; };
 		FA41AB102AFAB654001B537B /* SongRepositoryQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongRepositoryQuizView.swift; sourceTree = "<group>"; };
 		FA41AB122AFAB66E001B537B /* SongRepositoryLearnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongRepositoryLearnView.swift; sourceTree = "<group>"; };
@@ -138,7 +138,7 @@
 		FAA92C472AFBB7C300C35C7B /* NotationQuizFiveLevelPassedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationQuizFiveLevelPassedView.swift; sourceTree = "<group>"; };
 		FAB5DC9F2ADBDE2F007FC96A /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		FAB6CE792AFC348100C145AD /* PostplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostplayView.swift; sourceTree = "<group>"; };
-		FAB6CE822AFD09D900C145AD /* ExpandableSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableSectionViewModel.swift; sourceTree = "<group>"; };
+		FAB6CE822AFD09D900C145AD /* ExpandableSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableSectionView.swift; sourceTree = "<group>"; };
 		FAB6CE872AFD0A8900C145AD /* OnboardPostplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardPostplayView.swift; sourceTree = "<group>"; };
 		FAB6CE892AFD0AAA00C145AD /* PostplayScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostplayScoreView.swift; sourceTree = "<group>"; };
 		FAB6CE8C2AFD0C7A00C145AD /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
@@ -156,6 +156,8 @@
 		FAD89D1E2ACB47D90019A99D /* PreplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreplayView.swift; sourceTree = "<group>"; };
 		FAD89D232AD5E51A0019A99D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FAD89D2E2AD5F85B0019A99D /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		FAE695A52B239DB8000D3C0C /* ButtonExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonExtension.swift; sourceTree = "<group>"; };
+		FAE695A72B239E7B000D3C0C /* TilesComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TilesComponentView.swift; sourceTree = "<group>"; };
 		FAF7D1FD2AEC2D3900EFD9BA /* TilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TilesViewModel.swift; sourceTree = "<group>"; };
 		FAF7D2002AEC2D5700EFD9BA /* LevelModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelModel.swift; sourceTree = "<group>"; };
 		FAF7D2032AEC2DB400EFD9BA /* LevelFeederModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelFeederModel.swift; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 				FA253C062AD9BF5100EA8F67 /* FontExtension.swift */,
 				FA253C142AD9C49E00EA8F67 /* ColorExtension.swift */,
 				FAB5DC9F2ADBDE2F007FC96A /* ViewExtension.swift */,
+				FAE695A52B239DB8000D3C0C /* ButtonExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -232,6 +235,7 @@
 		FA253C162ADB11A400EA8F67 /* Help */ = {
 			isa = PBXGroup;
 			children = (
+				FAB6CE822AFD09D900C145AD /* ExpandableSectionView.swift */,
 				FA253C172ADB11B200EA8F67 /* HelpPageView.swift */,
 			);
 			path = Help;
@@ -243,14 +247,6 @@
 				FA253C1B2ADBC8E800EA8F67 /* SoundModel.swift */,
 			);
 			path = Sound;
-			sourceTree = "<group>";
-		};
-		FA253C1A2ADBC89800EA8F67 /* TIles */ = {
-			isa = PBXGroup;
-			children = (
-				FA253C1D2ADBCCF200EA8F67 /* TilesModel.swift */,
-			);
-			path = TIles;
 			sourceTree = "<group>";
 		};
 		FA253C1F2ADBD9F100EA8F67 /* Sound */ = {
@@ -293,7 +289,6 @@
 		FAB6CE842AFD09E000C145AD /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				FAB6CE862AFD09F200C145AD /* ExpandableSection */,
 				FAB6CE852AFD09EB00C145AD /* Tiles */,
 			);
 			path = ViewModels;
@@ -305,14 +300,6 @@
 				FAF7D1FD2AEC2D3900EFD9BA /* TilesViewModel.swift */,
 			);
 			path = Tiles;
-			sourceTree = "<group>";
-		};
-		FAB6CE862AFD09F200C145AD /* ExpandableSection */ = {
-			isa = PBXGroup;
-			children = (
-				FAB6CE822AFD09D900C145AD /* ExpandableSectionViewModel.swift */,
-			);
-			path = ExpandableSection;
 			sourceTree = "<group>";
 		};
 		FABE78092AF38E30002FB1DC /* AfterQuiz */ = {
@@ -364,6 +351,7 @@
 		FAD89D132ACB432D0019A99D /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				FAE695A32B239D95000D3C0C /* Component */,
 				FABE78092AF38E30002FB1DC /* AfterQuiz */,
 				FA253C162ADB11A400EA8F67 /* Help */,
 				FAD89D1B2ACB44860019A99D /* Onboarding */,
@@ -381,7 +369,6 @@
 			children = (
 				FA41AB162AFAC544001B537B /* Trophy */,
 				FAF7D1FF2AEC2D4200EFD9BA /* Level */,
-				FA253C1A2ADBC89800EA8F67 /* TIles */,
 				FA253C192ADBC88800EA8F67 /* Sound */,
 			);
 			path = Models;
@@ -463,6 +450,14 @@
 				FA253C012AD9BC0F00EA8F67 /* BalooDa-Regular.ttf */,
 			);
 			path = Font;
+			sourceTree = "<group>";
+		};
+		FAE695A32B239D95000D3C0C /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				FAE695A72B239E7B000D3C0C /* TilesComponentView.swift */,
+			);
+			path = Component;
 			sourceTree = "<group>";
 		};
 		FAF7D1FC2AEAE23900EFD9BA /* Quiz */ = {
@@ -602,6 +597,7 @@
 				FA253C0B2AD9C11A00EA8F67 /* NotationQuizView.swift in Sources */,
 				FAF7D2012AEC2D5700EFD9BA /* LevelModel.swift in Sources */,
 				FA253C182ADB11B200EA8F67 /* HelpPageView.swift in Sources */,
+				FAE695A62B239DB8000D3C0C /* ButtonExtension.swift in Sources */,
 				FABE780B2AF38E60002FB1DC /* NotationQuizCorrectAnswerView.swift in Sources */,
 				FAD89D062AC86E280019A99D /* MelodissimoApp.swift in Sources */,
 				FA92737B2AFA69EB00B47D50 /* SongLearnView.swift in Sources */,
@@ -624,16 +620,16 @@
 				FAB5DCA02ADBDE2F007FC96A /* ViewExtension.swift in Sources */,
 				FA41AB152AFABADB001B537B /* SongQuizScoreView.swift in Sources */,
 				FA41AB132AFAB66E001B537B /* SongRepositoryLearnView.swift in Sources */,
+				FAE695A82B239E7B000D3C0C /* TilesComponentView.swift in Sources */,
 				FABE77FE2AF16479002FB1DC /* AfterQuizView.swift in Sources */,
 				FA253C1C2ADBC8E800EA8F67 /* SoundModel.swift in Sources */,
 				FAB6CE8D2AFD0C7A00C145AD /* TutorialView.swift in Sources */,
 				FABE78042AF192BE002FB1DC /* FirstLaunchView.swift in Sources */,
 				FAD89D1D2ACB44DC0019A99D /* SplashscreenView.swift in Sources */,
-				FAB6CE832AFD09D900C145AD /* ExpandableSectionViewModel.swift in Sources */,
+				FAB6CE832AFD09D900C145AD /* ExpandableSectionView.swift in Sources */,
 				FA253C152AD9C49E00EA8F67 /* ColorExtension.swift in Sources */,
 				FAB6CE882AFD0A8900C145AD /* OnboardPostplayView.swift in Sources */,
 				FA253C092AD9C10E00EA8F67 /* NotationLearnView.swift in Sources */,
-				FA253C1E2ADBCCF200EA8F67 /* TilesModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
