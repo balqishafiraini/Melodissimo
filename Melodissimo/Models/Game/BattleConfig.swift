@@ -45,6 +45,17 @@ struct BattleConfig: Hashable {
                      seed: seed)
     }
 
+    /// One of the 100 classic notation levels: its exact question sequence, no timer on levels 1–10,
+    /// then `max(3, 6 − level × 0.03)` seconds a note, and every 5th level is a boss.
+    static func classic(levelNo: Int, answers: [Int]) -> BattleConfig {
+        BattleConfig(newPool: Array(Set(answers)).sorted(),
+                     questionCount: answers.count,
+                     timePerNote: levelNo <= 10 ? nil : max(3, 6 - Double(levelNo) * 0.03),
+                     isBoss: levelNo % 5 == 0,
+                     fixedQuestions: answers,
+                     seed: UInt64(max(levelNo, 0)))
+    }
+
     /// Seconds the player gets for the next note after `correct` right answers, or `nil` without a timer.
     /// Endless battles speed up 8 % every 10 answers (never below 0.8 s); boss battles shrink 5 % per answer.
     func timeLimit(afterCorrect correct: Int) -> Double? {

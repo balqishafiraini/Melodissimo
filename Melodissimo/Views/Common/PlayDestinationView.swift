@@ -21,7 +21,14 @@ struct PlayDestinationView: View {
             }
         case .battle(let config):
             BattleView(request: request, config: config)
-        case .classic, .echo, .rush, .daily:
+        case .classic(let levelNo):
+            let levels = LevelFeederModel.shared.notationQuizLevels
+            if levels.indices.contains(levelNo - 1) {
+                BattleView(request: request, config: .classic(levelNo: levelNo, answers: levels[levelNo - 1].answer))
+            } else {
+                UnavailableModeView()
+            }
+        case .echo, .rush, .daily:
             UnavailableModeView()
         }
     }

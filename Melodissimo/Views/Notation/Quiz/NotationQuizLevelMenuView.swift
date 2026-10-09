@@ -90,7 +90,7 @@ struct NotationQuizLevelMenuView: View {
                                     let earnedStars = progress.stars(category: "notation", level: index)
                                     Button {
                                         if isLevelEnabled {
-                                            router.push(.notationQuiz(levelNo: index))
+                                            router.push(.play(PlayRequest(kind: .classic(levelNo: index))))
                                         }
                                     }label: {
                                         VStack(spacing: 12) {

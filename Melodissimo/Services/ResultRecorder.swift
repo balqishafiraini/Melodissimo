@@ -42,7 +42,9 @@ struct ResultRecorder {
             case .listen:
                 break
             }
-        case .battle, .classic, .echo, .rush, .daily:
+        case .classic(let levelNo):
+            recordClassic(result, levelNo: levelNo)
+        case .battle, .echo, .rush, .daily:
             break   // each mode records its own results in its own task
         }
 
@@ -50,6 +52,17 @@ struct ResultRecorder {
         progress.registerPlayToday()
         summary.newAchievements = evaluateAchievements()
         return summary
+    }
+
+    /// The classic 100 levels keep their legacy storage: the first-try percentage (carried in
+    /// `accuracy`) is the level's best score, which the grid turns into stars at 60 / 80 / 100 %,
+    /// and winning unlocks the next level. Winning with a mistake or two now counts, where the old
+    /// quiz only unlocked on a flawless run.
+    private func recordClassic(_ result: PlayResult, levelNo: Int) {
+        progress.recordScore(category: "notation", level: levelNo, score: Int(result.accuracy ?? 0))
+        if result.didWin {
+            progress.unlock(upToLevel: levelNo)
+        }
     }
 
     private func recordPerform(_ result: PlayResult, songId: String) -> RewardSummary {

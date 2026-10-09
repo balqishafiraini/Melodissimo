@@ -197,6 +197,11 @@ struct StageResultView: View {
             default:
                 resultButton("Back", filled: true) { router.pop() }
             }
+            if case .classic(let levelNo) = result.request.kind, result.didWin, levelNo < 100 {
+                resultButton("Next level", filled: true) {
+                    router.replaceTop(with: .play(PlayRequest(kind: .classic(levelNo: levelNo + 1))))
+                }
+            }
             if result.request.campaignStageId != nil {
                 // Goes back to the campaign map once that exists (Phase 5).
                 resultButton("Next", filled: true) {}
