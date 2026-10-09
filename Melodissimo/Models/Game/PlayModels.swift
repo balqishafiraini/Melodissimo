@@ -32,6 +32,9 @@ struct PlayRequest: Hashable {
     /// Song stages: show the note names on the keys. `nil` uses the mode's default
     /// (on for Practice, the setting for Perform).
     var showKeyLabels: Bool? = nil
+    /// Set (to `yyyyMMdd`) when this play is the day's challenge. The mode in `kind` is what is played;
+    /// the date says which day's reward it counts for.
+    var dailyDateKey: String? = nil
 }
 
 /// The outcome of one play, handed to `ResultRecorder` and the results screen.

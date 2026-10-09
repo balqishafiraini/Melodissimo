@@ -23,7 +23,10 @@ struct StageResultView: View {
         return false
     }
 
+    private var isDaily: Bool { result.request.dailyDateKey != nil }
+
     private var title: LocalizedStringKey {
+        if isDaily { return "Daily Challenge" }
         switch result.request.kind {
         case .song(let songId, _, _, _, _, _):
             return LocalizedStringKey(SongLibrary.song(id: songId)?.title ?? "")
@@ -236,7 +239,10 @@ struct StageResultView: View {
             resultButton("Retry", filled: false) {
                 router.replaceTop(with: .play(result.request))
             }
-            if result.request.campaignStageId != nil {
+            if isDaily {
+                // The day's challenge started from Home, so it ends there.
+                resultButton("Menu", filled: true) { router.popToRoot() }
+            } else if result.request.campaignStageId != nil {
                 // A campaign stage always goes back to the map, which moves Alpanica along.
                 resultButton(result.didWin ? "Next" : "Map", filled: true) {
                     router.pop(to: .campaignMap)

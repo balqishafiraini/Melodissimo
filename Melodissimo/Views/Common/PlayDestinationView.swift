@@ -25,7 +25,7 @@ struct PlayDestinationView: View {
             if let song = SongLibrary.song(id: songId) {
                 SongStageView(song: song, mode: mode, speed: speed, isBoss: isBoss, isSolemn: isSolemn,
                               noteLimit: noteLimit, campaignStageId: request.campaignStageId,
-                              showKeyLabels: request.showKeyLabels)
+                              showKeyLabels: request.showKeyLabels, dailyDateKey: request.dailyDateKey)
             } else {
                 UnavailableModeView()
             }
@@ -42,8 +42,14 @@ struct PlayDestinationView: View {
             BattleView(request: request, config: .rush(seed: freshSeed))
         case .echo(let config):
             EchoView(request: request, config: echoConfig(config))
-        case .daily:
-            UnavailableModeView()
+        case .daily(let dateKey):
+            // Play the day's mode; the date key rides along so the result pays the daily reward.
+            if let challenge = DailyChallenge.make(dateKey: dateKey, chapter: ProgressStore.shared.currentStage.chapter),
+               let kind = challenge.playKind {
+                PlayDestinationView(request: PlayRequest(kind: kind, dailyDateKey: dateKey))
+            } else {
+                UnavailableModeView()
+            }
         }
     }
 }

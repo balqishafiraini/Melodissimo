@@ -199,3 +199,7 @@
 "Buy %@?" = "Beli %@?";
 "It costs %lld coins." = "Harganya %lld koin.";
 "Not enough coins" = "Koin belum cukup";
+"Echo · +%lld coins" = "Gema · +%lld koin";
+"Note Battle · +%lld coins" = "Duel Nada · +%lld koin";
+"Song Sprint · +%lld coins" = "Lari Lagu · +%lld koin";
+"Done! Come back tomorrow" = "Selesai! Kembali besok";

@@ -19,8 +19,7 @@ struct DashboardView: View {
                 tourCard
                 Spacer(minLength: 0)
                 HStack(spacing: 20) {
-                    HomeCard(title: "Daily Challenge", subtitle: "Coming soon", icon: "icon_stage_boss",
-                             fill: Color.vanila, text: Color.darkGreen, isEnabled: false) {}
+                    dailyCard
                     HomeCard(title: "Free Play", subtitle: "Songs, levels, Echo and Rush", icon: "icon_stage_echo",
                              fill: Color.red, text: .white) {
                         router.push(.freePlay)
@@ -128,6 +127,29 @@ struct DashboardView: View {
                 // Presenting the share sheet
                 rootViewController.present(activityViewController, animated: true, completion: nil)
             }
+        }
+    }
+
+    // MARK: Daily challenge
+
+    /// Today's challenge: its type and reward, or a tick once it has been won.
+    private var dailyCard: some View {
+        let challenge = DailyChallenge.make(for: Date(), chapter: progress.currentStage.chapter)
+        let isDone = challenge.map { progress.isDailyDone($0.dateKey) } ?? false
+        let reward = CoinRewards.daily(streak: progress.streakAfterPlayingToday())
+        let subtitle: LocalizedStringKey
+        switch (challenge?.kind, isDone) {
+        case (nil, _): subtitle = "Coming soon"
+        case (_, true): subtitle = "Done! Come back tomorrow"
+        case (.echo?, false): subtitle = "Echo · +\(reward) coins"
+        case (.battle?, false): subtitle = "Note Battle · +\(reward) coins"
+        case (.songSprint?, false): subtitle = "Song Sprint · +\(reward) coins"
+        }
+        return HomeCard(title: "Daily Challenge", subtitle: subtitle, icon: "icon_stage_boss",
+                        fill: Color.vanila, text: Color.darkGreen, isEnabled: challenge != nil, isDone: isDone) {
+            // The date is read again at the tap, in case the app has been open past midnight.
+            let key = DailyChallenge.dateKey(for: Date())
+            router.push(.play(PlayRequest(kind: .daily(dateKey: key))))
         }
     }
 
@@ -273,6 +295,8 @@ private struct HomeCard: View {
     let fill: Color
     let text: Color
     var isEnabled = true
+    /// A tick on the badge, for a daily challenge that has been won.
+    var isDone = false
     let action: () -> Void
 
     var body: some View {
@@ -281,6 +305,15 @@ private struct HomeCard: View {
                 AssetImage(name: icon, fallbackEmoji: "🎵")
                     .frame(width: 84, height: 84)
                     .saturation(isEnabled ? 1 : 0)
+                    .overlay(alignment: .topTrailing) {
+                        if isDone {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.title)
+                                .foregroundColor(.green)
+                                .background(Circle().fill(Color.white))
+                                .offset(x: 10, y: -6)
+                        }
+                    }
                 Text(title)
                     .font(.custom("BalooDa-Regular", size: 36))
                     .lineLimit(1)

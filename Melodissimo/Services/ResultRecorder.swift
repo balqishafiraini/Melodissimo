@@ -28,6 +28,11 @@ struct ResultRecorder {
     /// Applies a finished play to the stored progress and says what it earned.
     @discardableResult
     func record(_ result: PlayResult) -> RewardSummary {
+        // The day's challenge has its own reward and doesn't touch any song, stage or Rush record.
+        if let dateKey = result.request.dailyDateKey {
+            return recordDaily(result, dateKey: dateKey)
+        }
+
         var summary = RewardSummary()
         // Stars above the previous best (a song's own best, or the campaign stage's) and the coins this play pays.
         var starGain = 0
@@ -101,6 +106,20 @@ struct ResultRecorder {
 
         progress.recordCombo(result.maxCombo)
         progress.registerPlayToday()
+        summary.newAchievements = evaluateAchievements()
+        return summary
+    }
+
+    /// A daily challenge counts as playing today and pays once per date, only when it is won.
+    private func recordDaily(_ result: PlayResult, dateKey: String) -> RewardSummary {
+        var summary = RewardSummary()
+        progress.recordCombo(result.maxCombo)
+        // First, so today's play is already in the streak that sets the bonus.
+        progress.registerPlayToday()
+        if result.didWin, progress.completeDaily(dateKey) {
+            summary.coins = CoinRewards.daily(streak: progress.currentStreak)
+            progress.earn(summary.coins)
+        }
         summary.newAchievements = evaluateAchievements()
         return summary
     }

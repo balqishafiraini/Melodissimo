@@ -33,6 +33,8 @@ struct SongStageView: View {
     let isBoss: Bool
     let isSolemn: Bool
     let campaignStageId: String?
+    /// Set when this stage is the day's challenge (a song sprint), so the result pays the daily reward.
+    let dailyDateKey: String?
     let showLabels: Bool
 
     /// Seconds a note takes to fall to the hit line (a setting later on).
@@ -40,13 +42,15 @@ struct SongStageView: View {
 
     /// `chart` plays a specific chart (the Chart Recorder's preview) instead of the song's bundled one.
     init(song: Song, mode: StageMode, speed: Double = 1, isBoss: Bool = false, isSolemn: Bool = false,
-         noteLimit: Int? = nil, campaignStageId: String? = nil, showKeyLabels: Bool? = nil, chart: SongChart? = nil) {
+         noteLimit: Int? = nil, campaignStageId: String? = nil, showKeyLabels: Bool? = nil,
+         dailyDateKey: String? = nil, chart: SongChart? = nil) {
         self.song = song
         self.mode = mode
         self.speed = speed
         self.isBoss = isBoss
         self.isSolemn = isSolemn
         self.campaignStageId = campaignStageId
+        self.dailyDateKey = dailyDateKey
         // Practice and Listen teach the fingering, so they show labels; Perform follows the setting.
         self.showLabels = showKeyLabels ?? (mode != .perform || ProgressStore.shared.labelsInPerform)
         _engine = StateObject(wrappedValue: {
@@ -343,7 +347,8 @@ struct SongStageView: View {
                                 isSolemn: isSolemn, noteLimit: nil),
                     campaignStageId: campaignStageId,
                     // Switching mode returns to that mode's default labels; replaying keeps the choice.
-                    showKeyLabels: newMode == mode ? showLabels : nil)
+                    showKeyLabels: newMode == mode ? showLabels : nil,
+                    dailyDateKey: dailyDateKey)
     }
 
     /// Records what the play earned, once. Perform then shows the results screen after a short

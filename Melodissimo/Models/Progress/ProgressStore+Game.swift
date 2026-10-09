@@ -214,6 +214,37 @@ extension ProgressStore {
         return true
     }
 
+    // MARK: - Daily challenge
+
+    private func dailyDoneKey(_ dateKey: String) -> String {
+        "daily_done_\(dateKey)"
+    }
+
+    /// Whether the challenge of that date (`yyyyMMdd`) has been won, so its reward is taken.
+    func isDailyDone(_ dateKey: String) -> Bool {
+        defaults.bool(forKey: dailyDoneKey(dateKey))
+    }
+
+    /// Marks the date's challenge as won. Returns `true` the first time only, which is when it pays.
+    @discardableResult
+    func completeDaily(_ dateKey: String) -> Bool {
+        guard !isDailyDone(dateKey) else { return false }
+        defaults.set(true, forKey: dailyDoneKey(dateKey))
+        objectWillChange.send()
+        return true
+    }
+
+    /// What the daily streak will be once the player plays today: one more than now if the last play
+    /// was yesterday, 1 after a gap or a first play, unchanged if they already played today.
+    func streakAfterPlayingToday(now: Date = Date(), calendar: Calendar = .current) -> Int {
+        guard let last = defaults.object(forKey: "lastPlayedDate") as? Date else { return 1 }
+        let today = calendar.startOfDay(for: now)
+        let lastDay = calendar.startOfDay(for: last)
+        if lastDay == today { return max(currentStreak, 1) }
+        let gap = calendar.dateComponents([.day], from: lastDay, to: today).day ?? 0
+        return gap == 1 ? currentStreak + 1 : 1
+    }
+
     // MARK: - Story cards
 
     private func storySeenKey(_ id: String) -> String {
