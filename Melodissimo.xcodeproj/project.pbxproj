@@ -3,38 +3,30 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		FAB6CE782AFC171C00C145AD /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = FAB6CE772AFC171C00C145AD /* ConfettiSwiftUI */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		FAC0DE012F0000010000A00C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAD89CFA2AC86E280019A99D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FAD89D012AC86E280019A99D;
+			remoteInfo = Melodissimo;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
-		FAD89D022AC86E280019A99D /* Melodissimo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Melodissimo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAC0DE012F0000010000A004 /* MelodissimoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MelodissimoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD89D022AC86E280019A99D /* Melodissimo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Melodissimo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFrameworksBuildPhase section */
-		FAD89CFF2AC86E280019A99D /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				FAB6CE782AFC171C00C145AD /* ConfettiSwiftUI in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FAC0DE012F0000010000A006 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
-
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		FAC0DE012F0000010000A001 /* Exceptions for "Melodissimo" folder in "Melodissimo" target */ = {
+		FAC0DE012F0000010000A001 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Data/Info.plist,
@@ -44,20 +36,27 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		FAD89D042AC86E280019A99D /* Melodissimo */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				FAC0DE012F0000010000A001 /* Exceptions for "Melodissimo" folder in "Melodissimo" target */,
-			);
-			path = Melodissimo;
-			sourceTree = "<group>";
-		};
-		FAC0DE012F0000010000A002 /* MelodissimoTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MelodissimoTests;
-			sourceTree = "<group>";
-		};
+		FAC0DE012F0000010000A002 /* MelodissimoTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MelodissimoTests; sourceTree = "<group>"; };
+		FAD89D042AC86E280019A99D /* Melodissimo */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (FAC0DE012F0000010000A001 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Melodissimo; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC0DE012F0000010000A006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FAD89CFF2AC86E280019A99D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAB6CE782AFC171C00C145AD /* ConfettiSwiftUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		FAD89CF92AC86E280019A99D = {
@@ -81,29 +80,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		FAD89D012AC86E280019A99D /* Melodissimo */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = FAD89D102AC86E2C0019A99D /* Build configuration list for PBXNativeTarget "Melodissimo" */;
-			buildPhases = (
-				FAD89CFE2AC86E280019A99D /* Sources */,
-				FAD89CFF2AC86E280019A99D /* Frameworks */,
-				FAD89D002AC86E280019A99D /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				FAD89D042AC86E280019A99D /* Melodissimo */,
-			);
-			name = Melodissimo;
-			packageProductDependencies = (
-				FAB6CE772AFC171C00C145AD /* ConfettiSwiftUI */,
-			);
-			productName = Melodissimo;
-			productReference = FAD89D022AC86E280019A99D /* Melodissimo.app */;
-			productType = "com.apple.product-type.application";
-		};
 		FAC0DE012F0000010000A003 /* MelodissimoTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FAC0DE012F0000010000A008 /* Build configuration list for PBXNativeTarget "MelodissimoTests" */;
@@ -127,6 +103,29 @@
 			productReference = FAC0DE012F0000010000A004 /* MelodissimoTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		FAD89D012AC86E280019A99D /* Melodissimo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAD89D102AC86E2C0019A99D /* Build configuration list for PBXNativeTarget "Melodissimo" */;
+			buildPhases = (
+				FAD89CFE2AC86E280019A99D /* Sources */,
+				FAD89CFF2AC86E280019A99D /* Frameworks */,
+				FAD89D002AC86E280019A99D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FAD89D042AC86E280019A99D /* Melodissimo */,
+			);
+			name = Melodissimo;
+			packageProductDependencies = (
+				FAB6CE772AFC171C00C145AD /* ConfettiSwiftUI */,
+			);
+			productName = Melodissimo;
+			productReference = FAD89D022AC86E280019A99D /* Melodissimo.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -137,12 +136,12 @@
 				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
-					FAD89D012AC86E280019A99D = {
-						CreatedOnToolsVersion = 14.3.1;
-					};
 					FAC0DE012F0000010000A003 = {
 						CreatedOnToolsVersion = 26.1.1;
 						TestTargetID = FAD89D012AC86E280019A99D;
+					};
+					FAD89D012AC86E280019A99D = {
+						CreatedOnToolsVersion = 14.3.1;
 					};
 				};
 			};
@@ -170,14 +169,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		FAD89D002AC86E280019A99D /* Resources */ = {
+		FAC0DE012F0000010000A007 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FAC0DE012F0000010000A007 /* Resources */ = {
+		FAD89D002AC86E280019A99D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -187,13 +186,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		FAD89CFE2AC86E280019A99D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		FAC0DE012F0000010000A005 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -201,17 +193,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXSourcesBuildPhase section */
-
-/* Begin PBXContainerItemProxy section */
-		FAC0DE012F0000010000A00C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAD89CFA2AC86E280019A99D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = FAD89D012AC86E280019A99D;
-			remoteInfo = Melodissimo;
+		FAD89CFE2AC86E280019A99D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXContainerItemProxy section */
+/* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
 		FAC0DE012F0000010000A00B /* PBXTargetDependency */ = {
@@ -222,6 +211,46 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		FAC0DE012F0000010000A009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AZQ73MXTBD;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.balqishafiraini.MelodissimoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Melodissimo.app/Melodissimo";
+			};
+			name = Debug;
+		};
+		FAC0DE012F0000010000A00A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AZQ73MXTBD;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.balqishafiraini.MelodissimoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Melodissimo.app/Melodissimo";
+			};
+			name = Release;
+		};
 		FAD89D0E2AC86E2C0019A99D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -408,49 +437,18 @@
 			};
 			name = Release;
 		};
-		FAC0DE012F0000010000A009 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = AZQ73MXTBD;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.balqishafiraini.MelodissimoTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Melodissimo.app/Melodissimo";
-			};
-			name = Debug;
-		};
-		FAC0DE012F0000010000A00A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = AZQ73MXTBD;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.balqishafiraini.MelodissimoTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Melodissimo.app/Melodissimo";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		FAC0DE012F0000010000A008 /* Build configuration list for PBXNativeTarget "MelodissimoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC0DE012F0000010000A009 /* Debug */,
+				FAC0DE012F0000010000A00A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		FAD89CFD2AC86E280019A99D /* Build configuration list for PBXProject "Melodissimo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -465,15 +463,6 @@
 			buildConfigurations = (
 				FAD89D112AC86E2C0019A99D /* Debug */,
 				FAD89D122AC86E2C0019A99D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		FAC0DE012F0000010000A008 /* Build configuration list for PBXNativeTarget "MelodissimoTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				FAC0DE012F0000010000A009 /* Debug */,
-				FAC0DE012F0000010000A00A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

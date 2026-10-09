@@ -123,33 +123,21 @@ private struct PianoKeyboardView: View {
         )
     }
 
+    /// The black keys sit in the gaps between white keys, so they're laid out in the
+    /// same five groups as the physical pianika (2 + 3 spacing pattern).
+    private static let blackKeyGroups: [[Int]] = [
+        [20, 21, 22],
+        [23, 24],
+        [25, 26, 27],
+        [28, 29],
+        [30, 31, 32]
+    ]
+
     private var whiteRow: some View {
         HStack(spacing: 2) {
-            Group {
-                key(1, "f1", "4.")
-                key(2, "g1", "5.")
-                key(3, "a1", "6.")
-                key(4, "b1", "7.")
+            ForEach(NoteCatalog.whiteKeyIDs, id: \.self) { id in
+                key(id)
             }
-            Group {
-                key(5, "c2", "1")
-                key(6, "d2", "2")
-                key(7, "e2", "3")
-                key(8, "f2", "4")
-                key(9, "g2", "5")
-                key(10, "a2", "6")
-                key(11, "b2", "7")
-            }
-            Group {
-                key(12, "c3", "1˙")
-                key(13, "d3", "2˙")
-                key(14, "e3", "3˙")
-                key(15, "f3", "4˙")
-                key(16, "g3", "5˙")
-                key(17, "a3", "6˙")
-                key(18, "b3", "7˙")
-            }
-            key(19, "c4", "1˙˙")
         }
         .frame(width: screenWidth, height: metrics.whiteRowHeight)
     }
@@ -157,42 +145,27 @@ private struct PianoKeyboardView: View {
     private var blackRow: some View {
         HStack {
             HStack(spacing: screenWidth * 0.06) {
-                HStack {
-                    key(20, "f1s", "4.#", isBlack: true)
-                    key(21, "g1s", "5.#", isBlack: true)
-                    key(22, "a1s", "6.#", isBlack: true)
-                }
-                HStack {
-                    key(23, "c2s", "1#", isBlack: true)
-                    key(24, "d2s", "2#", isBlack: true)
-                }
-                HStack {
-                    key(25, "f2s", "4#", isBlack: true)
-                    key(26, "g2s", "5#", isBlack: true)
-                    key(27, "a2s", "6#", isBlack: true)
-                }
-                HStack {
-                    key(28, "c3s", "1˙#", isBlack: true)
-                    key(29, "d3s", "2˙#", isBlack: true)
-                }
-                HStack {
-                    key(30, "f3s", "4˙#", isBlack: true)
-                    key(31, "g3s", "5˙#", isBlack: true)
-                    key(32, "a3s", "6˙#", isBlack: true)
+                ForEach(Self.blackKeyGroups.indices, id: \.self) { group in
+                    HStack {
+                        ForEach(Self.blackKeyGroups[group], id: \.self) { id in
+                            key(id)
+                        }
+                    }
                 }
             }
         }
         .frame(width: screenWidth * 0.88, height: metrics.blackRowHeight, alignment: .topLeading)
     }
 
-    private func key(_ id: Int, _ sound: String, _ label: String, isBlack: Bool = false) -> KeyTile {
-        KeyTile(id: id,
-                keySound: sound,
-                label: label,
-                isBlack: isBlack,
-                showLabel: showLabels,
-                metrics: metrics,
-                activeTileID: activeTileID)
+    private func key(_ id: Int) -> KeyTile {
+        let note = NoteCatalog.note(id)
+        return KeyTile(id: id,
+                       keySound: note.sound,
+                       label: note.label,
+                       isBlack: note.isBlack,
+                       showLabel: showLabels,
+                       metrics: metrics,
+                       activeTileID: activeTileID)
     }
 
     // MARK: Touch handling

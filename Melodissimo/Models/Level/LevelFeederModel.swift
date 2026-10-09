@@ -15,40 +15,7 @@ struct LevelFeederModel {
 
     let notationQuizLevels: [LevelModel] = {
         var generatedLevels: [LevelModel] = []
-        var idMappings: [String: Int] = [
-            "4.": 1,
-            "5.": 2,
-            "6.": 3,
-            "7.": 4,
-            "1": 5,
-            "2": 6,
-            "3": 7,
-            "4": 8,
-            "5": 9,
-            "6": 10,
-            "7": 11,
-            "1˙": 12,
-            "2˙": 13,
-            "3˙": 14,
-            "4˙": 15,
-            "5˙": 16,
-            "6˙": 17,
-            "7˙": 18,
-            "1˙˙": 19,
-            "4.#": 20,
-            "5.#": 21,
-            "6.#": 22,
-            "1#": 23,
-            "2#": 24,
-            "4#": 25,
-            "5#": 26,
-            "6#": 27,
-            "1˙#": 28,
-            "2˙#": 29,
-            "4˙#": 30,
-            "5˙#": 31,
-            "6˙#": 32
-        ]
+        let notePool = NoteCatalog.all
         
         // Use UserDefaults to store and retrieve questions for each level
         let userDefaults = UserDefaults.standard
@@ -105,8 +72,7 @@ struct LevelFeederModel {
                 randomQuestions = []
                 
                 for _ in 1...questionSetSize {
-                    let randomId = idMappings.randomElement()!
-                    randomQuestions.append(randomId.key)
+                    randomQuestions.append(notePool.randomElement()!.label)
                 }
                 
                 // Store the generated questions in UserDefaults
@@ -117,7 +83,7 @@ struct LevelFeederModel {
                 levelCategory: "notation",
                 levelNo: levelNo,
                 question: randomQuestions,
-                answer: randomQuestions.map { idMappings[$0]! }
+                answer: randomQuestions.map { NoteCatalog.id(forLabel: $0)! }
             )
             generatedLevels.append(level)
         }
@@ -126,27 +92,7 @@ struct LevelFeederModel {
     }()
     
     let preplayLevel: LevelModel = {
-        var idMappings: [String: Int] = [
-            "4.": 1,
-            "5.": 2,
-            "6.": 3,
-            "7.": 4,
-            "1": 5,
-            "2": 6,
-            "3": 7,
-            "4": 8,
-            "5": 9,
-            "6": 10,
-            "7": 11,
-            "1˙": 12,
-            "2˙": 13,
-            "3˙": 14,
-            "4˙": 15,
-            "5˙": 16,
-            "6˙": 17,
-            "7˙": 18,
-            "1˙˙": 19
-        ]
+        let notePool = NoteCatalog.whiteKeyIDs.map { NoteCatalog.note($0) }
         
         // Define the key for the postplay level
         let levelKey = "PreplayLevel"
@@ -157,8 +103,7 @@ struct LevelFeederModel {
         randomQuestions = []
         
         for _ in 1...questionSetSize {
-            let randomId = idMappings.randomElement()!
-            randomQuestions.append(randomId.key)
+            randomQuestions.append(notePool.randomElement()!.label)
         }
         
         
@@ -167,7 +112,7 @@ struct LevelFeederModel {
             levelCategory: "preplay",
             levelNo: 1,
             question: randomQuestions,
-            answer: randomQuestions.map { idMappings[$0]! }
+            answer: randomQuestions.map { NoteCatalog.id(forLabel: $0)! }
         )
     }()
     
@@ -321,40 +266,7 @@ struct LevelFeederModel {
     ]
     
     let postplayLevel: LevelModel = {
-        var idMappings: [String: Int] = [
-            "4.": 1,
-            "5.": 2,
-            "6.": 3,
-            "7.": 4,
-            "1": 5,
-            "2": 6,
-            "3": 7,
-            "4": 8,
-            "5": 9,
-            "6": 10,
-            "7": 11,
-            "1˙": 12,
-            "2˙": 13,
-            "3˙": 14,
-            "4˙": 15,
-            "5˙": 16,
-            "6˙": 17,
-            "7˙": 18,
-            "1˙˙": 19,
-            "4.#": 20,
-            "5.#": 21,
-            "6.#": 22,
-            "1#": 23,
-            "2#": 24,
-            "4#": 25,
-            "5#": 26,
-            "6#": 27,
-            "1˙#": 28,
-            "2˙#": 29,
-            "4˙#": 30,
-            "5˙#": 31,
-            "6˙#": 32
-        ]
+        let notePool = NoteCatalog.all
         
         // Define the key for the postplay level
         let levelKey = "PostplayLevel"
@@ -365,8 +277,7 @@ struct LevelFeederModel {
         randomQuestions = []
         
         for _ in 1...questionSetSize {
-            let randomId = idMappings.randomElement()!
-            randomQuestions.append(randomId.key)
+            randomQuestions.append(notePool.randomElement()!.label)
         }
         
         
@@ -375,7 +286,7 @@ struct LevelFeederModel {
             levelCategory: "postplay",
             levelNo: 1,
             question: randomQuestions,
-            answer: randomQuestions.map { idMappings[$0]! }
+            answer: randomQuestions.map { NoteCatalog.id(forLabel: $0)! }
         )
     }()
     
