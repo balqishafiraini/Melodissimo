@@ -18,15 +18,30 @@ struct StageResultView: View {
     @State private var shownStars = 0
     @State private var confettiCounter = 0
 
-    private var songTitle: String {
-        if case .song(let songId, _, _, _, _, _) = result.request.kind {
-            return SongLibrary.song(id: songId)?.title ?? ""
+    private var isSong: Bool {
+        if case .song = result.request.kind { return true }
+        return false
+    }
+
+    private var title: LocalizedStringKey {
+        switch result.request.kind {
+        case .song(let songId, _, _, _, _, _):
+            return LocalizedStringKey(SongLibrary.song(id: songId)?.title ?? "")
+        case .battle(let config):
+            return config.isBoss ? "Boss Battle" : "Note Battle"
+        case .classic(let levelNo):
+            return "Level \(levelNo)"
+        case .echo:
+            return "Echo"
+        case .rush:
+            return "Melody Rush"
+        case .daily:
+            return "Daily Challenge"
         }
-        return ""
     }
 
     private var isFullCombo: Bool {
-        result.accuracy != nil && result.miss == 0 && result.wrong == 0
+        isSong && result.accuracy != nil && result.miss == 0 && result.wrong == 0
     }
 
     var body: some View {
@@ -43,15 +58,25 @@ struct StageResultView: View {
                     .frame(maxWidth: .infinity)
 
                 VStack(spacing: 18) {
-                    Text(songTitle)
+                    Text(title)
                         .font(.custom("BalooDa-Regular", size: 36))
                         .foregroundColor(Color.darkGreen)
                         .lineLimit(1)
 
+                    if !isSong {
+                        Text(result.didWin ? "Victory!" : "Try again!")
+                            .font(.custom("BalooDa-Regular", size: 28))
+                            .foregroundColor(Color.darkGreen)
+                    }
+
                     starsRow
                     badges
                     statsGrid
-                    breakdown
+                    if isSong {
+                        breakdown
+                    } else if result.didWin {
+                        heartsLeft
+                    }
                     Spacer(minLength: 0)
                     buttons
                 }
@@ -106,7 +131,8 @@ struct StageResultView: View {
     private var statsGrid: some View {
         HStack(spacing: 28) {
             stat("Score", "\(result.score)")
-            if let accuracy = result.accuracy {
+            // Songs report timing accuracy; battles carry their first-try percentage elsewhere.
+            if isSong, let accuracy = result.accuracy {
                 stat("Accuracy", "\(Int(accuracy.rounded()))%")
             }
             stat("Max combo", "\(result.maxCombo)")
@@ -148,13 +174,28 @@ struct StageResultView: View {
         }
     }
 
+    /// Battles are won with hearts to spare: the stars are the hearts that were left.
+    private var heartsLeft: some View {
+        HStack(spacing: 10) {
+            Text("Hearts left")
+                .font(.subheadline)
+                .foregroundColor(Color.darkGreen.opacity(0.8))
+            HeartsView(hearts: result.stars, maxHearts: 3, size: 34)
+        }
+    }
+
     private var buttons: some View {
         HStack(spacing: 14) {
             resultButton("Retry", filled: false) {
                 router.replaceTop(with: .play(result.request))
             }
-            resultButton("Song menu", filled: true) {
-                router.pop(to: .songRepositoryQuiz)
+            switch result.request.kind {
+            case .song:
+                resultButton("Song menu", filled: true) { router.pop(to: .songRepositoryQuiz) }
+            case .classic:
+                resultButton("Levels", filled: true) { router.pop(to: .notationLevelMenu) }
+            default:
+                resultButton("Back", filled: true) { router.pop() }
             }
             if result.request.campaignStageId != nil {
                 // Goes back to the campaign map once that exists (Phase 5).

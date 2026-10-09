@@ -19,7 +19,9 @@ struct PlayDestinationView: View {
             } else {
                 UnavailableModeView()
             }
-        case .battle, .classic, .echo, .rush, .daily:
+        case .battle(let config):
+            BattleView(request: request, config: config)
+        case .classic, .echo, .rush, .daily:
             UnavailableModeView()
         }
     }

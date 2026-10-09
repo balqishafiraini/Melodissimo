@@ -90,6 +90,21 @@ struct DashboardView: View {
                     }
                     #endif
 
+                #if DEBUG
+                // TEMPORARY (Task 3.2, removed in Task 3.3): jump straight into a Note Battle.
+                Button {
+                    router.push(.play(PlayRequest(kind: .battle(
+                        BattleConfig(newPool: [5, 6, 7], reviewPool: [8, 9], questionCount: 4, timePerNote: nil, seed: 7)))))
+                } label: {
+                    Text("DEBUG: Note Battle")
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Capsule().fill(Color.yellow))
+                        .foregroundColor(Color.darkGreen)
+                        .font(.footnote)
+                }
+                #endif
+
                 Spacer()
 
                 HStack{
