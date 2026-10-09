@@ -28,6 +28,9 @@ enum Route: Hashable {
     case stageSetup(songId: String, campaignStageId: String? = nil, isBoss: Bool = false)
     /// What a finished play earned. `ResultRecorder` has already stored it.
     case result(PlayResult, RewardSummary)
+    /// DEBUG tools: author a rhythm chart by playing along, then preview it in Listen mode.
+    case chartRecorder
+    case chartPreview(SongChart)
 }
 
 /// Drives the app's single `NavigationStack`. Screens push routes and pop back

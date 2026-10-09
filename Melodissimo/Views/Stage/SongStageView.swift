@@ -38,8 +38,9 @@ struct SongStageView: View {
     /// Seconds a note takes to fall to the hit line (a setting later on).
     static let approachTime = 2.0
 
+    /// `chart` plays a specific chart (the Chart Recorder's preview) instead of the song's bundled one.
     init(song: Song, mode: StageMode, speed: Double = 1, isBoss: Bool = false, isSolemn: Bool = false,
-         noteLimit: Int? = nil, campaignStageId: String? = nil, showKeyLabels: Bool? = nil) {
+         noteLimit: Int? = nil, campaignStageId: String? = nil, showKeyLabels: Bool? = nil, chart: SongChart? = nil) {
         self.song = song
         self.mode = mode
         self.speed = speed
@@ -49,9 +50,9 @@ struct SongStageView: View {
         // Practice and Listen teach the fingering, so they show labels; Perform follows the setting.
         self.showLabels = showKeyLabels ?? (mode != .perform || ProgressStore.shared.labelsInPerform)
         _engine = StateObject(wrappedValue: {
-            var chart = SongChart.load(for: song)
-            if let noteLimit { chart.notes = Array(chart.notes.prefix(noteLimit)) }
-            return RhythmEngine(chart: chart, mode: mode, speed: speed, approachTime: SongStageView.approachTime)
+            var playedChart = chart ?? SongChart.load(for: song)
+            if let noteLimit { playedChart.notes = Array(playedChart.notes.prefix(noteLimit)) }
+            return RhythmEngine(chart: playedChart, mode: mode, speed: speed, approachTime: SongStageView.approachTime)
         }())
     }
 

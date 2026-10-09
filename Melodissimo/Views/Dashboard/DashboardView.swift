@@ -83,6 +83,12 @@ struct DashboardView: View {
                 Text("Hello! What do you want to learn today?")
                     .font(.largeTitle)
                     .foregroundColor(.white)
+                    #if DEBUG
+                    // Developer shortcut: long-press the title to open the Chart Recorder.
+                    .onLongPressGesture(minimumDuration: 1) {
+                        router.push(.chartRecorder)
+                    }
+                    #endif
 
                 Spacer()
 
@@ -170,6 +176,22 @@ struct DashboardView: View {
             PlayDestinationView(request: request)
         case .result(let result, let rewards):
             StageResultView(result: result, rewards: rewards)
+        case .chartRecorder:
+            #if DEBUG
+            ChartRecorderView()
+            #else
+            UnavailableModeView()
+            #endif
+        case .chartPreview(let chart):
+            #if DEBUG
+            if let song = SongLibrary.song(id: chart.id) {
+                SongStageView(song: song, mode: .listen, chart: chart)
+            } else {
+                UnavailableModeView()
+            }
+            #else
+            UnavailableModeView()
+            #endif
         case .stageSetup(let songId, let campaignStageId, let isBoss):
             if let song = SongLibrary.song(id: songId) {
                 StageSetupView(song: song, campaignStageId: campaignStageId, isBoss: isBoss)
