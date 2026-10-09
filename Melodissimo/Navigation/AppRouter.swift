@@ -22,6 +22,8 @@ enum Route: Hashable {
     case help
     case achievements
     case postplay
+    /// Launches any play mode; see `PlayRequest`.
+    case play(PlayRequest)
 }
 
 /// Drives the app's single `NavigationStack`. Screens push routes and pop back

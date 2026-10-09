@@ -84,6 +84,21 @@ struct DashboardView: View {
                     .font(.largeTitle)
                     .foregroundColor(.white)
 
+                #if DEBUG
+                // TEMPORARY (Task 2.1, removed in Task 2.4): jump straight into a Perform stage.
+                Button {
+                    router.push(.play(PlayRequest(kind: .song(songId: "berkibarlah-benderaku", mode: .perform, speed: 1,
+                                                              isBoss: false, isSolemn: false, noteLimit: nil))))
+                } label: {
+                    Text("DEBUG: Perform \"Berkibarlah Benderaku\"")
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Capsule().fill(Color.yellow))
+                        .foregroundColor(Color.darkGreen)
+                        .font(.footnote)
+                }
+                #endif
+
                 Spacer()
 
                 HStack{
@@ -166,6 +181,8 @@ struct DashboardView: View {
             AchievementsView()
         case .postplay:
             OnboardPostplayView()
+        case .play(let request):
+            PlayDestinationView(request: request)
         }
     }
 }
