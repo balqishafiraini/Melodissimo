@@ -107,6 +107,10 @@ struct StageResultView: View {
                     }
                     badges
                     statsGrid
+                    if rewards.coins > 0 {
+                        // Counts up once the stars have landed.
+                        CoinCountUp(total: rewards.coins, delay: 0.8 + 0.45 * Double(result.stars))
+                    }
                     if isSong {
                         breakdown
                     } else if result.didWin {

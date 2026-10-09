@@ -29,16 +29,27 @@ struct ResultRecorder {
     @discardableResult
     func record(_ result: PlayResult) -> RewardSummary {
         var summary = RewardSummary()
+        // Stars above the previous best (a song's own best, or the campaign stage's) and the coins this play pays.
+        var starGain = 0
+        var coins = 0
+        var isSong = false
+        var isSongPerform = false
+        var isBossPerform = false
 
         switch result.request.kind {
         case .song(let songId, let mode, _, _, _, _):
             // Listening teaches but earns nothing, and doesn't count as playing today.
             guard mode != .listen else { return summary }
+            isSong = true
             switch mode {
             case .practice:
+                if !progress.isSongPracticed(songId) { coins += CoinRewards.firstPractice }
                 progress.setSongPracticed(songId)
             case .perform:
                 summary = recordPerform(result, songId: songId)
+                starGain = summary.newStars
+                isSongPerform = true
+                if case .song(_, _, _, true, _, _) = result.request.kind { isBossPerform = true }
             case .listen:
                 break
             }
@@ -46,34 +57,47 @@ struct ResultRecorder {
             recordClassic(result, levelNo: levelNo)
         case .rush:
             summary.isNewBest = progress.recordRushScore(result.score)
+            coins += CoinRewards.rush(correctAnswers: result.correctCount)
         case .echo(let config):
             // `score` is the number of rounds cleared.
             progress.recordEchoBestRounds(result.score)
             if config.roundsToClear == nil {
                 summary.isNewBest = progress.recordEchoHighScore(result.score)
+                coins += CoinRewards.echoEndless(rounds: result.score)
             }
         case .battle, .daily:
             break   // each mode records its own results in its own task
         }
 
         // A campaign stage keeps the best stars of any play that was launched from the map.
+        var isFirstStageClear = false
         if let stageId = result.request.campaignStageId {
             let before = progress.stageStars(stageId)
             let gained = progress.recordStageStars(stageId, stars: result.stars)
-            if case .song(_, let mode, _, let isBoss, _, _) = result.request.kind {
-                // Songs already report their own best-star gain. Beating a boss for the first time
-                // (a star on a stage that had none) counts towards the Fals hunter.
-                if mode == .perform, isBoss, before == 0, result.stars >= 1 {
-                    progress.incrementBossesDefeated()
-                }
-            } else {
-                summary.newStars = gained
+            // Songs already report their own best-star gain.
+            if !isSong { summary.newStars = gained }
+            starGain = max(starGain, gained)
+            isFirstStageClear = before == 0 && result.stars >= 1
+            // Beating a boss for the first time (a star on a stage that had none) counts towards the Fals hunter.
+            if isBossPerform, isFirstStageClear {
+                progress.incrementBossesDefeated()
             }
             // The first star on the national anthem finishes the tour.
-            if before == 0, result.stars >= 1, StoryCatalog.finaleStage()?.id == stageId {
+            if isFirstStageClear, StoryCatalog.finaleStage()?.id == stageId {
                 progress.recordTourCompleted()
             }
         }
+
+        // Winning a campaign stage or performing a song pays by the stars it adds. Practice, Rush and
+        // endless Echo were paid above, and the classic levels pay nothing.
+        if result.didWin, result.stars >= 1, isSongPerform || result.request.campaignStageId != nil {
+            coins += CoinRewards.clear(newStars: starGain,
+                                       isFirstStageClear: isFirstStageClear,
+                                       isFirstBossClear: isFirstStageClear && isBossPerform)
+        }
+
+        progress.earn(coins)
+        summary.coins = coins
 
         progress.recordCombo(result.maxCombo)
         progress.registerPlayToday()

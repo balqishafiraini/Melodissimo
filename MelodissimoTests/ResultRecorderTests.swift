@@ -53,7 +53,7 @@ final class ResultRecorderTests: XCTestCase {
         XCTAssertEqual(progress.currentStreak, 1, "playing counts towards the daily streak")
         XCTAssertTrue(summary.isNewBest)
         XCTAssertEqual(summary.newStars, 3)
-        XCTAssertEqual(summary.coins, 0)
+        XCTAssertEqual(summary.coins, 3 * CoinRewards.perNewStar, "three new stars on a free song")
         XCTAssertEqual(evaluations, 1)
     }
 

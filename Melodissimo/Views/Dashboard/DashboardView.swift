@@ -76,19 +76,7 @@ struct DashboardView: View {
             }
             #endif
 
-            // Placeholder until the coin balance exists (Task 6.1).
-            HStack(spacing: 8) {
-                AssetImage(name: "icon_coin", fallbackEmoji: "🪙")
-                    .frame(width: 38, height: 38)
-                Text("0")
-                    .font(Font.headline)
-                    .foregroundColor(Color.darkGreen)
-            }
-            .padding(.horizontal, 20)
-            .frame(height: 72)
-            .background(Capsule().fill(Color.yellow))
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(Text("Coins"))
+            CoinBadge()
 
             Spacer()
 

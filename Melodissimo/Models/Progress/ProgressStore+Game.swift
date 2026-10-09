@@ -188,6 +188,32 @@ extension ProgressStore {
         CampaignCatalog.allStages.reduce(0) { $0 + stageStars($1.id) }
     }
 
+    // MARK: - Coins
+
+    /// Every coin ever earned. Only ever increases, so two devices can merge with `max`.
+    var coinsEarnedTotal: Int { defaults.integer(forKey: "coins_earnedTotal") }
+
+    /// Every coin ever spent. Only ever increases.
+    var coinsSpentTotal: Int { defaults.integer(forKey: "coins_spentTotal") }
+
+    /// What the player can spend now.
+    var coinBalance: Int { max(0, coinsEarnedTotal - coinsSpentTotal) }
+
+    func earn(_ amount: Int) {
+        guard amount > 0 else { return }
+        defaults.set(coinsEarnedTotal + amount, forKey: "coins_earnedTotal")
+        objectWillChange.send()
+    }
+
+    /// Takes `amount` from the balance. Returns `false`, changing nothing, when there isn't enough.
+    @discardableResult
+    func spend(_ amount: Int) -> Bool {
+        guard amount > 0, amount <= coinBalance else { return false }
+        defaults.set(coinsSpentTotal + amount, forKey: "coins_spentTotal")
+        objectWillChange.send()
+        return true
+    }
+
     // MARK: - Story cards
 
     private func storySeenKey(_ id: String) -> String {

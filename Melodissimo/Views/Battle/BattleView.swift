@@ -223,7 +223,8 @@ struct BattleView: View {
                                 // (the classic levels' legacy score); `nil` for endless Melody Rush.
                                 accuracy: viewModel.isEndless ? nil : Double(viewModel.firstTryPercent),
                                 maxCombo: viewModel.maxCombo,
-                                perfect: 0, great: 0, good: 0, miss: 0, wrong: 0)
+                                perfect: 0, great: 0, good: 0, miss: 0, wrong: 0,
+                                correctCount: viewModel.correctCount)
         let rewards = ResultRecorder.record(result)
         DispatchQueue.main.asyncAfter(deadline: .now() + (won ? 0.9 : 1.4)) {
             if isOnScreen {

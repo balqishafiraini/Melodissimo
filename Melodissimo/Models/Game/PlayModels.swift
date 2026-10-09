@@ -50,6 +50,8 @@ struct PlayResult: Hashable {
     let good: Int
     let miss: Int
     let wrong: Int
+    /// Battles and Melody Rush: how many answers were right (Rush pays one coin per five).
+    var correctCount = 0
 }
 
 /// What a play earned, shown on the results screen.
