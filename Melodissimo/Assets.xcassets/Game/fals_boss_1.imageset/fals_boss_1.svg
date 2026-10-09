@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 420" width="420" height="420">
+<g transform="scale(1.4)">
+ 
+ <g id="stem"><rect x="196" y="40" width="12" height="130" rx="6" fill="#2c6e57"/>
+  <path d="M208 42 Q250 52 246 92 Q232 70 208 74Z" fill="#2c6e57"/></g>
+ <g id="body"><path d="M60 170 Q52 100 120 92 Q196 84 212 150 Q228 222 150 236 Q70 248 60 170Z" fill="#4fb38a"/>
+  <path d="M84 150 Q90 110 128 106 Q100 120 96 152Z" fill="#86dcb7"/></g>
+ <ellipse cx="115" cy="160" rx="16" ry="19" fill="#fff"/><circle cx="119" cy="163" r="9" fill="#2d2440"/><circle cx="122" cy="159" r="3" fill="#fff"/>
+ <ellipse cx="170" cy="155" rx="13" ry="15" fill="#fff"/><circle cx="167" cy="158" r="7" fill="#2d2440"/><circle cx="169" cy="155" r="2.5" fill="#fff"/>
+ <path d="M98 132 L132 142" stroke="#2d2440" stroke-width="7" stroke-linecap="round"/><path d="M188 138 L158 146" stroke="#2d2440" stroke-width="7" stroke-linecap="round"/><path d="M120 200 Q145 186 170 200" fill="none" stroke="#2d2440" stroke-width="6" stroke-linecap="round"/><path d="M132 196 l4 8 l4 -9 M150 194 l4 9 l4 -8" fill="#fff" stroke="#2d2440" stroke-width="2"/>
+ <ellipse cx="98" cy="190" rx="11" ry="7" fill="#ffb3d1" opacity=".8"/><ellipse cx="185" cy="184" rx="10" ry="6" fill="#ffb3d1" opacity=".8"/>
+ <g id="feet" fill="#2c6e57"><ellipse cx="110" cy="240" rx="20" ry="10"/><ellipse cx="170" cy="238" rx="20" ry="10"/></g>
+ <g id="sour-notes" fill="none" stroke="#ff6b8b" stroke-width="4" stroke-linecap="round">
+  <path d="M250 120 l10 -6 l-4 12 l10 -4"/><path d="M30 100 l8 8 l-10 2 l8 8"/></g>
+ <path d="M92 104 L100 62 L122 88 L140 52 L158 86 L180 60 L184 102 Q140 92 92 104Z" fill="#ffd34d" stroke="#e0a800" stroke-width="3" stroke-linejoin="round"/><circle cx="140" cy="80" r="6" fill="#ff6b8b"/><g fill="#3a9a5b"><path d="M70 110 Q60 70 96 80 Q90 100 70 110Z"/><path d="M200 106 Q222 70 190 74 Q190 96 200 106Z"/></g>
+</g>
+</svg>
