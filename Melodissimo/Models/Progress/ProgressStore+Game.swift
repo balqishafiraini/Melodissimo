@@ -82,6 +82,20 @@ extension ProgressStore {
         return true
     }
 
+    // MARK: - Melody Rush
+
+    /// The best Melody Rush score.
+    var rushHighScore: Int { defaults.integer(forKey: "rush_highScore") }
+
+    /// Keeps the best score. Returns `true` when `score` is a new high score.
+    @discardableResult
+    func recordRushScore(_ score: Int) -> Bool {
+        guard score > rushHighScore else { return false }
+        defaults.set(score, forKey: "rush_highScore")
+        objectWillChange.send()
+        return true
+    }
+
     // MARK: - Stats (feed the achievements)
 
     /// Perform runs finished, over all songs.

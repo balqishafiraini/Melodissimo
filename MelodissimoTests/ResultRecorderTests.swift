@@ -146,3 +146,63 @@ final class ResultRecorderTests: XCTestCase {
         XCTAssertEqual(progress.songStars(songId), 3)
     }
 }
+
+final class RushRecordingTests: XCTestCase {
+
+    private var suiteName = ""
+    private var defaults: UserDefaults!
+    private var progress: ProgressStore!
+    private var recorder: ResultRecorder!
+
+    override func setUp() {
+        super.setUp()
+        suiteName = "RushRecordingTests-\(UUID().uuidString)"
+        defaults = UserDefaults(suiteName: suiteName)
+        progress = ProgressStore(defaults: defaults)
+        recorder = ResultRecorder(progress: progress, evaluateAchievements: { [] })
+    }
+
+    override func tearDown() {
+        defaults.removePersistentDomain(forName: suiteName)
+        super.tearDown()
+    }
+
+    private func rush(score: Int, combo: Int = 12) -> PlayResult {
+        PlayResult(request: PlayRequest(kind: .rush), didWin: false, stars: 0, score: score, accuracy: nil,
+                   maxCombo: combo, perfect: 0, great: 0, good: 0, miss: 0, wrong: 0)
+    }
+
+    func testTheFirstScoreIsAHighScore() {
+        XCTAssertEqual(progress.rushHighScore, 0)
+        let summary = recorder.record(rush(score: 240))
+        XCTAssertTrue(summary.isNewBest)
+        XCTAssertEqual(progress.rushHighScore, 240)
+        XCTAssertEqual(defaults.integer(forKey: "rush_highScore"), 240)
+    }
+
+    func testOnlyABetterScoreReplacesIt() {
+        recorder.record(rush(score: 500))
+        XCTAssertFalse(recorder.record(rush(score: 300)).isNewBest)
+        XCTAssertFalse(recorder.record(rush(score: 500)).isNewBest, "tying it isn't a new high score")
+        XCTAssertEqual(progress.rushHighScore, 500)
+        XCTAssertTrue(recorder.record(rush(score: 510)).isNewBest)
+        XCTAssertEqual(progress.rushHighScore, 510)
+    }
+
+    func testAZeroScoreIsNeverAHighScore() {
+        XCTAssertFalse(recorder.record(rush(score: 0)).isNewBest)
+        XCTAssertEqual(progress.rushHighScore, 0)
+    }
+
+    func testRushStillCountsForComboAndStreak() {
+        recorder.record(rush(score: 100, combo: 17))
+        XCTAssertEqual(progress.bestCombo, 17)
+        XCTAssertEqual(progress.currentStreak, 1)
+    }
+
+    func testRushDoesNotTouchSongOrClassicProgress() {
+        recorder.record(rush(score: 100))
+        XCTAssertEqual(progress.statSongsPerformed, 0)
+        XCTAssertEqual(progress.highestUnlockedLevel, 0)
+    }
+}

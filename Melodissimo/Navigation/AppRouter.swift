@@ -31,6 +31,8 @@ enum Route: Hashable {
     /// DEBUG tools: author a rhythm chart by playing along, then preview it in Listen mode.
     case chartRecorder
     case chartPreview(SongChart)
+    /// The hub for playing anything outside the campaign: songs, classic levels, Echo, Melody Rush.
+    case freePlay
 }
 
 /// Drives the app's single `NavigationStack`. Screens push routes and pop back

@@ -40,6 +40,11 @@ struct StageResultView: View {
         }
     }
 
+    private var isRush: Bool {
+        if case .rush = result.request.kind { return true }
+        return false
+    }
+
     private var isFullCombo: Bool {
         isSong && result.accuracy != nil && result.miss == 0 && result.wrong == 0
     }
@@ -63,13 +68,20 @@ struct StageResultView: View {
                         .foregroundColor(Color.darkGreen)
                         .lineLimit(1)
 
-                    if !isSong {
+                    if isRush {
+                        // Rush has no winning, only how far you got.
+                        Text("Game over")
+                            .font(.custom("BalooDa-Regular", size: 28))
+                            .foregroundColor(Color.darkGreen)
+                    } else if !isSong {
                         Text(result.didWin ? "Victory!" : "Try again!")
                             .font(.custom("BalooDa-Regular", size: 28))
                             .foregroundColor(Color.darkGreen)
                     }
 
-                    starsRow
+                    if !isRush {
+                        starsRow
+                    }
                     badges
                     statsGrid
                     if isSong {
@@ -110,7 +122,7 @@ struct StageResultView: View {
         if rewards.isNewBest || isFullCombo {
             HStack(spacing: 12) {
                 if rewards.isNewBest {
-                    badge("New best!", color: Color.green)
+                    badge(isRush ? "NEW HIGH SCORE" : "New best!", color: Color.green)
                 }
                 if isFullCombo {
                     badge("FULL COMBO", color: Color.red)
@@ -136,6 +148,9 @@ struct StageResultView: View {
                 stat("Accuracy", "\(Int(accuracy.rounded()))%")
             }
             stat("Max combo", "\(result.maxCombo)")
+            if isRush {
+                stat("High score", "\(ProgressStore.shared.rushHighScore)")
+            }
         }
     }
 
@@ -222,8 +237,11 @@ struct StageResultView: View {
 
     // MARK: Animation
 
-    /// Stars appear one by one; three stars also fire the confetti.
+    /// Stars appear one by one; three stars also fire the confetti. A new Rush high score gets the confetti too.
     private func popInStars() {
+        if isRush, rewards.isNewBest {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { confettiCounter += 1 }
+        }
         guard result.stars > 0 else { return }
         for star in 1...result.stars {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4 + 0.45 * Double(star)) {

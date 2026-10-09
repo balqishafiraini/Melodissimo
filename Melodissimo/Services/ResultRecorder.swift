@@ -44,7 +44,9 @@ struct ResultRecorder {
             }
         case .classic(let levelNo):
             recordClassic(result, levelNo: levelNo)
-        case .battle, .echo, .rush, .daily:
+        case .rush:
+            summary.isNewBest = progress.recordRushScore(result.score)
+        case .battle, .echo, .daily:
             break   // each mode records its own results in its own task
         }
 

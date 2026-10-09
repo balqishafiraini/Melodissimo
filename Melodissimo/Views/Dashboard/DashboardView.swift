@@ -44,6 +44,18 @@ struct DashboardView: View {
                     .padding(.trailing)
 
                     Button {
+                        router.push(.freePlay)
+                    } label: {
+                        Text("Free Play")
+                            .frame(width: 200, height: 80)
+                            .background(Color.yellow)
+                            .foregroundColor(Color.darkGreen)
+                            .cornerRadius(20)
+                            .font(Font.headline)
+                    }
+                    .padding(.trailing)
+
+                    Button {
                         // Finding the key window scene
                         if let keyWindowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                             // Accessing the key window from the window scene
@@ -176,6 +188,8 @@ struct DashboardView: View {
             PlayDestinationView(request: request)
         case .result(let result, let rewards):
             StageResultView(result: result, rewards: rewards)
+        case .freePlay:
+            FreePlayView()
         case .chartRecorder:
             #if DEBUG
             ChartRecorderView()

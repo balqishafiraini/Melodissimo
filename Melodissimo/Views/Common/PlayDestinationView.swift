@@ -8,6 +8,8 @@ import SwiftUI
 /// Maps a `PlayRequest` to the screen that plays it. Each play mode adds its case here.
 struct PlayDestinationView: View {
     let request: PlayRequest
+    /// Melody Rush is different every time. The seed is chosen once per screen so a re-render can't change the notes.
+    @State private var rushSeed = UInt64.random(in: 1...UInt64.max)
 
     var body: some View {
         switch request.kind {
@@ -28,7 +30,9 @@ struct PlayDestinationView: View {
             } else {
                 UnavailableModeView()
             }
-        case .echo, .rush, .daily:
+        case .rush:
+            BattleView(request: request, config: .rush(seed: rushSeed))
+        case .echo, .daily:
             UnavailableModeView()
         }
     }
