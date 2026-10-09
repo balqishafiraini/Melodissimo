@@ -21,10 +21,10 @@ struct HelpPageView: View {
             .text(NSLocalizedString("- For Song Quiz feature, you must pressed the button SEQUENTIALLY from the numeral notation song from the song you've selected. If you're not sure about what button you've pressed, click 'Reset' button and you must start it all over again.", comment: ""))
         ]),
         ExpandableSectionData(title: NSLocalizedString("Why my tiles won’t make sound?", comment: ""), items: [
-            .text(NSLocalizedString("Make sure you've pressed it at least 2 seconds.", comment: "")),
+            .text(NSLocalizedString("Make sure the volume of your iPad is turned up. Each tile plays as soon as you touch it.", comment: "")),
         ]),
         ExpandableSectionData(title: NSLocalizedString("Can I pressed more than one tiles in one time?", comment: ""), items: [
-            .text(NSLocalizedString("Unfortunately, you can't do that right now. But we will make sure to update that feature in the future app update. Please stay tune with us.", comment: "")),
+            .text(NSLocalizedString("Yes! You can press several tiles at the same time with different fingers, and you can also slide your finger from one tile to the next.", comment: "")),
         ]),
         ExpandableSectionData(title: NSLocalizedString("How to read the numeral notation in Song feature?", comment: ""), items: [
             .text(NSLocalizedString("Almost all of the number that shown in numeral notation song is same with the keyboard. However, you'll see some differences, there are:", comment: "")),
