@@ -26,7 +26,7 @@ struct StoryCardView: View {
 
             VStack(spacing: 24) {
                 HStack(alignment: .center, spacing: 28) {
-                    AlpanicaView(mood: alpanicaMood, hopTrigger: hop, height: 200)
+                    AlpanicaView(mood: alpanicaMood, outfit: .equipped, hopTrigger: hop, height: 200, keepsOutfit: true)
                         .frame(width: 200)
 
                     VStack(alignment: .leading, spacing: 14) {

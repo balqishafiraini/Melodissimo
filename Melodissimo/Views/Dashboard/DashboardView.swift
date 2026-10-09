@@ -77,6 +77,9 @@ struct DashboardView: View {
             #endif
 
             CoinBadge()
+            iconButton("bag.fill", label: "Shop", fill: Color.yellow, tint: Color.darkGreen) {
+                router.push(.shop)
+            }
 
             Spacer()
 
@@ -138,7 +141,7 @@ struct DashboardView: View {
             router.push(.campaignMap)
         } label: {
             HStack(spacing: 30) {
-                AlpanicaView(mood: .idle, hopTrigger: 0, height: 210)
+                AlpanicaView(mood: .idle, outfit: .equipped, hopTrigger: 0, height: 210)
                     .frame(width: 230)
 
                 VStack(alignment: .leading, spacing: 10) {
@@ -234,6 +237,8 @@ struct DashboardView: View {
             CampaignMapView()
         case .learnHub:
             LearnHubView()
+        case .shop:
+            ShopView()
         case .chartRecorder:
             #if DEBUG
             ChartRecorderView()

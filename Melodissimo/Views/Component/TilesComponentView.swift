@@ -63,10 +63,12 @@ private struct KeyTile: View {
     let isPressed: Bool
     /// A tint that wins over the pressed look: a hint glow, a correct (green) or wrong (red) flash.
     let highlight: Color?
+    /// The colour of a pressed key (the equipped keyboard skin's).
+    let pressedColor: Color
 
     private var keyColor: Color {
         if let highlight { return highlight }
-        if isPressed { return .gray }
+        if isPressed { return pressedColor }
         return isBlack ? .black : .white
     }
 
@@ -209,11 +211,13 @@ struct PianoKeyboard: View {
     @State private var activeTileIDs: Set<Int> = []
     /// How many fingers are on each key, so a key stays down until the last one lifts.
     @State private var fingersOnKey: [Int: Int] = [:]
+    /// The equipped keyboard skin, read once when the keyboard appears.
+    @State private var skin = KeyboardSkin.equipped
 
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 30)
-                .fill(Color.navy)
+                .fill(skin.body)
                 .padding()
                 .frame(width: screenWidth, height: metrics.containerHeight)
                 .cornerRadius(50)
@@ -275,7 +279,8 @@ struct PianoKeyboard: View {
                        showLabel: showLabels,
                        metrics: metrics,
                        isPressed: activeTileIDs.contains(id) || pressedFromOutside.contains(id),
-                       highlight: highlights[id])
+                       highlight: highlights[id],
+                       pressedColor: skin.pressed)
     }
 
     // MARK: Touch handling

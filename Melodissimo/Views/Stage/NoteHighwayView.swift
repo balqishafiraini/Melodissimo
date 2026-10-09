@@ -21,6 +21,9 @@ struct NoteHighwayView: View {
     /// Solemn songs show a quiet check mark for a hit instead of judgment words, and nothing for a miss.
     var isSolemn = false
 
+    /// The equipped falling-note skin, read once when the stage opens.
+    private let noteSkin = NoteSkin.equipped
+
     /// How long a judgment popup rises and fades.
     static let popupDuration = 0.5
 
@@ -153,8 +156,11 @@ struct NoteHighwayView: View {
         let rect = HighwayGeometry.noteRect(noteTime: note.time, duration: note.duration,
                                             songTime: songTime, approachTime: engine.approachTime,
                                             hitY: hitY, keyFrame: keyFrame, highwayOriginX: originX)
-        let isBlack = NoteCatalog.note(note.keyId).isBlack
-        let fill: Color = note.judgment == .miss ? Color.gray.opacity(0.55) : (isBlack ? .navy : .yellow)
+        let key = NoteCatalog.note(note.keyId)
+        let isBlack = key.isBlack
+        let fill: Color = note.judgment == .miss
+            ? Color.gray.opacity(0.55)
+            : (noteSkin.color(semitone: key.semitone, isBlack: isBlack) ?? (isBlack ? .navy : .yellow))
         let shape = Path(roundedRect: rect, cornerRadius: 10)
         context.fill(shape, with: .color(fill))
         context.stroke(shape, with: .color(Color.white.opacity(0.85)), lineWidth: 2)

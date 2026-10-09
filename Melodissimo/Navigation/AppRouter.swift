@@ -37,6 +37,8 @@ enum Route: Hashable {
     case campaignMap
     /// The lessons: notes, songs and the skill test.
     case learnHub
+    /// Spend coins on keyboard skins, note skins and outfits.
+    case shop
 }
 
 /// Drives the app's single `NavigationStack`. Screens push routes and pop back

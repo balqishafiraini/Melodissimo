@@ -78,7 +78,8 @@ struct StageResultView: View {
 
             HStack(spacing: 32) {
                 // She hops each time a star lands.
-                AlpanicaView(mood: result.stars > 0 ? .happy : .sad, hopTrigger: shownStars, height: 380)
+                AlpanicaView(mood: result.stars > 0 ? .happy : .sad, outfit: .equipped, hopTrigger: shownStars, height: 380,
+                             keepsOutfit: true)
                     .frame(maxWidth: .infinity)
 
                 VStack(spacing: 18) {

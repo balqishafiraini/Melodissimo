@@ -189,3 +189,13 @@
 "Achievements" = "Pencapaian";
 "Settings" = "Pengaturan";
 "Coins earned" = "Koin didapat";
+"Shop" = "Toko";
+"Keyboard" = "Tuts";
+"Outfit" = "Busana";
+"Default" = "Bawaan";
+"Buy" = "Beli";
+"Equip" = "Pakai";
+"Equipped" = "Dipakai";
+"Buy %@?" = "Beli %@?";
+"It costs %lld coins." = "Harganya %lld koin.";
+"Not enough coins" = "Koin belum cukup";

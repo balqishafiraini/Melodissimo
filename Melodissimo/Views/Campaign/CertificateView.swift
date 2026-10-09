@@ -74,7 +74,7 @@ struct CertificateView: View {
         CertificateCard(stars: progress.tourStars,
                         maxStars: CampaignCatalog.allStages.count * 3,
                         date: progress.tourCompletedAt ?? Date(),
-                        outfit: .none)
+                        outfit: .equipped)
     }
 
     var body: some View {

@@ -123,7 +123,7 @@ struct BattleView: View {
         GeometryReader { geo in
             let spriteHeight = min(300, geo.size.height * 0.85)
             HStack(alignment: .bottom, spacing: 0) {
-                AlpanicaView(mood: mood, hopTrigger: viewModel.correctCount, height: spriteHeight)
+                AlpanicaView(mood: mood, outfit: .equipped, hopTrigger: viewModel.correctCount, height: spriteHeight)
                     .frame(maxWidth: .infinity)
 
                 questionBubble(height: spriteHeight * 0.7)

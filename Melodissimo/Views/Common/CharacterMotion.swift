@@ -198,9 +198,19 @@ struct AlpanicaView<T: Equatable>: View {
     var outfit: AlpanicaOutfit = .none
     var hopTrigger: T
     var height: CGFloat = 260
+    /// The happy and sad poses have no outfit art, so by default they replace the outfit. Screens that
+    /// stay open for a while (results, story, Home) set this to keep the outfit on in those moods.
+    var keepsOutfit = false
+
+    private var artName: String {
+        if keepsOutfit, outfit != .none, mood == .happy || mood == .sad {
+            return outfit.assetName
+        }
+        return mood.assetName(outfit: outfit)
+    }
 
     var body: some View {
-        Image(mood.assetName(outfit: outfit))
+        Image(artName)
             .resizable()
             .scaledToFit()
             .frame(height: height)

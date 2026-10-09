@@ -237,7 +237,7 @@ private struct ChapterPanel: View {
 
             // Alpanica waits on the stage the player is up to and hops over when it changes.
             if current.chapter == chapter.number, let offset = stages.firstIndex(where: { $0.id == current.id }) {
-                AlpanicaView(mood: .idle, outfit: .none, hopTrigger: current.id, height: 110)
+                AlpanicaView(mood: .idle, outfit: .equipped, hopTrigger: current.id, height: 110)
                     .position(x: points[offset].x, y: points[offset].y - (current.isLandmark ? 118 : 100))
                     .animation(.spring(response: 0.6, dampingFraction: 0.6), value: current.id)
                     .allowsHitTesting(false)
