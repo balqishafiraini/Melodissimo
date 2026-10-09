@@ -44,6 +44,18 @@ struct DashboardView: View {
                     .padding(.trailing)
 
                     Button {
+                        router.push(.campaignMap)
+                    } label: {
+                        Text("Nusantara Tour")
+                            .frame(width: 260, height: 80)
+                            .background(Color.yellow)
+                            .foregroundColor(Color.darkGreen)
+                            .cornerRadius(20)
+                            .font(Font.headline)
+                    }
+                    .padding(.trailing)
+
+                    Button {
                         router.push(.freePlay)
                     } label: {
                         Text("Free Play")
@@ -190,6 +202,8 @@ struct DashboardView: View {
             StageResultView(result: result, rewards: rewards)
         case .freePlay:
             FreePlayView()
+        case .campaignMap:
+            CampaignMapView()
         case .chartRecorder:
             #if DEBUG
             ChartRecorderView()

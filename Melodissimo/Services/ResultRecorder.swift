@@ -56,6 +56,16 @@ struct ResultRecorder {
             break   // each mode records its own results in its own task
         }
 
+        // A campaign stage keeps the best stars of any play that was launched from the map.
+        if let stageId = result.request.campaignStageId {
+            let gained = progress.recordStageStars(stageId, stars: result.stars)
+            if case .song = result.request.kind {
+                // Songs already report their own best-star gain.
+            } else {
+                summary.newStars = gained
+            }
+        }
+
         progress.recordCombo(result.maxCombo)
         progress.registerPlayToday()
         summary.newAchievements = evaluateAchievements()

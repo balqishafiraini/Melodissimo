@@ -222,22 +222,25 @@ struct StageResultView: View {
             resultButton("Retry", filled: false) {
                 router.replaceTop(with: .play(result.request))
             }
-            switch result.request.kind {
-            case .song:
-                resultButton("Song menu", filled: true) { router.pop(to: .songRepositoryQuiz) }
-            case .classic:
-                resultButton("Levels", filled: true) { router.pop(to: .notationLevelMenu) }
-            default:
-                resultButton("Back", filled: true) { router.pop() }
-            }
-            if case .classic(let levelNo) = result.request.kind, result.didWin, levelNo < 100 {
-                resultButton("Next level", filled: true) {
-                    router.replaceTop(with: .play(PlayRequest(kind: .classic(levelNo: levelNo + 1))))
-                }
-            }
             if result.request.campaignStageId != nil {
-                // Goes back to the campaign map once that exists (Phase 5).
-                resultButton("Next", filled: true) {}
+                // A campaign stage always goes back to the map, which moves Alpanica along.
+                resultButton(result.didWin ? "Next" : "Map", filled: true) {
+                    router.pop(to: .campaignMap)
+                }
+            } else {
+                switch result.request.kind {
+                case .song:
+                    resultButton("Song menu", filled: true) { router.pop(to: .songRepositoryQuiz) }
+                case .classic:
+                    resultButton("Levels", filled: true) { router.pop(to: .notationLevelMenu) }
+                default:
+                    resultButton("Back", filled: true) { router.pop() }
+                }
+                if case .classic(let levelNo) = result.request.kind, result.didWin, levelNo < 100 {
+                    resultButton("Next level", filled: true) {
+                        router.replaceTop(with: .play(PlayRequest(kind: .classic(levelNo: levelNo + 1))))
+                    }
+                }
             }
         }
     }

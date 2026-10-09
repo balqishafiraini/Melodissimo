@@ -315,7 +315,10 @@ final class CampaignProgressTests: XCTestCase {
     }
 
     func testInjectedDefaultsDoNotTouchTheStandardStore() {
+        // Tests run inside the app, so the standard store may already hold real progress.
+        let before = UserDefaults.standard.integer(forKey: "stage_stars_c1-01")
         store.recordStageStars("c1-01", stars: 3)
-        XCTAssertEqual(UserDefaults.standard.integer(forKey: "stage_stars_c1-01"), 0)
+        XCTAssertEqual(UserDefaults.standard.integer(forKey: "stage_stars_c1-01"), before)
+        XCTAssertEqual(store.stageStars("c1-01"), 3)
     }
 }

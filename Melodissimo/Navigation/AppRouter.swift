@@ -33,6 +33,8 @@ enum Route: Hashable {
     case chartPreview(SongChart)
     /// The hub for playing anything outside the campaign: songs, classic levels, Echo, Melody Rush.
     case freePlay
+    /// The Nusantara Tour map.
+    case campaignMap
 }
 
 /// Drives the app's single `NavigationStack`. Screens push routes and pop back

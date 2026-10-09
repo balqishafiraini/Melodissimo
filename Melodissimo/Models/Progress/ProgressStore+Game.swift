@@ -159,13 +159,15 @@ extension ProgressStore {
         defaults.integer(forKey: stageStarsKey(stageId))
     }
 
-    /// Stores stars for a stage, keeping only the best.
-    func recordStageStars(_ stageId: String, stars: Int) {
+    /// Stores stars for a stage, keeping only the best. Returns how many stars were gained over the old best.
+    @discardableResult
+    func recordStageStars(_ stageId: String, stars: Int) -> Int {
         let clamped = min(max(stars, 0), 3)
-        if clamped > stageStars(stageId) {
-            defaults.set(clamped, forKey: stageStarsKey(stageId))
-            objectWillChange.send()
-        }
+        let previous = stageStars(stageId)
+        guard clamped > previous else { return 0 }
+        defaults.set(clamped, forKey: stageStarsKey(stageId))
+        objectWillChange.send()
+        return clamped - previous
     }
 
     /// Total stars over a chapter's stages.
