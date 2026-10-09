@@ -9,7 +9,13 @@ import Foundation
 import AVFoundation
 import AVKit
 
-var player: AVAudioPlayer?
+// Reference to the player that is currently sounding, so `stopSound()` can halt it.
+private var player: AVAudioPlayer?
+
+// Cache of preloaded players keyed by note name. Each note's audio file is decoded
+// from disk only once and reused on every subsequent tap, so tile presses stay
+// instant instead of re-decoding the m4a each time.
+private var playerCache: [String: AVAudioPlayer] = [:]
 
 private var isAudioSessionConfigured = false
 
@@ -26,21 +32,36 @@ private func configureAudioSessionIfNeeded() {
     }
 }
 
-func playSound (key: String) {
-    configureAudioSessionIfNeeded()
-    let url = Bundle.main.url(forResource: key, withExtension: "m4a")
-    guard url != nil else {
-        return
+// Return a cached player for the note, creating and preparing it on first use.
+private func cachedPlayer(for key: String) -> AVAudioPlayer? {
+    if let existing = playerCache[key] {
+        return existing
+    }
+    guard let url = Bundle.main.url(forResource: key, withExtension: "m4a") else {
+        return nil
     }
     do {
-        player = try AVAudioPlayer(contentsOf: url!)
-        player?.play()
+        let newPlayer = try AVAudioPlayer(contentsOf: url)
+        newPlayer.prepareToPlay()
+        playerCache[key] = newPlayer
+        return newPlayer
     } catch {
         print("\(error)")
+        return nil
     }
 }
 
-func stopSound() {
-        // Stop AVAudioPlayer
-    player?.stop()
+func playSound(key: String) {
+    configureAudioSessionIfNeeded()
+    guard let notePlayer = cachedPlayer(for: key) else {
+        return
     }
+    notePlayer.currentTime = 0
+    notePlayer.play()
+    player = notePlayer
+}
+
+func stopSound() {
+    // Stop the player that is currently sounding.
+    player?.stop()
+}

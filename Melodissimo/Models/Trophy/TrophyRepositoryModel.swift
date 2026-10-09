@@ -13,7 +13,7 @@ class TrophyRepositoryModel: ObservableObject {
     
     init() {
         // Initialize with your available trophies
-        trophies = LevelFeederModel().levels
+        trophies = LevelFeederModel.shared.levels
             .filter({ $0.levelCategory == "song" })
             .map({ TrophyModel(name: $0.songTitle ?? "", isEarned: false) })
         

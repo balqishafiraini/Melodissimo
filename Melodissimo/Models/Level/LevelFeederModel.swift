@@ -8,6 +8,11 @@
 import Foundation
 
 struct LevelFeederModel {
+    // Building the full level catalog is expensive (100 notation levels plus
+    // UserDefaults reads, songs, and pre/post-play generation). Build it once and
+    // reuse the shared instance everywhere instead of rebuilding on every access.
+    static let shared = LevelFeederModel()
+
     let notationQuizLevels: [LevelModel] = {
         var generatedLevels: [LevelModel] = []
         var idMappings: [String: Int] = [

@@ -8,6 +8,11 @@
 import Foundation
 import SwiftUI
 
+/// The device screen width, read once. The tile layouts reference this many times
+/// per render; caching it avoids repeatedly hitting `UIScreen.main` (which is also
+/// deprecated) on every layout pass. The game runs in portrait, so the width is stable.
+let screenWidth = UIScreen.main.bounds.width
+
 extension View {
     /// A convenience method for applying TouchDownUpEventModifier.
     func onTouchDownUp(pressed: @escaping ((Bool) -> Void)) -> some View {

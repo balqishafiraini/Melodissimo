@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SongRepositoryLearnView: View {
     
-    var levelFeeder = LevelFeederModel()
+    var levelFeeder = LevelFeederModel.shared
 
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject private var router: AppRouter

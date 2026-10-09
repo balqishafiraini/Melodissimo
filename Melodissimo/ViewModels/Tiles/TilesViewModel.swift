@@ -139,7 +139,7 @@ class TilesViewModel: ObservableObject {
     
     func getLevel(currentLevelNo: Int, currentLevelCat: String) {
         //cara 1
-        currentLevel = LevelFeederModel().levels.first(where: {$0.levelNo == currentLevelNo && $0.levelCategory == currentLevelCat})
+        currentLevel = LevelFeederModel.shared.levels.first(where: {$0.levelNo == currentLevelNo && $0.levelCategory == currentLevelCat})
         
         //        print("Current Level: \(String(describing: currentLevel))")
         
@@ -148,7 +148,7 @@ class TilesViewModel: ObservableObject {
     
     func getSongTitle(songTitle: String) {
         let unwrappedSongTitle = songTitle 
-        currentLevel = LevelFeederModel().levels.first(where: { $0.songTitle == unwrappedSongTitle })
+        currentLevel = LevelFeederModel.shared.levels.first(where: { $0.songTitle == unwrappedSongTitle })
         print("Song Title: \(unwrappedSongTitle)")
         resetAll()
     }

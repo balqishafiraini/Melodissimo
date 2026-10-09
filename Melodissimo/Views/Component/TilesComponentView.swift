@@ -31,7 +31,7 @@ struct WhiteTilesQuizButton: View {
         .buttonStyle(WhiteTilesStyle(isPressed: $buttonPressed))
         .onTouch(limitToBounds: false) { loc in
             //Using UIScreen.main.bound.width bcs the width is dynamic
-            if loc.x > UIScreen.main.bounds.width*0.048 || loc.x < 0 || loc.y > 350 || loc.y < 0 {
+            if loc.x > screenWidth*0.048 || loc.x < 0 || loc.y > 350 || loc.y < 0 {
                 buttonPressed = false
             } else {
                 buttonPressed = true
@@ -69,7 +69,7 @@ struct WhiteTilesQuizButtonMini: View {
         .buttonStyle(WhiteTilesStyleMini(isPressed: $buttonPressed))
         .onTouch(limitToBounds: false) { loc in
             //Using UIScreen.main.bound.width bcs the width is dynamic
-            if loc.x > UIScreen.main.bounds.width*0.048 || loc.x < 0 || loc.y > 200 || loc.y < 0 {
+            if loc.x > screenWidth*0.048 || loc.x < 0 || loc.y > 200 || loc.y < 0 {
                 buttonPressed = false
             } else {
                 buttonPressed = true
@@ -102,7 +102,7 @@ struct WhiteTilesButtonMini: View {
         .buttonStyle(WhiteTilesStyleMini(isPressed: $buttonPressed))
         .onTouch(limitToBounds: false) { loc in
             //Using UIScreen.main.bound.width bcs the width is dynamic
-            if loc.x > UIScreen.main.bounds.width*0.048 || loc.x < 0 || loc.y > 200 || loc.y < 0 {
+            if loc.x > screenWidth*0.048 || loc.x < 0 || loc.y > 200 || loc.y < 0 {
                 buttonPressed = false
             } else {
                 buttonPressed = true
@@ -134,7 +134,7 @@ struct BlackTilesButtonMini: View {
         .buttonStyle(BlackTilesStyleMini(isPressed: $buttonPressed))
         .onTouch(limitToBounds: false) { loc in
             //Using UIScreen.main.bound.width bcs the width is dynamic
-            if loc.x > UIScreen.main.bounds.width*0.048 || loc.x < 0 || loc.y > 200 || loc.y < 0 {
+            if loc.x > screenWidth*0.048 || loc.x < 0 || loc.y > 200 || loc.y < 0 {
                 buttonPressed = false
             } else {
                 buttonPressed = true
@@ -166,7 +166,7 @@ struct WhiteTilesButton: View {
         .buttonStyle(WhiteTilesStyle(isPressed: $buttonPressed))
         .onTouch(limitToBounds: false) { loc in
             //Using UIScreen.main.bound.width bcs the width is dynamic
-            if loc.x > UIScreen.main.bounds.width*0.048 || loc.x < 0 || loc.y > 350 || loc.y < 0 {
+            if loc.x > screenWidth*0.048 || loc.x < 0 || loc.y > 350 || loc.y < 0 {
                 buttonPressed = false
             } else {
                 buttonPressed = true
@@ -203,7 +203,7 @@ struct BlackTilesQuizButton: View {
         .buttonStyle(BlackTilesStyle(isPressed: $buttonPressed))
         .onTouch(limitToBounds: false) { loc in
             //Using UIScreen.main.bound.width bcs the width is dynamic
-            if loc.x > UIScreen.main.bounds.width*0.042 || loc.x < 0 || loc.y > 220 || loc.y < 0 {
+            if loc.x > screenWidth*0.042 || loc.x < 0 || loc.y > 220 || loc.y < 0 {
                 buttonPressed = false
             } else {
                 buttonPressed = true
@@ -241,7 +241,7 @@ struct BlackTilesQuizButtonMini: View {
         .buttonStyle(BlackTilesStyleMini(isPressed: $buttonPressed))
         .onTouch(limitToBounds: false) { loc in
             //Using UIScreen.main.bound.width bcs the width is dynamic
-            if loc.x > UIScreen.main.bounds.width*0.042 || loc.x < 0 || loc.y > 120 || loc.y < 0 {
+            if loc.x > screenWidth*0.042 || loc.x < 0 || loc.y > 120 || loc.y < 0 {
                 buttonPressed = false
             } else {
                 buttonPressed = true
@@ -275,7 +275,7 @@ struct BlackTilesButton: View {
         .buttonStyle(BlackTilesStyle(isPressed: $buttonPressed))
         .onTouch(limitToBounds: false) { loc in
             //Using UIScreen.main.bound.width bcs the width is dynamic
-            if loc.x > UIScreen.main.bounds.width*0.042 || loc.x < 0 || loc.y > 220 || loc.y < 0 {
+            if loc.x > screenWidth*0.042 || loc.x < 0 || loc.y > 220 || loc.y < 0 {
                 buttonPressed = false
             } else {
                 buttonPressed = true
@@ -300,7 +300,7 @@ struct PianikaStackLearning: View {
             RoundedRectangle(cornerRadius: 30)
                 .fill(Color.navy)
                 .padding()
-                .frame(width: UIScreen.main.bounds.size.width, height: 450)
+                .frame(width: screenWidth, height: 450)
                 .cornerRadius(50)
             
             HStack (spacing: 2){
@@ -335,12 +335,12 @@ struct PianikaStackLearning: View {
                 WhiteTilesButton (keySound: "c4", labelNot: "1˙˙")
                 
             }
-            .frame(width: UIScreen.main.bounds.size.width, height: 450)
+            .frame(width: screenWidth, height: 450)
             
             
             
             HStack{
-                HStack(spacing: UIScreen.main.bounds.width*0.06) {
+                HStack(spacing: screenWidth*0.06) {
                     HStack {
                         BlackTilesButton (keySound: "f1s", labelNot: "4.#")
                         BlackTilesButton (keySound: "g1s", labelNot: "5.#")
@@ -370,9 +370,9 @@ struct PianikaStackLearning: View {
                     }
                 }
             }
-            .frame(width: UIScreen.main.bounds.size.width*0.88, height: 350, alignment: .topLeading)
+            .frame(width: screenWidth*0.88, height: 350, alignment: .topLeading)
         }
-        .frame(width: UIScreen.main.bounds.size.width, height: 450, alignment: .topLeading)
+        .frame(width: screenWidth, height: 450, alignment: .topLeading)
         .padding()
     }
     
@@ -387,7 +387,7 @@ struct PianikaStackLearningMini: View {
             RoundedRectangle(cornerRadius: 30)
                 .fill(Color.navy)
                 .padding()
-                .frame(width: UIScreen.main.bounds.size.width, height: 300)
+                .frame(width: screenWidth, height: 300)
                 .cornerRadius(50)
             
             HStack (spacing: 2){
@@ -422,12 +422,12 @@ struct PianikaStackLearningMini: View {
                 WhiteTilesButtonMini (keySound: "c4", labelNot: "1˙˙")
                 
             }
-            .frame(width: UIScreen.main.bounds.size.width, height: 300)
+            .frame(width: screenWidth, height: 300)
             
             
             
             HStack{
-                HStack(spacing: UIScreen.main.bounds.width*0.06) {
+                HStack(spacing: screenWidth*0.06) {
                     HStack {
                         BlackTilesButtonMini (keySound: "f1s", labelNot: "4.#")
                         BlackTilesButtonMini (keySound: "g1s", labelNot: "5.#")
@@ -457,9 +457,9 @@ struct PianikaStackLearningMini: View {
                     }
                 }
             }
-            .frame(width: UIScreen.main.bounds.size.width*0.88, height: 200, alignment: .topLeading)
+            .frame(width: screenWidth*0.88, height: 200, alignment: .topLeading)
         }
-        .frame(width: UIScreen.main.bounds.size.width, height: 300, alignment: .topLeading)
+        .frame(width: screenWidth, height: 300, alignment: .topLeading)
         .padding()
     }
     
@@ -487,7 +487,7 @@ struct PianikaStackQuiz: View {
             RoundedRectangle(cornerRadius: 30)
                 .fill(Color.navy)
                 .padding()
-                .frame(width: UIScreen.main.bounds.size.width, height: 450)
+                .frame(width: screenWidth, height: 450)
                 .cornerRadius(50)
             
             HStack (spacing: 2){
@@ -522,12 +522,12 @@ struct PianikaStackQuiz: View {
                 WhiteTilesQuizButton (keySound: "c4", id: 19)
                 
             }
-            .frame(width: UIScreen.main.bounds.size.width, height: 450)
+            .frame(width: screenWidth, height: 450)
             
             
             
             HStack{
-                HStack(spacing: UIScreen.main.bounds.width*0.06) {
+                HStack(spacing: screenWidth*0.06) {
                     HStack {
                         BlackTilesQuizButton (keySound: "f1s", id: 20)
                         BlackTilesQuizButton (keySound: "g1s", id: 21)
@@ -557,9 +557,9 @@ struct PianikaStackQuiz: View {
                     }
                 }
             }
-            .frame(width: UIScreen.main.bounds.size.width*0.88, height: 350, alignment: .topLeading)
+            .frame(width: screenWidth*0.88, height: 350, alignment: .topLeading)
         }
-        .frame(width: UIScreen.main.bounds.size.width, height: 450, alignment: .topLeading)
+        .frame(width: screenWidth, height: 450, alignment: .topLeading)
         .padding()
         .environmentObject(viewModel)
         
@@ -586,7 +586,7 @@ struct PianikaStackQuizMini: View {
             RoundedRectangle(cornerRadius: 30)
                 .fill(Color.navy)
                 .padding()
-                .frame(width: UIScreen.main.bounds.size.width, height: 300)
+                .frame(width: screenWidth, height: 300)
                 .cornerRadius(50)
             
             HStack (spacing: 2){
@@ -621,12 +621,12 @@ struct PianikaStackQuizMini: View {
                 WhiteTilesQuizButtonMini (keySound: "c4", id: 19)
                 
             }
-            .frame(width: UIScreen.main.bounds.size.width, height: 300)
+            .frame(width: screenWidth, height: 300)
             
             
             
             HStack{
-                HStack(spacing: UIScreen.main.bounds.width*0.06) {
+                HStack(spacing: screenWidth*0.06) {
                     HStack {
                         BlackTilesQuizButtonMini (keySound: "f1s", id: 20)
                         BlackTilesQuizButtonMini (keySound: "g1s", id: 21)
@@ -656,9 +656,9 @@ struct PianikaStackQuizMini: View {
                     }
                 }
             }
-            .frame(width: UIScreen.main.bounds.size.width*0.88, height: 200, alignment: .topLeading)
+            .frame(width: screenWidth*0.88, height: 200, alignment: .topLeading)
         }
-        .frame(width: UIScreen.main.bounds.size.width, height: 300, alignment: .topLeading)
+        .frame(width: screenWidth, height: 300, alignment: .topLeading)
         .environmentObject(viewModel)
         
     }

@@ -11,7 +11,7 @@ struct SongRepositoryQuizView: View {
 
     @EnvironmentObject private var router: AppRouter
 
-    var levelFeeder = LevelFeederModel()
+    var levelFeeder = LevelFeederModel.shared
     var trophyRepository = TrophyRepositoryModel()
 
     var filteredSongLevels: [LevelModel] {
