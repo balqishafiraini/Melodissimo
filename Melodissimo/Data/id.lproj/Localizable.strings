@@ -48,4 +48,12 @@
 "Finished!" = "Selesai!";
 "Retry" = "Ulangi";
 "Coming soon" = "Segera hadir";
-
+"Paused" = "Jeda";
+"Resume" = "Lanjutkan";
+"Restart" = "Mulai ulang";
+"Quit" = "Keluar";
+"Perfect!" = "Sempurna!";
+"Great" = "Bagus";
+"Good" = "Baik";
+"Miss" = "Meleset";
+"Pause" = "Jeda";

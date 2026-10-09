@@ -16,6 +16,11 @@ struct NoteHighwayView: View {
     /// Key id → frame in window coordinates, reported by `PianoKeyboard`.
     let keyFrames: [Int: CGRect]
     var labelsOnNotes = true
+    /// Rising "Perfect!" / "Great" / "Good" / "Miss" popups. Only Perform mode judges, so other modes never show them.
+    var showsPopups = true
+
+    /// How long a judgment popup rises and fades.
+    static let popupDuration = 0.5
 
     /// Space under the hit line, so the line itself isn't clipped by the bottom edge.
     private static let hitLineInset: CGFloat = 10
@@ -35,9 +40,35 @@ struct NoteHighwayView: View {
                             .foregroundColor(note.isBlack ? .white : .darkGreen)
                             .tag(note.id)
                     }
+                    ForEach(Judgment.allCases, id: \.self) { judgment in
+                        Self.popupLabel(judgment)
+                            .tag(Self.popupSymbolID(judgment))
+                    }
                 }
             }
         }
+    }
+
+    // MARK: Popups
+
+    private static func popupSymbolID(_ judgment: Judgment) -> String {
+        "judgment-\(judgment.rawValue)"
+    }
+
+    /// The popup's text and colour: both, so the judgment never depends on colour alone.
+    private static func popupLabel(_ judgment: Judgment) -> some View {
+        let (text, color): (LocalizedStringKey, Color) = {
+            switch judgment {
+            case .perfect: return ("Perfect!", .yellow)
+            case .great: return ("Great", .softGreen)
+            case .good: return ("Good", .softBlue)
+            case .miss: return ("Miss", .red)
+            }
+        }()
+        return Text(text)
+            .font(.custom("BalooDa-Regular", size: 28))
+            .foregroundColor(color)
+            .shadow(color: .black.opacity(0.6), radius: 2, y: 1)
     }
 
     // MARK: Drawing
@@ -54,6 +85,27 @@ struct NoteHighwayView: View {
             for note in engine.notes where NoteCatalog.note(note.keyId).isBlack == blackKeys {
                 drawNote(note, &context, songTime: songTime, hitY: hitY, originX: originX)
             }
+        }
+
+        if showsPopups {
+            drawPopups(&context, hitY: hitY, originX: originX)
+        }
+    }
+
+    /// Each recent judgment rises from the hit line at its lane and fades out over `popupDuration`.
+    private func drawPopups(_ context: inout GraphicsContext, hitY: CGFloat, originX: CGFloat) {
+        let now = CACurrentMediaTime()
+        for event in engine.recentEvents {
+            // A wrong press has no popup: the key flash and the lost combo say enough.
+            guard let judgment = event.judgment else { continue }
+            let age = now - event.hostTime
+            guard age >= 0, age < Self.popupDuration,
+                  let keyFrame = keyFrames[event.keyId],
+                  let symbol = context.resolveSymbol(id: Self.popupSymbolID(judgment)) else { continue }
+            let progress = CGFloat(age / Self.popupDuration)
+            var layer = context
+            layer.opacity = Double(1 - progress)
+            layer.draw(symbol, at: CGPoint(x: keyFrame.midX - originX, y: hitY - 40 - 50 * progress))
         }
     }
 

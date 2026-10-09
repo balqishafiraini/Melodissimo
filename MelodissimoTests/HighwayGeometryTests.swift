@@ -84,3 +84,34 @@ final class PlayModelsTests: XCTestCase {
         XCTAssertNotEqual(Route.play(request), Route.help)
     }
 }
+
+final class CountInTests: XCTestCase {
+
+    func testShowsThreeTwoOneOverTheCountIn() {
+        // 0.5 s per beat: the clock runs from -1.5 to 0.
+        func display(_ t: Double) -> (Int, Double)? {
+            CountIn.display(songTime: t, secondsPerBeat: 0.5).map { ($0.number, $0.progress) }
+        }
+        XCTAssertEqual(display(-1.5)?.0, 3)
+        XCTAssertEqual(display(-1.5)?.1 ?? -1, 0, accuracy: 1e-9)
+        XCTAssertEqual(display(-1.25)?.0, 3)
+        XCTAssertEqual(display(-1.25)?.1 ?? -1, 0.5, accuracy: 1e-9)
+        XCTAssertEqual(display(-1.01)?.0, 3)
+        XCTAssertEqual(display(-1.0)?.0, 2)
+        XCTAssertEqual(display(-0.75)?.0, 2)
+        XCTAssertEqual(display(-0.49)?.0, 1)
+        XCTAssertEqual(display(-0.001)?.0, 1)
+    }
+
+    func testNothingOnceTheSongHasStarted() {
+        XCTAssertNil(CountIn.display(songTime: 0, secondsPerBeat: 0.5))
+        XCTAssertNil(CountIn.display(songTime: 3, secondsPerBeat: 0.5))
+        XCTAssertNil(CountIn.display(songTime: -1, secondsPerBeat: 0))
+    }
+
+    func testClampsWhenTheClockIsBeforeTheCountIn() {
+        let early = CountIn.display(songTime: -10, secondsPerBeat: 0.5)
+        XCTAssertEqual(early?.number, 3)
+        XCTAssertEqual(early?.progress ?? -1, 0, accuracy: 1e-9)
+    }
+}
