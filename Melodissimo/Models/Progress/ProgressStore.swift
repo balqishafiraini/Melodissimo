@@ -12,7 +12,8 @@ class ProgressStore: ObservableObject {
 
     static let shared = ProgressStore()
 
-    private let defaults = UserDefaults.standard
+    /// Backing store. `.standard` in the app; tests inject a throwaway suite.
+    let defaults: UserDefaults
 
     // Minimum percentage needed for each star rating.
     static let oneStarThreshold = 60
@@ -22,7 +23,9 @@ class ProgressStore: ObservableObject {
     // Key used by the existing level menu to decide which levels are unlocked.
     private let unlockedLevelKey = "currentLevel"
 
-    private init() {}
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
 
     // MARK: - Best score
 
