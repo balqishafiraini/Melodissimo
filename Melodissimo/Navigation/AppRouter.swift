@@ -24,6 +24,8 @@ enum Route: Hashable {
     case postplay
     /// Launches any play mode; see `PlayRequest`.
     case play(PlayRequest)
+    /// Pick Listen / Practice / Perform and the speed for a song. Campaign stages pass their id.
+    case stageSetup(songId: String, campaignStageId: String? = nil, isBoss: Bool = false)
 }
 
 /// Drives the app's single `NavigationStack`. Screens push routes and pop back
@@ -38,6 +40,12 @@ final class AppRouter: ObservableObject {
 
     func pop() {
         if !path.isEmpty { path.removeLast() }
+    }
+
+    /// Swaps the top screen for another, so Back from the new one skips the old.
+    func replaceTop(with route: Route) {
+        if !path.isEmpty { path.removeLast() }
+        path.append(route)
     }
 
     func popToRoot() {

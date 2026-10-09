@@ -18,6 +18,8 @@ struct NoteHighwayView: View {
     var labelsOnNotes = true
     /// Rising "Perfect!" / "Great" / "Good" / "Miss" popups. Only Perform mode judges, so other modes never show them.
     var showsPopups = true
+    /// Solemn songs show a quiet check mark for a hit instead of judgment words, and nothing for a miss.
+    var isSolemn = false
 
     /// How long a judgment popup rises and fades.
     static let popupDuration = 0.5
@@ -29,10 +31,11 @@ struct NoteHighwayView: View {
         GeometryReader { geo in
             let originX = geo.frame(in: .global).minX
             TimelineView(.animation) { timeline in
-                // Reading the date is what makes SwiftUI redraw the canvas on every frame.
-                let _ = timeline.date
+                // The canvas closure must capture something that changes every frame (the timeline's
+                // date), otherwise SwiftUI sees an unchanged closure and stops redrawing it.
+                let frameDate = timeline.date
                 Canvas { context, size in
-                    draw(&context, size: size, originX: originX)
+                    draw(&context, size: size, originX: originX, frameDate: frameDate)
                 } symbols: {
                     ForEach(NoteCatalog.all) { note in
                         Text(note.label)
@@ -44,12 +47,18 @@ struct NoteHighwayView: View {
                         Self.popupLabel(judgment)
                             .tag(Self.popupSymbolID(judgment))
                     }
+                    Image(systemName: "checkmark")
+                        .font(.custom("BalooDa-Regular", size: 26))
+                        .foregroundColor(.white)
+                        .tag(Self.solemnCheckID)
                 }
             }
         }
     }
 
     // MARK: Popups
+
+    private static let solemnCheckID = "solemn-check"
 
     private static func popupSymbolID(_ judgment: Judgment) -> String {
         "judgment-\(judgment.rawValue)"
@@ -73,7 +82,8 @@ struct NoteHighwayView: View {
 
     // MARK: Drawing
 
-    private func draw(_ context: inout GraphicsContext, size: CGSize, originX: CGFloat) {
+    private func draw(_ context: inout GraphicsContext, size: CGSize, originX: CGFloat, frameDate: Date) {
+        _ = frameDate   // only here to make every frame's closure differ; timing uses the host clock
         let songTime = engine.songTime(now: CACurrentMediaTime())
         let hitY = size.height - Self.hitLineInset
 
@@ -98,13 +108,16 @@ struct NoteHighwayView: View {
         for event in engine.recentEvents {
             // A wrong press has no popup: the key flash and the lost combo say enough.
             guard let judgment = event.judgment else { continue }
+            // Solemn songs only get a faint check mark for hits.
+            if isSolemn, judgment == .miss { continue }
             let age = now - event.hostTime
+            let symbolID = isSolemn ? Self.solemnCheckID : Self.popupSymbolID(judgment)
             guard age >= 0, age < Self.popupDuration,
                   let keyFrame = keyFrames[event.keyId],
-                  let symbol = context.resolveSymbol(id: Self.popupSymbolID(judgment)) else { continue }
+                  let symbol = context.resolveSymbol(id: symbolID) else { continue }
             let progress = CGFloat(age / Self.popupDuration)
             var layer = context
-            layer.opacity = Double(1 - progress)
+            layer.opacity = Double(1 - progress) * (isSolemn ? 0.5 : 1)
             layer.draw(symbol, at: CGPoint(x: keyFrame.midX - originX, y: hitY - 40 - 50 * progress))
         }
     }

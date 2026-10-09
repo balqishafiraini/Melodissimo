@@ -10,6 +10,53 @@ import Foundation
 
 extension ProgressStore {
 
+    // MARK: - Songs (Song Stage)
+
+    private func songKey(_ name: String, _ songId: String) -> String {
+        "song_\(name)_\(songId)"
+    }
+
+    /// Best Perform score.
+    func songBestScore(_ songId: String) -> Int {
+        defaults.integer(forKey: songKey("bestScore", songId))
+    }
+
+    /// Best Perform accuracy, 0–100.
+    func songBestAccuracy(_ songId: String) -> Double {
+        defaults.double(forKey: songKey("bestAccuracy", songId))
+    }
+
+    /// Best Perform stars (0...3), after the speed cap.
+    func songStars(_ songId: String) -> Int {
+        defaults.integer(forKey: songKey("stars", songId))
+    }
+
+    /// Practice finished at least once, which unlocks Perform.
+    func isSongPracticed(_ songId: String) -> Bool {
+        defaults.bool(forKey: songKey("practiced", songId))
+    }
+
+    func setSongPracticed(_ songId: String) {
+        guard !isSongPracticed(songId) else { return }
+        defaults.set(true, forKey: songKey("practiced", songId))
+        objectWillChange.send()
+    }
+
+    func isSongFullCombo(_ songId: String) -> Bool {
+        defaults.bool(forKey: songKey("fullCombo", songId))
+    }
+
+    // MARK: - Settings
+
+    /// Whether key labels are shown while performing (off by default; Practice always starts with them on).
+    var labelsInPerform: Bool {
+        get { defaults.bool(forKey: "settings_labelsInPerform") }
+        set {
+            defaults.set(newValue, forKey: "settings_labelsInPerform")
+            objectWillChange.send()
+        }
+    }
+
     // MARK: - Campaign stages
 
     private func stageStarsKey(_ stageId: String) -> String {

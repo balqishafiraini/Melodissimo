@@ -57,3 +57,18 @@
 "Good" = "Baik";
 "Miss" = "Meleset";
 "Pause" = "Jeda";
+"Listen" = "Dengar";
+"Practice" = "Latihan";
+"Perform" = "Tampil";
+"Speed" = "Kecepatan";
+"Best" = "Terbaik";
+"Practiced" = "Sudah latihan";
+"Show key labels" = "Tampilkan nama tuts";
+"Slower speeds earn fewer stars" = "Kecepatan lambat memberi lebih sedikit bintang";
+"Finish Practice once to unlock Perform" = "Selesaikan Latihan sekali untuk membuka Tampil";
+"Nice listening!" = "Pendengaran yang bagus!";
+"Try Practice →" = "Coba Latihan →";
+"Practice complete!" = "Latihan selesai!";
+"Perform is unlocked" = "Tampil sudah terbuka";
+"Perform →" = "Tampil →";
+

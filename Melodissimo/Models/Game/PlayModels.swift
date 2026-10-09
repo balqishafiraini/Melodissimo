@@ -29,6 +29,9 @@ struct PlayRequest: Hashable {
 
     let kind: Kind
     var campaignStageId: String? = nil
+    /// Song stages: show the note names on the keys. `nil` uses the mode's default
+    /// (on for Practice, the setting for Perform).
+    var showKeyLabels: Bool? = nil
 }
 
 /// The outcome of one play, handed to `ResultRecorder` and the results screen.

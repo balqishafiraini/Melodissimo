@@ -85,12 +85,21 @@ struct DashboardView: View {
                     .foregroundColor(.white)
 
                 #if DEBUG
-                // TEMPORARY (Task 2.1, removed in Task 2.4): jump straight into a Perform stage.
+                // TEMPORARY (Task 2.1, removed in Task 2.4): open a song's stage setup directly.
                 Button {
-                    router.push(.play(PlayRequest(kind: .song(songId: "berkibarlah-benderaku", mode: .perform, speed: 1,
-                                                              isBoss: false, isSolemn: false, noteLimit: nil))))
+                    router.push(.stageSetup(songId: "berkibarlah-benderaku"))
                 } label: {
-                    Text("DEBUG: Perform \"Berkibarlah Benderaku\"")
+                    Text("DEBUG: Stage setup \"Berkibarlah Benderaku\"")
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Capsule().fill(Color.yellow))
+                        .foregroundColor(Color.darkGreen)
+                        .font(.footnote)
+                }
+                Button {
+                    router.push(.stageSetup(songId: "indonesia-raya"))
+                } label: {
+                    Text("DEBUG: Stage setup \"Indonesia Raya\" (solemn)")
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(Capsule().fill(Color.yellow))
@@ -183,6 +192,12 @@ struct DashboardView: View {
             OnboardPostplayView()
         case .play(let request):
             PlayDestinationView(request: request)
+        case .stageSetup(let songId, let campaignStageId, let isBoss):
+            if let song = SongLibrary.song(id: songId) {
+                StageSetupView(song: song, campaignStageId: campaignStageId, isBoss: isBoss)
+            } else {
+                UnavailableModeView()
+            }
         }
     }
 }

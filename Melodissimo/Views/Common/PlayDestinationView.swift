@@ -14,7 +14,8 @@ struct PlayDestinationView: View {
         case .song(let songId, let mode, let speed, let isBoss, let isSolemn, let noteLimit):
             if let song = SongLibrary.song(id: songId) {
                 SongStageView(song: song, mode: mode, speed: speed, isBoss: isBoss, isSolemn: isSolemn,
-                              noteLimit: noteLimit, campaignStageId: request.campaignStageId)
+                              noteLimit: noteLimit, campaignStageId: request.campaignStageId,
+                              showKeyLabels: request.showKeyLabels)
             } else {
                 UnavailableModeView()
             }
