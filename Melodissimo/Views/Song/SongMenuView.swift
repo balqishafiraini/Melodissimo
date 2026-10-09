@@ -99,7 +99,7 @@ struct SongMenuView: View {
                                 Text("SONG")
                                     .font(.custom("BalooDa-Regular", size: 20))
                                     .foregroundColor(.white)
-                                Text("QUIZ")
+                                Text("STAGE")
                                     .font(.custom("BalooDa-Regular", size: 50))
                                     .foregroundColor(.white)
                                 

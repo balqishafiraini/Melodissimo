@@ -26,6 +26,8 @@ enum Route: Hashable {
     case play(PlayRequest)
     /// Pick Listen / Practice / Perform and the speed for a song. Campaign stages pass their id.
     case stageSetup(songId: String, campaignStageId: String? = nil, isBoss: Bool = false)
+    /// What a finished play earned. `ResultRecorder` has already stored it.
+    case result(PlayResult, RewardSummary)
 }
 
 /// Drives the app's single `NavigationStack`. Screens push routes and pop back

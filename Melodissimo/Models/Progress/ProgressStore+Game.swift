@@ -46,6 +46,60 @@ extension ProgressStore {
         defaults.bool(forKey: songKey("fullCombo", songId))
     }
 
+    /// Keeps the highest Perform score. Returns `true` when `score` beat the previous best.
+    @discardableResult
+    func recordSongScore(_ songId: String, score: Int) -> Bool {
+        guard score > songBestScore(songId) else { return false }
+        defaults.set(score, forKey: songKey("bestScore", songId))
+        objectWillChange.send()
+        return true
+    }
+
+    func recordSongAccuracy(_ songId: String, accuracy: Double) {
+        if accuracy > songBestAccuracy(songId) {
+            defaults.set(accuracy, forKey: songKey("bestAccuracy", songId))
+            objectWillChange.send()
+        }
+    }
+
+    /// Keeps the best Perform stars (clamped to 0...3). Returns how many stars were gained over the old best.
+    @discardableResult
+    func recordSongStars(_ songId: String, stars: Int) -> Int {
+        let clamped = min(max(stars, 0), 3)
+        let previous = songStars(songId)
+        guard clamped > previous else { return 0 }
+        defaults.set(clamped, forKey: songKey("stars", songId))
+        objectWillChange.send()
+        return clamped - previous
+    }
+
+    /// Marks the song as full-combo'd. Returns `true` the first time only.
+    @discardableResult
+    func setSongFullCombo(_ songId: String) -> Bool {
+        guard !isSongFullCombo(songId) else { return false }
+        defaults.set(true, forKey: songKey("fullCombo", songId))
+        objectWillChange.send()
+        return true
+    }
+
+    // MARK: - Stats (feed the achievements)
+
+    /// Perform runs finished, over all songs.
+    var statSongsPerformed: Int { defaults.integer(forKey: "stat_songsPerformed") }
+
+    /// Songs played through without a miss or wrong press.
+    var statFullCombos: Int { defaults.integer(forKey: "stat_fullCombos") }
+
+    func incrementSongsPerformed() {
+        defaults.set(statSongsPerformed + 1, forKey: "stat_songsPerformed")
+        objectWillChange.send()
+    }
+
+    func incrementFullCombos() {
+        defaults.set(statFullCombos + 1, forKey: "stat_fullCombos")
+        objectWillChange.send()
+    }
+
     // MARK: - Settings
 
     /// Whether key labels are shown while performing (off by default; Practice always starts with them on).

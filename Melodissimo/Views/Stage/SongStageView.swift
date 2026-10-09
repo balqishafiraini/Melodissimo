@@ -23,6 +23,9 @@ struct SongStageView: View {
     @State private var keyFrames: [Int: CGRect] = [:]
     /// Practice: the key that was just pressed wrongly, flashed red for a moment.
     @State private var wrongFlashKeyId: Int?
+    /// False once the player has left, so a pending hop to the results screen can't hit the wrong screen.
+    @State private var isOnScreen = true
+    @State private var hasRecordedResult = false
 
     let song: Song
     let mode: StageMode
@@ -98,16 +101,15 @@ struct SongStageView: View {
             flashWrongKeyIfPracticing()
         }
         .onChange(of: engine.phase) { newPhase in
-            // Finishing Practice once unlocks Perform.
-            if newPhase == .finished, mode == .practice {
-                ProgressStore.shared.setSongPracticed(song.id)
-            }
+            if newPhase == .finished { finish() }
         }
         .onAppear {
+            isOnScreen = true
             engine.attachTicker()
             engine.start(now: CACurrentMediaTime())
         }
         .onDisappear {
+            isOnScreen = false
             engine.detachTicker()
         }
     }
@@ -323,10 +325,39 @@ struct SongStageView: View {
     private func request(for newMode: StageMode) -> PlayRequest {
         PlayRequest(kind: .song(songId: song.id, mode: newMode, speed: speed, isBoss: isBoss,
                                 isSolemn: isSolemn, noteLimit: nil),
-                    campaignStageId: campaignStageId)
+                    campaignStageId: campaignStageId,
+                    // Switching mode returns to that mode's default labels; replaying keeps the choice.
+                    showKeyLabels: newMode == mode ? showLabels : nil)
     }
 
-    /// Per-mode end screen. Perform's is a placeholder until the results route exists.
+    /// Records what the play earned, once. Perform then shows the results screen after a short
+    /// pause so the last judgment popup can be seen; Practice stays on its own finish overlay.
+    private func finish() {
+        guard !hasRecordedResult else { return }
+        hasRecordedResult = true
+        switch mode {
+        case .listen:
+            break
+        case .practice:
+            let result = PlayResult(request: request(for: .practice), didWin: true, stars: 0, score: 0, accuracy: nil,
+                                    maxCombo: 0, perfect: 0, great: 0, good: 0, miss: 0, wrong: 0)
+            ResultRecorder.record(result)
+        case .perform:
+            let stars = engine.stars()
+            let result = PlayResult(request: request(for: .perform), didWin: stars > 0, stars: stars,
+                                    score: engine.score, accuracy: engine.accuracy, maxCombo: engine.maxCombo,
+                                    perfect: engine.counts.perfect, great: engine.counts.great, good: engine.counts.good,
+                                    miss: engine.counts.miss, wrong: engine.wrongPresses)
+            let rewards = ResultRecorder.record(result)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+                if isOnScreen {
+                    router.replaceTop(with: .result(result, rewards))
+                }
+            }
+        }
+    }
+
+    /// Per-mode end screen. Perform only shows a short banner before the results screen.
     private var finishedOverlay: some View {
         VStack(spacing: 16) {
             switch mode {
@@ -363,22 +394,9 @@ struct SongStageView: View {
                     }
                 }
             case .perform:
+                // The results screen follows in a moment.
                 Text("Finished!")
-                    .font(.custom("BalooDa-Regular", size: 48))
-                Text("\(engine.score)")
                     .font(.custom("BalooDa-Regular", size: 64))
-                overlayRow {
-                    Button {
-                        engine.restart(now: CACurrentMediaTime())
-                    } label: {
-                        finishedButtonLabel("Retry", filled: false)
-                    }
-                    Button {
-                        router.pop()
-                    } label: {
-                        finishedButtonLabel("< Back", filled: true)
-                    }
-                }
             }
         }
         .foregroundColor(Color.darkGreen)

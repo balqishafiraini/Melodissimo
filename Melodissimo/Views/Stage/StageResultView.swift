@@ -1,0 +1,189 @@
+//
+//  StageResultView.swift
+//  Melodissimo
+//
+
+import SwiftUI
+import ConfettiSwiftUI
+
+/// The results of a Perform run: stars popping in one by one, score, accuracy, combo and the
+/// Perfect / Great / Good / Miss / Wrong breakdown, plus "New best!" and FULL COMBO badges.
+struct StageResultView: View {
+    @EnvironmentObject private var router: AppRouter
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    let result: PlayResult
+    let rewards: RewardSummary
+
+    @State private var shownStars = 0
+    @State private var confettiCounter = 0
+
+    private var songTitle: String {
+        if case .song(let songId, _, _, _, _, _) = result.request.kind {
+            return SongLibrary.song(id: songId)?.title ?? ""
+        }
+        return ""
+    }
+
+    private var isFullCombo: Bool {
+        result.accuracy != nil && result.miss == 0 && result.wrong == 0
+    }
+
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(Color.yellow)
+                .ignoresSafeArea()
+            Image("bgMusic")
+                .scaledToFit()
+
+            HStack(spacing: 32) {
+                // She hops each time a star lands.
+                AlpanicaView(mood: result.stars > 0 ? .happy : .sad, hopTrigger: shownStars, height: 380)
+                    .frame(maxWidth: .infinity)
+
+                VStack(spacing: 18) {
+                    Text(songTitle)
+                        .font(.custom("BalooDa-Regular", size: 36))
+                        .foregroundColor(Color.darkGreen)
+                        .lineLimit(1)
+
+                    starsRow
+                    badges
+                    statsGrid
+                    breakdown
+                    Spacer(minLength: 0)
+                    buttons
+                }
+                .padding(28)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(RoundedRectangle(cornerRadius: 36).fill(Color.white))
+            }
+            .padding(32)
+        }
+        .confettiCannon(counter: $confettiCounter, num: 30, confettiSize: 16, radius: 500, repetitions: 3)
+        .onAppear(perform: popInStars)
+    }
+
+    // MARK: Pieces
+
+    private var starsRow: some View {
+        HStack(spacing: 12) {
+            ForEach(0..<3, id: \.self) { index in
+                let isShown = index < shownStars
+                Image(systemName: isShown ? "star.fill" : "star")
+                    .font(.custom("BalooDa-Regular", size: 64))
+                    .foregroundColor(isShown ? Color.yellow : Color.darkGreen.opacity(0.3))
+                    .scaleEffect(isShown || reduceMotion ? 1 : 0.5)
+                    .animation(reduceMotion ? .easeIn(duration: 0.2) : .spring(response: 0.4, dampingFraction: 0.45), value: shownStars)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var badges: some View {
+        if rewards.isNewBest || isFullCombo {
+            HStack(spacing: 12) {
+                if rewards.isNewBest {
+                    badge("New best!", color: Color.green)
+                }
+                if isFullCombo {
+                    badge("FULL COMBO", color: Color.red)
+                }
+            }
+        }
+    }
+
+    private func badge(_ title: LocalizedStringKey, color: Color) -> some View {
+        Text(title)
+            .font(.custom("BalooDa-Regular", size: 22))
+            .foregroundColor(.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+            .background(Capsule().fill(color))
+    }
+
+    private var statsGrid: some View {
+        HStack(spacing: 28) {
+            stat("Score", "\(result.score)")
+            if let accuracy = result.accuracy {
+                stat("Accuracy", "\(Int(accuracy.rounded()))%")
+            }
+            stat("Max combo", "\(result.maxCombo)")
+        }
+    }
+
+    private func stat(_ title: LocalizedStringKey, _ value: String) -> some View {
+        VStack(spacing: 0) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(Color.darkGreen.opacity(0.8))
+            Text(value)
+                .font(.custom("BalooDa-Regular", size: 40))
+                .foregroundColor(Color.darkGreen)
+        }
+    }
+
+    private var breakdown: some View {
+        HStack(spacing: 18) {
+            breakdownItem("Perfect!", result.perfect, Color.yellow)
+            breakdownItem("Great", result.great, Color.softGreen)
+            breakdownItem("Good", result.good, Color.softBlue)
+            breakdownItem("Miss", result.miss, Color.red)
+            breakdownItem("Wrong", result.wrong, Color.gray)
+        }
+    }
+
+    private func breakdownItem(_ title: LocalizedStringKey, _ count: Int, _ color: Color) -> some View {
+        VStack(spacing: 2) {
+            Text("\(count)")
+                .font(.custom("BalooDa-Regular", size: 30))
+                .foregroundColor(Color.darkGreen)
+            HStack(spacing: 4) {
+                Circle().fill(color).frame(width: 12, height: 12)
+                Text(title)
+                    .font(.footnote)
+                    .foregroundColor(Color.darkGreen)
+            }
+        }
+    }
+
+    private var buttons: some View {
+        HStack(spacing: 14) {
+            resultButton("Retry", filled: false) {
+                router.replaceTop(with: .play(result.request))
+            }
+            resultButton("Song menu", filled: true) {
+                router.pop(to: .songRepositoryQuiz)
+            }
+            if result.request.campaignStageId != nil {
+                // Goes back to the campaign map once that exists (Phase 5).
+                resultButton("Next", filled: true) {}
+            }
+        }
+    }
+
+    private func resultButton(_ title: LocalizedStringKey, filled: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .frame(width: 190, height: 64)
+                .background(filled ? Color.darkGreen : Color.yellow)
+                .foregroundColor(filled ? .white : Color.darkGreen)
+                .cornerRadius(20)
+                .font(Font.headline)
+        }
+    }
+
+    // MARK: Animation
+
+    /// Stars appear one by one; three stars also fire the confetti.
+    private func popInStars() {
+        guard result.stars > 0 else { return }
+        for star in 1...result.stars {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4 + 0.45 * Double(star)) {
+                shownStars = star
+                if star == 3 { confettiCounter += 1 }
+            }
+        }
+    }
+}

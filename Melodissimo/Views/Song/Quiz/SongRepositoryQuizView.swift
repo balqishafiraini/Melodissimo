@@ -10,6 +10,7 @@ import SwiftUI
 struct SongRepositoryQuizView: View {
 
     @EnvironmentObject private var router: AppRouter
+    @ObservedObject private var progress = ProgressStore.shared
 
     var levelFeeder = LevelFeederModel.shared
     var trophyRepository = TrophyRepositoryModel()
@@ -29,7 +30,7 @@ struct SongRepositoryQuizView: View {
             
             VStack{
                 ZStack {
-                    Text("Quiz Song Notation Repository")
+                    Text("Song Stage")
                         .foregroundColor(Color.darkGreen)
                         .font(Font.largeTitle)
 
@@ -70,13 +71,14 @@ struct SongRepositoryQuizView: View {
                     ) {
                         ForEach(filteredSongLevels) { level in
                             Button {
-                                router.push(.songQuiz(songTitle: level.songTitle ?? ""))
+                                router.push(.stageSetup(songId: SongLibrary.slug(for: level.songTitle ?? "")))
                             } label: {
                                 VStack(spacing: 1) {
                                     if trophyRepository.isTrophyEarned(songTitle: level.songTitle ?? "") {
                                         Image("trophy")
                                     }
                                     Text(level.songTitle ?? "Unknown Song Title")
+                                    stars(for: level.songTitle ?? "")
                                 }
                                 .foregroundStyle(.white)
                                 .font(.largeTitle)
@@ -101,4 +103,16 @@ struct SongRepositoryQuizView: View {
         
     }
     
+
+    /// Best Perform stars for a song, under its card.
+    private func stars(for songTitle: String) -> some View {
+        let earned = progress.songStars(SongLibrary.slug(for: songTitle))
+        return HStack(spacing: 6) {
+            ForEach(0..<3, id: \.self) { index in
+                Image(systemName: index < earned ? "star.fill" : "star")
+                    .foregroundColor(index < earned ? Color.yellow : Color.white.opacity(0.5))
+                    .font(.title2)
+            }
+        }
+    }
 }

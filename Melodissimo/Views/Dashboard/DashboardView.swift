@@ -84,30 +84,6 @@ struct DashboardView: View {
                     .font(.largeTitle)
                     .foregroundColor(.white)
 
-                #if DEBUG
-                // TEMPORARY (Task 2.1, removed in Task 2.4): open a song's stage setup directly.
-                Button {
-                    router.push(.stageSetup(songId: "berkibarlah-benderaku"))
-                } label: {
-                    Text("DEBUG: Stage setup \"Berkibarlah Benderaku\"")
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(Capsule().fill(Color.yellow))
-                        .foregroundColor(Color.darkGreen)
-                        .font(.footnote)
-                }
-                Button {
-                    router.push(.stageSetup(songId: "indonesia-raya"))
-                } label: {
-                    Text("DEBUG: Stage setup \"Indonesia Raya\" (solemn)")
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(Capsule().fill(Color.yellow))
-                        .foregroundColor(Color.darkGreen)
-                        .font(.footnote)
-                }
-                #endif
-
                 Spacer()
 
                 HStack{
@@ -192,6 +168,8 @@ struct DashboardView: View {
             OnboardPostplayView()
         case .play(let request):
             PlayDestinationView(request: request)
+        case .result(let result, let rewards):
+            StageResultView(result: result, rewards: rewards)
         case .stageSetup(let songId, let campaignStageId, let isBoss):
             if let song = SongLibrary.song(id: songId) {
                 StageSetupView(song: song, campaignStageId: campaignStageId, isBoss: isBoss)
