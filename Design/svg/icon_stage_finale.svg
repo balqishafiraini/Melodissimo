@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
-<g transform="scale(1.0)">
- <circle cx="64" cy="68" r="56" fill="#000" opacity=".12"/>
- <circle cx="64" cy="62" r="56" fill="#d64545"/><circle cx="64" cy="62" r="46" fill="#fff" opacity=".18"/>
- <rect x="40" y="24" width="6" height="76" rx="3" fill="#fff"/><path d="M46 28 H94 V48 H46Z" fill="#ff3b3b"/><path d="M46 48 H94 V68 H46Z" fill="#fff"/></g>
-</svg>
