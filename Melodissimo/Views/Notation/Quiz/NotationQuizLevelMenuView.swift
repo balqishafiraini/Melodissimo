@@ -8,20 +8,18 @@
 import SwiftUI
 
 struct NotationQuizLevelMenuView: View {
-    @State private var isPresentingHelp = false
-    @State private var isPresentingLevel = false
-    @State private var isPresentingMenu = false
-    @State private var selectedLevel = -1
-    @Environment(\.dismiss) var dismiss
-    @State private var currentLevel = UserDefaults.standard.integer(forKey: "currentLevel")
-    
+    @EnvironmentObject private var router: AppRouter
+    @ObservedObject private var progress = ProgressStore.shared
+    @State private var currentLevel = ProgressStore.shared.highestUnlockedLevel
+
+    private let levelRange = 1...100
+
     func getCurrentLevelProgress() -> Int {
-        return UserDefaults.standard.integer(forKey: "currentLevel")
+        return progress.highestUnlockedLevel
     }
-    
-    
+
+
     var body: some View {
-        NavigationView {
             ZStack {
                 Image("notationQuizLevelMenu")
                     .resizable()
@@ -30,50 +28,47 @@ struct NotationQuizLevelMenuView: View {
                     .ignoresSafeArea()
                 
                 VStack {
-                    HStack {
-                        Button {
-                            isPresentingMenu = true
-                        } label: {
-                            Text("Menu")
-                                .frame(width: 120, height: 80)
-                                .background(Color.darkGreen)
+                    ZStack {
+                        VStack(spacing: 4) {
+                            Text("Menu Level")
                                 .foregroundColor(.white)
-                                .cornerRadius(20)
-                                .font(Font.headline)
-                        }
-                        .padding(.init(top: 30, leading: 30, bottom: 0, trailing: 0))
-                        NavigationLink(destination: NotationMenuView()
-                            .navigationBarBackButtonHidden(true), isActive: $isPresentingMenu) {
-                                EmptyView()
+                                .font(Font.largeTitle)
+                            HStack(spacing: 6) {
+                                Image(systemName: "star.fill")
+                                    .foregroundColor(.yellow)
+                                Text("\(progress.totalStars(category: "notation", levels: levelRange)) / \(levelRange.count * 3)")
+                                    .foregroundColor(.white)
+                                    .font(Font.title3)
                             }
-                        
-                        Spacer()
-                        
-                        Text("Menu Level")
-                            .padding(.init(top: 30, leading: 0, bottom: 0, trailing: 0))
-                            .foregroundColor(.white)
-                            .cornerRadius(20)
-                            .font(Font.largeTitle)
-                        
-                        Spacer()
-                        
-                        Button {
-                            isPresentingHelp = true
-                        } label: {
-                            Text("?")
-                                .frame(width: 80, height: 80)
-                                .background(Color.darkGreen)
-                                .foregroundColor(.white)
-                                .cornerRadius(20)
-                                .font(Font.title)
                         }
-                        .padding(.init(top: 30, leading: 0, bottom: 0, trailing: 30))
-                        NavigationLink(destination: HelpPageView()
-                            .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                                EmptyView()
+
+                        HStack {
+                            Button {
+                                router.pop(to: .notationMenu)
+                            } label: {
+                                Text("Menu")
+                                    .frame(width: 120, height: 80)
+                                    .background(Color.darkGreen)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(20)
+                                    .font(Font.headline)
                             }
+
+                            Spacer()
+
+                            Button {
+                                router.push(.help)
+                            } label: {
+                                Text("?")
+                                    .frame(width: 80, height: 80)
+                                    .background(Color.darkGreen)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(20)
+                                    .font(Font.title)
+                            }
+                        }
                     }
-                    .padding()
+                    .padding(.init(top: 30, leading: 30, bottom: 0, trailing: 30))
                     
                     Spacer()
                     
@@ -92,42 +87,56 @@ struct NotationQuizLevelMenuView: View {
                             ) {
                                 ForEach(1..<101, id: \.self) { index in
                                     let isLevelEnabled = index <= currentLevel + 1
+                                    let earnedStars = progress.stars(category: "notation", level: index)
                                     Button {
                                         if isLevelEnabled {
-                                            selectedLevel = index
-                                            isPresentingLevel = true
+                                            router.push(.notationQuiz(levelNo: index))
                                         }
                                     }label: {
-                                        Text("Level \(index)")
-                                            .foregroundStyle(Color.darkGreen)
-                                            .font(.largeTitle)
-                                            .frame(width: UIScreen.main.bounds.width * 0.2, height: 250)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 40)
-                                                    .fill(isLevelEnabled ? Color.yellow : Color.gray)
-                                            )
+                                        VStack(spacing: 12) {
+                                            Text("Level \(index)")
+                                                .foregroundStyle(Color.darkGreen)
+                                                .font(.largeTitle)
+                                            StarRatingView(earned: earnedStars, isEnabled: isLevelEnabled)
+                                        }
+                                        .frame(width: UIScreen.main.bounds.width * 0.2, height: 250)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 40)
+                                                .fill(isLevelEnabled ? Color.yellow : Color.gray)
+                                        )
                                     }
                                     .disabled(!isLevelEnabled)
-                                    
-                                    .background(NavigationLink("", destination: NotationQuizView(levelNo: selectedLevel)
-                                        .navigationBarBackButtonHidden(true), isActive: $isPresentingLevel))
                                 }
                             }
                             .padding(10)
                             .background(Color.clear)
                         }
                         .frame(width: UIScreen.main.bounds.width * 0.95, height: UIScreen.main.bounds.height*0.75)
-                        
+
                     }.padding()
-                    
+
                     Spacer()
                 }.padding()
             }
-        }
         .onAppear {
             currentLevel = getCurrentLevelProgress()
         }
         .ignoresSafeArea()
-        .navigationViewStyle(StackNavigationViewStyle())
+    }
+}
+
+/// Shows up to three stars, filling in the ones the player has earned on a level.
+struct StarRatingView: View {
+    var earned: Int
+    var isEnabled: Bool
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<3, id: \.self) { index in
+                Image(systemName: index < earned ? "star.fill" : "star")
+                    .foregroundColor(index < earned ? .orange : Color.darkGreen.opacity(isEnabled ? 0.4 : 0.6))
+            }
+        }
+        .font(.title2)
     }
 }

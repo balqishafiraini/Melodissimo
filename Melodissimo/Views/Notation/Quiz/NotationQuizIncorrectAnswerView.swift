@@ -9,18 +9,12 @@ import Foundation
 import SwiftUI
 
 struct NotationQuizIncorrectAnswerView: View {
-    @State var isPresenting = false
-    @State var isPresentingHelp = false
-    @State var isPresentingMenu = false
 
-    
     var level: LevelModel?
 
-    
-    @Environment(\.dismiss) var dismiss
-    
+    @EnvironmentObject private var router: AppRouter
+
     var body: some View {
-        NavigationView {
             ZStack {
                 Rectangle()
                     .fill(Color.red)
@@ -32,7 +26,7 @@ struct NotationQuizIncorrectAnswerView: View {
                 VStack{
                     HStack{
                         Button {
-                            isPresentingMenu = true
+                            router.pop(to: .notationMenu)
                         } label: {
                             Text("Menu")
                                 .frame(width: 120, height: 80)
@@ -41,15 +35,11 @@ struct NotationQuizIncorrectAnswerView: View {
                                 .cornerRadius(20)
                                 .font(Font.headline)
                         }
-                        NavigationLink(destination: NotationMenuView()
-                            .navigationBarBackButtonHidden(true), isActive: $isPresentingMenu) {
-                                EmptyView()
-                            }
-                        
+
                         Spacer()
-                        
+
                         Button {
-                            isPresentingHelp = true
+                            router.push(.help)
                         } label: {
                             Text("?")
                                 .frame(width: 80, height: 80)
@@ -58,11 +48,7 @@ struct NotationQuizIncorrectAnswerView: View {
                                 .cornerRadius(20)
                                 .font(Font.title)
                         }
-                        NavigationLink(destination: HelpPageView()
-                            .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                                EmptyView()
-                            }
-                        
+
                     }
                     .padding()
                     
@@ -82,8 +68,9 @@ struct NotationQuizIncorrectAnswerView: View {
                             Spacer()
                             
                             Button {
-                                isPresenting = true
-                                
+                                let levelNo = level?.levelNo ?? 0
+                                router.pop(to: .notationLevelMenu)
+                                router.push(.notationQuiz(levelNo: levelNo))
                             } label: {
                                 Text("Try again")
                                     .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
@@ -92,13 +79,9 @@ struct NotationQuizIncorrectAnswerView: View {
                                     .cornerRadius(20)
                                     .font(Font.title)
                             }
-                            NavigationLink(destination: NotationQuizView(levelNo: level?.levelNo ?? 0)
-                                .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
-                                    EmptyView()
-                                }
-                            
+
                             Spacer()
-                            
+
                         }
                         Spacer()
                         Image("alpanicaSad")
@@ -108,11 +91,7 @@ struct NotationQuizIncorrectAnswerView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
-                
+
             }
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-        
-        
     }
 }

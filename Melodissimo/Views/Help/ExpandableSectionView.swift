@@ -43,9 +43,9 @@ struct ExpandableSectionView: View {
                 }
             }
             .padding()
-            .frame(width: UIScreen.main.bounds.width, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.white)
-            
+
             if isExpanded {
                 VStack(alignment: .leading) {
                     ForEach(data.items.indices, id: \.self) { index in
@@ -66,11 +66,11 @@ struct ExpandableSectionView: View {
                     Spacer()
                 }
                 .padding()
-                .frame(width: UIScreen.main.bounds.width, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.white)
             }
         }
-        .frame(width: UIScreen.main.bounds.width-50)
+        .frame(maxWidth: .infinity)
         .background(Color.white)
         .cornerRadius(30)
         .padding()

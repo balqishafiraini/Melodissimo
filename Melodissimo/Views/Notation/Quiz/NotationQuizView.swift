@@ -12,14 +12,12 @@ import Foundation
 struct NotationQuizView: View {
     
     @State var buttonPressed = false
-    
-    @State var isPresenting = false
-    @State var isPresentingHelp = false
-    
+
     @Environment(\.dismiss) var dismiss
-    
+    @EnvironmentObject private var router: AppRouter
+
     @StateObject var tilesViewModel = TilesViewModel()
-    
+
     var levelNo: Int
     
     var body: some View {
@@ -32,46 +30,61 @@ struct NotationQuizView: View {
                 .scaledToFit()
             
             VStack (spacing: 1){
-                HStack{
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("< Back")
-                            .frame(width: 120, height: 80)
-                            .background(Color.darkGreen)
-                            .foregroundColor(.white)
-                            .cornerRadius(20)
-                            .font(Font.headline)
-                    }.padding()
-                    
-                    Spacer()
-                    
+                ZStack {
                     Text("Level: \(levelNo)")
                         .foregroundColor(.white)
-                        .cornerRadius(20)
                         .font(Font.headline)
-                    
-                    Spacer()
-                    
-                    Button {
-                        isPresentingHelp = true
-                    } label: {
-                        Text("?")
-                            .frame(width: 80, height: 80)
-                            .background(Color.darkGreen)
-                            .foregroundColor(.white)
-                            .cornerRadius(20)
-                            .font(Font.title)
-                    }
-                    .padding()
-                    NavigationLink(destination: HelpPageView()
-                        .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                            EmptyView()
+
+                    HStack{
+                        Button {
+                            dismiss()
+                        } label: {
+                            Text("< Back")
+                                .frame(width: 120, height: 80)
+                                .background(Color.darkGreen)
+                                .foregroundColor(.white)
+                                .cornerRadius(20)
+                                .font(Font.headline)
                         }
-                    
+
+                        Spacer()
+
+                        Button {
+                            router.push(.help)
+                        } label: {
+                            Text("?")
+                                .frame(width: 80, height: 80)
+                                .background(Color.darkGreen)
+                                .foregroundColor(.white)
+                                .cornerRadius(20)
+                                .font(Font.title)
+                        }
+                    }
                 }
                 .padding([.leading, .trailing])
-                
+
+                HStack {
+                    HStack(spacing: 4) {
+                        ForEach(0..<tilesViewModel.maxLives, id: \.self) { index in
+                            Image(systemName: index < tilesViewModel.lives ? "heart.fill" : "heart")
+                                .foregroundColor(.red)
+                        }
+                    }
+
+                    Spacer()
+
+                    if tilesViewModel.combo > 1 {
+                        Text("Combo x\(tilesViewModel.combo)")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(Capsule().fill(Color.darkGreen))
+                    }
+                }
+                .font(.title2)
+                .padding([.leading, .trailing])
+
                 ZStack {
                     Text("\(tilesViewModel.currentLevel?.question[tilesViewModel.currentQuestionIndex] ?? "N/A")")
                         .foregroundStyle(.black)
@@ -81,14 +94,19 @@ struct NotationQuizView: View {
                 }
                 
                                 
-                PianikaStackQuiz(viewModel: tilesViewModel)
-                                
+                PianikaStackQuiz(viewModel: tilesViewModel, autoNavigateOnFinish: false)
+
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
         }
         .onAppear {
             tilesViewModel.getLevel(currentLevelNo: levelNo, currentLevelCat: "notation")
+        }
+        .onChange(of: tilesViewModel.canNavigateToAfterQuizPage) { finished in
+            if finished, let level = tilesViewModel.currentLevel {
+                router.push(.afterQuiz(level: level, answers: tilesViewModel.answers, score: tilesViewModel.score))
+            }
         }
     }
 }

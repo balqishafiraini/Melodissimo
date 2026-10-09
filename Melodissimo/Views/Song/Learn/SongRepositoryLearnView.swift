@@ -9,16 +9,11 @@ import SwiftUI
 
 struct SongRepositoryLearnView: View {
     
-    @State var isPresenting = false
-    @State private var isPresentingHelp = false
-    @State private var isPresentingLevel = false
-    @State private var isPresentingMenu = false
-    @State private var selectedSongTitle: String?
-    
     var levelFeeder = LevelFeederModel()
-    
+
     @Environment(\.dismiss) var dismiss
-    
+    @EnvironmentObject private var router: AppRouter
+
     var body: some View {
         ZStack {
             Rectangle()
@@ -51,7 +46,7 @@ struct SongRepositoryLearnView: View {
                     Spacer()
                     
                     Button {
-                        isPresentingHelp = true
+                        router.push(.help)
                     } label: {
                         Text("?")
                             .frame(width: 80, height: 80)
@@ -60,11 +55,7 @@ struct SongRepositoryLearnView: View {
                             .cornerRadius(20)
                             .font(Font.title)
                     }
-                    NavigationLink(destination: HelpPageView()
-                        .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                            EmptyView()
-                        }
-                    
+
                 }
                 .padding()
                 
@@ -77,8 +68,7 @@ struct SongRepositoryLearnView: View {
                     ) {
                         ForEach(levelFeeder.levels.filter { $0.levelCategory == "song" }, id: \.self) { level in
                             Button {
-                                selectedSongTitle = level.songTitle
-                                isPresentingLevel = true
+                                router.push(.songLearn(songTitle: level.songTitle ?? ""))
                             } label: {
                                 Text(level.songTitle ?? "")
                                     .foregroundStyle(.white)
@@ -89,10 +79,6 @@ struct SongRepositoryLearnView: View {
                                             .fill(Color.green)
                                     )
                             }
-                            .background(
-                                NavigationLink("", destination: SongLearnView(songTitle: selectedSongTitle ?? "").navigationBarBackButtonHidden(true), isActive: $isPresentingLevel)
-                                    
-                            )
                         }
                     }
                     .padding(10)

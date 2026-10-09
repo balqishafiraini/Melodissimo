@@ -10,15 +10,13 @@ import AVFoundation
 import Foundation
 
 struct SongLearnView: View {
-    @State private var isPresentingHelp = false
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject private var router: AppRouter
     @StateObject private var tilesViewModel = TilesViewModel()
-    
+
     var songTitle: String
-    
-    @State private var isPresentingLevel = false
-    
-    
+
+
     var body: some View {
         ZStack {
             Rectangle()
@@ -51,7 +49,7 @@ struct SongLearnView: View {
                     Spacer()
                     
                     Button {
-                        isPresentingHelp = true
+                        router.push(.help)
                     } label: {
                         Text("?")
                             .frame(width: 80, height: 80)
@@ -61,11 +59,7 @@ struct SongLearnView: View {
                             .font(Font.title)
                     }
                     .padding()
-                    NavigationLink(destination: HelpPageView()
-                        .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                            EmptyView()
-                        }
-                    
+
                 }
                 .padding([.leading, .trailing])
                 
@@ -92,9 +86,6 @@ struct SongLearnView: View {
             // Customize the function behavior based on songTitle
             tilesViewModel.getSongTitle(songTitle: songTitle)
         }
-        .onDisappear {
-            isPresentingLevel = false
-        }
-        
+
     }
 }

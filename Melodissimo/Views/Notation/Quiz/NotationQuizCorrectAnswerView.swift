@@ -11,21 +11,14 @@ import SwiftUI
 struct NotationQuizCorrectAnswerView: View {
     
     var level: LevelModel?
-    
-    @State var isPresenting = false
-    @State var isPresentingHelp = false
-    
-    @Environment(\.dismiss) var dismiss
-    
+
+    @EnvironmentObject private var router: AppRouter
+
     func setCurrentLevelProgress(_ level: Int) {
-            let highestLevelUnlocked = UserDefaults.standard.integer(forKey: "currentLevel")
-            if level > highestLevelUnlocked {
-                UserDefaults.standard.set(level, forKey: "currentLevel")
-            }
-        }
-    
+        ProgressStore.shared.unlock(upToLevel: level)
+    }
+
     var body: some View {
-        NavigationView {
             ZStack {
                 Rectangle()
                     .fill(Color.red)
@@ -39,7 +32,7 @@ struct NotationQuizCorrectAnswerView: View {
                         Spacer()
                         
                         Button {
-                            isPresentingHelp = true
+                            router.push(.help)
                         } label: {
                             Text("?")
                                 .frame(width: 80, height: 80)
@@ -48,11 +41,7 @@ struct NotationQuizCorrectAnswerView: View {
                                 .cornerRadius(20)
                                 .font(Font.title)
                         }
-                        NavigationLink(destination: HelpPageView()
-                            .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                                EmptyView()
-                            }
-                        
+
                     }
                     .padding()
                     
@@ -72,9 +61,8 @@ struct NotationQuizCorrectAnswerView: View {
                             Spacer()
                             
                             Button {
-                                isPresenting = true
                                 setCurrentLevelProgress(level?.levelNo ?? 0)
-
+                                router.pop(to: .notationLevelMenu)
                             } label: {
                                 Text("Next")
                                     .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
@@ -83,13 +71,9 @@ struct NotationQuizCorrectAnswerView: View {
                                     .cornerRadius(20)
                                     .font(Font.title)
                             }
-                            NavigationLink(destination: NotationQuizLevelMenuView()
-                                .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
-                                    EmptyView()
-                                }
-                            
+
                             Spacer()
-                            
+
                         }
                         Spacer()
                         Image("alpanicaGlasses")
@@ -100,11 +84,7 @@ struct NotationQuizCorrectAnswerView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
-                
+
             }
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-        
-        
     }
 }

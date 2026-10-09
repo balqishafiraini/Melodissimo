@@ -467,15 +467,22 @@ struct PianikaStackLearningMini: View {
 }
 
 struct PianikaStackQuiz: View {
-    
+
     @ObservedObject var viewModel: TilesViewModel
 
+    /// Legacy flows (preplay/postplay) still push the result screen from here via a
+    /// `NavigationLink`. The router-driven game flow sets this to `false` and pushes
+    /// the result route itself, so there's no double navigation.
+    var autoNavigateOnFinish = true
+
     var body: some View {
-        
-        NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers, userScore: viewModel.score).navigationBarBackButtonHidden(true), isActive: $viewModel.canNavigateToAfterQuizPage) {
-            Text("")
+
+        if autoNavigateOnFinish {
+            NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers, userScore: viewModel.score).navigationBarBackButtonHidden(true), isActive: $viewModel.canNavigateToAfterQuizPage) {
+                Text("")
+            }
         }
-        
+
         ZStack {
             RoundedRectangle(cornerRadius: 30)
                 .fill(Color.navy)
@@ -561,15 +568,20 @@ struct PianikaStackQuiz: View {
     
 }
 struct PianikaStackQuizMini: View {
-    
+
     @ObservedObject var viewModel: TilesViewModel
 
+    /// See `PianikaStackQuiz.autoNavigateOnFinish`.
+    var autoNavigateOnFinish = true
+
     var body: some View {
-        
-        NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers, userScore: viewModel.score).navigationBarBackButtonHidden(true), isActive: $viewModel.canNavigateToAfterQuizPage) {
-            Text("")
+
+        if autoNavigateOnFinish {
+            NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers, userScore: viewModel.score).navigationBarBackButtonHidden(true), isActive: $viewModel.canNavigateToAfterQuizPage) {
+                Text("")
+            }
         }
-        
+
         ZStack {
             RoundedRectangle(cornerRadius: 30)
                 .fill(Color.navy)

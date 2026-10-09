@@ -12,10 +12,9 @@ import Foundation
 struct NotationLearnView: View {
     
     @State var buttonPressed = false
-    @State var isPresenting = false
-    @State var isPresentingHelp = false
     @Environment(\.dismiss) var dismiss
-    
+    @EnvironmentObject private var router: AppRouter
+
     var body: some View {
         ZStack {
             Rectangle()
@@ -41,7 +40,7 @@ struct NotationLearnView: View {
                     Spacer()
                     
                     Button {
-                        isPresentingHelp = true
+                        router.push(.help)
                     } label: {
                         Text("?")
                             .frame(width: 80, height: 80)
@@ -50,11 +49,7 @@ struct NotationLearnView: View {
                             .cornerRadius(20)
                             .font(Font.title)
                     }.padding()
-                    NavigationLink(destination: HelpPageView()
-                        .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                            EmptyView()
-                        }
-                    
+
                 }
                 .padding()
                 

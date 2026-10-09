@@ -16,21 +16,14 @@ struct NotationQuizFiveLevelPassedView: View {
     @State private var showCelebration = false
     @State private var showSurpriseText = true // Added state variable to control the visibility of the surprise text
     @State private var counter = 0
-    
-    @Environment(\.dismiss) var dismiss
-    
+
+    @EnvironmentObject private var router: AppRouter
+
     func setCurrentLevelProgress(_ level: Int) {
-            let highestLevelUnlocked = UserDefaults.standard.integer(forKey: "currentLevel")
-            if level > highestLevelUnlocked {
-                UserDefaults.standard.set(level, forKey: "currentLevel")
-            }
-        }
-    
-    @State var isPresenting = false
-    @State var isPresentingHelp = false
-    
+        ProgressStore.shared.unlock(upToLevel: level)
+    }
+
     var body: some View {
-        NavigationView {
             ZStack {
                 Rectangle()
                     .fill(LinearGradient(gradient: Gradient(colors: [Color.green, Color.gray]), startPoint: .top, endPoint: .bottom))
@@ -44,7 +37,7 @@ struct NotationQuizFiveLevelPassedView: View {
                         Spacer()
                         
                         Button {
-                            isPresentingHelp = true
+                            router.push(.help)
                         } label: {
                             Text("?")
                                 .frame(width: 80, height: 80)
@@ -53,11 +46,7 @@ struct NotationQuizFiveLevelPassedView: View {
                                 .cornerRadius(20)
                                 .font(Font.title)
                         }
-                        NavigationLink(destination: HelpPageView()
-                            .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                                EmptyView()
-                            }
-                        
+
                     }
                     .padding()
                     
@@ -83,7 +72,7 @@ struct NotationQuizFiveLevelPassedView: View {
                                         if let unwrappedLevelNo = level?.levelNo {
                                             setCurrentLevelProgress(unwrappedLevelNo)
                                         }
-                                        isPresenting = true
+                                        router.pop(to: .notationLevelMenu)
                                     } label: {
                                         Text("Next")
                                             .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
@@ -93,12 +82,7 @@ struct NotationQuizFiveLevelPassedView: View {
                                             .font(Font.title)
                                     }
                                 }
-                                
-                                NavigationLink(destination: NotationQuizLevelMenuView()
-                                    .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
-                                        EmptyView()
-                                }
-                            
+
                             Spacer()
                             
                         }
@@ -126,9 +110,7 @@ struct NotationQuizFiveLevelPassedView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
-                
+
             }
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
     }
 }

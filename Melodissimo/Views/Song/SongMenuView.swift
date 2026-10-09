@@ -8,14 +8,9 @@
 import SwiftUI
 
 struct SongMenuView: View {
-    
-    @State var isPresenting = false
-    @State var isPresentingLearn = false
-    @State var isPresentingQuiz = false
-    @State var isPresentingHelp = false
-    
-    @Environment(\.dismiss) var dismiss
-    
+
+    @EnvironmentObject private var router: AppRouter
+
     var body: some View {
         ZStack {
             Rectangle()
@@ -28,7 +23,7 @@ struct SongMenuView: View {
             VStack{
                 HStack{
                     Button {
-                        isPresenting = true
+                        router.popToRoot()
                     } label: {
                         Text("Menu")
                             .frame(width: 120, height: 80)
@@ -37,15 +32,11 @@ struct SongMenuView: View {
                             .cornerRadius(20)
                             .font(Font.headline)
                     }
-                    NavigationLink(destination: DashboardView()
-                        .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
-                            EmptyView()
-                        }
-                    
+
                     Spacer()
-                    
+
                     Button {
-                        isPresentingHelp = true
+                        router.push(.help)
                     } label: {
                         Text("?")
                             .frame(width: 80, height: 80)
@@ -54,11 +45,7 @@ struct SongMenuView: View {
                             .cornerRadius(20)
                             .font(Font.title)
                     }
-                    NavigationLink(destination: HelpPageView()
-                        .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                            EmptyView()
-                        }
-                    
+
                 }
                 .padding()
                 
@@ -92,12 +79,8 @@ struct SongMenuView: View {
                         .frame(alignment: .topLeading)
                     }
                     .onTapGesture {
-                        isPresentingLearn = true
+                        router.push(.songRepositoryLearn)
                     }
-                    NavigationLink(destination: SongRepositoryLearnView()
-                        .navigationBarBackButtonHidden(true), isActive: $isPresentingLearn) {
-                            EmptyView()
-                        }
 
                     Spacer()
                     
@@ -127,13 +110,9 @@ struct SongMenuView: View {
                         .frame(alignment: .topLeading)
                     }
                     .onTapGesture {
-                        isPresentingQuiz = true
+                        router.push(.songRepositoryQuiz)
                     }
-                    NavigationLink(destination: SongRepositoryQuizView()
-                        .navigationBarBackButtonHidden(true), isActive: $isPresentingQuiz) {
-                            EmptyView()
-                        }
-                    
+
                     Spacer()
                 }
                 Spacer()

@@ -10,15 +10,13 @@ import AVFoundation
 import Foundation
 
 struct SongQuizView: View {
-    @State private var isPresentingHelp = false
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject private var router: AppRouter
     @StateObject private var tilesViewModel = TilesViewModel()
-    
-    var songTitle: String
-    
-    @State private var isPresentingLevel = false
 
-    
+    var songTitle: String
+
+
     var body: some View {
         ZStack {
             Rectangle()
@@ -51,7 +49,7 @@ struct SongQuizView: View {
                     Spacer()
                     
                     Button {
-                        isPresentingHelp = true
+                        router.push(.help)
                     } label: {
                         Text("?")
                             .frame(width: 80, height: 80)
@@ -61,11 +59,7 @@ struct SongQuizView: View {
                             .font(Font.title)
                     }
                     .padding()
-                    NavigationLink(destination: HelpPageView()
-                        .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                            EmptyView()
-                        }
-                    
+
                 }
                 .padding([.leading, .trailing])
                 
@@ -112,7 +106,7 @@ struct SongQuizView: View {
                         .font(Font.body)
                 }
                 
-                PianikaStackQuizMini(viewModel: tilesViewModel)
+                PianikaStackQuizMini(viewModel: tilesViewModel, autoNavigateOnFinish: false)
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
@@ -122,8 +116,10 @@ struct SongQuizView: View {
             // Customize the function behavior based on songTitle
             tilesViewModel.getSongTitle(songTitle: songTitle)
         }
-        .onDisappear {
-            isPresentingLevel = false
+        .onChange(of: tilesViewModel.canNavigateToAfterQuizPage) { finished in
+            if finished, let level = tilesViewModel.currentLevel {
+                router.push(.afterQuiz(level: level, answers: tilesViewModel.answers, score: tilesViewModel.score))
+            }
         }
 
     }

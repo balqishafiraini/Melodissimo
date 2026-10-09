@@ -8,17 +8,14 @@
 import SwiftUI
 
 struct SongQuizScoreView: View {
-    @State var isPresenting = false
-    @State var isPresentingHelp = false
-    
+
     var score: Int
-    
+
     var songTitle: String
-    
-    @Environment(\.dismiss) var dismiss
-    
+
+    @EnvironmentObject private var router: AppRouter
+
     var body: some View {
-        NavigationView {
             ZStack {
                 Rectangle()
                     .fill(Color.yellow)
@@ -32,7 +29,7 @@ struct SongQuizScoreView: View {
                         Spacer()
                         
                         Button {
-                            isPresentingHelp = true
+                            router.push(.help)
                         } label: {
                             Text("?")
                                 .frame(width: 80, height: 80)
@@ -41,11 +38,7 @@ struct SongQuizScoreView: View {
                                 .cornerRadius(20)
                                 .font(Font.title)
                         }
-                        NavigationLink(destination: HelpPageView()
-                            .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                                EmptyView()
-                            }
-                        
+
                     }
                     .padding()
                     
@@ -80,8 +73,7 @@ struct SongQuizScoreView: View {
                             Spacer()
                             
                             Button {
-                                isPresenting = true
-                                
+                                router.pop(to: .songRepositoryQuiz)
                             } label: {
                                 Text("Menu")
                                     .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
@@ -90,13 +82,9 @@ struct SongQuizScoreView: View {
                                     .cornerRadius(20)
                                     .font(Font.title)
                             }
-                            NavigationLink(destination: SongRepositoryQuizView()
-                                .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
-                                    EmptyView()
-                                }
-                            
+
                             Spacer()
-                            
+
                         }
                         Spacer()
                         Image("alpanicaGlasses")
@@ -107,15 +95,13 @@ struct SongQuizScoreView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
-                
+
             }
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
             if score == 100 {
                 UserDefaults.standard.set(true, forKey: songTitle)
             }
         }
-        
+
     }
 }
