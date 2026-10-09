@@ -13,140 +13,27 @@ struct DashboardView: View {
     @ObservedObject private var progress = ProgressStore.shared
 
     var body: some View {
-        let shareText = NSLocalizedString("Learn melodica (pianika) in a more fun way with Melodissimo! Download it on the App Store (only available on iPad) https://s.id/GetMelodissimo", comment: "")
-
         NavigationStack(path: $router.path) {
-            VStack (alignment: .leading, spacing: 1){
-                HStack{
-                    HStack(spacing: 8) {
-                        Image(systemName: "flame.fill")
-                            .foregroundColor(.orange)
-                        Text("\(progress.currentStreak)")
-                            .foregroundColor(.white)
-                            .font(Font.headline)
-                    }
-                    .padding(.horizontal, 20)
-                    .frame(height: 80)
-                    .background(Capsule().fill(Color.darkGreen))
-
-                    Spacer()
-
-                    Button {
-                        router.push(.achievements)
-                    } label: {
-                        Image(systemName: "trophy.fill")
-                            .frame(width: 80, height: 80)
-                            .background(Color.yellow)
-                            .foregroundColor(Color.darkGreen)
-                            .cornerRadius(20)
-                            .font(Font.title)
-                    }
-                    .padding(.trailing)
-
-                    Button {
-                        router.push(.campaignMap)
-                    } label: {
-                        Text("Nusantara Tour")
-                            .frame(width: 260, height: 80)
-                            .background(Color.yellow)
-                            .foregroundColor(Color.darkGreen)
-                            .cornerRadius(20)
-                            .font(Font.headline)
-                    }
-                    .padding(.trailing)
-
-                    Button {
+            VStack(spacing: 20) {
+                topBar
+                tourCard
+                Spacer(minLength: 0)
+                HStack(spacing: 20) {
+                    HomeCard(title: "Daily Challenge", subtitle: "Coming soon", icon: "icon_stage_boss",
+                             fill: Color.vanila, text: Color.darkGreen, isEnabled: false) {}
+                    HomeCard(title: "Free Play", subtitle: "Songs, levels, Echo and Rush", icon: "icon_stage_echo",
+                             fill: Color.red, text: .white) {
                         router.push(.freePlay)
-                    } label: {
-                        Text("Free Play")
-                            .frame(width: 200, height: 80)
-                            .background(Color.yellow)
-                            .foregroundColor(Color.darkGreen)
-                            .cornerRadius(20)
-                            .font(Font.headline)
                     }
-                    .padding(.trailing)
-
-                    Button {
-                        // Finding the key window scene
-                        if let keyWindowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                            // Accessing the key window from the window scene
-                            if let rootViewController = keyWindowScene.windows.first?.rootViewController {
-                                let activityViewController = UIActivityViewController(activityItems: [shareText], applicationActivities: nil)
-
-                                // Adjust popover presentation on iPad
-                                activityViewController.popoverPresentationController?.sourceView = rootViewController.view
-                                activityViewController.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2, width: 0, height: 0)
-
-                                // Presenting the share sheet
-                                rootViewController.present(activityViewController, animated: true, completion: nil)
-                            }
-                        }
-                    } label: {
-                        Text("Share")
-                            .frame(width: 200, height: 80)
-                            .background(Color.yellow)
-                            .foregroundColor(Color.darkGreen)
-                            .cornerRadius(20)
-                            .font(Font.headline)
-                    }
-                    .padding(.trailing)
-
-                    Button {
-                        router.push(.help)
-                    } label: {
-                        Text("Help")
-                            .frame(width: 150, height: 80)
-                            .background(Color.darkGreen)
-                            .foregroundColor(.white)
-                            .cornerRadius(20)
-                            .font(Font.headline)
+                    HomeCard(title: "Learn", subtitle: "Notes, songs and a skill test", icon: "icon_stage_song",
+                             fill: Color.yellow, text: Color.darkGreen) {
+                        router.push(.learnHub)
                     }
                 }
-                .padding(.bottom)
-                Text("Hello! What do you want to learn today?")
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-                    #if DEBUG
-                    // Developer shortcut: long-press the title to open the Chart Recorder.
-                    .onLongPressGesture(minimumDuration: 1) {
-                        router.push(.chartRecorder)
-                    }
-                    #endif
-
-                Spacer()
-
-                HStack{
-                    Spacer()
-
-                    Button {
-                        router.push(.notationMenu)
-                    } label: {
-                        Image("notationMenuButton")
-                    }
-
-                    Spacer()
-
-                    Button {
-                        router.push(.songMenu)
-                    } label: {
-                        Image("songMenuButton")
-                    }
-
-                    Spacer()
-
-                    Button {
-                        router.push(.postplay)
-                    } label: {
-                        Image("postplayMenuButton")
-                    }
-
-                    Spacer()
-                }
-                Spacer()
+                .frame(height: 210)
             }
-            .padding()
-            .frame(height: UIScreen.main.bounds.height, alignment: .topLeading)
+            .padding(30)
+            .frame(height: UIScreen.main.bounds.height, alignment: .top)
             // Background (not a ZStack child) so the scaledToFill image can't widen the
             // layout past the screen on aspect ratios that differ from the artwork's.
             .background {
@@ -163,6 +50,159 @@ struct DashboardView: View {
             }
         }
         .environmentObject(router)
+    }
+
+    // MARK: Top bar
+
+    /// Streak and coins on the left; achievements, settings, help and share on the right.
+    private var topBar: some View {
+        HStack(spacing: 14) {
+            HStack(spacing: 8) {
+                Image(systemName: "flame.fill")
+                    .foregroundColor(.orange)
+                Text("\(progress.currentStreak)")
+                    .foregroundColor(.white)
+                    .font(Font.headline)
+            }
+            .padding(.horizontal, 20)
+            .frame(height: 72)
+            .background(Capsule().fill(Color.darkGreen))
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(Text("Day streak"))
+            #if DEBUG
+            // Developer shortcut: long-press the streak to open the Chart Recorder.
+            .onLongPressGesture(minimumDuration: 1) {
+                router.push(.chartRecorder)
+            }
+            #endif
+
+            // Placeholder until the coin balance exists (Task 6.1).
+            HStack(spacing: 8) {
+                AssetImage(name: "icon_coin", fallbackEmoji: "🪙")
+                    .frame(width: 38, height: 38)
+                Text("0")
+                    .font(Font.headline)
+                    .foregroundColor(Color.darkGreen)
+            }
+            .padding(.horizontal, 20)
+            .frame(height: 72)
+            .background(Capsule().fill(Color.yellow))
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(Text("Coins"))
+
+            Spacer()
+
+            iconButton("trophy.fill", label: "Achievements", fill: Color.yellow, tint: Color.darkGreen) {
+                router.push(.achievements)
+            }
+            // Placeholder until the settings screen exists (Task 6.4).
+            iconButton("gearshape.fill", label: "Settings", fill: Color.darkGreen, tint: .white) {}
+                .disabled(true)
+                .opacity(0.45)
+            iconButton("questionmark", label: "Help", fill: Color.darkGreen, tint: .white) {
+                router.push(.help)
+            }
+            iconButton("square.and.arrow.up", label: "Share", fill: Color.yellow, tint: Color.darkGreen) {
+                shareApp()
+            }
+        }
+    }
+
+    private func iconButton(_ symbol: String, label: LocalizedStringKey, fill: Color, tint: Color,
+                            action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .frame(width: 72, height: 72)
+                .background(fill)
+                .foregroundColor(tint)
+                .cornerRadius(20)
+                .font(Font.title2)
+        }
+        .accessibilityLabel(Text(label))
+    }
+
+    /// Opens the system share sheet with the app's invitation text.
+    private func shareApp() {
+        let shareText = NSLocalizedString("Learn melodica (pianika) in a more fun way with Melodissimo! Download it on the App Store (only available on iPad) https://s.id/GetMelodissimo", comment: "")
+        // Finding the key window scene
+        if let keyWindowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            // Accessing the key window from the window scene
+            if let rootViewController = keyWindowScene.windows.first?.rootViewController {
+                let activityViewController = UIActivityViewController(activityItems: [shareText], applicationActivities: nil)
+
+                // Adjust popover presentation on iPad
+                activityViewController.popoverPresentationController?.sourceView = rootViewController.view
+                activityViewController.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2, width: 0, height: 0)
+
+                // Presenting the share sheet
+                rootViewController.present(activityViewController, animated: true, completion: nil)
+            }
+        }
+    }
+
+    // MARK: Nusantara Tour card
+
+    /// The big call to action: which island the player is on, the next stage, and the tour's stars.
+    private var tourCard: some View {
+        let current = progress.currentStage
+        let chapter = CampaignCatalog.chapter(current.chapter)
+        return Button {
+            router.push(.campaignMap)
+        } label: {
+            HStack(spacing: 30) {
+                AlpanicaView(mood: .idle, hopTrigger: 0, height: 210)
+                    .frame(width: 230)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Nusantara Tour")
+                        .font(.custom("BalooDa-Regular", size: 52))
+                        .foregroundColor(.white)
+
+                    if progress.isTourComplete {
+                        Label("Tour Complete", systemImage: "checkmark.seal.fill")
+                            .font(.custom("BalooDa-Regular", size: 30))
+                            .foregroundColor(Color.yellow)
+                    } else {
+                        HStack(spacing: 10) {
+                            Image(systemName: chapter.symbol)
+                                .frame(width: 44, height: 44)
+                                .background(Circle().fill(Color(hex: chapter.tintHex)))
+                                .foregroundColor(.white)
+                            Text(chapter.name)
+                                .font(.custom("BalooDa-Regular", size: 32))
+                                .foregroundColor(.white)
+                        }
+                        HStack(spacing: 6) {
+                            Text("Up next:")
+                            Text(current.title)
+                        }
+                        .font(.headline)
+                        .foregroundColor(.white.opacity(0.9))
+                    }
+
+                    HStack(spacing: 6) {
+                        Image(systemName: "star.fill")
+                            .foregroundColor(Color.yellow)
+                        Text("\(progress.tourStars) / \(CampaignCatalog.allStages.count * 3)")
+                            .foregroundColor(.white)
+                    }
+                    .font(.title3)
+                }
+
+                Spacer(minLength: 0)
+
+                Text(progress.tourStars == 0 ? "Start" : "Continue")
+                    .font(.custom("BalooDa-Regular", size: 34))
+                    .foregroundColor(Color.darkGreen)
+                    .frame(width: 210, height: 76)
+                    .background(Capsule().fill(Color.yellow))
+            }
+            .padding(.horizontal, 36)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 240, maxHeight: 300)
+            .background(RoundedRectangle(cornerRadius: 40).fill(Color.darkGreen))
+            .shadow(color: .black.opacity(0.25), radius: 8, y: 4)
+        }
     }
 
     /// Maps each route to its screen. Centralised so there is a single source of
@@ -204,6 +244,8 @@ struct DashboardView: View {
             FreePlayView()
         case .campaignMap:
             CampaignMapView()
+        case .learnHub:
+            LearnHubView()
         case .chartRecorder:
             #if DEBUG
             ChartRecorderView()
@@ -227,5 +269,41 @@ struct DashboardView: View {
                 UnavailableModeView()
             }
         }
+    }
+}
+
+/// One of the three smaller cards on Home: a badge, a title and a line of detail.
+private struct HomeCard: View {
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
+    let icon: String
+    let fill: Color
+    let text: Color
+    var isEnabled = true
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 6) {
+                AssetImage(name: icon, fallbackEmoji: "🎵")
+                    .frame(width: 84, height: 84)
+                    .saturation(isEnabled ? 1 : 0)
+                Text(title)
+                    .font(.custom("BalooDa-Regular", size: 36))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                Text(subtitle)
+                    .font(.subheadline)
+                    .lineLimit(2)
+                    .opacity(0.9)
+            }
+            // A card that isn't open yet keeps its solid fill and only fades its contents.
+            .foregroundColor(text.opacity(isEnabled ? 1 : 0.55))
+            .padding(22)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background(RoundedRectangle(cornerRadius: 36).fill(fill))
+            .shadow(color: .black.opacity(0.2), radius: 6, y: 3)
+        }
+        .disabled(!isEnabled)
     }
 }

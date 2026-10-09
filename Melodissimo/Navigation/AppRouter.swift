@@ -35,6 +35,8 @@ enum Route: Hashable {
     case freePlay
     /// The Nusantara Tour map.
     case campaignMap
+    /// The lessons: notes, songs and the skill test.
+    case learnHub
 }
 
 /// Drives the app's single `NavigationStack`. Screens push routes and pop back

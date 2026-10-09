@@ -53,18 +53,18 @@ struct FreePlayView: View {
 
                 Grid(horizontalSpacing: 24, verticalSpacing: 24) {
                     GridRow {
-                        card("Songs", subtitle: "Pick any of the 18 songs", icon: "icon_stage_song") {
+                        HubCard(title: "Songs", subtitle: "Pick any of the 18 songs", icon: "icon_stage_song") {
                             router.push(.songRepositoryQuiz)
                         }
-                        card("Classic Levels", subtitle: "The 100 note-reading levels", icon: "icon_stage_battle") {
+                        HubCard(title: "Classic Levels", subtitle: "The 100 note-reading levels", icon: "icon_stage_battle") {
                             router.push(.notationLevelMenu)
                         }
                     }
                     GridRow {
-                        card("Echo", subtitle: echoSubtitle, icon: "icon_stage_echo") {
+                        HubCard(title: "Echo", subtitle: echoSubtitle, icon: "icon_stage_echo") {
                             isChoosingEchoLevel = true
                         }
-                        card("Melody Rush", subtitle: rushSubtitle, icon: "icon_stage_boss") {
+                        HubCard(title: "Melody Rush", subtitle: rushSubtitle, icon: "icon_stage_boss") {
                             router.push(.play(PlayRequest(kind: .rush)))
                         }
                     }
@@ -94,29 +94,5 @@ struct FreePlayView: View {
 
     private var rushSubtitle: LocalizedStringKey {
         progress.rushHighScore > 0 ? "High score \(progress.rushHighScore)" : "How far can you go?"
-    }
-
-    private func card(_ title: LocalizedStringKey, subtitle: LocalizedStringKey, icon: String,
-                      isEnabled: Bool = true, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 20) {
-                AssetImage(name: icon, fallbackEmoji: "🎵")
-                    .frame(width: 110, height: 110)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.custom("BalooDa-Regular", size: 44))
-                    Text(subtitle)
-                        .font(.headline)
-                        .opacity(0.9)
-                }
-                Spacer(minLength: 0)
-            }
-            .foregroundColor(.white)
-            .padding(24)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(RoundedRectangle(cornerRadius: 36).fill(isEnabled ? Color.green : Color.gray))
-            .opacity(isEnabled ? 1 : 0.7)
-        }
-        .disabled(!isEnabled)
     }
 }

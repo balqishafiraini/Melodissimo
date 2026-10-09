@@ -58,11 +58,20 @@ struct ResultRecorder {
 
         // A campaign stage keeps the best stars of any play that was launched from the map.
         if let stageId = result.request.campaignStageId {
+            let before = progress.stageStars(stageId)
             let gained = progress.recordStageStars(stageId, stars: result.stars)
-            if case .song = result.request.kind {
-                // Songs already report their own best-star gain.
+            if case .song(_, let mode, _, let isBoss, _, _) = result.request.kind {
+                // Songs already report their own best-star gain. Beating a boss for the first time
+                // (a star on a stage that had none) counts towards the Fals hunter.
+                if mode == .perform, isBoss, before == 0, result.stars >= 1 {
+                    progress.incrementBossesDefeated()
+                }
             } else {
                 summary.newStars = gained
+            }
+            // The first star on the national anthem finishes the tour.
+            if before == 0, result.stars >= 1, StoryCatalog.finaleStage()?.id == stageId {
+                progress.recordTourCompleted()
             }
         }
 

@@ -137,6 +137,14 @@ extension ProgressStore {
         objectWillChange.send()
     }
 
+    /// Song bosses beaten for the first time (feeds "Pemburu Fals").
+    var statBossesDefeated: Int { defaults.integer(forKey: "stat_bossesDefeated") }
+
+    func incrementBossesDefeated() {
+        defaults.set(statBossesDefeated + 1, forKey: "stat_bossesDefeated")
+        objectWillChange.send()
+    }
+
     // MARK: - Settings
 
     /// Whether key labels are shown while performing (off by default; Practice always starts with them on).
@@ -178,6 +186,50 @@ extension ProgressStore {
     /// Total stars over the whole tour.
     var tourStars: Int {
         CampaignCatalog.allStages.reduce(0) { $0 + stageStars($1.id) }
+    }
+
+    // MARK: - Story cards
+
+    private func storySeenKey(_ id: String) -> String {
+        "story_seen_\(id)"
+    }
+
+    /// Whether a story card (or the Tour Complete certificate) has already been shown.
+    func isStorySeen(_ id: String) -> Bool {
+        defaults.bool(forKey: storySeenKey(id))
+    }
+
+    func markStorySeen(_ id: String) {
+        defaults.set(true, forKey: storySeenKey(id))
+        objectWillChange.send()
+    }
+
+    /// The story cards to show on the map now, in story order.
+    var pendingStoryCards: [StoryCard] {
+        StoryCatalog.pending(currentChapter: currentStage.chapter, stars: stageStars, seen: isStorySeen)
+    }
+
+    /// Whether the Tour Complete certificate is waiting to be shown.
+    var isCertificatePending: Bool {
+        StoryCatalog.shouldShowCertificate(stars: stageStars, seen: isStorySeen)
+    }
+
+    /// When the finale first earned a star, printed on the certificate. `nil` until the tour is done.
+    var tourCompletedAt: Date? {
+        let seconds = defaults.double(forKey: "stat_tourCompletedAt")
+        return seconds > 0 ? Date(timeIntervalSince1970: seconds) : nil
+    }
+
+    /// Remembers the day the tour was completed. Only the first call counts.
+    func recordTourCompleted(on date: Date = Date()) {
+        guard tourCompletedAt == nil else { return }
+        defaults.set(date.timeIntervalSince1970, forKey: "stat_tourCompletedAt")
+        objectWillChange.send()
+    }
+
+    /// Every stage has at least one star.
+    var isTourComplete: Bool {
+        CampaignCatalog.allStages.allSatisfy { stageStars($0.id) >= 1 }
     }
 
     // MARK: - Chapter unlocking

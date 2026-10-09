@@ -40,6 +40,11 @@ struct StageResultView: View {
         }
     }
 
+    private var isBossSong: Bool {
+        if case .song(_, _, _, let isBoss, _, _) = result.request.kind { return isBoss }
+        return false
+    }
+
     private var isRush: Bool {
         if case .rush = result.request.kind { return true }
         return false
@@ -89,6 +94,10 @@ struct StageResultView: View {
                             .foregroundColor(Color.darkGreen)
                     } else if !isSong {
                         Text(result.didWin ? "Victory!" : "Try again!")
+                            .font(.custom("BalooDa-Regular", size: 28))
+                            .foregroundColor(Color.darkGreen)
+                    } else if isBossSong {
+                        Text(result.didWin ? "Boss defeated!" : "Try again!")
                             .font(.custom("BalooDa-Regular", size: 28))
                             .foregroundColor(Color.darkGreen)
                     }

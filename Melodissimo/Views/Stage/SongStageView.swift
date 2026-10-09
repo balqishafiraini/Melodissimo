@@ -62,7 +62,7 @@ struct SongStageView: View {
 
             VStack(spacing: 0) {
                 hud
-                    .frame(height: 72)
+                    .frame(height: isBoss ? 92 : 72)
 
                 NoteHighwayView(engine: engine, keyFrames: keyFrames,
                                 showsPopups: mode == .perform, isSolemn: isSolemn)
@@ -209,11 +209,26 @@ struct SongStageView: View {
 
             scoreArea
                 .foregroundColor(hudTextColor)
+
+            if isBoss {
+                BossBadgeView(kind: bossKind,
+                              health: mode == .perform ? bossHealth : nil,
+                              hitTrigger: engine.counts.perfect + engine.counts.great + engine.counts.good)
+            }
         }
         .padding(.horizontal, 24)
         .overlay(alignment: .bottom) {
             progressBar
         }
+    }
+
+    /// Which island's Fals this boss is: the chapter of the campaign stage (the first one in Free Play).
+    private var bossKind: Int {
+        campaignStageId.flatMap { CampaignCatalog.stage(id: $0)?.chapter } ?? 1
+    }
+
+    private var bossHealth: Double {
+        BossHealth.fraction(counts: engine.counts, totalNotes: engine.totalNotes)
     }
 
     @ViewBuilder

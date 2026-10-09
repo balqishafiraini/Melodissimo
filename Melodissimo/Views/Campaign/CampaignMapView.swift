@@ -11,6 +11,16 @@ struct CampaignMapView: View {
     @EnvironmentObject private var router: AppRouter
     @ObservedObject private var progress = ProgressStore.shared
     @State private var selectedStage: Stage?
+    /// The story card or certificate currently covering the map.
+    @State private var story: MapStory?
+    /// False once the player has left, so a pending card doesn't pop up behind another screen.
+    @State private var isOnScreen = true
+
+    /// What can cover the map: a story card, or the Tour Complete certificate.
+    private enum MapStory: Equatable {
+        case card(StoryCard)
+        case certificate
+    }
 
     private let panelWidth = screenWidth * 0.9
 
@@ -50,14 +60,68 @@ struct CampaignMapView: View {
                 }
             }
         }
-        .sheet(item: $selectedStage) { stage in
-            StageSheetView(stage: stage, stars: progress.stageStars(stage.id)) {
-                selectedStage = nil
-                // Let the sheet finish closing before the next screen is pushed.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { play(stage) }
+        .overlay {
+            if let story {
+                storyView(story)
+                    .transition(.opacity)
             }
+        }
+        .animation(.easeOut(duration: 0.25), value: story)
+        .onAppear {
+            isOnScreen = true
+            // A beat after arriving, so the avatar's hop to the new stage is seen before the story starts.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { showNextStory() }
+        }
+        .onDisappear { isOnScreen = false }
+        .sheet(item: $selectedStage) { stage in
+            StageSheetView(stage: stage,
+                           stars: progress.stageStars(stage.id),
+                           onPlay: {
+                               selectedStage = nil
+                               // Let the sheet finish closing before the next screen is pushed.
+                               DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { play(stage) }
+                           },
+                           onCertificate: showsCertificate(for: stage) ? {
+                               selectedStage = nil
+                               DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { story = .certificate }
+                           } : nil)
             .presentationDetents([.height(480)])
         }
+    }
+
+    // MARK: Story
+
+    @ViewBuilder
+    private func storyView(_ story: MapStory) -> some View {
+        switch story {
+        case .card(let card):
+            StoryCardView(card: card) {
+                progress.markStorySeen(card.id)
+                self.story = nil
+                // More cards may be waiting: a boss card is followed by the next island's first card.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { showNextStory() }
+            }
+        case .certificate:
+            CertificateView(progress: progress) {
+                progress.markStorySeen(StoryCatalog.certificateId)
+                self.story = nil
+            }
+        }
+    }
+
+    /// Shows the next unseen story card, then the certificate once every card has been seen.
+    private func showNextStory() {
+        guard isOnScreen, story == nil, selectedStage == nil else { return }
+        if let card = progress.pendingStoryCards.first {
+            story = .card(card)
+        } else if progress.isCertificatePending {
+            story = .certificate
+        }
+    }
+
+    private func showsCertificate(for stage: Stage) -> Bool {
+        if case .finale = stage.kind { return progress.stageStars(stage.id) >= 1 }
+        return false
     }
 
     // MARK: Pieces
@@ -230,14 +294,5 @@ private struct ChapterPanel: View {
                 }
             }
         }
-    }
-}
-
-private extension Color {
-    /// 0xRRGGBB, as stored in `Chapter.tintHex`.
-    init(hex: UInt32) {
-        self.init(red: Double((hex >> 16) & 0xFF) / 255,
-                  green: Double((hex >> 8) & 0xFF) / 255,
-                  blue: Double(hex & 0xFF) / 255)
     }
 }

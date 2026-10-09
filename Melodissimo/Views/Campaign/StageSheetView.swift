@@ -11,6 +11,8 @@ struct StageSheetView: View {
     let stage: Stage
     let stars: Int
     let onPlay: () -> Void
+    /// Set for the finale once it has a star, so the certificate can be opened again.
+    var onCertificate: (() -> Void)? = nil
 
     var body: some View {
         VStack(spacing: 18) {
@@ -46,6 +48,14 @@ struct StageSheetView: View {
                     .foregroundColor(.white)
                     .cornerRadius(20)
                     .font(Font.headline)
+            }
+
+            if let onCertificate {
+                Button(action: onCertificate) {
+                    Label("Certificate", systemImage: "rosette")
+                        .font(Font.headline)
+                        .foregroundColor(Color.darkGreen)
+                }
             }
         }
         .padding(30)
