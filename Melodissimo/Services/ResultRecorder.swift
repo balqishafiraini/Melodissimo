@@ -46,7 +46,13 @@ struct ResultRecorder {
             recordClassic(result, levelNo: levelNo)
         case .rush:
             summary.isNewBest = progress.recordRushScore(result.score)
-        case .battle, .echo, .daily:
+        case .echo(let config):
+            // `score` is the number of rounds cleared.
+            progress.recordEchoBestRounds(result.score)
+            if config.roundsToClear == nil {
+                summary.isNewBest = progress.recordEchoHighScore(result.score)
+            }
+        case .battle, .daily:
             break   // each mode records its own results in its own task
         }
 

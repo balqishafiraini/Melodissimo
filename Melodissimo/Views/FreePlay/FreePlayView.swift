@@ -10,6 +10,7 @@ import SwiftUI
 struct FreePlayView: View {
     @EnvironmentObject private var router: AppRouter
     @ObservedObject private var progress = ProgressStore.shared
+    @State private var isChoosingEchoLevel = false
 
     var body: some View {
         ZStack {
@@ -60,8 +61,9 @@ struct FreePlayView: View {
                         }
                     }
                     GridRow {
-                        // Echo opens up with Phase 4.
-                        card("Echo", subtitle: "Coming soon", icon: "icon_stage_echo", isEnabled: false) {}
+                        card("Echo", subtitle: echoSubtitle, icon: "icon_stage_echo") {
+                            isChoosingEchoLevel = true
+                        }
                         card("Melody Rush", subtitle: rushSubtitle, icon: "icon_stage_boss") {
                             router.push(.play(PlayRequest(kind: .rush)))
                         }
@@ -71,6 +73,23 @@ struct FreePlayView: View {
             }
             .padding(30)
         }
+        .confirmationDialog("Echo", isPresented: $isChoosingEchoLevel, titleVisibility: .visible) {
+            Button("Easy: the keys light up") { startEcho(glow: true) }
+            Button("Hard: listen only") { startEcho(glow: false) }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+
+    /// An endless Echo run over the middle notes (1 2 3 4 5 6 7 1˙); later rounds use phrases from real songs.
+    /// `PlayDestinationView` gives it a fresh seed every time.
+    private func startEcho(glow: Bool) {
+        let config = EchoConfig(pool: Array(5...12), roundsToClear: nil, startLength: 2, maxLength: 8,
+                                glowDuringPlayback: glow, useSongSnippets: true, seed: 0)
+        router.push(.play(PlayRequest(kind: .echo(config))))
+    }
+
+    private var echoSubtitle: LocalizedStringKey {
+        progress.echoHighScore > 0 ? "Best \(progress.echoHighScore) rounds" : "Hear it, play it back"
     }
 
     private var rushSubtitle: LocalizedStringKey {

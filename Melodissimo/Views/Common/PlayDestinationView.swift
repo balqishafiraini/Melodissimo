@@ -8,8 +8,16 @@ import SwiftUI
 /// Maps a `PlayRequest` to the screen that plays it. Each play mode adds its case here.
 struct PlayDestinationView: View {
     let request: PlayRequest
-    /// Melody Rush is different every time. The seed is chosen once per screen so a re-render can't change the notes.
-    @State private var rushSeed = UInt64.random(in: 1...UInt64.max)
+    /// Endless modes (Melody Rush, endless Echo) are different every time. The seed is chosen once per
+    /// screen so a re-render can't change the notes.
+    @State private var freshSeed = UInt64.random(in: 1...UInt64.max)
+
+    /// Stages keep their own fixed seed; an endless Echo run gets a fresh one each time.
+    private func echoConfig(_ config: EchoConfig) -> EchoConfig {
+        var fresh = config
+        if fresh.roundsToClear == nil { fresh.seed = freshSeed }
+        return fresh
+    }
 
     var body: some View {
         switch request.kind {
@@ -31,8 +39,10 @@ struct PlayDestinationView: View {
                 UnavailableModeView()
             }
         case .rush:
-            BattleView(request: request, config: .rush(seed: rushSeed))
-        case .echo, .daily:
+            BattleView(request: request, config: .rush(seed: freshSeed))
+        case .echo(let config):
+            EchoView(request: request, config: echoConfig(config))
+        case .daily:
             UnavailableModeView()
         }
     }

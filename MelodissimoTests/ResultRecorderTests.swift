@@ -206,3 +206,65 @@ final class RushRecordingTests: XCTestCase {
         XCTAssertEqual(progress.highestUnlockedLevel, 0)
     }
 }
+
+final class EchoRecordingTests: XCTestCase {
+
+    private var suiteName = ""
+    private var defaults: UserDefaults!
+    private var progress: ProgressStore!
+    private var recorder: ResultRecorder!
+
+    override func setUp() {
+        super.setUp()
+        suiteName = "EchoRecordingTests-\(UUID().uuidString)"
+        defaults = UserDefaults(suiteName: suiteName)
+        progress = ProgressStore(defaults: defaults)
+        recorder = ResultRecorder(progress: progress, evaluateAchievements: { [] })
+    }
+
+    override func tearDown() {
+        defaults.removePersistentDomain(forName: suiteName)
+        super.tearDown()
+    }
+
+    private func echo(rounds: Int, endless: Bool, won: Bool = false) -> PlayResult {
+        let config = EchoConfig(pool: [5, 6, 7], roundsToClear: endless ? nil : 3, seed: 1)
+        return PlayResult(request: PlayRequest(kind: .echo(config)), didWin: won, stars: won ? 3 : 0, score: rounds,
+                          accuracy: nil, maxCombo: 0, perfect: 0, great: 0, good: 0, miss: 0, wrong: 0)
+    }
+
+    func testAnEndlessRunSetsTheHighScoreAndTheBestRoundsStat() {
+        let summary = recorder.record(echo(rounds: 7, endless: true))
+        XCTAssertTrue(summary.isNewBest)
+        XCTAssertEqual(progress.echoHighScore, 7)
+        XCTAssertEqual(progress.statEchoBestRounds, 7)
+        XCTAssertEqual(defaults.integer(forKey: "echo_highScore"), 7)
+        XCTAssertEqual(defaults.integer(forKey: "stat_echoBestRounds"), 7)
+    }
+
+    func testOnlyABetterEndlessRunReplacesTheHighScore() {
+        recorder.record(echo(rounds: 9, endless: true))
+        XCTAssertFalse(recorder.record(echo(rounds: 5, endless: true)).isNewBest)
+        XCTAssertFalse(recorder.record(echo(rounds: 9, endless: true)).isNewBest)
+        XCTAssertEqual(progress.echoHighScore, 9)
+        XCTAssertTrue(recorder.record(echo(rounds: 10, endless: true)).isNewBest)
+    }
+
+    func testACampaignEchoFeedsTheStatButNotTheEndlessHighScore() {
+        let summary = recorder.record(echo(rounds: 5, endless: false, won: true))
+        XCTAssertFalse(summary.isNewBest)
+        XCTAssertEqual(progress.echoHighScore, 0)
+        XCTAssertEqual(progress.statEchoBestRounds, 5, "any Echo counts towards \"10 rounds in Echo\"")
+    }
+
+    func testTheBestRoundsStatNeverGoesDown() {
+        recorder.record(echo(rounds: 8, endless: true))
+        recorder.record(echo(rounds: 3, endless: false))
+        XCTAssertEqual(progress.statEchoBestRounds, 8)
+    }
+
+    func testEchoCountsForTheStreak() {
+        recorder.record(echo(rounds: 2, endless: true))
+        XCTAssertEqual(progress.currentStreak, 1)
+    }
+}

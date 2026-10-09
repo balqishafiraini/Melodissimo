@@ -45,6 +45,20 @@ struct StageResultView: View {
         return false
     }
 
+    /// Echo scores are rounds cleared, and an endless run can't be won, only extended.
+    private var isEndlessEcho: Bool {
+        if case .echo(let config) = result.request.kind { return config.roundsToClear == nil }
+        return false
+    }
+
+    private var isEcho: Bool {
+        if case .echo = result.request.kind { return true }
+        return false
+    }
+
+    /// Modes that end with "Game over" and a high score instead of stars.
+    private var isEndless: Bool { isRush || isEndlessEcho }
+
     private var isFullCombo: Bool {
         isSong && result.accuracy != nil && result.miss == 0 && result.wrong == 0
     }
@@ -68,8 +82,8 @@ struct StageResultView: View {
                         .foregroundColor(Color.darkGreen)
                         .lineLimit(1)
 
-                    if isRush {
-                        // Rush has no winning, only how far you got.
+                    if isEndless {
+                        // Endless modes have no winning, only how far you got.
                         Text("Game over")
                             .font(.custom("BalooDa-Regular", size: 28))
                             .foregroundColor(Color.darkGreen)
@@ -79,7 +93,7 @@ struct StageResultView: View {
                             .foregroundColor(Color.darkGreen)
                     }
 
-                    if !isRush {
+                    if !isEndless {
                         starsRow
                     }
                     badges
@@ -122,7 +136,7 @@ struct StageResultView: View {
         if rewards.isNewBest || isFullCombo {
             HStack(spacing: 12) {
                 if rewards.isNewBest {
-                    badge(isRush ? "NEW HIGH SCORE" : "New best!", color: Color.green)
+                    badge(isEndless ? "NEW HIGH SCORE" : "New best!", color: Color.green)
                 }
                 if isFullCombo {
                     badge("FULL COMBO", color: Color.red)
@@ -142,14 +156,18 @@ struct StageResultView: View {
 
     private var statsGrid: some View {
         HStack(spacing: 28) {
-            stat("Score", "\(result.score)")
+            stat(isEcho ? "Rounds" : "Score", "\(result.score)")
             // Songs report timing accuracy; battles carry their first-try percentage elsewhere.
             if isSong, let accuracy = result.accuracy {
                 stat("Accuracy", "\(Int(accuracy.rounded()))%")
             }
-            stat("Max combo", "\(result.maxCombo)")
+            if !isEcho {
+                stat("Max combo", "\(result.maxCombo)")
+            }
             if isRush {
                 stat("High score", "\(ProgressStore.shared.rushHighScore)")
+            } else if isEndlessEcho {
+                stat("High score", "\(ProgressStore.shared.echoHighScore)")
             }
         }
     }
@@ -239,7 +257,7 @@ struct StageResultView: View {
 
     /// Stars appear one by one; three stars also fire the confetti. A new Rush high score gets the confetti too.
     private func popInStars() {
-        if isRush, rewards.isNewBest {
+        if isEndless, rewards.isNewBest {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { confettiCounter += 1 }
         }
         guard result.stars > 0 else { return }

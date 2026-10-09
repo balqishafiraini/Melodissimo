@@ -96,7 +96,30 @@ extension ProgressStore {
         return true
     }
 
+    // MARK: - Echo
+
+    /// The most rounds cleared in one endless Echo run.
+    var echoHighScore: Int { defaults.integer(forKey: "echo_highScore") }
+
+    /// Keeps the best endless run. Returns `true` when `rounds` is a new high score.
+    @discardableResult
+    func recordEchoHighScore(_ rounds: Int) -> Bool {
+        guard rounds > echoHighScore else { return false }
+        defaults.set(rounds, forKey: "echo_highScore")
+        objectWillChange.send()
+        return true
+    }
+
     // MARK: - Stats (feed the achievements)
+
+    /// The most rounds cleared in any Echo play, endless or campaign (feeds "Telinga Emas").
+    var statEchoBestRounds: Int { defaults.integer(forKey: "stat_echoBestRounds") }
+
+    func recordEchoBestRounds(_ rounds: Int) {
+        guard rounds > statEchoBestRounds else { return }
+        defaults.set(rounds, forKey: "stat_echoBestRounds")
+        objectWillChange.send()
+    }
 
     /// Perform runs finished, over all songs.
     var statSongsPerformed: Int { defaults.integer(forKey: "stat_songsPerformed") }
