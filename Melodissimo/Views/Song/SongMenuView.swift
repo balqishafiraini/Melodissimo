@@ -93,7 +93,7 @@ struct SongMenuView: View {
                                 .resizable()
                                 .padding()
                                 .scaledToFit()
-                                .frame(height: UIScreen.main.bounds.height*0.3, alignment: .topLeading)
+                                .frame(height: UIScreen.main.bounds.height*0.23, alignment: .topLeading)
                                 
                             VStack(alignment: .leading) {
                                 Text("SONG")

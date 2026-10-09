@@ -92,7 +92,6 @@ struct SongQuizView: View {
                         }
                     }
                     .padding()
-                    .frame(minWidth: UIScreen.main.bounds.width)
                 }
                 
                 Button {
