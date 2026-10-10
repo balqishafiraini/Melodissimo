@@ -12,8 +12,8 @@ class AchievementStore: ObservableObject {
 
     static let shared = AchievementStore()
 
-    private let defaults = UserDefaults.standard
-    private let progress = ProgressStore.shared
+    private let defaults: UserDefaults
+    private let progress: ProgressStore
 
     @Published var achievements: [Achievement] = []
 
@@ -58,10 +58,42 @@ class AchievementStore: ObservableObject {
                        detail: "Taklukkan semua 100 level.", systemImage: "crown.fill") {
                 self.progress.clearedLevelCount >= 100
             },
+            // The game modes (Song Stage, Echo, the Nusantara Tour, Rush and the shop).
+            Definition(id: "first_show", title: "Panggung Pertama",
+                       detail: "Tampilkan lagu pertamamu di Panggung Lagu.", systemImage: "music.mic") {
+                self.progress.statSongsPerformed >= 1
+            },
+            Definition(id: "full_combo", title: "Tanpa Cela",
+                       detail: "Mainkan satu lagu tanpa meleset atau salah tekan.", systemImage: "checkmark.shield.fill") {
+                self.progress.statFullCombos >= 1
+            },
+            Definition(id: "golden_ear", title: "Telinga Emas",
+                       detail: "Capai 10 ronde di Gema.", systemImage: "ear.fill") {
+                self.progress.statEchoBestRounds >= 10
+            },
+            Definition(id: "fals_hunter", title: "Pemburu Fals",
+                       detail: "Kalahkan 3 bos Fals.", systemImage: "shield.fill") {
+                self.progress.statBossesDefeated >= 3
+            },
+            Definition(id: "sabang_merauke", title: "Dari Sabang Sampai Merauke",
+                       detail: "Tamatkan Tur Nusantara sampai Indonesia Raya.", systemImage: "flag.fill") {
+                self.progress.tourCompletedAt != nil
+            },
+            Definition(id: "rush_100", title: "Kilat",
+                       detail: "Raih skor 100 di Melody Rush.", systemImage: "bolt.fill") {
+                self.progress.rushHighScore >= 100
+            },
+            Definition(id: "collector", title: "Kolektor",
+                       detail: "Miliki 3 barang dari toko.", systemImage: "bag.fill") {
+                self.progress.purchasedShopItemCount >= 3
+            },
         ]
     }
 
-    private init() {
+    /// The app uses `shared`; tests inject a throwaway `UserDefaults` and a `ProgressStore` over the same suite.
+    init(defaults: UserDefaults = .standard, progress: ProgressStore = .shared) {
+        self.defaults = defaults
+        self.progress = progress
         reload()
     }
 

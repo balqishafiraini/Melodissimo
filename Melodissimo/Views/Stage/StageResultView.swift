@@ -115,6 +115,9 @@ struct StageResultView: View {
                         // Counts up once the stars have landed.
                         CoinCountUp(total: rewards.coins, delay: 0.8 + 0.45 * Double(result.stars))
                     }
+                    if !rewards.newAchievements.isEmpty {
+                        AchievementBanner(titles: rewards.newAchievements)
+                    }
                     if isSong {
                         breakdown
                     } else if result.didWin {

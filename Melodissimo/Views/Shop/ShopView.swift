@@ -13,6 +13,8 @@ struct ShopView: View {
 
     @State private var category: ShopCategory = .keyboard
     @State private var itemToBuy: ShopItem?
+    /// Achievements a purchase just unlocked (the Kolektor), shown for a few seconds.
+    @State private var unlockedTitles: [String] = []
 
     private let columns = [GridItem(.adaptive(minimum: 230), spacing: 20)]
 
@@ -37,6 +39,13 @@ struct ShopView: View {
                 }
             }
             .padding(30)
+        }
+        .overlay(alignment: .bottom) {
+            if !unlockedTitles.isEmpty {
+                AchievementBanner(titles: unlockedTitles)
+                    .padding(.bottom, 24)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
         .alert(Text("Buy \(itemToBuy?.name ?? "")?"),
                isPresented: Binding(get: { itemToBuy != nil }, set: { if !$0 { itemToBuy = nil } }),
@@ -176,6 +185,15 @@ struct ShopView: View {
         // Wear a new purchase right away, since that is what people want to see.
         if progress.buy(item) {
             progress.equip(item)
+            showUnlocked(AchievementStore.shared.evaluate().map(\.title))
+        }
+    }
+
+    private func showUnlocked(_ titles: [String]) {
+        guard !titles.isEmpty else { return }
+        withAnimation { unlockedTitles = titles }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+            withAnimation { unlockedTitles = [] }
         }
     }
 }
