@@ -37,9 +37,6 @@ struct SongStageView: View {
     let dailyDateKey: String?
     let showLabels: Bool
 
-    /// Seconds a note takes to fall to the hit line (a setting later on).
-    static let approachTime = 2.0
-
     /// `chart` plays a specific chart (the Chart Recorder's preview) instead of the song's bundled one.
     init(song: Song, mode: StageMode, speed: Double = 1, isBoss: Bool = false, isSolemn: Bool = false,
          noteLimit: Int? = nil, campaignStageId: String? = nil, showKeyLabels: Bool? = nil,
@@ -56,7 +53,10 @@ struct SongStageView: View {
         _engine = StateObject(wrappedValue: {
             var playedChart = chart ?? SongChart.load(for: song)
             if let noteLimit { playedChart.notes = Array(playedChart.notes.prefix(noteLimit)) }
-            return RhythmEngine(chart: playedChart, mode: mode, speed: speed, approachTime: SongStageView.approachTime)
+            // Read once per play: the settings screen can't be open while a stage is.
+            let settings = ProgressStore.shared
+            return RhythmEngine(chart: playedChart, mode: mode, speed: speed,
+                                approachTime: settings.approachTime, audioOffsetMs: settings.audioOffsetMs)
         }())
     }
 

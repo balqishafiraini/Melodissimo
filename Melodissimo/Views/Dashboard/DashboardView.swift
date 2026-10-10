@@ -85,10 +85,9 @@ struct DashboardView: View {
             iconButton("trophy.fill", label: "Achievements", fill: Color.yellow, tint: Color.darkGreen) {
                 router.push(.achievements)
             }
-            // Placeholder until the settings screen exists (Task 6.4).
-            iconButton("gearshape.fill", label: "Settings", fill: Color.darkGreen, tint: .white) {}
-                .disabled(true)
-                .opacity(0.45)
+            iconButton("gearshape.fill", label: "Settings", fill: Color.darkGreen, tint: .white) {
+                router.push(.settings)
+            }
             iconButton("questionmark", label: "Help", fill: Color.darkGreen, tint: .white) {
                 router.push(.help)
             }
@@ -261,6 +260,8 @@ struct DashboardView: View {
             LearnHubView()
         case .shop:
             ShopView()
+        case .settings:
+            SettingsView()
         case .chartRecorder:
             #if DEBUG
             ChartRecorderView()

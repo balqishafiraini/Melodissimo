@@ -39,6 +39,8 @@ enum Route: Hashable {
     case learnHub
     /// Spend coins on keyboard skins, note skins and outfits.
     case shop
+    /// Note speed, key labels, audio timing and reset.
+    case settings
 }
 
 /// Drives the app's single `NavigationStack`. Screens push routes and pop back

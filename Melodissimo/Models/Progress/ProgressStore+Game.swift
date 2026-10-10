@@ -156,6 +156,75 @@ extension ProgressStore {
         }
     }
 
+    /// The speeds the settings offer for how long a note takes to fall, in seconds (longer = slower = easier).
+    static let approachTimeChoices: [Double] = [1.5, 2.0, 2.5, 3.0]
+    static let defaultApproachTime = 2.0
+
+    /// Seconds a note takes to fall from the top of the highway to the hit line.
+    var approachTime: Double {
+        get {
+            guard let stored = defaults.object(forKey: "settings_approachTime") as? Double,
+                  Self.approachTimeChoices.contains(stored) else { return Self.defaultApproachTime }
+            return stored
+        }
+        set {
+            defaults.set(newValue, forKey: "settings_approachTime")
+            objectWillChange.send()
+        }
+    }
+
+    /// Milliseconds the engine shifts the song clock when judging a press, −150…+150 (default 0).
+    /// Positive forgives taps that arrive late.
+    var audioOffsetMs: Int {
+        get {
+            min(max(defaults.integer(forKey: "settings_audioOffsetMs"), AudioCalibration.offsetRange.lowerBound),
+                AudioCalibration.offsetRange.upperBound)
+        }
+        set {
+            let clamped = min(max(newValue, AudioCalibration.offsetRange.lowerBound), AudioCalibration.offsetRange.upperBound)
+            defaults.set(clamped, forKey: "settings_audioOffsetMs")
+            objectWillChange.send()
+        }
+    }
+
+    // MARK: - Reset
+
+    /// Keys that hold progress and are removed whole by a reset. Everything else a reset removes is
+    /// matched by `resettablePrefixes`.
+    private static let resettableKeys: Set<String> = [
+        "currentLevel", "bestCombo", "currentStreak", "longestStreak", "lastPlayedDate",
+        "preplayScore", "postplayScore",
+        "campaign_grantedChapter",
+        "coins_earnedTotal", "coins_spentTotal",
+        "shop_owned", "equip_keyboard", "equip_notes", "equip_outfit",
+        "rush_highScore", "echo_highScore",
+    ]
+
+    private static let resettablePrefixes = [
+        "bestScore_", "achievement_", "song_", "stage_stars_", "daily_done_", "story_seen_", "stat_",
+    ]
+
+    /// Whether a reset removes this key. Everything in the persistence list except the classic levels'
+    /// question sets (`Level1…Level100`), `isPreplayDone` and the settings, which are preferences rather
+    /// than progress. Song titles are the trophy flags.
+    static func isResettableKey(_ key: String, songTitles: Set<String> = Set(SongLibrary.all.map(\.title))) -> Bool {
+        resettableKeys.contains(key)
+            || resettablePrefixes.contains { key.hasPrefix($0) }
+            || songTitles.contains(key)
+    }
+
+    /// Wipes the player's progress: levels, stars, streaks, coins, purchases, trophies, achievements
+    /// and every game record. Keeps the question sets, the pre-play test flag and the settings.
+    func resetProgress() {
+        let titles = Set(SongLibrary.all.map(\.title))
+        for key in defaults.dictionaryRepresentation().keys where Self.isResettableKey(key, songTitles: titles) {
+            defaults.removeObject(forKey: key)
+        }
+        objectWillChange.send()
+        // A fresh profile starts the tour at chapter 1 again.
+        runMigrationIfNeeded()
+    }
+
     // MARK: - Campaign stages
 
     private func stageStarsKey(_ stageId: String) -> String {
