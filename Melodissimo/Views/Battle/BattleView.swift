@@ -23,6 +23,8 @@ struct BattleView: View {
     /// False once the player has left, so a pending hop to the results can't hit the wrong screen.
     @State private var isOnScreen = true
     @State private var hasFinished = false
+    /// The first stage's three coach-mark bubbles, shown over the battle before the first question.
+    @State private var isCoaching = false
 
     private let ticker = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
 
@@ -52,9 +54,19 @@ struct BattleView: View {
                                   // Answers register on finger lift, so a player can slide to aim.
                                   if isRelease { viewModel.answer(keyId: id, now: CACurrentMediaTime()) }
                               })
+                    .coachTarget(.keyboard)
             }
             .ignoresSafeArea(edges: .bottom)
             .offset(x: nudge)
+        }
+        .overlayPreferenceValue(CoachTargetKey.self) { anchors in
+            GeometryReader { geo in
+                if isCoaching {
+                    CoachMarkOverlay(steps: CoachMarks.firstStage,
+                                     frames: anchors.mapValues { geo[$0] },
+                                     onFinish: finishCoaching)
+                }
+            }
         }
         .onReceive(ticker) { _ in
             viewModel.step(now: CACurrentMediaTime())
@@ -67,6 +79,11 @@ struct BattleView: View {
         }
         .onAppear {
             isOnScreen = true
+            // A new player's first stage has no timer, so the question can wait while the bubbles are read.
+            isCoaching = viewModel.config.timePerNote == nil
+                && CoachMarks.shouldShow(stageId: request.campaignStageId,
+                                         stars: ProgressStore.shared.stageStars(CoachMarks.firstStageId),
+                                         seen: ProgressStore.shared.isCoachSeen(CoachMarks.seenId))
             viewModel.start(now: CACurrentMediaTime())
         }
         .onDisappear {
@@ -82,7 +99,9 @@ struct BattleView: View {
                 router.pop()
             } label: {
                 Text("< Back")
-                    .frame(width: 120, height: 64)
+                    .lineLimit(1)
+                    .padding(.horizontal, 14)
+                    .frame(minWidth: 120, minHeight: 64, maxHeight: 64)
                     .background(Color.darkGreen)
                     .foregroundColor(.white)
                     .cornerRadius(20)
@@ -90,6 +109,7 @@ struct BattleView: View {
             }
 
             HeartsView(hearts: viewModel.hearts, maxHearts: max(viewModel.config.hearts, 3))
+                .coachTarget(.hearts)
 
             Spacer()
 
@@ -168,7 +188,13 @@ struct BattleView: View {
         .padding(.horizontal, 28)
         .padding(.vertical, 18)
         .background(SpeechBubble().fill(Color.white))
+        .coachTarget(.question)
         .frame(height: height, alignment: .center)
+    }
+
+    private func finishCoaching() {
+        ProgressStore.shared.markCoachSeen(CoachMarks.seenId)
+        withAnimation { isCoaching = false }
     }
 
     // MARK: Reactions

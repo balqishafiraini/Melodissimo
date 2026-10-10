@@ -30,7 +30,7 @@ struct NotationQuizLevelMenuView: View {
                 VStack {
                     ZStack {
                         VStack(spacing: 4) {
-                            Text("Menu Level")
+                            Text("Classic Levels")
                                 .foregroundColor(.white)
                                 .font(Font.largeTitle)
                             HStack(spacing: 6) {

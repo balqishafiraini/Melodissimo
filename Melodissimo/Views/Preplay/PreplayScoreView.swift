@@ -81,14 +81,14 @@ struct PreplayScoreView: View {
                                 UserDefaults.standard.set(score, forKey: "preplayScore")
                                 
                             } label: {
-                                Text("Menu")
+                                Text("Start the Tour")
                                     .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
                                     .background(Color.yellow)
                                     .foregroundColor(Color.red)
                                     .cornerRadius(20)
                                     .font(Font.title)
                             }
-                            NavigationLink(destination: DashboardView()
+                            NavigationLink(destination: DashboardView(startsFirstStage: true)
                                 .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
                                     EmptyView()
                                 }

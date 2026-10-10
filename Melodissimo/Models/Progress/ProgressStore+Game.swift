@@ -210,7 +210,7 @@ extension ProgressStore {
     ]
 
     private static let resettablePrefixes = [
-        "bestScore_", "achievement_", "song_", "stage_stars_", "daily_done_", "story_seen_", "stat_",
+        "bestScore_", "achievement_", "song_", "stage_stars_", "daily_done_", "story_seen_", "coach_seen_", "stat_",
     ]
 
     /// Whether a reset removes this key. Everything in the persistence list except the classic levels'
@@ -321,6 +321,18 @@ extension ProgressStore {
         if lastDay == today { return max(currentStreak, 1) }
         let gap = calendar.dateComponents([.day], from: lastDay, to: today).day ?? 0
         return gap == 1 ? currentStreak + 1 : 1
+    }
+
+    // MARK: - Coach marks
+
+    /// Whether a set of coach-mark bubbles (see `CoachMarks`) has already been shown.
+    func isCoachSeen(_ id: String) -> Bool {
+        defaults.bool(forKey: "coach_seen_\(id)")
+    }
+
+    func markCoachSeen(_ id: String) {
+        defaults.set(true, forKey: "coach_seen_\(id)")
+        objectWillChange.send()
     }
 
     // MARK: - Story cards

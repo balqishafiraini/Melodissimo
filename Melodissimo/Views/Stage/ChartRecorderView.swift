@@ -57,7 +57,9 @@ struct ChartRecorderView: View {
         HStack {
             Button { router.pop() } label: {
                 Text("< Back")
-                    .frame(width: 120, height: 64)
+                    .lineLimit(1)
+                    .padding(.horizontal, 14)
+                    .frame(minWidth: 120, minHeight: 64, maxHeight: 64)
                     .background(Color.darkGreen)
                     .foregroundColor(.white)
                     .cornerRadius(20)

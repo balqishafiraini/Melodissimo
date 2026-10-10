@@ -28,7 +28,9 @@ struct AchievementsView: View {
                             dismiss()
                         } label: {
                             Text("< Back")
-                                .frame(width: 120, height: 60)
+                                .lineLimit(1)
+                                .padding(.horizontal, 14)
+                                .frame(minWidth: 120, minHeight: 60, maxHeight: 60)
                                 .background(Color.yellow)
                                 .foregroundColor(Color.darkGreen)
                                 .cornerRadius(20)
@@ -40,7 +42,7 @@ struct AchievementsView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "flame.fill")
                                 .foregroundColor(.orange)
-                            Text("\(progress.currentStreak) hari")
+                            Text("\(progress.currentStreak) days")
                                 .foregroundColor(.white)
                                 .font(.headline)
                         }

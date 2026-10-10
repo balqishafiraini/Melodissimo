@@ -12,6 +12,10 @@ struct DashboardView: View {
     @StateObject private var router = AppRouter()
     @ObservedObject private var progress = ProgressStore.shared
 
+    /// Set when the pre-play test has just finished: Home takes the new player straight to the first stage.
+    var startsFirstStage = false
+    @State private var hasStartedFirstStage = false
+
     var body: some View {
         NavigationStack(path: $router.path) {
             VStack(spacing: 20) {
@@ -42,6 +46,7 @@ struct DashboardView: View {
                     .ignoresSafeArea()
             }
             .toolbar(.hidden, for: .navigationBar)
+            .onAppear(perform: startFirstStageIfNeeded)
             .navigationDestination(for: Route.self) { route in
                 destination(for: route)
                     .navigationBarBackButtonHidden(true)
@@ -49,6 +54,23 @@ struct DashboardView: View {
             }
         }
         .environmentObject(router)
+    }
+
+    // MARK: First stage
+
+    /// After the pre-play test a new player lands on stage `c1-01` (with the map underneath, so Next and
+    /// Back lead somewhere sensible), where three coach-mark bubbles explain the screen.
+    private func startFirstStageIfNeeded() {
+        guard startsFirstStage, !hasStartedFirstStage else { return }
+        hasStartedFirstStage = true
+        guard progress.tourStars == 0, !progress.isCoachSeen(CoachMarks.seenId),
+              let stage = CampaignCatalog.stage(id: CoachMarks.firstStageId),
+              case .battle(let config) = stage.kind else { return }
+        // A beat after arriving, so Home is seen to open before the stage slides in.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            router.push(.campaignMap)
+            router.push(.play(PlayRequest(kind: .battle(config), campaignStageId: stage.id)))
+        }
     }
 
     // MARK: Top bar

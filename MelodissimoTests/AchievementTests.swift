@@ -36,15 +36,16 @@ final class AchievementTests: XCTestCase {
         }
     }
 
-    func testTheNewBadgesUseTheIndonesianTitlesFromThePlan() {
+    func testTheNewBadgesCarryTheTitlesFromThePlan() {
+        // The titles are English keys; the Indonesian ones from the plan are in id.lproj (see LocalizationTests).
         let titles = Dictionary(uniqueKeysWithValues: store.achievements.map { ($0.id, $0.title) })
-        XCTAssertEqual(titles["first_show"], "Panggung Pertama")
-        XCTAssertEqual(titles["full_combo"], "Tanpa Cela")
-        XCTAssertEqual(titles["golden_ear"], "Telinga Emas")
-        XCTAssertEqual(titles["fals_hunter"], "Pemburu Fals")
-        XCTAssertEqual(titles["sabang_merauke"], "Dari Sabang Sampai Merauke")
-        XCTAssertEqual(titles["rush_100"], "Kilat")
-        XCTAssertEqual(titles["collector"], "Kolektor")
+        XCTAssertEqual(titles["first_show"], "First Show")
+        XCTAssertEqual(titles["full_combo"], "Flawless")
+        XCTAssertEqual(titles["golden_ear"], "Golden Ear")
+        XCTAssertEqual(titles["fals_hunter"], "Fals Hunter")
+        XCTAssertEqual(titles["sabang_merauke"], "From Sabang to Merauke")
+        XCTAssertEqual(titles["rush_100"], "Lightning")
+        XCTAssertEqual(titles["collector"], "Collector")
     }
 
     func testEveryBadgeHasADetailAndASymbol() {
@@ -140,8 +141,8 @@ final class AchievementTests: XCTestCase {
         let result = PlayResult(request: request, didWin: true, stars: 3, score: 9_000, accuracy: 99, maxCombo: 30,
                                 perfect: 30, great: 0, good: 0, miss: 0, wrong: 0)
         let summary = recorder.record(result)
-        XCTAssertTrue(summary.newAchievements.contains("Panggung Pertama"))
-        XCTAssertTrue(summary.newAchievements.contains("Tanpa Cela"))
+        XCTAssertTrue(summary.newAchievements.contains("First Show"))
+        XCTAssertTrue(summary.newAchievements.contains("Flawless"))
     }
 
     func testResettingProgressLetsTheBadgesBeEarnedAgain() {

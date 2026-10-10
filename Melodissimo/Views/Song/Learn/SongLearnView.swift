@@ -32,7 +32,9 @@ struct SongLearnView: View {
                         dismiss()
                     } label: {
                         Text("< Back")
-                            .frame(width: 120, height: 80)
+                            .lineLimit(1)
+                            .padding(.horizontal, 14)
+                            .frame(minWidth: 120, minHeight: 80, maxHeight: 80)
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
                             .cornerRadius(20)
