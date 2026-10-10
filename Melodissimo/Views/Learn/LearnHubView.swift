@@ -25,7 +25,7 @@ struct LearnHubView: View {
                         .foregroundColor(Color.darkGreen)
 
                     HStack {
-                        Button {
+                        SoundButton {
                             router.pop()
                         } label: {
                             Text("Menu")
@@ -36,7 +36,7 @@ struct LearnHubView: View {
                                 .font(Font.headline)
                         }
                         Spacer()
-                        Button {
+                        SoundButton {
                             router.push(.help)
                         } label: {
                             Text("?")

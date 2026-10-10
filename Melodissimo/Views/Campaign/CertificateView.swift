@@ -98,7 +98,7 @@ struct CertificateView: View {
                                 .font(Font.headline)
                         }
                     }
-                    Button(action: onClose) {
+                    SoundButton(action: onClose) {
                         Text("Done")
                             .frame(width: 220, height: 64)
                             .background(Color.darkGreen)

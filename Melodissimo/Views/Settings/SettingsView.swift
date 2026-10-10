@@ -30,6 +30,7 @@ struct SettingsView: View {
                     VStack(spacing: 20) {
                         noteSpeedCard
                         labelsCard
+                        soundCard
                         audioCard
                         resetCard
                         aboutCard
@@ -65,7 +66,7 @@ struct SettingsView: View {
                 .foregroundColor(Color.darkGreen)
 
             HStack {
-                Button {
+                SoundButton {
                     router.pop()
                 } label: {
                     Text("< Back")
@@ -104,7 +105,7 @@ struct SettingsView: View {
         card("Note speed") {
             HStack(spacing: 12) {
                 ForEach(ProgressStore.approachTimeChoices, id: \.self) { seconds in
-                    Button {
+                    SoundButton {
                         progress.approachTime = seconds
                     } label: {
                         Text(String(format: "%.1f s", seconds))
@@ -136,6 +137,24 @@ struct SettingsView: View {
         }
     }
 
+    // MARK: Sound effects
+
+    private var soundCard: some View {
+        card("Sound effects") {
+            Toggle(isOn: Binding(get: { progress.sfxEnabled }, set: { newValue in
+                progress.sfxEnabled = newValue
+                // A click when switching them on, so you can hear that it worked.
+                if newValue { SFX.play(.button) }
+            })) {
+                Text("Sound effects on")
+                    .font(Font.headline)
+                    .foregroundColor(Color.darkGreen)
+            }
+            .tint(Color.darkGreen)
+            caption("Hits, clicks and coins. The pianika notes always play.")
+        }
+    }
+
     // MARK: Audio timing
 
     private var audioCard: some View {
@@ -154,7 +173,7 @@ struct SettingsView: View {
                     .accessibilityValue(Text(Self.offsetText(progress.audioOffsetMs)))
             }
             HStack(spacing: 14) {
-                Button {
+                SoundButton {
                     isCalibrating = true
                 } label: {
                     Text("Tap to the beat")
@@ -165,7 +184,7 @@ struct SettingsView: View {
                         .cornerRadius(18)
                         .font(Font.headline)
                 }
-                Button {
+                SoundButton {
                     progress.audioOffsetMs = 0
                 } label: {
                     Text("Reset")
@@ -191,7 +210,7 @@ struct SettingsView: View {
 
     private var resetCard: some View {
         card("Reset progress") {
-            Button {
+            SoundButton {
                 isConfirmingReset = true
             } label: {
                 Text("Reset progress")
@@ -225,6 +244,9 @@ struct SettingsView: View {
                 .font(Font.headline)
                 .foregroundColor(Color.darkGreen)
             Text("Version \(Self.versionText)")
+                .font(.subheadline)
+                .foregroundColor(Color.darkGreen.opacity(0.75))
+            Text("Sound effects: Kenney.nl (CC0)")
                 .font(.subheadline)
                 .foregroundColor(Color.darkGreen.opacity(0.75))
         }

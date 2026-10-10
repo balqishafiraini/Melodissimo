@@ -22,7 +22,7 @@ private var isAudioSessionConfigured = false
 // Configure the shared audio session for playback so notes are audible even when
 // the device's mute switch is on. Runs once, lazily, before the first sound plays.
 // A small IO buffer keeps tap-to-sound latency low, which matters for the rhythm game.
-private func configureAudioSessionIfNeeded() {
+func configureAudioSessionIfNeeded() {
     guard !isAudioSessionConfigured else { return }
     let session = AVAudioSession.sharedInstance()
     do {

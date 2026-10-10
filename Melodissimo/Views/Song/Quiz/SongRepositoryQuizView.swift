@@ -35,7 +35,7 @@ struct SongRepositoryQuizView: View {
                         .font(Font.largeTitle)
 
                     HStack{
-                        Button {
+                        SoundButton {
                             router.pop(to: .songMenu)
                         } label: {
                             Text("Menu")
@@ -48,7 +48,7 @@ struct SongRepositoryQuizView: View {
 
                         Spacer()
 
-                        Button {
+                        SoundButton {
                             router.push(.help)
                         } label: {
                             Text("?")
@@ -70,7 +70,7 @@ struct SongRepositoryQuizView: View {
                         spacing: 20
                     ) {
                         ForEach(filteredSongLevels) { level in
-                            Button {
+                            SoundButton {
                                 router.push(.stageSetup(songId: SongLibrary.slug(for: level.songTitle ?? "")))
                             } label: {
                                 VStack(spacing: 1) {

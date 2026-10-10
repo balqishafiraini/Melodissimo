@@ -27,7 +27,7 @@ struct FreePlayView: View {
                         .foregroundColor(Color.darkGreen)
 
                     HStack {
-                        Button {
+                        SoundButton {
                             router.pop()
                         } label: {
                             Text("Menu")
@@ -38,7 +38,7 @@ struct FreePlayView: View {
                                 .font(Font.headline)
                         }
                         Spacer()
-                        Button {
+                        SoundButton {
                             router.push(.help)
                         } label: {
                             Text("?")

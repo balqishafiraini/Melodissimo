@@ -66,7 +66,7 @@ struct ShopView: View {
                 .foregroundColor(Color.darkGreen)
 
             HStack {
-                Button {
+                SoundButton {
                     router.pop()
                 } label: {
                     Text("Menu")
@@ -85,7 +85,7 @@ struct ShopView: View {
     private var tabs: some View {
         HStack(spacing: 14) {
             ForEach(ShopCategory.allCases, id: \.self) { tab in
-                Button {
+                SoundButton {
                     category = tab
                 } label: {
                     Text(Self.title(of: tab))
@@ -148,7 +148,7 @@ struct ShopView: View {
                 .foregroundColor(Color.green)
                 .font(.headline)
         } else if progress.owns(item) {
-            Button {
+            SoundButton {
                 progress.equip(item)
             } label: {
                 Text("Equip")
@@ -161,7 +161,7 @@ struct ShopView: View {
             }
         } else {
             let canAfford = progress.coinBalance >= item.price
-            Button {
+            SoundButton {
                 itemToBuy = item
             } label: {
                 HStack(spacing: 8) {
@@ -185,6 +185,7 @@ struct ShopView: View {
         // Wear a new purchase right away, since that is what people want to see.
         if progress.buy(item) {
             progress.equip(item)
+            SFX.play(.coin)
             showUnlocked(AchievementStore.shared.evaluate().map(\.title))
         }
     }

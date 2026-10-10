@@ -41,7 +41,7 @@ struct StageSheetView: View {
                 }
             }
 
-            Button(action: onPlay) {
+            SoundButton(action: onPlay) {
                 Text("Play")
                     .frame(width: 240, height: 64)
                     .background(Color.darkGreen)
@@ -51,7 +51,7 @@ struct StageSheetView: View {
             }
 
             if let onCertificate {
-                Button(action: onCertificate) {
+                SoundButton(action: onCertificate) {
                     Label("Certificate", systemImage: "rosette")
                         .font(Font.headline)
                         .foregroundColor(Color.darkGreen)

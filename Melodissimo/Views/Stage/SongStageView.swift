@@ -114,6 +114,16 @@ struct SongStageView: View {
         }
         .onChange(of: engine.wrongPresses) { _ in
             flashWrongKeyIfPracticing()
+            playEffect(.wrong)
+        }
+        .onChange(of: engine.counts.perfect) { _ in
+            if mode == .perform { playEffect(.perfect) }
+        }
+        .onChange(of: engine.counts.miss) { _ in
+            if mode == .perform { playEffect(.miss) }
+        }
+        .task(id: engine.phase) {
+            await tickThroughCountIn()
         }
         .onChange(of: engine.combo) { combo in
             pulseComboIfMilestone(combo)
@@ -150,6 +160,28 @@ struct SongStageView: View {
     private var pressedFromOutside: Set<Int> {
         guard mode == .listen, let key = engine.hintKeyId else { return [] }
         return [key]
+    }
+
+    /// Plays a sound effect, except on the solemn songs, which stay quiet.
+    private func playEffect(_ effect: SFX.Effect) {
+        guard !isSolemn else { return }
+        SFX.play(effect)
+    }
+
+    /// A tick on each 3-2-1 of the count-in. Cancelled when the phase changes (pause, start), so
+    /// a resume starts the ticking again from the current number.
+    private func tickThroughCountIn() async {
+        guard engine.phase == .countIn, !isSolemn else { return }
+        let secondsPerBeat = engine.countInDuration / RhythmEngine.countInBeats
+        var lastNumber = 0
+        while !Task.isCancelled, engine.phase == .countIn {
+            let songTime = engine.songTime(now: CACurrentMediaTime())
+            if let count = CountIn.display(songTime: songTime, secondsPerBeat: secondsPerBeat), count.number != lastNumber {
+                lastNumber = count.number
+                SFX.play(.tick)
+            }
+            try? await Task.sleep(nanoseconds: 20_000_000)
+        }
     }
 
     /// Every tenth hit the combo number swells and settles, which is also when the multiplier steps up.
@@ -212,7 +244,7 @@ struct SongStageView: View {
     /// progress bar along the bottom edge.
     private var hud: some View {
         HStack(spacing: 16) {
-            Button {
+            SoundButton {
                 engine.pause(now: CACurrentMediaTime())
             } label: {
                 Image(systemName: "pause.fill")
@@ -333,17 +365,17 @@ struct SongStageView: View {
                 Text("Paused")
                     .font(.custom("BalooDa-Regular", size: 48))
                     .foregroundColor(Color.darkGreen)
-                Button {
+                SoundButton {
                     engine.resume(now: CACurrentMediaTime())
                 } label: {
                     overlayButtonLabel("Resume", filled: true)
                 }
-                Button {
+                SoundButton {
                     engine.restart(now: CACurrentMediaTime())
                 } label: {
                     overlayButtonLabel("Restart", filled: false)
                 }
-                Button {
+                SoundButton {
                     router.pop()
                 } label: {
                     overlayButtonLabel("Quit", filled: false)
@@ -410,12 +442,12 @@ struct SongStageView: View {
                 Text("Nice listening!")
                     .font(.custom("BalooDa-Regular", size: 48))
                 overlayRow {
-                    Button {
+                    SoundButton {
                         router.replaceTop(with: .play(request(for: .practice)))
                     } label: {
                         finishedButtonLabel("Try Practice →", filled: true)
                     }
-                    Button {
+                    SoundButton {
                         router.pop()
                     } label: {
                         finishedButtonLabel("< Back", filled: false)
@@ -427,12 +459,12 @@ struct SongStageView: View {
                 Text("Perform is unlocked")
                     .font(.headline)
                 overlayRow {
-                    Button {
+                    SoundButton {
                         router.replaceTop(with: .play(request(for: .perform)))
                     } label: {
                         finishedButtonLabel("Perform →", filled: true)
                     }
-                    Button {
+                    SoundButton {
                         router.pop()
                     } label: {
                         finishedButtonLabel("< Back", filled: false)

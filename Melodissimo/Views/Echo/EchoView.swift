@@ -64,6 +64,7 @@ struct EchoView: View {
         }
         .onChange(of: viewModel.roundsCleared) { _ in
             setMood(.happy, for: 0.9)
+            SFX.play(.star)
         }
         .onChange(of: viewModel.phase) { phase in
             if phase == .won || phase == .lost { finish() }
@@ -92,7 +93,7 @@ struct EchoView: View {
 
     private var topBar: some View {
         HStack(spacing: 20) {
-            Button {
+            SoundButton {
                 router.pop()
             } label: {
                 Text("< Back")
@@ -208,6 +209,7 @@ struct EchoView: View {
         case .wrong:
             flash(wrong: outcome.keyId)
             setMood(.sad, for: 0.8)
+            SFX.play(.wrong)
         }
     }
 

@@ -57,7 +57,7 @@ struct StageSetupView: View {
 
     private var topBar: some View {
         HStack {
-            Button {
+            SoundButton {
                 router.pop()
             } label: {
                 Text("< Back")
@@ -127,7 +127,7 @@ struct StageSetupView: View {
                 .foregroundColor(Color.darkGreen)
             HStack(spacing: 12) {
                 ForEach(Self.speeds, id: \.value) { option in
-                    Button {
+                    SoundButton {
                         speed = option.value
                     } label: {
                         Text(option.title)
@@ -171,7 +171,7 @@ struct StageSetupView: View {
     }
 
     private func modeButton(_ mode: StageMode, title: LocalizedStringKey, symbol: String, color: Color, locked: Bool = false) -> some View {
-        Button {
+        SoundButton {
             start(mode)
         } label: {
             VStack(spacing: 8) {

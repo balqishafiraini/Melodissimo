@@ -24,7 +24,7 @@ struct AchievementsView: View {
                         .foregroundColor(.white)
 
                     HStack {
-                        Button {
+                        SoundButton {
                             dismiss()
                         } label: {
                             Text("< Back")

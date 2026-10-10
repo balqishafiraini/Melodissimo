@@ -99,7 +99,7 @@ struct DashboardView: View {
 
     private func iconButton(_ symbol: String, label: LocalizedStringKey, fill: Color, tint: Color,
                             action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+        SoundButton(action: action) {
             Image(systemName: symbol)
                 .frame(width: 72, height: 72)
                 .background(fill)
@@ -158,7 +158,7 @@ struct DashboardView: View {
     private var tourCard: some View {
         let current = progress.currentStage
         let chapter = CampaignCatalog.chapter(current.chapter)
-        return Button {
+        return SoundButton {
             router.push(.campaignMap)
         } label: {
             HStack(spacing: 30) {
@@ -301,7 +301,7 @@ private struct HomeCard: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        SoundButton(action: action) {
             VStack(alignment: .leading, spacing: 6) {
                 AssetImage(name: icon, fallbackEmoji: "🎵")
                     .frame(width: 84, height: 84)

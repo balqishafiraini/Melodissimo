@@ -156,6 +156,15 @@ extension ProgressStore {
         }
     }
 
+    /// Whether the game's sound effects play (on by default). The note samples always play.
+    var sfxEnabled: Bool {
+        get { defaults.object(forKey: "settings_sfxEnabled") as? Bool ?? true }
+        set {
+            defaults.set(newValue, forKey: "settings_sfxEnabled")
+            objectWillChange.send()
+        }
+    }
+
     /// The speeds the settings offer for how long a note takes to fall, in seconds (longer = slower = easier).
     static let approachTimeChoices: [Double] = [1.5, 2.0, 2.5, 3.0]
     static let defaultApproachTime = 2.0

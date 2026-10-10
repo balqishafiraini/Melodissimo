@@ -15,6 +15,8 @@ struct CampaignMapView: View {
     @State private var story: MapStory?
     /// False once the player has left, so a pending card doesn't pop up behind another screen.
     @State private var isOnScreen = true
+    /// The stage the player was up to when the map last appeared, to tell when a new one has opened.
+    @State private var lastSeenStageId: String?
 
     /// What can cover the map: a story card, or the Tour Complete certificate.
     private enum MapStory: Equatable {
@@ -69,6 +71,12 @@ struct CampaignMapView: View {
         .animation(.easeOut(duration: 0.25), value: story)
         .onAppear {
             isOnScreen = true
+            // The avatar hops to a stage that has just opened: a little fanfare as it lands.
+            let currentId = progress.currentStage.id
+            if let last = lastSeenStageId, last != currentId {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { if isOnScreen { SFX.play(.unlock) } }
+            }
+            lastSeenStageId = currentId
             // A beat after arriving, so the avatar's hop to the new stage is seen before the story starts.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { showNextStory() }
         }
@@ -143,7 +151,7 @@ struct CampaignMapView: View {
             }
 
             HStack {
-                Button {
+                SoundButton {
                     router.pop()
                 } label: {
                     Text("Menu")
@@ -154,7 +162,7 @@ struct CampaignMapView: View {
                         .font(Font.headline)
                 }
                 Spacer()
-                Button {
+                SoundButton {
                     router.push(.help)
                 } label: {
                     Text("?")

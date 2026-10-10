@@ -17,7 +17,7 @@ struct HubCard: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        SoundButton(action: action) {
             HStack(spacing: 20) {
                 AssetImage(name: icon, fallbackEmoji: "🎵")
                     .frame(width: 110, height: 110)

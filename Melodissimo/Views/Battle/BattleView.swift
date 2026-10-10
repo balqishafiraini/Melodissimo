@@ -78,7 +78,7 @@ struct BattleView: View {
 
     private var topBar: some View {
         HStack(spacing: 20) {
-            Button {
+            SoundButton {
                 router.pop()
             } label: {
                 Text("< Back")
@@ -179,8 +179,10 @@ struct BattleView: View {
         switch outcome.kind {
         case .correct:
             setMood(.attack, for: 0.6)
+            SFX.play(.monsterHit)
         case .wrong, .timeout:
             setMood(.sad, for: 0.8)
+            SFX.play(.playerHurt)
             if let key = viewModel.revealKeyId {
                 playSound(key: NoteCatalog.note(key).sound)
             }

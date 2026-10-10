@@ -43,7 +43,7 @@ struct NotationQuizLevelMenuView: View {
                         }
 
                         HStack {
-                            Button {
+                            SoundButton {
                                 router.pop(to: .notationMenu)
                             } label: {
                                 Text("Menu")
@@ -56,7 +56,7 @@ struct NotationQuizLevelMenuView: View {
 
                             Spacer()
 
-                            Button {
+                            SoundButton {
                                 router.push(.help)
                             } label: {
                                 Text("?")
@@ -88,7 +88,7 @@ struct NotationQuizLevelMenuView: View {
                                 ForEach(1..<101, id: \.self) { index in
                                     let isLevelEnabled = index <= currentLevel + 1
                                     let earnedStars = progress.stars(category: "notation", level: index)
-                                    Button {
+                                    SoundButton {
                                         if isLevelEnabled {
                                             router.push(.play(PlayRequest(kind: .classic(levelNo: index))))
                                         }

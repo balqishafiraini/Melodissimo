@@ -43,7 +43,7 @@ struct StoryCardView: View {
                         .frame(width: 200, height: 210)
                 }
 
-                Button(action: onContinue) {
+                SoundButton(action: onContinue) {
                     Text("Continue")
                         .frame(width: 260, height: 64)
                         .background(Color.darkGreen)

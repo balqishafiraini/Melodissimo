@@ -277,7 +277,7 @@ struct StageResultView: View {
     }
 
     private func resultButton(_ title: LocalizedStringKey, filled: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+        SoundButton(action: action) {
             Text(title)
                 .frame(width: 190, height: 64)
                 .background(filled ? Color.darkGreen : Color.yellow)
@@ -294,10 +294,19 @@ struct StageResultView: View {
         if isEndless, rewards.isNewBest {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { confettiCounter += 1 }
         }
+        // The coins start counting once the stars have landed, and a badge or a high score gets its fanfare after.
+        let landed = 0.4 + 0.45 * Double(result.stars)
+        if rewards.coins > 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + landed + 0.4) { SFX.play(.coin) }
+        }
+        if !rewards.newAchievements.isEmpty || (isEndless && rewards.isNewBest) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + landed + 0.9) { SFX.play(.unlock) }
+        }
         guard result.stars > 0 else { return }
         for star in 1...result.stars {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4 + 0.45 * Double(star)) {
                 shownStars = star
+                SFX.play(.star)
                 if star == 3 { confettiCounter += 1 }
             }
         }

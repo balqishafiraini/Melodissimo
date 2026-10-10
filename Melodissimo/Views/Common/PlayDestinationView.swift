@@ -65,7 +65,7 @@ struct UnavailableModeView: View {
                 Text("Coming soon")
                     .font(.custom("BalooDa-Regular", size: 48))
                     .foregroundColor(Color.darkGreen)
-                Button {
+                SoundButton {
                     router.pop()
                 } label: {
                     Text("< Back")
