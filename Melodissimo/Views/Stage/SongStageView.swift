@@ -18,6 +18,7 @@ import SwiftUI
 struct SongStageView: View {
     @EnvironmentObject private var router: AppRouter
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @StateObject private var engine: RhythmEngine
     /// Key frames in window coordinates, from the keyboard, so the highway lanes line up with the keys.
     @State private var keyFrames: [Int: CGRect] = [:]
@@ -26,6 +27,10 @@ struct SongStageView: View {
     /// False once the player has left, so a pending hop to the results screen can't hit the wrong screen.
     @State private var isOnScreen = true
     @State private var hasRecordedResult = false
+    /// When each key was last pressed, for the highway's lane flash.
+    @State private var laneFlashes = LaneFlashes()
+    /// The combo text's scale: it pops on every tenth hit.
+    @State private var comboScale: CGFloat = 1
 
     let song: Song
     let mode: StageMode
@@ -69,14 +74,19 @@ struct SongStageView: View {
                     .frame(height: isBoss ? 92 : 72)
 
                 NoteHighwayView(engine: engine, keyFrames: keyFrames,
-                                showsPopups: mode == .perform, isSolemn: isSolemn)
+                                showsPopups: mode == .perform, isSolemn: isSolemn,
+                                laneFlashes: isSolemn ? nil : laneFlashes, reduceMotion: reduceMotion)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(isSolemn ? Color.navy.opacity(0.55) : Color.black.opacity(0.35))
 
                 PianoKeyboard(metrics: .stage,
                               showLabels: showLabels,
                               highlights: highlights,
-                              onNoteOn: { engine.press(keyId: $0, now: CACurrentMediaTime()) },
+                              onNoteOn: { keyId in
+                                  let now = CACurrentMediaTime()
+                                  laneFlashes.press(keyId: keyId, at: now)
+                                  engine.press(keyId: keyId, now: now)
+                              },
                               onKeyFrames: { frames in
                                   if frames != keyFrames { keyFrames = frames }
                               },
@@ -104,6 +114,9 @@ struct SongStageView: View {
         }
         .onChange(of: engine.wrongPresses) { _ in
             flashWrongKeyIfPracticing()
+        }
+        .onChange(of: engine.combo) { combo in
+            pulseComboIfMilestone(combo)
         }
         .onChange(of: engine.phase) { newPhase in
             if newPhase == .finished { finish() }
@@ -137,6 +150,16 @@ struct SongStageView: View {
     private var pressedFromOutside: Set<Int> {
         guard mode == .listen, let key = engine.hintKeyId else { return [] }
         return [key]
+    }
+
+    /// Every tenth hit the combo number swells and settles, which is also when the multiplier steps up.
+    /// Solemn songs and Reduce Motion skip it.
+    private func pulseComboIfMilestone(_ combo: Int) {
+        guard ComboPulse.isMilestone(combo), !isSolemn, !reduceMotion else { return }
+        withAnimation(.easeOut(duration: 0.1)) { comboScale = 1.6 }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.45)) { comboScale = 1 }
+        }
     }
 
     private func flashWrongKeyIfPracticing() {
@@ -255,6 +278,7 @@ struct SongStageView: View {
                             .font(.subheadline)
                         Text("\(engine.combo)")
                             .font(.custom("BalooDa-Regular", size: 22))
+                            .scaleEffect(comboScale, anchor: .leading)
                     }
                 }
             }

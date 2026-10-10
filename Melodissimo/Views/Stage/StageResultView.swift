@@ -142,11 +142,19 @@ struct StageResultView: View {
         HStack(spacing: 12) {
             ForEach(0..<3, id: \.self) { index in
                 let isShown = index < shownStars
-                Image(systemName: isShown ? "star.fill" : "star")
-                    .font(.custom("BalooDa-Regular", size: 64))
-                    .foregroundColor(isShown ? Color.yellow : Color.darkGreen.opacity(0.3))
-                    .scaleEffect(isShown || reduceMotion ? 1 : 0.5)
-                    .animation(reduceMotion ? .easeIn(duration: 0.2) : .spring(response: 0.4, dampingFraction: 0.45), value: shownStars)
+                // The empty star stays; the gold one stamps down on top of it, big and tilted, then settles.
+                // With Reduce Motion it only fades in.
+                ZStack {
+                    Image(systemName: "star")
+                        .foregroundColor(Color.darkGreen.opacity(0.3))
+                    Image(systemName: "star.fill")
+                        .foregroundColor(Color.yellow)
+                        .scaleEffect(isShown || reduceMotion ? 1 : 2.4)
+                        .rotationEffect(.degrees(isShown || reduceMotion ? 0 : -25))
+                        .opacity(isShown ? 1 : 0)
+                }
+                .font(.custom("BalooDa-Regular", size: 64))
+                .animation(reduceMotion ? .easeIn(duration: 0.2) : .spring(response: 0.35, dampingFraction: 0.5), value: shownStars)
             }
         }
     }

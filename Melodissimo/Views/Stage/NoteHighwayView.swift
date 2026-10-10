@@ -20,6 +20,10 @@ struct NoteHighwayView: View {
     var showsPopups = true
     /// Solemn songs show a quiet check mark for a hit instead of judgment words, and nothing for a miss.
     var isSolemn = false
+    /// When each key was last pressed, for the lane flash. `nil` draws no flash.
+    var laneFlashes: LaneFlashes?
+    /// Reduce Motion: no particles, only fades.
+    var reduceMotion = false
 
     /// The equipped falling-note skin, read once when the stage opens.
     private let noteSkin = NoteSkin.equipped
@@ -91,6 +95,7 @@ struct NoteHighwayView: View {
         let hitY = size.height - Self.hitLineInset
 
         drawLanes(&context, size: size, originX: originX)
+        drawLaneFlashes(&context, hitY: hitY, originX: originX)
         drawHitLine(&context, size: size, hitY: hitY)
 
         // White-key notes first so the narrower black-key notes sit on top of them.
@@ -101,7 +106,40 @@ struct NoteHighwayView: View {
         }
 
         if showsPopups {
+            drawBursts(&context, hitY: hitY, originX: originX)
             drawPopups(&context, hitY: hitY, originX: originX)
+        }
+    }
+
+    /// A key-down lights its lane from the hit line upward and fades over `LaneFlashes.duration`.
+    /// Solemn songs stay calm, so they pass no `laneFlashes`.
+    private func drawLaneFlashes(_ context: inout GraphicsContext, hitY: CGFloat, originX: CGFloat) {
+        guard let laneFlashes else { return }
+        for flash in laneFlashes.active(at: CACurrentMediaTime()) {
+            guard let keyFrame = keyFrames[flash.keyId] else { continue }
+            let rect = CGRect(x: keyFrame.minX - originX, y: 0, width: keyFrame.width, height: hitY)
+            var layer = context
+            layer.opacity = 0.28 * (1 - flash.progress)
+            layer.fill(Path(rect), with: .color(.white))
+        }
+    }
+
+    /// Small circles fanning out of the hit line on a Perfect. None for solemn songs or with Reduce Motion.
+    private func drawBursts(_ context: inout GraphicsContext, hitY: CGFloat, originX: CGFloat) {
+        guard !isSolemn, !reduceMotion else { return }
+        let now = CACurrentMediaTime()
+        for event in engine.recentEvents where event.judgment == .perfect {
+            let age = now - event.hostTime
+            guard age >= 0, age < HitBurst.duration, let keyFrame = keyFrames[event.keyId] else { continue }
+            let centre = CGPoint(x: keyFrame.midX - originX, y: hitY)
+            let seed = event.keyId &+ Int(event.hostTime * 1000)
+            for (index, particle) in HitBurst.particles(progress: age / HitBurst.duration, seed: seed).enumerated() {
+                var layer = context
+                layer.opacity = particle.opacity
+                let dot = CGRect(x: centre.x + particle.dx - particle.radius, y: centre.y + particle.dy - particle.radius,
+                                 width: particle.radius * 2, height: particle.radius * 2)
+                layer.fill(Path(ellipseIn: dot), with: .color(index.isMultiple(of: 2) ? Color.yellow : .white))
+            }
         }
     }
 
