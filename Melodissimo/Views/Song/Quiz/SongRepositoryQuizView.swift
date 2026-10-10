@@ -36,7 +36,7 @@ struct SongRepositoryQuizView: View {
 
                     HStack{
                         SoundButton {
-                            router.pop(to: .songMenu)
+                            router.popToRoot()
                         } label: {
                             Text("Menu")
                                 .frame(width: 120, height: 80)

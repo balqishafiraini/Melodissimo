@@ -44,7 +44,7 @@ struct NotationQuizLevelMenuView: View {
 
                         HStack {
                             SoundButton {
-                                router.pop(to: .notationMenu)
+                                router.popToRoot()
                             } label: {
                                 Text("Menu")
                                     .frame(width: 120, height: 80)

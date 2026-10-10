@@ -9,16 +9,11 @@ import SwiftUI
 /// Carrying payloads here (instead of pushing fresh `NavigationView`s) keeps the
 /// game flow on one stack so screens push and pop instead of piling up.
 enum Route: Hashable {
-    case notationMenu
-    case songMenu
     case notationLearn
     case songRepositoryLearn
     case songLearn(songTitle: String)
     case notationLevelMenu
-    case notationQuiz(levelNo: Int)
     case songRepositoryQuiz
-    case songQuiz(songTitle: String)
-    case afterQuiz(level: LevelModel, answers: [Int], score: Int)
     case help
     case achievements
     case postplay

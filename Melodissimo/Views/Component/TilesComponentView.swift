@@ -338,40 +338,14 @@ struct PianikaStackQuiz: View {
 
     @ObservedObject var viewModel: TilesViewModel
 
-    /// Legacy flows (preplay/postplay) still push the result screen from here via a
-    /// `NavigationLink`. The router-driven game flow sets this to `false` and pushes
-    /// the result route itself, so there's no double navigation.
-    var autoNavigateOnFinish = true
-
     var body: some View {
-        if autoNavigateOnFinish {
-            NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers, userScore: viewModel.score).navigationBarBackButtonHidden(true), isActive: $viewModel.canNavigateToAfterQuizPage) {
-                Text("")
-            }
+        // The pre-play and post-play tests push their score screen from here.
+        NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers, userScore: viewModel.score).navigationBarBackButtonHidden(true), isActive: $viewModel.canNavigateToAfterQuizPage) {
+            Text("")
         }
 
         // In a quiz, the key the finger lifts on is the submitted answer.
         PianoKeyboard(metrics: .full, showLabels: false, onNoteOff: { id, isRelease in
-            if isRelease { viewModel.addAnswer(id) }
-        })
-    }
-}
-
-struct PianikaStackQuizMini: View {
-
-    @ObservedObject var viewModel: TilesViewModel
-
-    /// See `PianikaStackQuiz.autoNavigateOnFinish`.
-    var autoNavigateOnFinish = true
-
-    var body: some View {
-        if autoNavigateOnFinish {
-            NavigationLink(destination: AfterQuizView(level: viewModel.currentLevel, userAnswer: viewModel.answers, userScore: viewModel.score).navigationBarBackButtonHidden(true), isActive: $viewModel.canNavigateToAfterQuizPage) {
-                Text("")
-            }
-        }
-
-        PianoKeyboard(metrics: .mini, showLabels: false, onNoteOff: { id, isRelease in
             if isRelease { viewModel.addAnswer(id) }
         })
     }

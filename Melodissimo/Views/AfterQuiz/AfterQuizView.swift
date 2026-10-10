@@ -1,5 +1,5 @@
 //
-//  PreplayScoreView.swift
+//  AfterQuizView.swift
 //  Melodissimo
 //
 //  Created by Balqis on 31/10/23.
@@ -8,6 +8,8 @@
 import SwiftUI
 import Foundation
 
+/// Where the old-style quiz ends: the score screen of the pre-play or post-play skill test.
+/// (The classic levels and the songs now end on `StageResultView`.)
 struct AfterQuizView: View {
     var level: LevelModel?
     var userAnswer: [Int]
@@ -15,27 +17,11 @@ struct AfterQuizView: View {
 
     var body: some View {
         if level?.levelCategory == "preplay" {
-            return AnyView(PreplayScoreView(score: userScore))
-        } else if level?.levelCategory == "notation" {
-            if level?.answer == userAnswer {
-                if (level?.levelNo ?? 0) % 5 == 0 {
-                    return AnyView(NotationQuizFiveLevelPassedView(level: level))
-                } else {
-                    return AnyView(NotationQuizCorrectAnswerView(level: level))
-                }
-            } else {
-                return AnyView(NotationQuizIncorrectAnswerView(level: level))
-            }
-        } else if level?.levelCategory == "song" {
-            return AnyView(SongQuizScoreView(score: userScore, songTitle: level?.songTitle ?? ""))
-        }else if level?.levelCategory == "postplay" {
-            return AnyView(PostplayScoreView(score: userScore))
+            PreplayScoreView(score: userScore)
+        } else if level?.levelCategory == "postplay" {
+            PostplayScoreView(score: userScore)
         } else {
-            return AnyView(EmptyView())
+            EmptyView()
         }
     }
 }
-
-
-
-

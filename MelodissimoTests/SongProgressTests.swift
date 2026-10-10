@@ -86,11 +86,11 @@ final class AppRouterTests: XCTestCase {
 
     func testReplaceTopSwapsTheLastScreen() {
         let router = AppRouter()
-        router.push(.songMenu)
+        router.push(.freePlay)
         router.push(.stageSetup(songId: "a"))
         router.push(.play(PlayRequest(kind: .rush)))
         router.replaceTop(with: .help)
-        XCTAssertEqual(router.path, [.songMenu, .stageSetup(songId: "a"), .help])
+        XCTAssertEqual(router.path, [.freePlay, .stageSetup(songId: "a"), .help])
         router.pop()
         XCTAssertEqual(router.path.last, .stageSetup(songId: "a"), "Back skips the replaced screen")
     }
@@ -103,11 +103,11 @@ final class AppRouterTests: XCTestCase {
 
     func testPopToKeepsTheTargetOnTop() {
         let router = AppRouter()
-        router.push(.songMenu)
+        router.push(.freePlay)
         router.push(.help)
         router.push(.achievements)
         router.pop(to: .help)
-        XCTAssertEqual(router.path, [.songMenu, .help])
+        XCTAssertEqual(router.path, [.freePlay, .help])
         router.pop(to: .postplay)                            // not on the stack: back to the root
         XCTAssertTrue(router.path.isEmpty)
     }

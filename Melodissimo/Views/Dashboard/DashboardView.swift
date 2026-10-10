@@ -244,10 +244,6 @@ struct DashboardView: View {
     @ViewBuilder
     private func destination(for route: Route) -> some View {
         switch route {
-        case .notationMenu:
-            NotationMenuView()
-        case .songMenu:
-            SongMenuView()
         case .notationLearn:
             NotationLearnView()
         case .songRepositoryLearn:
@@ -256,14 +252,8 @@ struct DashboardView: View {
             SongLearnView(songTitle: songTitle)
         case .notationLevelMenu:
             NotationQuizLevelMenuView()
-        case .notationQuiz(let levelNo):
-            NotationQuizView(levelNo: levelNo)
         case .songRepositoryQuiz:
             SongRepositoryQuizView()
-        case .songQuiz(let songTitle):
-            SongQuizView(songTitle: songTitle)
-        case .afterQuiz(let level, let answers, let score):
-            AfterQuizView(level: level, userAnswer: answers, userScore: score)
         case .help:
             HelpPageView()
         case .achievements:

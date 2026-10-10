@@ -28,6 +28,22 @@ struct NoteHighwayView: View {
     /// The equipped falling-note skin, read once when the stage opens.
     private let noteSkin = NoteSkin.equipped
 
+    /// The keys this song actually uses. Only their labels are built as canvas symbols: the symbols are
+    /// rebuilt every frame, and a song uses 8 to 15 of the 32 keys.
+    private let usedKeyIds: [Int]
+
+    init(engine: RhythmEngine, keyFrames: [Int: CGRect], labelsOnNotes: Bool = true, showsPopups: Bool = true,
+         isSolemn: Bool = false, laneFlashes: LaneFlashes? = nil, reduceMotion: Bool = false) {
+        self.engine = engine
+        self.keyFrames = keyFrames
+        self.labelsOnNotes = labelsOnNotes
+        self.showsPopups = showsPopups
+        self.isSolemn = isSolemn
+        self.laneFlashes = laneFlashes
+        self.reduceMotion = reduceMotion
+        self.usedKeyIds = Array(Set(engine.notes.map(\.keyId))).sorted()
+    }
+
     /// How long a judgment popup rises and fades.
     static let popupDuration = 0.5
 
@@ -44,7 +60,8 @@ struct NoteHighwayView: View {
                 Canvas { context, size in
                     draw(&context, size: size, originX: originX, frameDate: frameDate)
                 } symbols: {
-                    ForEach(NoteCatalog.all) { note in
+                    ForEach(usedKeyIds, id: \.self) { keyId in
+                        let note = NoteCatalog.note(keyId)
                         Text(note.label)
                             .font(.custom("BalooDa-Regular", size: 22))
                             .foregroundColor(note.isBlack ? .white : .darkGreen)
