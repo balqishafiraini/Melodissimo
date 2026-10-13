@@ -67,7 +67,13 @@ struct SongLearnView: View {
                 
                 ScrollView {
                     ZStack {
-                        if let songNotImg = tilesViewModel.currentLevel?.songNotImg {
+                        if let song = SongLibrary.song(title: songTitle) {
+                            // Drawn from the chart, so it matches the song stage and the backing track.
+                            NotAngkaSheetView(chart: SongChart.load(for: song))
+                                .padding()
+                                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.5)
+                                .background(RoundedRectangle(cornerRadius: 30).fill(Color.white))
+                        } else if let songNotImg = tilesViewModel.currentLevel?.songNotImg {
                             Image(songNotImg)
                                 .resizable()
                                 .padding()

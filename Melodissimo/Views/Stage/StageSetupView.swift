@@ -86,9 +86,7 @@ struct StageSetupView: View {
     }
 
     private var notationCard: some View {
-        Image(song.notationImage)
-            .resizable()
-            .scaledToFit()
+        NotAngkaSheetView(chart: SongChart.load(for: song))
             .padding(16)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(RoundedRectangle(cornerRadius: 30).fill(Color.white))
