@@ -254,6 +254,131 @@ pickup: 1
     print("selftest OK")
 
 
+VIDEO_URL = "https://www.youtube.com/watch?v=8zULnhUmem4"
+FULL_DURATION = 2819.0
+
+# Approximate start (s) of each song and the window (s) where the silence before it is searched (§2.2).
+WINDOWS = {2: (85, 125), 3: (155, 195), 4: (335, 375), 5: (505, 545), 6: (715, 755), 7: (925, 965),
+           8: (1075, 1115), 9: (1285, 1325), 10: (1475, 1515), 11: (1695, 1735), 12: (1895, 1935),
+           13: (2085, 2125), 14: (2325, 2365), 15: (2495, 2535), 16: (2585, 2625)}
+APPROX_LEN = {1: 105, 2: 70, 3: 180, 4: 170, 5: 210, 6: 210, 7: 150, 8: 210, 9: 190, 10: 220,
+              11: 200, 12: 190, 13: 240, 14: 170, 15: 90, 16: 215}
+
+
+def run(cmd, **kw):
+    import subprocess
+    r = subprocess.run([str(c) for c in cmd], capture_output=True, text=True, **kw)
+    if r.returncode != 0:
+        sys.exit(f"command failed: {' '.join(map(str, cmd))}\n{r.stderr[-2000:]}")
+    return r
+
+
+def probe_duration(path):
+    r = run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path])
+    return float(r.stdout.strip())
+
+
+def cmd_fetch(args):
+    WORK.mkdir(parents=True, exist_ok=True)
+    existing = [p for p in WORK.glob("source.*")]
+    if not existing:
+        run(["yt-dlp", "-f", "bestaudio", "-o", WORK / "source.%(ext)s", VIDEO_URL], timeout=1800)
+        existing = list(WORK.glob("source.*"))
+    src = existing[0]
+    full = WORK / "full.wav"
+    run(["ffmpeg", "-y", "-i", src, "-ar", "44100", "-ac", "2", "-c:a", "pcm_s16le", full], timeout=1800)
+    dur = probe_duration(full)
+    print(f"{src.name} -> full.wav, {dur:.1f} s")
+    assert abs(dur - FULL_DURATION) <= 3, f"unexpected duration {dur}"
+
+
+def frame_db(y, sr, frame=0.02):
+    import numpy as np
+    n = int(sr * frame)
+    m = len(y) // n
+    rms = np.sqrt((y[: m * n].reshape(m, n) ** 2).mean(axis=1) + 1e-12)
+    return 20 * np.log10(rms + 1e-12)
+
+
+def longest_silence(db, frame, thresh, min_len=0.3):
+    best, run_start = None, None
+    for i, v in enumerate(list(db) + [0.0]):
+        if v < thresh and run_start is None:
+            run_start = i
+        elif v >= thresh and run_start is not None:
+            if (i - run_start) * frame >= min_len and (best is None or i - run_start > best[1] - best[0]):
+                best = (run_start, i)
+            run_start = None
+    return best
+
+
+def cmd_cut(args):
+    import numpy as np
+    import soundfile as sf
+    songs_dir, mp3_dir = WORK / "songs", WORK / "mp3"
+    songs_dir.mkdir(parents=True, exist_ok=True)
+    mp3_dir.mkdir(parents=True, exist_ok=True)
+    full = WORK / "full.wav"
+    manifest = load_manifest()
+    info = sf.info(str(full))
+    sr, total = info.samplerate, info.frames
+    frame = 0.02
+    cuts_path = BS / "cuts.json"
+
+    if args.from_json:
+        cuts = json.loads(cuts_path.read_text())
+    else:
+        # boundaries[i] = (end of song i, start of song i+1)
+        bounds = {}
+        for n, (lo, hi) in WINDOWS.items():
+            seg, _ = sf.read(str(full), start=int(lo * sr), frames=int((hi - lo) * sr), always_2d=True)
+            mono = seg.mean(axis=1)
+            db = frame_db(mono, sr, frame)
+            kind, sil = None, None
+            for th in (-45, -40, -35, -30):
+                sil = longest_silence(db, frame, th)
+                if sil:
+                    kind = f"silence {th}dB"
+                    break
+            if not sil:
+                sm = np.convolve(db, np.ones(10) / 10, mode="same")
+                i = int(np.argmin(sm))
+                sil, kind = (i, i + 1), "no-silence"
+            s0, s1 = lo + sil[0] * frame, lo + sil[1] * frame
+            bounds[n] = (s0 + 0.25, max(s1 - 0.05, s0 + 0.25), kind)
+        head, _ = sf.read(str(full), start=0, frames=int(30 * sr), always_2d=True)
+        dbh = frame_db(head.mean(axis=1), sr, frame)
+        first = int(np.argmax(dbh > -45)) * frame
+        tail_start = int((FULL_DURATION - 60) * sr)
+        tail, _ = sf.read(str(full), start=tail_start, always_2d=True)
+        dbt = frame_db(tail.mean(axis=1), sr, frame)
+        last = tail_start / sr + (len(dbt) - 1 - int(np.argmax(dbt[::-1] > -45))) * frame
+        cuts = []
+        for song in manifest:
+            n = song["n"]
+            start = max(first - 0.05, 0.0) if n == 1 else bounds[n][1]
+            end = min(last + 0.5, total / sr) if n == 16 else bounds[n + 1][0]
+            kind = "start/end of file" if n in (1, 16) else bounds[n][2]
+            if n < 16 and n > 1:
+                kind = f"{bounds[n][2]} | {bounds[n + 1][2]}" if bounds[n][2] != bounds[n + 1][2] else bounds[n][2]
+            cuts.append({"n": n, "slug": song["slug"], "start": round(start, 3), "end": round(end, 3),
+                         "duration": round(end - start, 3), "boundary": kind})
+        cuts_path.write_text(json.dumps(cuts, indent=2, ensure_ascii=False) + "\n")
+
+    print(f"{'n':>2}  {'title':<28} {'start':>8} {'end':>8} {'dur':>7}  boundary")
+    for c, song in zip(cuts, manifest):
+        a, b = int(round(c["start"] * sr)), int(round(c["end"] * sr))
+        data, _ = sf.read(str(full), start=a, frames=b - a, always_2d=True)
+        sf.write(str(songs_dir / f"{c['n']:02d}_{c['slug']}.wav"), data, sr, subtype="PCM_16")
+        run(["ffmpeg", "-y", "-i", songs_dir / f"{c['n']:02d}_{c['slug']}.wav", "-c:a", "libmp3lame", "-q:a", "2",
+             "-metadata", f"title={song['title']}", mp3_dir / f"{c['n']:02d} - {song['title']}.mp3"])
+        flag = ""
+        if abs(c["duration"] - APPROX_LEN[c["n"]]) > 20 or not (50 <= c["duration"] <= 300):
+            flag = "  <-- CHECK duration"
+        mm = lambda t: f"{int(t // 60)}:{t % 60:04.1f}"
+        print(f"{c['n']:>2}  {song['title']:<28} {mm(c['start']):>8} {mm(c['end']):>8} {c['duration']:>7.1f}  {c['boundary']}{flag}")
+
+
 def cmd_stub(args):
     sys.exit(f"'{args.cmd}' is not implemented yet (see BACKSOUND_PLAN.md)")
 
@@ -262,7 +387,11 @@ def main(argv=None):
     p = argparse.ArgumentParser(description="Melodissimo backsound pipeline")
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("selftest").set_defaults(func=cmd_selftest)
-    for name in ("fetch", "cut", "analyze", "json2ref", "check-ref", "build", "emit-swift"):
+    sub.add_parser("fetch").set_defaults(func=cmd_fetch)
+    cp = sub.add_parser("cut")
+    cp.add_argument("--from-json", action="store_true")
+    cp.set_defaults(func=cmd_cut)
+    for name in ("analyze", "json2ref", "check-ref", "build", "emit-swift"):
         sp = sub.add_parser(name)
         sp.add_argument("--only")
         sp.set_defaults(func=cmd_stub)
