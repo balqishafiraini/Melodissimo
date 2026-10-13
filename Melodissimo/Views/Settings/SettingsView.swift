@@ -12,6 +12,7 @@ struct SettingsView: View {
     @ObservedObject private var progress = ProgressStore.shared
 
     @State private var isCalibrating = false
+    @State private var isTestingMicrophone = false
     @State private var isConfirmingReset = false
     @State private var isReallyConfirmingReset = false
     @State private var didReset = false
@@ -29,6 +30,7 @@ struct SettingsView: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         noteSpeedCard
+                        inputCard
                         labelsCard
                         soundCard
                         audioCard
@@ -42,6 +44,9 @@ struct SettingsView: View {
         }
         .fullScreenCover(isPresented: $isCalibrating) {
             CalibrationView()
+        }
+        .fullScreenCover(isPresented: $isTestingMicrophone) {
+            MicCalibrationView()
         }
         .alert("Reset progress?", isPresented: $isConfirmingReset) {
             Button("Continue", role: .destructive) { isReallyConfirmingReset = true }
@@ -122,6 +127,43 @@ struct SettingsView: View {
                 }
             }
             caption("How long a note takes to fall. A bigger number means slower notes.")
+        }
+    }
+
+    // MARK: Input
+
+    private var inputCard: some View {
+        card("Input") {
+            HStack(spacing: 12) {
+                ForEach(InputMode.allCases, id: \.self) { mode in
+                    SoundButton {
+                        progress.inputMode = mode
+                    } label: {
+                        Text(mode == .touch ? "Touch" : "Real pianika")
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 60)
+                            .background(progress.inputMode == mode ? Color.darkGreen : Color.softBlue.opacity(0.5))
+                            .foregroundColor(progress.inputMode == mode ? .white : Color.darkGreen)
+                            .cornerRadius(18)
+                            .font(.custom("BalooDa-Regular", size: 26))
+                    }
+                    .accessibilityAddTraits(progress.inputMode == mode ? .isSelected : [])
+                }
+            }
+            if progress.inputMode == .pianika {
+                SoundButton {
+                    isTestingMicrophone = true
+                } label: {
+                    Text("Test the microphone")
+                        .padding(.horizontal, 28)
+                        .frame(height: 60)
+                        .background(Color.yellow)
+                        .foregroundColor(Color.darkGreen)
+                        .cornerRadius(18)
+                        .font(Font.headline)
+                }
+            }
+            caption("Play the songs on your own pianika. The iPad listens through the microphone, so play in a quiet room.")
         }
     }
 

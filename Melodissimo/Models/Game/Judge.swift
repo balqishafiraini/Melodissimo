@@ -44,15 +44,19 @@ enum Judge {
     static let good = 0.200
 
     /// Judges a press by its distance from the note time (seconds, early or late).
-    /// `nil` means the press is too far from the note to count as a hit.
-    static func judge(delta: Double) -> Judgment? {
+    /// `nil` means the press is too far from the note to count as a hit. `bonus` widens every
+    /// window (the real-pianika microphone mode adds 50 ms for its detection delay).
+    static func judge(delta: Double, bonus: Double = 0) -> Judgment? {
         switch abs(delta) {
-        case ...perfect: return .perfect
-        case ...great: return .great
-        case ...good: return .good
+        case ...(perfect + bonus): return .perfect
+        case ...(great + bonus): return .great
+        case ...(good + bonus): return .good
         default: return nil
         }
     }
+
+    /// Extra seconds on every window when the notes come from a real pianika through the microphone.
+    static let microphoneBonus = 0.050
 
     /// Base points for a hit, before the combo multiplier.
     static func points(for judgment: Judgment) -> Int {

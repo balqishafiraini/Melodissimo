@@ -304,3 +304,15 @@
 "Learn Song Notation Repository" = "Pelajari Koleksi Notasi Lagu";
 "Email us on: appmelodissimo@gmail.com" = "Email kami di: appmelodissimo@gmail.com";
 "Learn melodica (pianika) in a more fun way with Melodissimo! Download it on the App Store (only available on iPad) https://s.id/GetMelodissimo" = "Belajar Pianika lebih menyenangkan dengan game Melodissimo! Ayo download di App Store (hanya tersedia pada iPad) https://s.id/GetMelodissimo";
+
+/* Task 8.1: real pianika via microphone */
+"Input" = "Cara bermain";
+"Touch" = "Sentuh";
+"Real pianika" = "Pianika asli";
+"Test the microphone" = "Coba mikrofon";
+"Play the songs on your own pianika. The iPad listens through the microphone, so play in a quiet room." = "Mainkan lagu di pianika milikmu. iPad mendengarkan lewat mikrofon, jadi bermainlah di ruangan yang tenang.";
+"Play 1 (C) on your pianika" = "Mainkan nada 1 (C) di pianikamu";
+"Perfect! The game hears you." = "Mantap! Permainan mendengarmu.";
+"Hold the note steady for a moment." = "Tahan nadanya sebentar.";
+"Microphone access is off. Turn it on in the iPad's Settings to play with a real pianika." = "Akses mikrofon mati. Nyalakan di Pengaturan iPad untuk bermain dengan pianika asli.";
+"The microphone could not start." = "Mikrofon tidak bisa dinyalakan.";

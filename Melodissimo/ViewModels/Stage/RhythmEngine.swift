@@ -52,6 +52,8 @@ final class RhythmEngine: ObservableObject {
     /// Seconds a note takes to fall from the top of the highway to the hit line.
     let approachTime: Double
     let audioOffsetMs: Int
+    /// Seconds added to every judgment window (the microphone mode's allowance for detection delay).
+    let windowBonus: Double
     let countInDuration: Double
 
     @Published private(set) var phase: Phase = .ready
@@ -83,6 +85,7 @@ final class RhythmEngine: ObservableObject {
          speed: Double = 1,
          approachTime: Double = 2.0,
          audioOffsetMs: Int = 0,
+         windowBonus: Double = 0,
          soundPlayer: @escaping (String) -> Void = { playSound(key: $0) },
          soundStopper: @escaping (String) -> Void = { stopSound(key: $0) }) {
         self.chart = chart
@@ -90,6 +93,7 @@ final class RhythmEngine: ObservableObject {
         self.speed = speed
         self.approachTime = approachTime
         self.audioOffsetMs = audioOffsetMs
+        self.windowBonus = windowBonus
         self.soundPlayer = soundPlayer
         self.soundStopper = soundStopper
         self.countInDuration = Self.countInBeats * 60 / (chart.bpm * speed)
@@ -203,9 +207,9 @@ final class RhythmEngine: ObservableObject {
         let t = inputTime(now: now)
         // Notes are sorted by time, so stop at the first one that hasn't entered the window yet.
         var i = firstUnjudged
-        while i < notes.count, notes[i].time - t <= Judge.good {
+        while i < notes.count, notes[i].time - t <= Judge.good + windowBonus {
             let note = notes[i]
-            if note.judgment == nil, note.keyId == keyId, let judgment = Judge.judge(delta: t - note.time) {
+            if note.judgment == nil, note.keyId == keyId, let judgment = Judge.judge(delta: t - note.time, bonus: windowBonus) {
                 registerHit(at: i, judgment: judgment, now: now)
                 return
             }
@@ -233,7 +237,7 @@ final class RhythmEngine: ObservableObject {
         guard firstUnjudged < notes.count else { return }
         let note = notes[firstUnjudged]
         // Only presses aimed at the next note count; an early correct press is fine.
-        guard note.time - songTime(now: now) <= Judge.good else { return }
+        guard note.time - songTime(now: now) <= Judge.good + windowBonus else { return }
 
         if keyId == note.keyId {
             notes[firstUnjudged].judgment = .perfect
@@ -279,7 +283,7 @@ final class RhythmEngine: ObservableObject {
         var i = firstUnjudged
         while i < notes.count {
             if notes[i].judgment != nil { i += 1; continue }
-            guard t - notes[i].time > Judge.good else { break }   // sorted: nothing later has expired either
+            guard t - notes[i].time > Judge.good + windowBonus else { break }   // sorted: nothing later has expired either
             notes[i].judgment = .miss
             counts.add(.miss)
             record(JudgmentEvent(keyId: notes[i].keyId, judgment: .miss, hostTime: now))
@@ -372,6 +376,7 @@ final class RhythmEngine: ObservableObject {
 
     private func finish(now: CFTimeInterval) {
         guard phase != .finished else { return }
+        stopListenSound()
         clock.pause(at: now)
         isWaiting = false
         if hintKeyId != nil { hintKeyId = nil }
@@ -391,6 +396,8 @@ final class RhythmEngine: ObservableObject {
     func detachTicker() {
         ticker?.stop()
         ticker = nil
+        // With the ticker gone nothing would ever end a Listen note that is still sounding.
+        stopListenSound()
     }
 }
 

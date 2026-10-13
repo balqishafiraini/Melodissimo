@@ -20,6 +20,8 @@ struct SongStageView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @StateObject private var engine: RhythmEngine
+    /// Real-pianika mode: the microphone's notes drive the engine instead of (or as well as) touches.
+    @StateObject private var mic = MicrophoneInput()
     /// Key frames in window coordinates, from the keyboard, so the highway lanes line up with the keys.
     @State private var keyFrames: [Int: CGRect] = [:]
     /// Practice: the key that was just pressed wrongly, flashed red for a moment.
@@ -41,6 +43,8 @@ struct SongStageView: View {
     /// Set when this stage is the day's challenge (a song sprint), so the result pays the daily reward.
     let dailyDateKey: String?
     let showLabels: Bool
+    /// True when the player chose "Real pianika" in Settings and the stage takes input (not Listen).
+    let usesMicrophone: Bool
 
     /// `chart` plays a specific chart (the Chart Recorder's preview) instead of the song's bundled one.
     init(song: Song, mode: StageMode, speed: Double = 1, isBoss: Bool = false, isSolemn: Bool = false,
@@ -55,13 +59,16 @@ struct SongStageView: View {
         self.dailyDateKey = dailyDateKey
         // Practice and Listen teach the fingering, so they show labels; Perform follows the setting.
         self.showLabels = showKeyLabels ?? (mode != .perform || ProgressStore.shared.labelsInPerform)
+        let microphone = mode != .listen && ProgressStore.shared.inputMode == .pianika
+        self.usesMicrophone = microphone
         _engine = StateObject(wrappedValue: {
             var playedChart = chart ?? SongChart.load(for: song)
             if let noteLimit { playedChart.notes = Array(playedChart.notes.prefix(noteLimit)) }
             // Read once per play: the settings screen can't be open while a stage is.
             let settings = ProgressStore.shared
             return RhythmEngine(chart: playedChart, mode: mode, speed: speed,
-                                approachTime: settings.approachTime, audioOffsetMs: settings.audioOffsetMs)
+                                approachTime: settings.approachTime, audioOffsetMs: settings.audioOffsetMs,
+                                windowBonus: microphone ? Judge.microphoneBonus : 0)
         }())
     }
 
@@ -82,6 +89,7 @@ struct SongStageView: View {
                 PianoKeyboard(metrics: .stage,
                               showLabels: showLabels,
                               highlights: highlights,
+                              playsSound: !usesMicrophone,
                               onNoteOn: { keyId in
                                   let now = CACurrentMediaTime()
                                   laneFlashes.press(keyId: keyId, at: now)
@@ -135,10 +143,19 @@ struct SongStageView: View {
             isOnScreen = true
             engine.attachTicker()
             engine.start(now: CACurrentMediaTime())
+            if usesMicrophone {
+                mic.onNote = { keyId, hostTime in
+                    laneFlashes.press(keyId: keyId, at: hostTime)
+                    engine.press(keyId: keyId, now: hostTime)
+                }
+                mic.start()
+            }
         }
         .onDisappear {
             isOnScreen = false
             engine.detachTicker()
+            mic.onNote = nil
+            mic.stop()
         }
     }
 
@@ -158,6 +175,7 @@ struct SongStageView: View {
 
     /// Listen: the key that is sounding is drawn pressed, as if an invisible player held it.
     private var pressedFromOutside: Set<Int> {
+        if usesMicrophone, let heard = mic.currentKeyId { return [heard] }
         guard mode == .listen, let key = engine.hintKeyId else { return [] }
         return [key]
     }
