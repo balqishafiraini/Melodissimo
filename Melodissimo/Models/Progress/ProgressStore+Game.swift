@@ -230,6 +230,7 @@ extension ProgressStore {
             defaults.removeObject(forKey: key)
         }
         objectWillChange.send()
+        CloudSync.shared.forgetProgress()
         // A fresh profile starts the tour at chapter 1 again.
         runMigrationIfNeeded()
     }

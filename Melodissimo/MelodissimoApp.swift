@@ -16,6 +16,8 @@ struct MelodissimoApp: App {
         SFX.shared.preload()
         // Players with classic levels already cleared start further along the Nusantara Tour (runs once).
         ProgressStore.shared.runMigrationIfNeeded()
+        // Mirror progress to iCloud (needs the iCloud key-value capability; a no-op without it).
+        CloudSync.shared.start()
     }
 
     var body: some Scene {
