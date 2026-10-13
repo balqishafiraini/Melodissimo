@@ -144,6 +144,13 @@ struct StageSetupView: View {
             Text("Slower speeds earn fewer stars")
                 .font(.footnote)
                 .foregroundColor(Color.darkGreen.opacity(0.8))
+            // A map stage stays locked until this one has a star, so say what that takes.
+            if let campaignStageId, progress.stageStars(campaignStageId) == 0 {
+                Label("Perform with at least 60% accuracy (1★) to open the next stage",
+                      systemImage: "lock.open.fill")
+                    .font(.footnote.bold())
+                    .foregroundColor(Color.darkGreen)
+            }
         }
     }
 
