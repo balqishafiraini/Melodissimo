@@ -3,7 +3,7 @@ import XCTest
 
 final class SongChartTests: XCTestCase {
 
-    private var berkibarlah: Song { SongLibrary.song(title: "Berkibarlah Benderaku")! }
+    private var sample: Song { SongLibrary.song(title: "Hari Merdeka")! }
 
     // MARK: Slugs and library
 
@@ -15,10 +15,10 @@ final class SongChartTests: XCTestCase {
         XCTAssertEqual(SongLibrary.slug(for: "Lagu 17 Agustus"), "lagu-17-agustus")
     }
 
-    func testLibraryHasAllEighteenSongsWithUniqueSlugs() {
+    func testLibraryHasAllSixteenSongsWithUniqueSlugs() {
         let songs = SongLibrary.all
-        XCTAssertEqual(songs.count, 18)
-        XCTAssertEqual(Set(songs.map(\.id)).count, 18)
+        XCTAssertEqual(songs.count, 16)
+        XCTAssertEqual(Set(songs.map(\.id)).count, 16)
         for song in songs {
             XCTAssertFalse(song.keyIds.isEmpty, song.title)
             XCTAssertTrue(song.keyIds.allSatisfy { (1...32).contains($0) }, song.title)
@@ -27,25 +27,27 @@ final class SongChartTests: XCTestCase {
         }
     }
 
-    func testOnlyTheTwoNationalSongsAreSolemn() {
+    func testOnlyTheThreeSolemnSongsAreSolemn() {
         let solemn = SongLibrary.all.filter(\.isSolemn).map(\.title)
-        XCTAssertEqual(Set(solemn), ["Indonesia Raya", "Mengheningkan Cipta"])
+        XCTAssertEqual(Set(solemn), ["Indonesia Raya", "Mengheningkan Cipta", "Gugur Bunga"])
     }
 
     // MARK: Default chart
 
-    func testAllEighteenSongsLoadAChartMatchingTheirMelody() {
+    func testAllSixteenSongsLoadAChartMatchingTheirMelody() {
         for song in SongLibrary.all {
             let chart = SongChart.load(for: song)
             XCTAssertEqual(chart.id, song.id)
             XCTAssertEqual(chart.notes.count, song.keyIds.count, song.title)
             XCTAssertTrue(chart.isValid, song.title)
             XCTAssertTrue(chart.matchesMelody(of: song), "\(song.title): chart keys differ from the melody")
+            XCTAssertNotNil(chart.offset, "\(song.title): chart is not synced to its backing track")
+            XCTAssertTrue(BackingTrackPlayer.isAvailable(for: song.id), "\(song.title): bgm_\(song.id).m4a is not bundled")
         }
     }
 
     func testDefaultChartIsOneNotePerBeat() {
-        let song = berkibarlah
+        let song = sample
         let chart = SongChart.defaultChart(for: song)
         XCTAssertEqual(chart.bpm, 90)
         XCTAssertEqual(chart.notes.count, song.keyIds.count)
@@ -69,7 +71,7 @@ final class SongChartTests: XCTestCase {
     }
 
     func testHalfSpeedDoublesTimesAndDurations() {
-        let chart = SongChart.defaultChart(for: berkibarlah)
+        let chart = SongChart.defaultChart(for: sample)
         let normal = chart.timedNotes(speed: 1)
         let slow = chart.timedNotes(speed: 0.5)
         XCTAssertEqual(normal.count, slow.count)
@@ -83,7 +85,7 @@ final class SongChartTests: XCTestCase {
 
     func testHandWrittenJSONDecodes() throws {
         let json = """
-        { "id": "berkibarlah-benderaku", "title": "Berkibarlah Benderaku", "bpm": 96,
+        { "id": "sample-benderaku", "title": "Berkibarlah Benderaku", "bpm": 96,
           "notes": [ { "k": 9, "b": 0, "d": 1 }, { "k": 9, "b": 1, "d": 0.5 } ] }
         """
         let chart = try JSONDecoder().decode(SongChart.self, from: Data(json.utf8))
@@ -126,7 +128,7 @@ final class SongChartTests: XCTestCase {
     }
 
     func testLoadPrefersABundledChartOverTheDefault() throws {
-        let song = berkibarlah
+        let song = sample
         let json = """
         { "id": "\(song.id)", "title": "\(song.title)", "bpm": 120,
           "notes": [ { "k": 9, "b": 0, "d": 2 }, { "k": 7, "b": 2, "d": 1 } ] }
@@ -138,7 +140,7 @@ final class SongChartTests: XCTestCase {
     }
 
     func testLoadFallsBackToTheDefaultWhenTheFileIsMissingOrBroken() throws {
-        let song = berkibarlah
+        let song = sample
         let empty = try makeBundle(containing: [:])
         XCTAssertEqual(SongChart.load(for: song, bundle: empty), SongChart.defaultChart(for: song))
 

@@ -223,7 +223,7 @@ final class DailyRewardTests: XCTestCase {
     }
 
     func testADailySprintDoesNotTouchTheSongsOwnRecords() {
-        let songId = SongLibrary.slug(for: "Terima Kasih Guru")
+        let songId = SongLibrary.slug(for: "Halo Halo Bandung")
         let kind = PlayRequest.Kind.song(songId: songId, mode: .perform, speed: 1, isBoss: false, isSolemn: false, noteLimit: 32)
         let result = PlayResult(request: PlayRequest(kind: kind, dailyDateKey: "20261010"), didWin: true, stars: 3, score: 9_000,
                                 accuracy: 98, maxCombo: 32, perfect: 30, great: 2, good: 0, miss: 0, wrong: 0)

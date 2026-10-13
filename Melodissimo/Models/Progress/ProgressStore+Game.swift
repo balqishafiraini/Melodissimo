@@ -165,6 +165,15 @@ extension ProgressStore {
         }
     }
 
+    /// Whether a song's instrumental plays under the song stage (on by default; off in Real pianika mode regardless).
+    var backingTrackEnabled: Bool {
+        get { defaults.object(forKey: "settings_backingTrack") as? Bool ?? true }
+        set {
+            defaults.set(newValue, forKey: "settings_backingTrack")
+            objectWillChange.send()
+        }
+    }
+
     /// The speeds the settings offer for how long a note takes to fall, in seconds (longer = slower = easier).
     static let approachTimeChoices: [Double] = [1.5, 2.0, 2.5, 3.0]
     static let defaultApproachTime = 2.0
@@ -216,7 +225,7 @@ extension ProgressStore {
     /// Whether a reset removes this key. Everything in the persistence list except the classic levels'
     /// question sets (`Level1…Level100`), `isPreplayDone` and the settings, which are preferences rather
     /// than progress. Song titles are the trophy flags.
-    static func isResettableKey(_ key: String, songTitles: Set<String> = Set(SongLibrary.all.map(\.title))) -> Bool {
+    static func isResettableKey(_ key: String, songTitles: Set<String> = Set(SongLibrary.all.map(\.title)).union(SongLibrary.retiredTitles)) -> Bool {
         resettableKeys.contains(key)
             || resettablePrefixes.contains { key.hasPrefix($0) }
             || songTitles.contains(key)
@@ -225,7 +234,7 @@ extension ProgressStore {
     /// Wipes the player's progress: levels, stars, streaks, coins, purchases, trophies, achievements
     /// and every game record. Keeps the question sets, the pre-play test flag and the settings.
     func resetProgress() {
-        let titles = Set(SongLibrary.all.map(\.title))
+        let titles = Set(SongLibrary.all.map(\.title)).union(SongLibrary.retiredTitles)
         for key in defaults.dictionaryRepresentation().keys where Self.isResettableKey(key, songTitles: titles) {
             defaults.removeObject(forKey: key)
         }
@@ -378,6 +387,33 @@ extension ProgressStore {
     /// Every stage has at least one star.
     var isTourComplete: Bool {
         CampaignCatalog.allStages.allSatisfy { stageStars($0.id) >= 1 }
+    }
+
+    // MARK: - Renamed songs
+
+    /// Run once: a renamed song keeps its progress. The best score, accuracy and stars are copied to the new slug
+    /// with `max`, the practiced and full-combo flags with `or`, and the trophy flag (keyed by the exact title) with `or`.
+    /// The old keys stay, so nothing is ever removed.
+    func migrateRenamedSongs() {
+        let doneKey = "migration_songRenames_v1"
+        guard !defaults.bool(forKey: doneKey) else { return }
+        for (oldTitle, newTitle) in SongLibrary.renamedTitles {
+            let old = SongLibrary.slug(for: oldTitle)
+            let new = SongLibrary.slug(for: newTitle)
+            func key(_ name: String, _ slug: String) -> String { songKey(name, slug) }
+            for name in ["bestScore", "stars"] {
+                defaults.set(max(defaults.integer(forKey: key(name, old)), defaults.integer(forKey: key(name, new))),
+                             forKey: key(name, new))
+            }
+            defaults.set(max(defaults.double(forKey: key("bestAccuracy", old)), defaults.double(forKey: key("bestAccuracy", new))),
+                         forKey: key("bestAccuracy", new))
+            for name in ["practiced", "fullCombo"] {
+                defaults.set(defaults.bool(forKey: key(name, old)) || defaults.bool(forKey: key(name, new)), forKey: key(name, new))
+            }
+            defaults.set(defaults.bool(forKey: oldTitle) || defaults.bool(forKey: newTitle), forKey: newTitle)
+        }
+        defaults.set(true, forKey: doneKey)
+        objectWillChange.send()
     }
 
     // MARK: - Chapter unlocking

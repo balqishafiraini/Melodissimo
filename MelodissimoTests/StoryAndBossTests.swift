@@ -152,7 +152,7 @@ final class BossRecordingTests: XCTestCase {
     private var secondBoss: String { StoryCatalog.bossStage(inChapter: 2)!.id }
 
     private func perform(stars: Int, boss: Bool = true, stage: String? = nil, mode: StageMode = .perform) -> PlayResult {
-        let kind = PlayRequest.Kind.song(songId: SongLibrary.slug(for: "Terima Kasih Guru"), mode: mode, speed: 1,
+        let kind = PlayRequest.Kind.song(songId: SongLibrary.slug(for: "Halo Halo Bandung"), mode: mode, speed: 1,
                                          isBoss: boss, isSolemn: false, noteLimit: nil)
         return PlayResult(request: PlayRequest(kind: kind, campaignStageId: stage ?? firstBoss), didWin: stars > 0, stars: stars,
                           score: 1000, accuracy: 70, maxCombo: 8, perfect: 5, great: 3, good: 2, miss: 1, wrong: 0)

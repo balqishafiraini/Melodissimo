@@ -42,9 +42,9 @@ final class NoteCatalogTests: XCTestCase {
         }
     }
 
-    func testAllEighteenSongsMapEveryLabelToItsKeyId() {
+    func testAllSixteenSongsMapEveryLabelToItsKeyId() {
         let songs = LevelFeederModel.shared.songLevel
-        XCTAssertEqual(songs.count, 18)
+        XCTAssertEqual(songs.count, 16)
         for song in songs {
             let ids = song.question.map { NoteCatalog.id(forLabel: $0) }
             XCTAssertFalse(ids.contains(nil), "\(song.songTitle ?? "?") has a label that isn't a pianika key")

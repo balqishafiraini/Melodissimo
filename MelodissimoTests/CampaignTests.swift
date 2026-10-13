@@ -11,10 +11,10 @@ final class CampaignTests: XCTestCase {
 
     // MARK: Catalog shape
 
-    func testThereAreFiftyThreeStagesWithUniqueIds() {
-        XCTAssertEqual(stages.count, 53)
-        XCTAssertEqual(Set(stages.map(\.id)).count, 53)
-        XCTAssertEqual(CampaignCatalog.chapters.map { CampaignCatalog.stages(inChapter: $0.number).count }, [7, 11, 9, 11, 9, 6])
+    func testThereAreFortyNineStagesWithUniqueIds() {
+        XCTAssertEqual(stages.count, 49)
+        XCTAssertEqual(Set(stages.map(\.id)).count, 49)
+        XCTAssertEqual(CampaignCatalog.chapters.map { CampaignCatalog.stages(inChapter: $0.number).count }, [7, 11, 9, 9, 7, 6])
     }
 
     func testStageIdsAreChapterAndTwoDigitIndex() {
@@ -82,7 +82,7 @@ final class CampaignTests: XCTestCase {
     func testLaterChaptersMixInReviewFromEarlierChapters() {
         let chapter3 = CampaignCatalog.stages(inChapter: 3)
         guard case .battle(let b2) = chapter3[1].kind else { return XCTFail() }
-        XCTAssertEqual(b2.newPool, [1, 13, 14])
+        XCTAssertEqual(b2.newPool, [13, 14])
         XCTAssertEqual(Set(b2.reviewPool), Set(CampaignCatalog.notesTaught(through: 2)))
         XCTAssertEqual(b2.newWeight, 0.7)
         XCTAssertEqual(b2.timePerNote, 5)
@@ -95,14 +95,14 @@ final class CampaignTests: XCTestCase {
     func testEchoPoolsAddOnlyNearbyReviewNotes() {
         let chapter2 = CampaignCatalog.stages(inChapter: 2)
         guard case .echo(let e1) = chapter2[2].kind else { return XCTFail() }
-        // New notes 7. 6. 5. (ids 4, 3, 2) plus at most five review notes.
-        XCTAssertTrue(Set([4, 3, 2]).isSubset(of: Set(e1.pool)))
-        XCTAssertLessThanOrEqual(e1.pool.count, 3 + 5)
-        // The review notes are the ones closest in pitch: the bottom of the old range (ids 5, 6, 7, 8, 9).
-        XCTAssertEqual(Set(e1.pool), Set([4, 3, 2, 5, 6, 7, 8, 9]))
+        // New notes 6. 4. (ids 3, 1) plus at most five review notes.
+        XCTAssertTrue(Set([3, 1]).isSubset(of: Set(e1.pool)))
+        XCTAssertLessThanOrEqual(e1.pool.count, 2 + 5)
+        // The review notes are the ones closest in pitch: 5. and 7. (taught in chapter 1) and the bottom of the old range.
+        XCTAssertEqual(Set(e1.pool), Set([3, 1, 2, 4, 5, 6, 7]))
         guard case .echo(let e2) = chapter2[chapter2.count - 2].kind else { return XCTFail() }
-        XCTAssertEqual(Set(e2.pool), Set([4, 3, 2] + [5, 6, 7, 8, 9, 10, 11, 12]))
-        XCTAssertEqual(e2.pool.count, 11)
+        XCTAssertEqual(Set(e2.pool), Set([3, 1] + [2, 4, 5, 6, 7, 8, 9, 10]))
+        XCTAssertEqual(e2.pool.count, 10)
     }
 
     func testNearestReviewNotesOrdersByPitchDistanceThenId() {
@@ -139,7 +139,7 @@ final class CampaignTests: XCTestCase {
             used += chapter.songTitles + [chapter.bossSongTitle] + (chapter.finaleSongTitle.map { [$0] } ?? [])
         }
         XCTAssertEqual(Set(used), Set(SongLibrary.all.map(\.title)))
-        XCTAssertEqual(used.count, 18)
+        XCTAssertEqual(used.count, 16)
         XCTAssertEqual(Set(CampaignCatalog.notesTaught(through: 6)), Set(1...32))
         XCTAssertEqual(CampaignCatalog.chapters.flatMap(\.newNotes).count, 32, "no note is taught twice")
     }

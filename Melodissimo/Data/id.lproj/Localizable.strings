@@ -93,7 +93,7 @@
 "High score" = "Skor tertinggi";
 "NEW HIGH SCORE" = "SKOR TERTINGGI BARU";
 "Game over" = "Permainan selesai";
-"Pick any of the 18 songs" = "Pilih salah satu dari 18 lagu";
+"Pick any of the %lld songs" = "Pilih salah satu dari %lld lagu";
 "The 100 note-reading levels" = "100 level membaca nada";
 "How far can you go?" = "Seberapa jauh kamu bisa?";
 "High score %lld" = "Skor tertinggi %lld";
@@ -127,7 +127,7 @@
 "Alpanica is sailing from Sabang to Merauke to bring them back." = "Alpanica berlayar dari Sabang sampai Merauke untuk mengembalikannya.";
 "Our first stop is Sumatra. Let's learn the notes!" = "Pemberhentian pertama adalah Sumatra. Ayo kenali nadanya!";
 "You did it! The Sumatra Fals is defeated." = "Kamu berhasil! Fals dari Sumatra sudah kalah.";
-"Its song of thanks to our teachers rings out again." = "Lagu terima kasih untuk guru berkumandang lagi.";
+"Indonesia Tetap Merdeka rings out again." = "Lagu Indonesia Tetap Merdeka berkumandang lagi.";
 "Next stop: Jawa!" = "Pemberhentian berikutnya: Jawa!";
 "Welcome to Jawa, the island of palaces and gamelan!" = "Selamat datang di Jawa, pulau istana dan gamelan!";
 "Fals is hiding in the lower notes here." = "Fals bersembunyi di nada-nada rendah di sini.";
@@ -145,13 +145,13 @@
 "The notes get higher here, so reach up!" = "Nadanya makin tinggi di sini, ayo raih ke atas!";
 "Fals is faster, too. Stay sharp!" = "Fals juga makin cepat. Tetap waspada!";
 "Great job! The Sulawesi Fals sailed away." = "Hebat! Fals dari Sulawesi berlayar pergi.";
-"Rayuan Pulau Kelapa sounds sweet again." = "Rayuan Pulau Kelapa terdengar manis lagi.";
+"Maju Tak Gentar marches on again." = "Maju Tak Gentar berkumandang gagah lagi.";
 "Next: Bali and Nusa Tenggara!" = "Berikutnya: Bali dan Nusa Tenggara!";
 "Bali and Nusa Tenggara are full of dance and sunshine!" = "Bali dan Nusa Tenggara penuh tarian dan matahari!";
 "Now you will meet the black keys." = "Sekarang kamu akan bertemu tuts hitam.";
 "They sound a little different, so listen well!" = "Bunyinya sedikit berbeda, dengarkan baik-baik!";
 "The Nusa Tenggara Fals is defeated!" = "Fals dari Nusa Tenggara sudah kalah!";
-"Hymne Guru fills the air with thanks." = "Hymne Guru memenuhi udara dengan rasa terima kasih.";
+"Api Kemerdekaan burns bright again." = "Api Kemerdekaan menyala terang lagi.";
 "The last island is waiting: Maluku and Papua!" = "Pulau terakhir menunggu: Maluku dan Papua!";
 "This is the far east, where Indonesia reaches Merauke." = "Ini ujung timur, tempat Indonesia sampai di Merauke.";
 "Every note you have learned is here." = "Semua nada yang sudah kamu pelajari ada di sini.";
@@ -229,6 +229,8 @@
 "Achievement unlocked!" = "Pencapaian terbuka!";
 "Sound effects" = "Efek suara";
 "Sound effects on" = "Efek suara menyala";
+"Backing music" = "Musik pengiring";
+"Plays the song's instrumental in the song stage. Off in Real pianika mode." = "Memutar musik instrumental lagu di panggung lagu. Mati saat mode Pianika asli.";
 "Hits, clicks and coins. The pianika notes always play." = "Bunyi ketukan, klik, dan koin. Nada pianika selalu berbunyi.";
 "Sound effects: Kenney.nl (CC0)" = "Efek suara: Kenney.nl (CC0)";
 "The questions will appear only ONCE and change automatically once you lift your finger from the answer tile. Slide to the right tile before you let go." = "Pertanyaan hanya muncul SEKALI dan akan berubah otomatis saat kamu mengangkat jari dari tuts jawaban. Geser ke tuts yang benar sebelum melepas jari.";

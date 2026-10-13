@@ -36,7 +36,7 @@ enum StoryCatalog {
         ]),
         StoryCard(id: "boss_1", kind: .bossDefeated, chapter: 1, lines: [
             "You did it! The Sumatra Fals is defeated.",
-            "Its song of thanks to our teachers rings out again.",
+            "Indonesia Tetap Merdeka rings out again.",
             "Next stop: Jawa!"
         ]),
         StoryCard(id: "intro_2", kind: .chapterIntro, chapter: 2, lines: [
@@ -66,7 +66,7 @@ enum StoryCatalog {
         ]),
         StoryCard(id: "boss_4", kind: .bossDefeated, chapter: 4, lines: [
             "Great job! The Sulawesi Fals sailed away.",
-            "Rayuan Pulau Kelapa sounds sweet again.",
+            "Maju Tak Gentar marches on again.",
             "Next: Bali and Nusa Tenggara!"
         ]),
         StoryCard(id: "intro_5", kind: .chapterIntro, chapter: 5, lines: [
@@ -76,7 +76,7 @@ enum StoryCatalog {
         ]),
         StoryCard(id: "boss_5", kind: .bossDefeated, chapter: 5, lines: [
             "The Nusa Tenggara Fals is defeated!",
-            "Hymne Guru fills the air with thanks.",
+            "Api Kemerdekaan burns bright again.",
             "The last island is waiting: Maluku and Papua!"
         ]),
         StoryCard(id: "intro_6", kind: .chapterIntro, chapter: 6, lines: [

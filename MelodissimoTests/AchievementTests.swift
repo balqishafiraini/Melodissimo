@@ -136,7 +136,7 @@ final class AchievementTests: XCTestCase {
 
     func testAPerfectPerformThroughTheRecorderUnlocksTheFirstTwoBadges() {
         let recorder = ResultRecorder(progress: progress, evaluateAchievements: { [store] in store!.evaluate().map(\.title) })
-        let request = PlayRequest(kind: .song(songId: "berkibarlah-benderaku", mode: .perform, speed: 1,
+        let request = PlayRequest(kind: .song(songId: "halo-halo-bandung", mode: .perform, speed: 1,
                                               isBoss: false, isSolemn: false, noteLimit: nil))
         let result = PlayResult(request: request, didWin: true, stars: 3, score: 9_000, accuracy: 99, maxCombo: 30,
                                 perfect: 30, great: 0, good: 0, miss: 0, wrong: 0)

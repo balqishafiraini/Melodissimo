@@ -19,6 +19,7 @@
 | 6 | Coins, shop, daily challenge, settings | v3.0 |
 | 7 | Polish, game feel, onboarding, cleanup | v3.x |
 | 8 | Stretch: real pianika via mic, iCloud, Game Center | later |
+| 9 | Backsound: real instrumentals for the 16 songs (see `BACKSOUND_PLAN.md`) | v3.x |
 
 Task checkboxes are in §5. Tick them as tasks land.
 
@@ -51,8 +52,8 @@ Later, kids can play the same stages on their **real pianika** through the iPad 
 |---|---|---|
 | 32-key pianika (F3–C6) with samples, glide-across touch | `Views/Component/TilesComponentView.swift`, `Models/Sound/SoundModel.swift` | Single-touch only (`DragGesture`). Quiz answers register on **finger lift**. |
 | 100 note-reading levels | `Models/Level/LevelFeederModel.swift` | Random questions persisted in `UserDefaults` as `Level1…Level100`. |
-| 18 songs as pitch sequences | `LevelFeederModel.songLevel` | **No rhythm data.** All 18 validated: every label matches its key id. |
-| Score-sheet images for all 18 songs | `Assets.xcassets/Notasi/*` | |
+| 16 songs as pitch sequences, each with a chart and a backing track | `LevelFeederModel.songLevel`, `Data/Charts/chart_<slug>.json`, `Data/Sound/Backing/bgm_<slug>.m4a` | Phase 9 replaced the original 18 with the 16 songs of the backsound recording. Charts are format v2 (see `BACKSOUND_PLAN.md` §3.3). |
+| Score-sheet images (old 18 songs) | `Assets.xcassets/Notasi/*` | Kept in the asset catalog but no longer shown: the sheet is drawn from the chart (`NotAngkaSheetView`). |
 | Mascot Alpanica: `alpanica`, `alpanicaSad`, `alpanicaGlasses`, `alpanicaCrown`, `alpanicaCrownGlasses` | `Assets.xcassets/Clipart` | |
 | Stars, unlocks, combo, 3 lives, daily streak | `Models/Progress/ProgressStore.swift`, `ViewModels/Tiles/TilesViewModel.swift` | |
 | 7 achievements | `Models/Achievement/AchievementStore.swift` | |
@@ -136,15 +137,15 @@ Key ids are the existing ones: `1=4.  2=5.  3=6.  4=7.  5=1 … 11=7  12=1˙ …
 
 | # | Chapter | New notes (ids) | Songs (stage order) | Boss song | Timer |
 |---|---|---|---|---|---|
-| 1 | **Sumatra** (Sabang) | `1 2 3 4 5 6 7 1˙` (5–12) | Berkibarlah Benderaku | Terima Kasih Guru | none |
-| 2 | **Jawa** | `7. 6. 5.` (4, 3, 2) | Merah Putih, Ibu Kita Kartini, Ibu Pertiwi | Garuda Pancasila | 6 s |
-| 3 | **Kalimantan** | `4. 2˙ 3˙` (1, 13, 14) | Halo Halo Bandung, Indonesia Tetap Merdeka | Hari Merdeka | 5 s |
-| 4 | **Sulawesi** | `4˙ 5˙ 6˙` (15, 16, 17) | Tanah Airku, Satu Nusa Satu Bangsa, Maju Tak Gentar | Rayuan Pulau Kelapa | 4.5 s |
-| 5 | **Bali & Nusa Tenggara** | `4# 1# 5# 2# 6#` (25, 23, 26, 24, 27) | Mengheningkan Cipta *(solemn)*, Indonesia Pusaka | Hymne Guru | 4 s |
-| 6 | **Maluku & Papua** (Merauke) | `7˙ 1˙˙` + all remaining sharps (18, 19, 20, 21, 22, 28–32) | — | Dari Sabang Sampai Merauke | 3.5 s |
+| 1 | **Sumatra** (Sabang) | `1 2 3 4 5 6 7 1˙` + `5. 7.` (5–12, 2, 4) | Bendera Merah Putih | Indonesia Tetap Merdeka | none |
+| 2 | **Jawa** | `6. 4.` (3, 1) | Halo Halo Bandung, Bhinneka Tunggal Ika, Dari Sabang Sampai Merauke | Garuda Pancasila | 6 s |
+| 3 | **Kalimantan** | `2˙ 3˙` (13, 14) | Bagimu Negeri, Mars Harapan Bangsa | Hari Merdeka | 5 s |
+| 4 | **Sulawesi** | `4˙ 5˙ 6˙` (15, 16, 17) | Tanah Airku, Gugur Bunga *(solemn)* | Maju Tak Gentar | 4.5 s |
+| 5 | **Bali & Nusa Tenggara** | `4# 1# 5# 2# 6#` (25, 23, 26, 24, 27) | Mengheningkan Cipta *(solemn)* | Api Kemerdekaan | 4 s |
+| 6 | **Maluku & Papua** (Merauke) | `7˙ 1˙˙` + all remaining sharps (18, 19, 20, 21, 22, 28–32) | — | Bangun Pemudi Pemuda | 3.5 s |
 | — | **Finale: Upacara** | — | **Indonesia Raya** *(solemn ceremony)* | — | — |
 
-**Stage generation rule.** This is deterministic, so implement it as code and don't hand-write 53 stages. `new` = the chapter's new notes; `review` = all earlier chapters' notes.
+**Stage generation rule.** This is deterministic, so implement it as code and don't hand-write the stages. `new` = the chapter's new notes; `review` = all earlier chapters' notes.
 
 ```
 B1  battle  pool = new.prefix(3)                         q=6   timer=none          "Meet the notes"
@@ -159,16 +160,16 @@ BOSS        song stage = chapter.bossSong, with the Fals boss skin (HP bar = acc
 FINALE      (chapter 6 only) ceremony stage = Indonesia Raya
 ```
 
-That gives 7 + 11 + 9 + 11 + 9 + 6 = **53 stages**. Stage ids are `c{chapter}-{index:02}`, for example `c2-05`.
+That gives 7 + 11 + 9 + 9 + 7 + 6 = **49 stages** (Phase 9 moved two notes down a chapter and cut the song count from 18 to 16). Stage ids are `c{chapter}-{index:02}`, for example `c2-05`.
 
 **Unlocks:**
 - Stage *i* unlocks when stage *i−1* has ≥ 1★.
 - A chapter's first stage unlocks when the previous chapter's last stage has ≥ 1★.
 - **Migration for existing players** (run once): classic levels cleared ≥ 20 / 40 / 60 / 80 / 95 unlocks chapter 2 / 3 / 4 / 5 / 6.
 
-**Solemn songs** (`Indonesia Raya`, `Mengheningkan Cipta`) have **no monster, no combo flames, no screen shake, and a calm flag background.** Indonesia's national-symbols law (UU 24/2009) restricts how the national anthem may be used, and fighting a monster to it would be disrespectful. Keep these songs dignified.
+**Solemn songs** (`Indonesia Raya`, `Mengheningkan Cipta`, and since Phase 9 `Gugur Bunga`, a song of mourning) have **no monster, no combo flames, no screen shake, and a calm flag background.** Indonesia's national-symbols law (UU 24/2009) restricts how the national anthem may be used, and fighting a monster to it would be disrespectful. Keep these songs dignified.
 
-**Free Play stays fully open:** all 18 songs, the 100 classic levels, Echo endless and Rush. Teachers assign specific songs, so never lock content behind the campaign. The campaign adds structure and rewards.
+**Free Play stays fully open:** all 16 songs, the 100 classic levels, Echo endless and Rush. Teachers assign specific songs, so never lock content behind the campaign. The campaign adds structure and rewards.
 
 ### 2.4 Economy (coins, no real money)
 
@@ -324,6 +325,8 @@ enum NoteCatalog {
 | `settings_approachTime` | Double | seconds a note takes to fall (default 2.0) |
 | `settings_audioOffsetMs` | Int | default 0, range −150…+150 |
 | `settings_labelsInPerform` | Bool | default false |
+| `settings_backingTrack` | Bool | backing music on/off, default **true** (absent = true) — added in Phase 9 |
+| `migration_songRenames_v1` | Bool | the "Merah Putih" → "Bendera Merah Putih" progress copy has run — added in Phase 9 |
 
 Song **slug**: lowercase the title and replace every run of non-alphanumeric characters with `-`. Example: `"Halo Halo Bandung"` → `halo-halo-bandung`.
 
@@ -806,7 +809,7 @@ struct EchoConfig: Hashable {
 - Progress functions: `stageStars(id)`, `isUnlocked(stage)`, `currentStage` (first unlocked stage with 0★) and `runMigrationIfNeeded()` (§2.3).
 
 **Tests:**
-- 53 stages with unique ids
+- 49 stages with unique ids (53 before Phase 9)
 - every song and boss stage's notes are ⊆ cumulative notes taught through that chapter (**this proves the curriculum**)
 - unlock chain
 - migration thresholds

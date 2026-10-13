@@ -53,7 +53,7 @@ final class ChartQuantizerTests: XCTestCase {
     }
 
     func testQuantizedOutputIsAValidChart() {
-        let song = SongLibrary.song(id: "berkibarlah-benderaku")!
+        let song = SongLibrary.song(id: "halo-halo-bandung")!
         let spb = 60.0 / 96
         let played = song.keyIds.enumerated().map { RecordedPress(time: 100 + Double($0.offset) * spb + 0.03, keyId: $0.element) }
         let chart = ChartQuantizer.chart(for: song, bpm: 96, notes: ChartQuantizer.quantize(played, bpm: 96, grid: 0.5))
@@ -77,7 +77,7 @@ final class ChartQuantizerTests: XCTestCase {
     }
 
     func testWritesChartSlugJSONAndSongChartLoadsItBack() throws {
-        let song = SongLibrary.song(id: "merah-putih")!
+        let song = SongLibrary.song(id: "bendera-merah-putih")!
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         addTeardownBlock { try? FileManager.default.removeItem(at: dir) }
@@ -85,8 +85,8 @@ final class ChartQuantizerTests: XCTestCase {
         let notes = song.keyIds.enumerated().map { ChartNote(k: $0.element, b: Double($0.offset) * 0.5, d: 0.5) }
         let chart = ChartQuantizer.chart(for: song, bpm: 110, notes: notes)
         let url = try ChartQuantizer.write(chart, for: song, to: dir)
-        XCTAssertEqual(url.lastPathComponent, "chart_merah-putih.json")
-        XCTAssertEqual(ChartQuantizer.fileName(for: song), "chart_merah-putih.json")
+        XCTAssertEqual(url.lastPathComponent, "chart_bendera-merah-putih.json")
+        XCTAssertEqual(ChartQuantizer.fileName(for: song), "chart_bendera-merah-putih.json")
 
         let loaded = SongChart.load(for: song, bundle: try XCTUnwrap(Bundle(path: dir.path)))
         XCTAssertEqual(loaded, chart, "what the recorder writes is what the game loads")
@@ -95,7 +95,7 @@ final class ChartQuantizerTests: XCTestCase {
 
 final class ChartRecorderViewModelTests: XCTestCase {
 
-    private let song = SongLibrary.song(id: "berkibarlah-benderaku")!      // 5, 5, 3, 1, 2, …
+    private let song = SongLibrary.song(id: "maju-tak-gentar")!      // 5, 5, 3, 5, 1˙, …
 
     private func recorder() -> ChartRecorderViewModel {
         let model = ChartRecorderViewModel(song: song)

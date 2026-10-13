@@ -29,12 +29,12 @@ final class SongProgressTests: XCTestCase {
     }
 
     func testPracticedFlagIsPerSongAndPersistedUnderTheDocumentedKey() {
-        store.setSongPracticed("merah-putih")
-        XCTAssertTrue(store.isSongPracticed("merah-putih"))
-        XCTAssertFalse(store.isSongPracticed("ibu-pertiwi"))
-        XCTAssertTrue(defaults.bool(forKey: "song_practiced_merah-putih"))
-        store.setSongPracticed("merah-putih")        // idempotent
-        XCTAssertTrue(store.isSongPracticed("merah-putih"))
+        store.setSongPracticed("bendera-merah-putih")
+        XCTAssertTrue(store.isSongPracticed("bendera-merah-putih"))
+        XCTAssertFalse(store.isSongPracticed("tanah-airku"))
+        XCTAssertTrue(defaults.bool(forKey: "song_practiced_bendera-merah-putih"))
+        store.setSongPracticed("bendera-merah-putih")        // idempotent
+        XCTAssertTrue(store.isSongPracticed("bendera-merah-putih"))
     }
 
     func testReadsTheDocumentedKeys() {
@@ -55,12 +55,61 @@ final class SongProgressTests: XCTestCase {
         XCTAssertTrue(defaults.bool(forKey: "settings_labelsInPerform"))
     }
 
+    // MARK: Renamed songs
+
+    func testRenamedSongKeepsItsProgressUnderTheNewSlug() {
+        defaults.set(5000, forKey: "song_bestScore_merah-putih")
+        defaults.set(2, forKey: "song_stars_merah-putih")
+        defaults.set(88.5, forKey: "song_bestAccuracy_merah-putih")
+        defaults.set(true, forKey: "song_practiced_bendera-merah-putih")
+        defaults.set(true, forKey: "song_fullCombo_merah-putih")
+        defaults.set(true, forKey: "Merah Putih")
+        // The new slug already has a lower score and one star: the better value wins.
+        defaults.set(100, forKey: "song_bestScore_bendera-merah-putih")
+        defaults.set(3, forKey: "song_stars_bendera-merah-putih")
+
+        store.migrateRenamedSongs()
+
+        XCTAssertEqual(store.songBestScore("bendera-merah-putih"), 5000)
+        XCTAssertEqual(store.songStars("bendera-merah-putih"), 3, "max, not overwrite")
+        XCTAssertEqual(store.songBestAccuracy("bendera-merah-putih"), 88.5)
+        XCTAssertTrue(store.isSongPracticed("bendera-merah-putih"))
+        XCTAssertTrue(store.isSongFullCombo("bendera-merah-putih"))
+        XCTAssertTrue(defaults.bool(forKey: "Bendera Merah Putih"), "the trophy follows the title")
+        // Nothing is removed.
+        XCTAssertEqual(defaults.integer(forKey: "song_bestScore_merah-putih"), 5000)
+        XCTAssertTrue(defaults.bool(forKey: "Merah Putih"))
+    }
+
+    func testRenameMigrationRunsOnlyOnce() {
+        defaults.set(10, forKey: "song_bestScore_merah-putih")
+        store.migrateRenamedSongs()
+        defaults.set(9999, forKey: "song_bestScore_merah-putih")
+        store.migrateRenamedSongs()
+        XCTAssertEqual(store.songBestScore("bendera-merah-putih"), 10)
+        XCTAssertTrue(defaults.bool(forKey: "migration_songRenames_v1"))
+    }
+
+    func testBackingTrackSettingIsOnByDefault() {
+        XCTAssertTrue(store.backingTrackEnabled)
+        store.backingTrackEnabled = false
+        XCTAssertFalse(store.backingTrackEnabled)
+        XCTAssertFalse(defaults.bool(forKey: "settings_backingTrack"))
+        store.backingTrackEnabled = true
+        XCTAssertTrue(store.backingTrackEnabled)
+    }
+
+    func testBackingTrackFileNameFollowsTheSlug() {
+        XCTAssertEqual(BackingTrackPlayer.resourceName(for: "halo-halo-bandung"), "bgm_halo-halo-bandung")
+        XCTAssertFalse(BackingTrackPlayer.isAvailable(for: "no-such-song"))
+    }
+
     func testEverySongHasADistinctKeySpace() {
         for song in SongLibrary.all {
             store.setSongPracticed(song.id)
         }
         XCTAssertTrue(SongLibrary.all.allSatisfy { store.isSongPracticed($0.id) })
-        XCTAssertEqual(defaults.dictionaryRepresentation().keys.filter { $0.hasPrefix("song_practiced_") }.count, 18)
+        XCTAssertEqual(defaults.dictionaryRepresentation().keys.filter { $0.hasPrefix("song_practiced_") }.count, 16)
     }
 }
 

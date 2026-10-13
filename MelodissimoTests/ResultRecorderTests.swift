@@ -10,7 +10,7 @@ final class ResultRecorderTests: XCTestCase {
     private var evaluations = 0
     private var unlocked: [String] = []
 
-    private let songId = "berkibarlah-benderaku"
+    private let songId = "halo-halo-bandung"
     private var songTitle: String { SongLibrary.song(id: songId)!.title }
 
     override func setUp() {
@@ -135,8 +135,8 @@ final class ResultRecorderTests: XCTestCase {
 
     func testRecordingNeverTouchesOtherSongs() {
         recorder.record(perform())
-        XCTAssertEqual(progress.songStars("merah-putih"), 0)
-        XCTAssertFalse(progress.isSongPracticed("merah-putih"))
+        XCTAssertEqual(progress.songStars("bendera-merah-putih"), 0)
+        XCTAssertFalse(progress.isSongPracticed("bendera-merah-putih"))
     }
 
     func testWritesGoToTheInjectedStoreOnly() {

@@ -53,7 +53,7 @@ struct FreePlayView: View {
 
                 Grid(horizontalSpacing: 24, verticalSpacing: 24) {
                     GridRow {
-                        HubCard(title: "Songs", subtitle: "Pick any of the 18 songs", icon: "icon_stage_song") {
+                        HubCard(title: "Songs", subtitle: "Pick any of the \(SongLibrary.all.count) songs", icon: "icon_stage_song") {
                             router.push(.songRepositoryQuiz)
                         }
                         HubCard(title: "Classic Levels", subtitle: "The 100 note-reading levels", icon: "icon_stage_battle") {

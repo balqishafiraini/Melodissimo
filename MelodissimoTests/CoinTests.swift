@@ -141,7 +141,7 @@ final class CoinRecordingTests: XCTestCase {
         super.tearDown()
     }
 
-    private let songId = SongLibrary.slug(for: "Terima Kasih Guru")
+    private let songId = SongLibrary.slug(for: "Halo Halo Bandung")
 
     private func battle(stage: String?, won: Bool = true, hearts: Int = 3) -> PlayResult {
         let config = BattleConfig(newPool: [5, 6, 7], questionCount: 6, timePerNote: nil, seed: 1)

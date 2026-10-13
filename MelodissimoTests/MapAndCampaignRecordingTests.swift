@@ -123,18 +123,18 @@ final class CampaignStageRecordingTests: XCTestCase {
     }
 
     func testASongStageRecordsItsPerformStarsAndKeepsTheSongsOwnGain() {
-        let request = PlayRequest(kind: .song(songId: "berkibarlah-benderaku", mode: .perform, speed: 1, isBoss: false,
+        let request = PlayRequest(kind: .song(songId: "halo-halo-bandung", mode: .perform, speed: 1, isBoss: false,
                                               isSolemn: false, noteLimit: nil), campaignStageId: "c1-04")
         let result = PlayResult(request: request, didWin: true, stars: 2, score: 9000, accuracy: 88, maxCombo: 30,
                                 perfect: 60, great: 10, good: 2, miss: 2, wrong: 1)
         let summary = recorder.record(result)
         XCTAssertEqual(progress.stageStars("c1-04"), 2)
-        XCTAssertEqual(progress.songStars("berkibarlah-benderaku"), 2)
+        XCTAssertEqual(progress.songStars("halo-halo-bandung"), 2)
         XCTAssertEqual(summary.newStars, 2, "the song's own gain")
     }
 
     func testPracticingACampaignSongDoesNotAwardStageStars() {
-        let request = PlayRequest(kind: .song(songId: "berkibarlah-benderaku", mode: .practice, speed: 1, isBoss: false,
+        let request = PlayRequest(kind: .song(songId: "halo-halo-bandung", mode: .practice, speed: 1, isBoss: false,
                                               isSolemn: false, noteLimit: nil), campaignStageId: "c1-04")
         let result = PlayResult(request: request, didWin: true, stars: 0, score: 0, accuracy: nil, maxCombo: 0,
                                 perfect: 0, great: 0, good: 0, miss: 0, wrong: 0)
