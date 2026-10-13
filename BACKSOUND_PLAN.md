@@ -224,7 +224,7 @@ backing position:     offset + t·speed (+ outputLatency·speed so the sound rea
 ## 5. Tasks
 
 ### Task B0 — Prep: clean tree, tools, skeleton
-- [ ] done
+- [x] done
 
 **Touches:** `.gitignore`, `Scripts/backsound/` (new), `BACKSOUND_PLAN.md`.
 
