@@ -8,6 +8,7 @@
 import Foundation
 import AVFoundation
 import AVKit
+import UIKit
 
 // Reference to the player that is currently sounding, so `stopSound()` can halt it.
 private var player: AVAudioPlayer?
@@ -18,6 +19,9 @@ private var player: AVAudioPlayer?
 private var playerCache: [String: AVAudioPlayer] = [:]
 
 private var isAudioSessionConfigured = false
+
+// Keeps the app-wide "go quiet when the app stops being active" observer alive.
+private var resignActiveObserver: NSObjectProtocol?
 
 // Configure the shared audio session for playback so notes are audible even when
 // the device's mute switch is on. Runs once, lazily, before the first sound plays.
@@ -30,6 +34,10 @@ func configureAudioSessionIfNeeded() {
         try? session.setPreferredIOBufferDuration(0.005)
         try session.setActive(true)
         isAudioSessionConfigured = true
+        // A note must never keep ringing once the app is no longer in front (a call, Control Center, the app switcher).
+        resignActiveObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.willResignActiveNotification, object: nil, queue: .main
+        ) { _ in stopAllSounds() }
     } catch {
         print("Failed to configure audio session: \(error)")
     }
@@ -105,4 +113,13 @@ func stopSound() {
 /// fingers can hold different keys at once.
 func stopSound(key: String) {
     playerCache[key]?.stop()
+}
+
+/// Silences every note that is sounding, whoever started it (a finger, autoplay, a hint).
+/// Called when a screen goes away so no sample outlives the screen that played it.
+func stopAllSounds() {
+    for notePlayer in playerCache.values {
+        notePlayer.stop()
+    }
+    player = nil
 }

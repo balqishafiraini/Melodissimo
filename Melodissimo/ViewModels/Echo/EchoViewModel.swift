@@ -176,6 +176,11 @@ final class EchoViewModel: ObservableObject {
         }
     }
 
+    /// Ends the note the phrase is sounding. Call when the screen goes away mid-playback.
+    func silence() {
+        stopSounding()
+    }
+
     private func stopSounding() {
         guard let index = soundingIndex, phrase.indices.contains(index) else { return }
         soundStopper(NoteCatalog.note(phrase[index]).sound)

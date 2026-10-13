@@ -464,6 +464,18 @@ final class RhythmEngineTests: XCTestCase {
         XCTAssertNil(engine.hintKeyId)
     }
 
+    func testListenSilencesTheSampleWhenTheScreenGoesAway() {
+        let log = Recorder()
+        let engine = makeEngine(.listen, played: log)
+        engine.attachTicker()
+        engine.step(now: 103.0)
+        XCTAssertEqual(log.played, ["c2"])
+        XCTAssertTrue(log.stopped.isEmpty)
+        engine.detachTicker()
+        XCTAssertEqual(log.stopped, ["c2"], "leaving the stage must not leave the note ringing")
+        XCTAssertNil(engine.hintKeyId)
+    }
+
     func testListenRepeatedKeyRetriggersTheSample() {
         let log = Recorder()
         let engine = makeEngine(.listen, keys: [5, 5], played: log)

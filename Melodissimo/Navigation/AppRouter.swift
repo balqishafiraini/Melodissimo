@@ -42,7 +42,11 @@ enum Route: Hashable {
 /// (`pop`, `popToRoot`, `pop(to:)`) instead of stacking new navigation containers.
 @MainActor
 final class AppRouter: ObservableObject {
-    @Published var path: [Route] = []
+    /// Every navigation (push, pop, replace, the swipe-back gesture) silences the notes, so a
+    /// sample started on one screen can never keep ringing on the next.
+    @Published var path: [Route] = [] {
+        didSet { stopAllSounds() }
+    }
 
     func push(_ route: Route) {
         path.append(route)

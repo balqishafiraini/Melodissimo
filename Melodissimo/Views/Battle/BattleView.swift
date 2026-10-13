@@ -69,6 +69,8 @@ struct BattleView: View {
             }
         }
         .onReceive(ticker) { _ in
+            // The timer keeps firing through the exit transition; a timeout then would sound the revealed key on the next screen.
+            guard isOnScreen else { return }
             viewModel.step(now: CACurrentMediaTime())
         }
         .onChange(of: viewModel.lastOutcome) { outcome in
@@ -88,6 +90,10 @@ struct BattleView: View {
         }
         .onDisappear {
             isOnScreen = false
+            // The revealed key rings out in full on a mistake; it must not carry over to the next screen.
+            if let key = viewModel.revealKeyId {
+                stopSound(key: NoteCatalog.note(key).sound)
+            }
         }
     }
 
@@ -96,6 +102,8 @@ struct BattleView: View {
     private var topBar: some View {
         HStack(spacing: 20) {
             SoundButton {
+                // Off screen first, so nothing sounds during the transition; the navigation then silences any note.
+                isOnScreen = false
                 router.pop()
             } label: {
                 Text("< Back")
@@ -209,7 +217,7 @@ struct BattleView: View {
         case .wrong, .timeout:
             setMood(.sad, for: 0.8)
             SFX.play(.playerHurt)
-            if let key = viewModel.revealKeyId {
+            if isOnScreen, let key = viewModel.revealKeyId {
                 playSound(key: NoteCatalog.note(key).sound)
             }
             nudgeScreen()

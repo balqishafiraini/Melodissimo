@@ -141,6 +141,19 @@ final class EchoViewModelTests: XCTestCase {
 
     // MARK: Flow
 
+    func testSilenceCutsTheSampleThatIsStillSounding() {
+        let log = Recorder()
+        let vm = makeVM(config(), log: log)
+        vm.start(now: 10)
+        vm.step(now: 10.5)
+        XCTAssertEqual(log.played.count, 1)
+        XCTAssertTrue(log.stopped.isEmpty)
+        vm.silence()
+        XCTAssertEqual(log.stopped, [NoteCatalog.note(vm.phrase[0]).sound])
+        vm.silence()
+        XCTAssertEqual(log.stopped.count, 1, "silencing twice is harmless")
+    }
+
     func testListeningPlaysOneSamplePerInterval() {
         let log = Recorder()
         let vm = makeVM(config(), log: log)

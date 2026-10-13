@@ -57,6 +57,8 @@ struct EchoView: View {
             nameOverlay
         }
         .onReceive(ticker) { _ in
+            // The timer keeps firing through the exit transition; a phrase note started then would outlive the screen.
+            guard isOnScreen else { return }
             viewModel.step(now: CACurrentMediaTime())
         }
         .onChange(of: viewModel.lastOutcome) { outcome in
@@ -75,7 +77,15 @@ struct EchoView: View {
         }
         .onDisappear {
             isOnScreen = false
+            viewModel.silence()
         }
+    }
+
+    /// Goes back. The phrase is silenced and stopped first, so it can't play on during the transition.
+    private func leave() {
+        isOnScreen = false
+        viewModel.silence()
+        router.pop()
     }
 
     // MARK: Keyboard state
@@ -94,7 +104,7 @@ struct EchoView: View {
     private var topBar: some View {
         HStack(spacing: 20) {
             SoundButton {
-                router.pop()
+                leave()
             } label: {
                 Text("< Back")
                     .lineLimit(1)

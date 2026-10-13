@@ -68,6 +68,7 @@ struct CalibrationView: View {
         .onDisappear {
             ticker?.stop()
             ticker = nil
+            stopAllSounds()
         }
     }
 

@@ -137,6 +137,44 @@ private struct MultiTouchKeySurface: UIViewRepresentable {
             fatalError("init(coder:) is not used")
         }
 
+        private var resignObserver: NSObjectProtocol?
+
+        deinit {
+            if let resignObserver { NotificationCenter.default.removeObserver(resignObserver) }
+        }
+
+        /// UIKit sends no `touchesEnded` / `touchesCancelled` when the view leaves the window or the app
+        /// loses focus mid-touch, so release every finger by hand; otherwise its key would stay down and ringing.
+        func releaseAllTouches() {
+            let held = keyForTouch
+            keyForTouch.removeAll()
+            for (_, id) in held { onKeyUp(id, false) }
+        }
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            if let resignObserver {
+                NotificationCenter.default.removeObserver(resignObserver)
+                self.resignObserver = nil
+            }
+            guard window != nil else {
+                // Torn down mid-touch. The fingers are forgotten right away, so a stray event can't release them twice,
+                // and the keys are let go a turn later so no state changes while SwiftUI is updating the view tree.
+                // The handler is held strongly: a popped screen's view is usually deallocated before that turn.
+                let held = Array(keyForTouch.values)
+                keyForTouch.removeAll()
+                if !held.isEmpty {
+                    let release = onKeyUp
+                    DispatchQueue.main.async { for id in held { release(id, false) } }
+                }
+                return
+            }
+            resignObserver = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification,
+                                                                    object: nil, queue: .main) { [weak self] _ in
+                self?.releaseAllTouches()
+            }
+        }
+
         /// Black keys sit on top of the white keys, so they win when both frames contain the point.
         private func keyID(at point: CGPoint) -> Int? {
             if let black = tiles.first(where: { $0.isBlack && $0.frame.contains(point) }) {
@@ -146,14 +184,19 @@ private struct MultiTouchKeySurface: UIViewRepresentable {
         }
 
         override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+            // A keyboard that has left the screen never starts a note: nothing would be left to stop it.
+            guard window != nil else { return }
             for touch in touches {
                 guard let id = keyID(at: touch.location(in: self)) else { continue }
+                // A finger that began cannot already be tracked; if it is, a lift was missed, so let go of that key first.
+                if let stale = keyForTouch[ObjectIdentifier(touch)] { onKeyUp(stale, false) }
                 keyForTouch[ObjectIdentifier(touch)] = id
                 onKeyDown(id)
             }
         }
 
         override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+            guard window != nil else { return }
             for touch in touches {
                 let touchID = ObjectIdentifier(touch)
                 let old = keyForTouch[touchID]
