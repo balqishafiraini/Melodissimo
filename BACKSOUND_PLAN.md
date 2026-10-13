@@ -261,7 +261,7 @@ backing position:     offset + t·speed (+ outputLatency·speed so the sound rea
 ---
 
 ### Task B1 — Download and cut the 16 songs
-- [ ] done
+- [x] done
 
 **Touches:** `backsound.py` (`fetch`, `cut`), `Scripts/backsound/cuts.json`.
 
@@ -286,7 +286,7 @@ backing position:     offset + t·speed (+ outputLatency·speed so the sound rea
 ---
 
 ### Task B2 — Analyze each recording
-- [ ] done
+- [x] done
 
 **Touches:** `backsound.py` (`analyze`), `Scripts/backsound/reports/<slug>.md`, `reports/summary.md`.
 
@@ -304,7 +304,7 @@ For each master (`analyze [--only slug]`):
 ---
 
 ### Task B3 — ⚠︎ Reference melodies (research)
-- [ ] done
+- [x] done
 
 **Touches:** `Scripts/backsound/reference/<slug>.txt` (16), `reference/SOURCES.md`, `backsound.py` (`json2ref`, `check-ref`).
 
@@ -625,3 +625,4 @@ Commit (reference anchors, sheets, reports, QA.md, script): `Task B5: build char
 
 ## 7. Executor notes
 *(Record decisions where this plan was silent, one bullet per task.)*
+- **B3:** (executed unattended, user pre-approved the table). The web score sources were images only, so they were downloaded to the scratchpad just to be read. Rhythm in the PNG angka sheets is ambiguous ('.' columns); bar-length sums decided it. Only one image source existed for Bangun Pemudi Pemuda, Mars Harapan Bangsa, Api Kemerdekaan and Gugur Bunga, so those four need the user's ear. One-stanza rule (user request): repeats, second verses and bridges were cut from every reference (see `reference/SOURCES.md`). `check-ref` also prints the B2 draft LCS, but most B2 drafts were empty/garbage, so B5's audio alignment score is the real pitch check.

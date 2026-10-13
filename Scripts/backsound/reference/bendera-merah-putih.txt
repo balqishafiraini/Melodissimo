@@ -1,0 +1,12 @@
+title: Bendera Merah Putih
+beats_per_bar: 4
+pickup: 1
+bpm_hint: 132
+slug: bendera-merah-putih
+ending: auto
+sources: Notasi/merahPutih.png; draft chart_merah-putih.json (unverified) — see SOURCES.md
+---
+5.| 3 [- 3] 4 2| 3 - 1 5.| 5 [- 4] [3 - - 4] [5 - - 6] |
+5 - - 5| 6 [6 - - 6] 6 [5 - - 4]| 3 - 1 [1 - - 2]| 3 [1 - - 1] [7. - - 1] [2 - - 3] |
+2 - - 5.| 1 [- 2] 3 4| 5 - 3 3| 5 4 3 2 |
+1 - - ||

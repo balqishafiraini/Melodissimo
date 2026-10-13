@@ -1,0 +1,12 @@
+title: Mars Harapan Bangsa
+slug: mars-harapan-bangsa
+beats_per_bar: 2
+bpm_hint: 132
+pickup: 0
+ending: auto
+sources: Staff + angka score (do = Bb, 2/4 marcia) from ikisuga/satusgiga blogspot; digits copied as-is (do -> C)
+---
+3 5 | 3 5 | [6 - - 3] 6 | - 5 | 3 5 | 1˙ 6 | 7 - | - 4 |
+2 4 | 2 4 | [7 - - 4] 6 | - 4 | 2 4 | 7 6 | 5 - | - 5 |
+3 5 | 3 5 | [6 - - 3] 6 | - 5 | 3 5 | 1˙ 7 | [2˙ - - 1˙] 6 | - [4 6] |
+1˙ [7 1˙] | 2˙ [1˙ 2˙] | [3˙ - - 1˙] [7 6] | 5 [3 - - 4] | 5 [2 - - 3] | [4 5] [6 7] | 1˙ - | - - ||

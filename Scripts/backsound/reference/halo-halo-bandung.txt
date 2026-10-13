@@ -1,0 +1,13 @@
+title: Halo Halo Bandung
+slug: halo-halo-bandung
+beats_per_bar: 4
+bpm_hint: 115
+pickup: 1
+ending: auto
+sources: Notasi/haloHaloBandung.png; draft chart_halo-halo-bandung.json
+---
+5. |
+3 - - [2 7.] | 2 1 [0 5.] [6. 7.] | 1 7. 6. 5. | 7. - - 5. | 4 - - [3 2] |
+3 2 [- 0] [2 1] | 7. 2 5 6 | 3 - 0 5. |
+3 - - [2 7.] | 2 1 [0 5.] [6. 7.] | 1 3 4 3 |
+6. - - [6. 7.] | 1 [- 7.] [2 1] [7. 6.] | 5 [3 5] [1 3] [3 4] | 3 [2 2] 6. 7. | 1 - - 0 ||

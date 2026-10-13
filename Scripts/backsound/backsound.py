@@ -81,7 +81,7 @@ def parse_ref_text(text, name="<text>"):
                 if ":" not in line:
                     raise RefError(f"{name}:{ln}: header line without ':' -> {line!r}")
                 k, v = line.split(":", 1)
-                header[k.strip()] = v.split("#")[0].strip() if k.strip() != "sources" else v.strip()
+                header[k.strip()] = re.split(r"\s#", v)[0].strip() if k.strip() != "sources" else v.strip()
         else:
             body.append((ln, raw))
     if not in_body:
@@ -93,7 +93,7 @@ def parse_ref_text(text, name="<text>"):
 
     anchors, music_tokens = [], []
     for ln, raw in body:
-        line = raw.split("#")[0].strip()
+        line = re.split(r"(?:^|\s)#", raw)[0].strip()
         if not line:
             continue
         if line.startswith("@anchor"):
@@ -537,6 +537,73 @@ def write_summary(rows):
     (BS / "reports" / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def cmd_json2ref(args):
+    """Convert a draft chart JSON to DSL text (a starting point for a reference file)."""
+    data = json.loads(Path(args.chart).read_text(encoding="utf-8"))
+    notes = [(n["k"], n["b"], n["d"]) for n in data["notes"]]
+    bpb = args.beats_per_bar
+    pickup = args.pickup
+    shift = (bpb - pickup) if pickup else 0
+    notes = [(k, b + shift, d) for k, b, d in notes]
+    print(f"title: {data.get('title', '')}\nbeats_per_bar: {bpb}\npickup: {pickup}\nbpm_hint: {data.get('bpm', 100)}\n---")
+    print(chart_to_dsl(notes, bpb, pickup))
+
+
+def ref_draft_similarity(slug, notes):
+    """Pitch-class LCS (share of the reference notes found in order in the B2 audio draft)."""
+    rp = BS / "reports" / f"{slug}.md"
+    if not rp.exists():
+        return None
+    txt = rp.read_text(encoding="utf-8")
+    m = re.search(r"## Draft melody.*?```\n(.*?)```", txt, re.S)
+    if not m:
+        return None
+    labels = re.findall(r"(\S+?)\([0-9.]+\)", m.group(1))
+    draft = [midi_of(ID_BY_LABEL[l]) % 12 for l in labels if l in ID_BY_LABEL]
+    ref = [midi_of(k) % 12 for k, _, _ in notes]
+    if not draft or not ref:
+        return None
+    return lcs_len(ref, draft) / len(ref)
+
+
+def cmd_check_ref(args):
+    manifest = select(load_manifest(), args.only)
+    rows = json.loads((BS / "reports" / "rows.json").read_text()) if (BS / "reports" / "rows.json").exists() else {}
+    bad = 0
+    for song in manifest:
+        slug = song["slug"]
+        path = BS / "reference" / f"{slug}.txt"
+        try:
+            header, notes, anchors, bars = parse_ref(path)
+        except (RefError, FileNotFoundError) as e:
+            print(f"[{slug}] ERROR {e}")
+            bad += 1
+            continue
+        errs = []
+        if len(notes) < 16:
+            errs.append(f"only {len(notes)} notes")
+        if any(not (1 <= k <= 32) for k, _, _ in notes):
+            errs.append("key id out of range")
+        bpb = int(header.get("beats_per_bar", 4))
+        pickup = float(header.get("pickup", 0))
+        first = (bpb - pickup) if pickup > 0 else 0
+        if notes and notes[0][1] < first - 1e-6:
+            errs.append("first note before the pickup bar")
+        end = max(b + d for _, b, d in notes)
+        bpm = float(header.get("bpm_hint", 0))
+        if not (50 <= bpm <= 140):
+            errs.append(f"bpm_hint {bpm} outside 50-140")
+        sim = ref_draft_similarity(slug, notes)
+        simtxt = "" if sim is None else f", draft LCS {sim:.2f}"
+        print(f"[{slug}] {len(notes)} notes, {len(bars)} bars, {end:.1f} beats, bpb {bpb}, pickup {pickup:g}, bpm_hint {bpm:g}{simtxt}"
+              + (" ERRORS: " + "; ".join(errs) if errs else " OK"))
+        if args.bars:
+            print("   bars: " + ", ".join(f"{n}@{s:g}" for n, s, _ in bars))
+        bad += bool(errs)
+    if bad:
+        sys.exit(1)
+
+
 def cmd_stub(args):
     sys.exit(f"'{args.cmd}' is not implemented yet (see BACKSOUND_PLAN.md)")
 
@@ -552,7 +619,16 @@ def main(argv=None):
     ap = sub.add_parser("analyze")
     ap.add_argument("--only")
     ap.set_defaults(func=cmd_analyze)
-    for name in ("json2ref", "check-ref", "build", "emit-swift"):
+    jp = sub.add_parser("json2ref")
+    jp.add_argument("chart")
+    jp.add_argument("--beats-per-bar", type=int, default=4)
+    jp.add_argument("--pickup", type=int, default=0)
+    jp.set_defaults(func=cmd_json2ref)
+    kp = sub.add_parser("check-ref")
+    kp.add_argument("--only")
+    kp.add_argument("--bars", action="store_true")
+    kp.set_defaults(func=cmd_check_ref)
+    for name in ("build", "emit-swift"):
         sp = sub.add_parser(name)
         sp.add_argument("--only")
         sp.set_defaults(func=cmd_stub)
