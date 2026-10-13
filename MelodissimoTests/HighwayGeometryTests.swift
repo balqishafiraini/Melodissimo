@@ -109,9 +109,11 @@ final class CountInTests: XCTestCase {
         XCTAssertNil(CountIn.display(songTime: -1, secondsPerBeat: 0))
     }
 
-    func testClampsWhenTheClockIsBeforeTheCountIn() {
-        let early = CountIn.display(songTime: -10, secondsPerBeat: 0.5)
-        XCTAssertEqual(early?.number, 3)
-        XCTAssertEqual(early?.progress ?? -1, 0, accuracy: 1e-9)
+    func testNothingWhileMoreThanThreeBeatsRemain() {
+        // A longer lead-in: the numbers only appear in the last 3 beats.
+        XCTAssertNil(CountIn.display(songTime: -2.5, secondsPerBeat: 0.5))          // 5 beats left
+        XCTAssertNil(CountIn.display(songTime: -10, secondsPerBeat: 0.5))
+        XCTAssertEqual(CountIn.display(songTime: -1.5, secondsPerBeat: 0.5)?.number, 3)   // exactly 3 beats
+        XCTAssertEqual(CountIn.display(songTime: -0.75, secondsPerBeat: 0.5)?.number, 2)  // 1.5 beats
     }
 }

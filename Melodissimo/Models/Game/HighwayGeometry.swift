@@ -48,9 +48,10 @@ enum HighwayGeometry {
 /// The 3-2-1 shown while the song clock is still negative.
 enum CountIn {
     /// Which number to show and how far into its beat the clock is (0 at the start, 1 at the end).
-    /// `nil` once the song has started.
+    /// `nil` once the song has started, and while more than `beats` beats remain (a longer lead-in).
     static func display(songTime: Double, secondsPerBeat: Double, beats: Int = 3) -> (number: Int, progress: Double)? {
         guard songTime < 0, secondsPerBeat > 0 else { return nil }
+        guard -songTime <= Double(beats) * secondsPerBeat + 1e-9 else { return nil }
         let remaining = min(Double(beats), -songTime / secondsPerBeat)        // beats left, beats...0
         let number = min(beats, max(1, Int(remaining.rounded(.up))))
         let progress = min(1, max(0, Double(number) - remaining))

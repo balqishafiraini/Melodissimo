@@ -337,7 +337,7 @@ Commit: `Task B3: reference melodies for the 16 songs`.
 ---
 
 ### Task B4 — Chart format v2 + engine hooks (logic only)
-- [ ] done
+- [x] done
 
 Independent of B0–B3; it can run first.
 

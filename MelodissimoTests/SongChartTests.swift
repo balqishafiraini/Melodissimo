@@ -150,4 +150,80 @@ final class SongChartTests: XCTestCase {
         ])
         XCTAssertEqual(SongChart.load(for: song, bundle: invalidKey), SongChart.defaultChart(for: song))
     }
+
+    // MARK: Chart format v2
+
+    private func v2(_ extra: (inout SongChart) -> Void = { _ in }) -> SongChart {
+        var chart = SongChart(id: "t", title: "T", bpm: 120,
+                              notes: [ChartNote(k: 5, b: 0, d: 1), ChartNote(k: 6, b: 2, d: 2)])
+        extra(&chart)
+        return chart
+    }
+
+    func testV1JSONDecodesWithNilExtras() throws {
+        let json = #"{"id":"a","title":"A","bpm":96,"notes":[{"k":9,"b":0,"d":1}]}"#
+        let chart = try JSONDecoder().decode(SongChart.self, from: Data(json.utf8))
+        XCTAssertNil(chart.beatsPerBar)
+        XCTAssertNil(chart.offset)
+        XCTAssertNil(chart.beatTimes)
+        XCTAssertTrue(chart.isValid)
+    }
+
+    func testV2JSONDecodes() throws {
+        let json = #"{"id":"a","title":"A","bpm":112.4,"beatsPerBar":3,"offset":3.412,"beatTimes":[3.412,3.946,4.48],"notes":[{"k":2,"b":3,"d":0.5}]}"#
+        let chart = try JSONDecoder().decode(SongChart.self, from: Data(json.utf8))
+        XCTAssertEqual(chart.beatsPerBar, 3)
+        XCTAssertEqual(chart.offset ?? 0, 3.412, accuracy: 1e-9)
+        XCTAssertEqual(chart.beatTimes?.count, 3)
+        XCTAssertTrue(chart.isValid)
+    }
+
+    func testSecondsAtBeatWithoutAMapIsLinear() {
+        XCTAssertEqual(v2().seconds(atBeat: 3), 1.5, accuracy: 1e-9)
+    }
+
+    func testSecondsAtBeatInterpolatesAndExtrapolates() {
+        let chart = v2 { $0.offset = 10; $0.beatTimes = [10, 10.5, 11.25] }   // intervals 0.5, 0.75
+        XCTAssertEqual(chart.seconds(atBeat: 0), 0, accuracy: 1e-9)
+        XCTAssertEqual(chart.seconds(atBeat: 0.5), 0.25, accuracy: 1e-9)
+        XCTAssertEqual(chart.seconds(atBeat: 1), 0.5, accuracy: 1e-9)
+        XCTAssertEqual(chart.seconds(atBeat: 1.5), 0.875, accuracy: 1e-9)
+        XCTAssertEqual(chart.seconds(atBeat: 2), 1.25, accuracy: 1e-9)
+        XCTAssertEqual(chart.seconds(atBeat: 3), 2.0, accuracy: 1e-9)    // continues at the last interval
+        XCTAssertEqual(chart.seconds(atBeat: -1), -0.5, accuracy: 1e-9)  // continues at the first interval
+    }
+
+    func testTimedNotesWithAMapAtHalfSpeed() {
+        let chart = v2 { $0.offset = 10; $0.beatTimes = [10, 10.5, 11.25, 12.25, 13.25] }
+        let timed = chart.timedNotes(speed: 0.5)
+        XCTAssertEqual(timed[0].time, 0, accuracy: 1e-9)
+        XCTAssertEqual(timed[0].duration, 1.0, accuracy: 1e-9)              // 0.5 s / 0.5
+        XCTAssertEqual(timed[1].time, 2.5, accuracy: 1e-9)                  // beat 2 = 1.25 s / 0.5
+        XCTAssertEqual(timed[1].duration, 4.0, accuracy: 1e-9)              // (3.25 - 1.25) / 0.5
+    }
+
+    func testTimedNotesWithoutAMapMatchTheOldFormula() {
+        let timed = v2().timedNotes(speed: 0.75)
+        XCTAssertEqual(timed[1].time, 2 * 60 / (120 * 0.75), accuracy: 1e-9)
+        XCTAssertEqual(timed[1].duration, 2 * 60 / (120 * 0.75), accuracy: 1e-9)
+    }
+
+    func testIsValidRejectsBadV2Fields() {
+        XCTAssertTrue(v2 { $0.offset = 0; $0.beatsPerBar = 4 }.isValid)
+        XCTAssertFalse(v2 { $0.offset = -0.1 }.isValid)
+        XCTAssertFalse(v2 { $0.beatsPerBar = 0 }.isValid)
+        XCTAssertFalse(v2 { $0.beatsPerBar = 13 }.isValid)
+        XCTAssertFalse(v2 { $0.offset = 1; $0.beatTimes = [1, 1.5, 1.4] }.isValid)    // decreasing
+        XCTAssertFalse(v2 { $0.offset = 1; $0.beatTimes = [1, 1] }.isValid)           // not strictly increasing
+        XCTAssertFalse(v2 { $0.offset = 2; $0.beatTimes = [1, 1.5, 2] }.isValid)      // offset mismatch
+        XCTAssertFalse(v2 { $0.beatTimes = [1, 1.5, 2] }.isValid)                     // map without offset
+        XCTAssertFalse(v2 { $0.offset = 1; $0.beatTimes = [1] }.isValid)              // too short
+    }
+
+    func testBackingTime() {
+        let chart = v2 { $0.offset = 4 }
+        XCTAssertEqual(chart.backingTime(songTime: -2, speed: 1), 2, accuracy: 1e-9)
+        XCTAssertEqual(chart.backingTime(songTime: 3, speed: 0.5), 5.5, accuracy: 1e-9)
+        XCTAssertEqual(v2().backingTime(songTime: 3, speed: 1), 3, accuracy: 1e-9)    // no offset → 0
+    }
 }

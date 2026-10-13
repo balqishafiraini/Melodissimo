@@ -38,6 +38,15 @@ final class RhythmEngine: ObservableObject {
         case ready, countIn, playing, paused, finished
     }
 
+    /// What the song clock is doing, for anything that must follow it (the backing track).
+    enum ClockEvent: Equatable {
+        /// Running: at host time `hostTime` the clock reads `songTime`.
+        case running(songTime: Double, hostTime: CFTimeInterval)
+        /// Stopped at `songTime` (pause, Practice wait, restart).
+        case halted(songTime: Double)
+        case finished
+    }
+
     /// The song clock starts this many beats before the first note, so the countdown is just `songTime < 0`.
     static let countInBeats = 3.0
     static let maxRecentEvents = 8
@@ -55,6 +64,8 @@ final class RhythmEngine: ObservableObject {
     /// Seconds added to every judgment window (the microphone mode's allowance for detection delay).
     let windowBonus: Double
     let countInDuration: Double
+    /// Seconds the clock runs before beat 0: the count-in, or longer when a backing track has an intro.
+    let leadInDuration: Double
 
     @Published private(set) var phase: Phase = .ready
     @Published private(set) var score = 0
@@ -69,6 +80,8 @@ final class RhythmEngine: ObservableObject {
     private(set) var recentEvents: [JudgmentEvent] = []
     /// Practice only: the song is frozen at the hit line, waiting for the right key.
     private(set) var isWaiting = false
+    /// Called whenever the song clock starts, halts, resumes or ends.
+    var onClockEvent: ((ClockEvent) -> Void)?
 
     private var clock = PausableClock()
     private var firstUnjudged = 0
@@ -86,6 +99,7 @@ final class RhythmEngine: ObservableObject {
          approachTime: Double = 2.0,
          audioOffsetMs: Int = 0,
          windowBonus: Double = 0,
+         leadIn: Double = 0,
          soundPlayer: @escaping (String) -> Void = { playSound(key: $0) },
          soundStopper: @escaping (String) -> Void = { stopSound(key: $0) }) {
         self.chart = chart
@@ -97,10 +111,11 @@ final class RhythmEngine: ObservableObject {
         self.soundPlayer = soundPlayer
         self.soundStopper = soundStopper
         self.countInDuration = Self.countInBeats * 60 / (chart.bpm * speed)
+        self.leadInDuration = max(countInDuration, leadIn)
         self.notes = chart.timedNotes(speed: speed).map {
             EngineNote(index: $0.index, keyId: $0.keyId, time: $0.time, duration: $0.duration, judgment: nil)
         }
-        clock.freeze(at: -countInDuration)
+        clock.freeze(at: -leadInDuration)
     }
 
     deinit {
@@ -144,8 +159,9 @@ final class RhythmEngine: ObservableObject {
     /// Begins the count-in. Does nothing unless the engine is `.ready`.
     func start(now: CFTimeInterval) {
         guard phase == .ready else { return }
-        clock.start(at: now, from: -countInDuration)
+        clock.start(at: now, from: -leadInDuration)
         phase = .countIn
+        onClockEvent?(.running(songTime: -leadInDuration, hostTime: now))
     }
 
     func pause(now: CFTimeInterval) {
@@ -153,6 +169,7 @@ final class RhythmEngine: ObservableObject {
         clock.pause(at: now)
         stopListenSound()
         phase = .paused
+        onClockEvent?(.halted(songTime: songTime(now: now)))
     }
 
     func resume(now: CFTimeInterval) {
@@ -162,6 +179,7 @@ final class RhythmEngine: ObservableObject {
             waitStartedAt = now
         } else {
             clock.resume(at: now)
+            onClockEvent?(.running(songTime: songTime(now: now), hostTime: now))
         }
         phase = songTime(now: now) < 0 ? .countIn : .playing
     }
@@ -182,8 +200,9 @@ final class RhythmEngine: ObservableObject {
         wrongPresses = 0
         hintKeyId = nil
         clock = PausableClock()
-        clock.freeze(at: -countInDuration)
+        clock.freeze(at: -leadInDuration)
         phase = .ready
+        onClockEvent?(.halted(songTime: -leadInDuration))
         start(now: now)
     }
 
@@ -247,6 +266,7 @@ final class RhythmEngine: ObservableObject {
             if isWaiting {
                 isWaiting = false
                 clock.resume(at: now)
+                onClockEvent?(.running(songTime: note.time, hostTime: now))
             }
             advanceFirstUnjudged()
             finishIfDone(now: now)
@@ -307,6 +327,7 @@ final class RhythmEngine: ObservableObject {
             if t >= note.time {
                 clock.freeze(at: note.time)
                 isWaiting = true
+                onClockEvent?(.halted(songTime: note.time))
                 waitStartedAt = now
                 wrongPressesOnCurrentNote = 0
             }
@@ -381,6 +402,7 @@ final class RhythmEngine: ObservableObject {
         isWaiting = false
         if hintKeyId != nil { hintKeyId = nil }
         phase = .finished
+        onClockEvent?(.finished)
     }
 
     // MARK: Display link

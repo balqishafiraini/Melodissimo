@@ -545,4 +545,76 @@ final class RhythmEngineTests: XCTestCase {
         engine.detachTicker()
         engine.detachTicker()
     }
+
+    // MARK: Lead-in and clock events
+
+    private func engineWithEvents(_ mode: StageMode, leadIn: Double = 0, events: EventLog) -> RhythmEngine {
+        let engine = RhythmEngine(chart: chart(), mode: mode, leadIn: leadIn,
+                                  soundPlayer: { _ in }, soundStopper: { _ in })
+        engine.onClockEvent = { events.list.append($0) }
+        return engine
+    }
+
+    final class EventLog { var list: [RhythmEngine.ClockEvent] = [] }
+
+    func testInitialSongTimeIsTheLongerOfCountInAndLeadIn() {
+        let short = RhythmEngine(chart: chart(), mode: .perform, leadIn: 1)
+        XCTAssertEqual(short.songTime(now: start), -3, accuracy: 1e-9)       // count-in is 3 s at 60 bpm
+        let long = RhythmEngine(chart: chart(), mode: .perform, leadIn: 7)
+        XCTAssertEqual(long.leadInDuration, 7, accuracy: 1e-9)
+        XCTAssertEqual(long.songTime(now: start), -7, accuracy: 1e-9)
+        long.start(now: start)
+        XCTAssertEqual(long.songTime(now: start + 2), -5, accuracy: 1e-9)
+    }
+
+    func testPerformEventSequence() {
+        let log = EventLog()
+        let engine = engineWithEvents(.perform, leadIn: 5, events: log)
+        engine.start(now: 100)
+        engine.pause(now: 102)
+        engine.resume(now: 110)
+        XCTAssertEqual(log.list, [.running(songTime: -5, hostTime: 100),
+                                  .halted(songTime: -3),
+                                  .running(songTime: -3, hostTime: 110)])
+        // Play through: the last note is at beat 2 → song time 2, and the misses end the song.
+        engine.step(now: 110 + 3 + 2 + 0.3)
+        XCTAssertEqual(engine.phase, .finished)
+        XCTAssertEqual(log.list.last, .finished)
+        XCTAssertEqual(log.list.filter { $0 == .finished }.count, 1)
+        engine.step(now: 130)
+        XCTAssertEqual(log.list.filter { $0 == .finished }.count, 1)
+    }
+
+    func testPracticeHaltsAtANoteAndRunsOnTheRightKey() {
+        let log = EventLog()
+        let engine = engineWithEvents(.practice, events: log)
+        engine.start(now: 100)
+        engine.step(now: 103.2)                      // the first note (time 0) has been reached
+        XCTAssertTrue(engine.isWaiting)
+        XCTAssertEqual(log.list.last, .halted(songTime: 0))
+        engine.press(keyId: 9, now: 104)             // wrong key → nothing
+        XCTAssertEqual(log.list.last, .halted(songTime: 0))
+        engine.press(keyId: 5, now: 105)
+        XCTAssertEqual(log.list.last, .running(songTime: 0, hostTime: 105))
+    }
+
+    func testRestartHaltsThenRunsAgain() {
+        let log = EventLog()
+        let engine = engineWithEvents(.perform, leadIn: 5, events: log)
+        engine.start(now: 100)
+        log.list.removeAll()
+        engine.restart(now: 120)
+        XCTAssertEqual(log.list, [.halted(songTime: -5), .running(songTime: -5, hostTime: 120)])
+    }
+
+    func testResumeWhileWaitingEmitsNoRunningEvent() {
+        let log = EventLog()
+        let engine = engineWithEvents(.practice, events: log)
+        engine.start(now: 100)
+        engine.step(now: 103.2)
+        engine.pause(now: 104)
+        log.list.removeAll()
+        engine.resume(now: 105)
+        XCTAssertTrue(log.list.isEmpty)
+    }
 }
