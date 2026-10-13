@@ -4,9 +4,10 @@ beats_per_bar: 4
 bpm_hint: 126
 pickup: 1
 ending: auto
-sources: Notasi/indonesiaTetapMerdeka.png; draft chart_indonesia-tetap-merdeka.json; repeated lines cut
+sources: Notasi/indonesiaTetapMerdeka.png; draft chart_indonesia-tetap-merdeka.json; rows 1-4 (the sheet repeats rows 3-4 once more)
 ---
 [5. 5.] |
-1 1 1 2 | 3 - 1 [7. 1] | 2 4 3 2 |
-1 - 0 [3 4] | 5 5 6 6 | 5 - - [3 4] | 5 5 6 6 |
-5 - 0 [2 3] | 4 4 5 5 | 3 - 1 [7. 1] | 2 4 3 2 | 1 - - - ||
+1 1 1 2 | 3 - 1 [7. 1] | 2 4 3 2 | 1 - 0 [5. 5.] |
+1 1 1 2 | 3 - 1 [7. 1] | 2 4 3 2 | 1 - 0 [3 4] |
+5 5 6 6 | 5 - - [3 4] | 5 5 6 6 | 5 - 0 [2 3] |
+4 4 5 5 | 3 - 1 [7. 1] | 2 4 3 2 | 1 - - - ||

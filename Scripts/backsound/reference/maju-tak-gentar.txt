@@ -4,10 +4,11 @@ beats_per_bar: 4
 bpm_hint: 132
 pickup: 0
 ending: auto
-sources: Notasi/majuTakGentar.png; draft chart_maju-tak-gentar.json; repeated lines cut
+sources: Notasi/majuTakGentar.png; draft chart_maju-tak-gentar.json
 ---
 5 5 [3 5] 1˙ | 3˙ - 0 2˙ | 1˙ - [2˙ 1˙] 6 | 5 - - 0 |
 4 - [2 4] 5 | 7 - 0 7 | 2˙ - [1˙ - - 7] 1˙ | 2˙ - - 0 |
+5 - [3 5] 1˙ | 3˙ - 0 2˙ | 1˙ - [2˙ 1˙] 6 | 5 - - 0 |
 4 - [2 4] 5 | 7 - 0 7 | 2˙ - [4˙ 3˙] 2˙ | 1˙ - 0 [1˙ - - 7] |
-6 [4˙ - - 4˙] 4˙ [3˙ - - 2˙] | 1˙ [3˙ - - 3˙] 3˙ [2˙ - - 1˙] |
-7 7 [1˙ 2˙] 3˙ | 1˙ - - - ||
+6 [4˙ - - 4˙] 4˙ [3˙ - - 2˙] | 1˙ [3˙ - - 3˙] 3˙ [2˙ - - 1˙] | 7 7 [1˙ 2˙] 4˙ | 3˙ - 0 [1˙ - - 7] |
+6 [4˙ - - 4˙] 4˙ [3˙ - - 2˙] | 1˙ [3˙ - - 3˙] 3˙ [2˙ - - 1˙] | 7 7 [1˙ 2˙] 3˙ | 1˙ - - - ||

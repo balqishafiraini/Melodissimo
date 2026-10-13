@@ -18,3 +18,24 @@
 | 14 | Dari Sabang Sampai Merauke | D# major (0.35 / 0.33) | -3 | 126.0 | max deviation 24 ms at 5.5 s (of 169 s) | 2 | 0.00  ⚠️ |
 | 15 | Mengheningkan Cipta | C major (0.94 / 0.73) | +0 | 136.0 | max deviation 112 ms at 6.0 s (of 91 s) | 12 | 0.17  ⚠️ |
 | 16 | Gugur Bunga | G major (0.82 / 0.81) | +5 | 120.2 | max deviation 123 ms at 1.5 s (of 211 s) | 57 | new |
+
+## Build summary (B5)
+
+| # | Song | Verdict | Shift | Align score | Pulse ratio | Onset med/p90 (ms) | Pitch % | Tempo | bpm | Cut (s) | m4a MB |
+|---|------|---------|-------|-------------|-------------|--------------------|---------|-------|-----|---------|--------|
+| 1 | Indonesia Raya | UNSURE | +5 | 0.60 | 1 | 29/67 | 46 | map | 97 | 69 | 1.13 |
+| 2 | Bagimu Negeri | UNSURE | +2 | 0.58 | 1 | 25/61 | 41 | map | 75 | 31 | 0.50 |
+| 3 | Hari Merdeka | LIKELY | -5 | 0.81 | 1 | 36/76 | 91 | map | 120 | 29 | 0.43 |
+| 4 | Garuda Pancasila | LIKELY | -5 | 0.88 | 1 | 5/34 | 98 | steady | 129 | 40 | 0.64 |
+| 5 | Maju Tak Gentar | LIKELY | +3 | 0.66 | 1 | 27/65 | 70 | steady | 133 | 50 | 0.83 |
+| 6 | Bangun Pemudi Pemuda | LIKELY | +5 | 0.82 | 1 | 21/67 | 93 | map | 117 | 30 | 0.50 |
+| 7 | Bendera Merah Putih | LIKELY | -5 | 0.74 | 1 | 29/80 | 86 | steady | 132 | 28 | 0.45 |
+| 8 | Mars Harapan Bangsa | UNSURE | +2 | 0.73 | 1 | 20/48 | 68 | steady | 132 | 33 | 0.52 |
+| 9 | Indonesia Tetap Merdeka | LIKELY | -5 | 0.74 | 1 | 27/35 | 81 | steady | 125 | 38 | 0.61 |
+| 10 | Bhinneka Tunggal Ika | UNSURE | +3 | 0.51 | 1 | 29/35 | 28 | steady | 128 | 28 | 0.47 |
+| 11 | Api Kemerdekaan | UNSURE | -5 | 0.78 | 1 | 20/33 | 74 | steady | 129 | 37 | 0.59 |
+| 12 | Halo Halo Bandung | LIKELY | +0 | 0.80 | 1 | 7/20 | 80 | steady | 116 | 40 | 0.65 |
+| 13 | Tanah Airku | UNSURE | +5 | 0.49 | 1 | 37/89 | 26 | map | 70 | 54 | 0.88 |
+| 14 | Dari Sabang Sampai Merauke | UNSURE | +2 | 0.48 | 1 | 11/97 | 23 | steady | 125 | 37 | 0.61 |
+| 15 | Mengheningkan Cipta | UNSURE | +0 | 0.67 | 1 | 22/52 | 71 | map | 68 | 91 | 1.45 |
+| 16 | Gugur Bunga | UNSURE | +0 | 0.83 | 1 | 30/47 | 71 | map | 61 | 43 | 0.70 |

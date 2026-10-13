@@ -85,3 +85,31 @@
 | 24.04 | 1˙ | 0.5 |
 | 24.36 | 3˙ | 0.5 |
 | 24.56 | 3˙ | 0.5 |
+
+## Build (B5)
+
+- key check: shift +5 (r=0.85, next +0 r=0.62); B2 guess 5
+- pitch shift: +5 semitones (rubberband -3)
+- alignment: pulse ratio 1 (tracker 68.9 bpm vs hint 65); DTW at 68.9 bpm: path slope 0.83, cost 0.324, melody starts at 19.9 s
+- grid pick (forced first note): j0 22, first note at 20.90 s, median |grid - DTW| over the first 12 notes 68 ms (25% within 250 ms; over all notes 1825 ms)
+- top grid candidates (dtw err ms / chroma score): j0=22 68/0.489; j0=22.25 149/0.456; j0=21.75 286/0.458; j0=22.5 367/0.430
+- best by chroma score (first note s / dtw err ms / score): 77.1 s / 56069 / 0.538; 179.9 s / 158947 / 0.538; 77.5 s / 56526 / 0.537; 76.8 s / 55841 / 0.536; 101.9 s / 80860 / 0.535; 77.8 s / 56754 / 0.532
+- time map: smoothed tracked grid (tracker 68.9 bpm), refine -30 ms
+- timing: median onset error 37 ms, p90 89 ms (54/55 notes within 150 ms of an onset)
+- melody-chroma agreement (duration weighted, notes with chroma >= 0.6): 26%
+- tempo: tempo map (beatTimes), bpm 70.4; max line residual 441 ms
+- game cut: 12.13–66.13 s of the shifted file (fade-out 2.0 s), 54 s long, pad 0.00 s
+- offset 6.631 s (m4a lag +0.0 ms), m4a 0.88 MB, chart valid: True
+
+Weakest 10 notes by chroma (bar.beat, expected):
+
+- bar 3.1.00 `2˙` chroma 0.01, onset error 23 ms
+- bar 5.3.00 `6` chroma 0.01, onset error 63 ms
+- bar 1.2.50 `2˙` chroma 0.01, onset error 5 ms
+- bar 2.4.50 `3˙` chroma 0.01, onset error 89 ms
+- bar 10.2.50 `3˙` chroma 0.01, onset error 10 ms
+- bar 5.2.00 `6` chroma 0.01, onset error 9 ms
+- bar 5.1.00 `6` chroma 0.02, onset error 28 ms
+- bar 8.4.00 `5` chroma 0.02, onset error 21 ms
+- bar 6.4.00 `4` chroma 0.02, onset error 99 ms
+- bar 6.3.50 `3` chroma 0.04, onset error 88 ms
