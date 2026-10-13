@@ -22,6 +22,8 @@ struct SongStageView: View {
     @StateObject private var engine: RhythmEngine
     /// Real-pianika mode: the microphone's notes drive the engine instead of (or as well as) touches.
     @StateObject private var mic = MicrophoneInput()
+    /// The song's instrumental, following the engine's clock. Idle when the song has none or it is switched off.
+    @StateObject private var backing = BackingTrackPlayer()
     /// Key frames in window coordinates, from the keyboard, so the highway lanes line up with the keys.
     @State private var keyFrames: [Int: CGRect] = [:]
     /// Practice: the key that was just pressed wrongly, flashed red for a moment.
@@ -45,6 +47,9 @@ struct SongStageView: View {
     let showLabels: Bool
     /// True when the player chose "Real pianika" in Settings and the stage takes input (not Listen).
     let usesMicrophone: Bool
+    /// True when the backing track plays: it is on in Settings, the stage is not in Real pianika mode, the stage
+    /// plays the bundled chart (not the Chart Recorder's preview) and the song has a track.
+    let usesBacking: Bool
 
     /// `chart` plays a specific chart (the Chart Recorder's preview) instead of the song's bundled one.
     init(song: Song, mode: StageMode, speed: Double = 1, isBoss: Bool = false, isSolemn: Bool = false,
@@ -61,14 +66,23 @@ struct SongStageView: View {
         self.showLabels = showKeyLabels ?? (mode != .perform || ProgressStore.shared.labelsInPerform)
         let microphone = mode != .listen && ProgressStore.shared.inputMode == .pianika
         self.usesMicrophone = microphone
+        let backingOn = ProgressStore.shared.backingTrackEnabled && !microphone && chart == nil
+            && BackingTrackPlayer.isAvailable(for: song.id)
+        self.usesBacking = backingOn
         _engine = StateObject(wrappedValue: {
             var playedChart = chart ?? SongChart.load(for: song)
             if let noteLimit { playedChart.notes = Array(playedChart.notes.prefix(noteLimit)) }
             // Read once per play: the settings screen can't be open while a stage is.
             let settings = ProgressStore.shared
+            // A track with an intro needs a longer pre-roll than the 3-2-1 count-in.
+            var leadIn = 0.0
+            if backingOn, let offset = playedChart.offset {
+                leadIn = BackingSchedule.leadIn(offset: offset, speed: speed,
+                                                countIn: RhythmEngine.countInBeats * 60 / (playedChart.bpm * speed))
+            }
             return RhythmEngine(chart: playedChart, mode: mode, speed: speed,
                                 approachTime: settings.approachTime, audioOffsetMs: settings.audioOffsetMs,
-                                windowBonus: microphone ? Judge.microphoneBonus : 0)
+                                windowBonus: microphone ? Judge.microphoneBonus : 0, leadIn: leadIn)
         }())
     }
 
@@ -142,6 +156,11 @@ struct SongStageView: View {
         .onAppear {
             isOnScreen = true
             engine.attachTicker()
+            // The track must be listening before the clock starts, so it hears the first `.running`.
+            if usesBacking, let offset = engine.chart.offset {
+                backing.load(songId: song.id, offset: offset, speed: speed)
+                engine.onClockEvent = { [weak backing] event in backing?.handle(event) }
+            }
             engine.start(now: CACurrentMediaTime())
             if usesMicrophone {
                 mic.onNote = { keyId, hostTime in
@@ -153,6 +172,8 @@ struct SongStageView: View {
         }
         .onDisappear {
             isOnScreen = false
+            engine.onClockEvent = nil
+            backing.stop()
             engine.detachTicker()
             mic.onNote = nil
             mic.stop()

@@ -196,6 +196,14 @@ struct SettingsView: View {
             }
             .tint(Color.darkGreen)
             caption("Hits, clicks and coins. The pianika notes always play.")
+            Divider()
+            Toggle(isOn: Binding(get: { progress.backingTrackEnabled }, set: { progress.backingTrackEnabled = $0 })) {
+                Text("Backing music")
+                    .font(Font.headline)
+                    .foregroundColor(Color.darkGreen)
+            }
+            .tint(Color.darkGreen)
+            caption("Plays the song's instrumental in the song stage. Off in Real pianika mode.")
         }
     }
 
