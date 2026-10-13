@@ -18,6 +18,8 @@ struct MelodissimoApp: App {
         ProgressStore.shared.runMigrationIfNeeded()
         // Mirror progress to iCloud (needs the iCloud key-value capability; a no-op without it).
         CloudSync.shared.start()
+        // Sign in to Game Center without any sign-in sheet, so leaderboards can take scores.
+        GameCenter.shared.authenticate()
     }
 
     var body: some Scene {

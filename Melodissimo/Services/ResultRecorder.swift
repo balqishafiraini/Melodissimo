@@ -11,13 +11,17 @@ struct ResultRecorder {
     let progress: ProgressStore
     /// Checks the achievements and returns the titles that were just unlocked.
     let evaluateAchievements: () -> [String]
+    /// Posts leaderboard scores (Game Center); tests pass a recorder instead.
+    let submitScores: ([LeaderboardScore]) -> Void
 
     static let shared = ResultRecorder()
 
     init(progress: ProgressStore = .shared,
-         evaluateAchievements: @escaping () -> [String] = { AchievementStore.shared.evaluate().map(\.title) }) {
+         evaluateAchievements: @escaping () -> [String] = { AchievementStore.shared.evaluate().map(\.title) },
+         submitScores: @escaping ([LeaderboardScore]) -> Void = { GameCenter.shared.submit($0) }) {
         self.progress = progress
         self.evaluateAchievements = evaluateAchievements
+        self.submitScores = submitScores
     }
 
     @discardableResult
@@ -107,6 +111,7 @@ struct ResultRecorder {
         progress.recordCombo(result.maxCombo)
         progress.registerPlayToday()
         summary.newAchievements = evaluateAchievements()
+        submitScores(LeaderboardSubmissions.scores(for: result, tourStars: progress.tourStars))
         return summary
     }
 
