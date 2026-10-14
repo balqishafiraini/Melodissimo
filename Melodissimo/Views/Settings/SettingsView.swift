@@ -19,28 +19,42 @@ struct SettingsView: View {
 
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.softBlue)
-                .ignoresSafeArea()
-            Image("bgMusic")
-                .scaledToFit()
+            ScreenBackdrop(color: Color.softBlue)
 
-            VStack(spacing: 18) {
+            VStack(spacing: Sizing.s(18)) {
                 topBar
                 ScrollView {
-                    VStack(spacing: 20) {
-                        noteSpeedCard
-                        inputCard
-                        labelsCard
-                        soundCard
-                        audioCard
-                        resetCard
-                        aboutCard
+                    if Sizing.isPhone {
+                        // Two columns on iPhone: the page is wide and short, so one tall column would be a long scroll.
+                        HStack(alignment: .top, spacing: 12) {
+                            VStack(spacing: 12) {
+                                noteSpeedCard
+                                inputCard
+                                labelsCard
+                            }
+                            VStack(spacing: 12) {
+                                soundCard
+                                audioCard
+                                resetCard
+                                aboutCard
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    } else {
+                        VStack(spacing: 20) {
+                            noteSpeedCard
+                            inputCard
+                            labelsCard
+                            soundCard
+                            audioCard
+                            resetCard
+                            aboutCard
+                        }
+                        .padding(.vertical, 4)
                     }
-                    .padding(.vertical, 4)
                 }
             }
-            .padding(30)
+            .padding(Sizing.s(30))
         }
         .fullScreenCover(isPresented: $isCalibrating) {
             CalibrationView()
@@ -87,10 +101,10 @@ struct SettingsView: View {
                     Text("< Back")
                         .lineLimit(1)
                         .padding(.horizontal, 14)
-                        .frame(minWidth: 120, minHeight: 80, maxHeight: 80)
+                        .frame(minWidth: Sizing.tap(120), minHeight: Sizing.tap(80), maxHeight: Sizing.tap(80))
                         .background(Color.darkGreen)
                         .foregroundColor(.white)
-                        .cornerRadius(20)
+                        .cornerRadius(Sizing.s(20))
                         .font(Font.headline)
                 }
                 Spacer()
@@ -99,15 +113,15 @@ struct SettingsView: View {
     }
 
     private func card<Content: View>(_ title: LocalizedStringKey, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: Sizing.isPhone ? 8 : 14) {
             Text(title)
-                .font(.custom("BalooDa-Regular", size: 30))
+                .font(.custom("BalooDa-Regular", size: Sizing.f(30)))
                 .foregroundColor(Color.darkGreen)
             content()
         }
-        .padding(24)
+        .padding(Sizing.isPhone ? 14 : 24)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 28).fill(Color.white))
+        .background(RoundedRectangle(cornerRadius: Sizing.s(28)).fill(Color.white))
     }
 
     private func caption(_ text: LocalizedStringKey) -> some View {
@@ -120,18 +134,18 @@ struct SettingsView: View {
 
     private var noteSpeedCard: some View {
         card("Note speed") {
-            HStack(spacing: 12) {
+            HStack(spacing: Sizing.isPhone ? 6 : 12) {
                 ForEach(ProgressStore.approachTimeChoices, id: \.self) { seconds in
                     SoundButton {
                         progress.approachTime = seconds
                     } label: {
                         Text(String(format: "%.1f s", seconds))
                             .frame(maxWidth: .infinity)
-                            .frame(height: 60)
+                            .frame(height: Sizing.tap(60))
                             .background(progress.approachTime == seconds ? Color.darkGreen : Color.softBlue.opacity(0.5))
                             .foregroundColor(progress.approachTime == seconds ? .white : Color.darkGreen)
-                            .cornerRadius(18)
-                            .font(.custom("BalooDa-Regular", size: 26))
+                            .cornerRadius(Sizing.s(18))
+                            .font(.custom("BalooDa-Regular", size: Sizing.f(26)))
                     }
                     .accessibilityAddTraits(progress.approachTime == seconds ? .isSelected : [])
                 }
@@ -144,18 +158,20 @@ struct SettingsView: View {
 
     private var inputCard: some View {
         card("Input") {
-            HStack(spacing: 12) {
+            HStack(spacing: Sizing.isPhone ? 6 : 12) {
                 ForEach(InputMode.allCases, id: \.self) { mode in
                     SoundButton {
                         progress.inputMode = mode
                     } label: {
                         Text(mode == .touch ? "Touch" : "Real pianika")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 60)
+                            .frame(height: Sizing.tap(60))
                             .background(progress.inputMode == mode ? Color.darkGreen : Color.softBlue.opacity(0.5))
                             .foregroundColor(progress.inputMode == mode ? .white : Color.darkGreen)
-                            .cornerRadius(18)
-                            .font(.custom("BalooDa-Regular", size: 26))
+                            .cornerRadius(Sizing.s(18))
+                            .font(.custom("BalooDa-Regular", size: Sizing.f(26)))
                     }
                     .accessibilityAddTraits(progress.inputMode == mode ? .isSelected : [])
                 }
@@ -165,11 +181,13 @@ struct SettingsView: View {
                     isTestingMicrophone = true
                 } label: {
                     Text("Test the microphone")
-                        .padding(.horizontal, 28)
-                        .frame(height: 60)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .padding(.horizontal, Sizing.s(28))
+                        .frame(height: Sizing.tap(60))
                         .background(Color.yellow)
                         .foregroundColor(Color.darkGreen)
-                        .cornerRadius(18)
+                        .cornerRadius(Sizing.s(18))
                         .font(Font.headline)
                 }
             }
@@ -223,9 +241,9 @@ struct SettingsView: View {
         card("Audio timing") {
             HStack {
                 Text(Self.offsetText(progress.audioOffsetMs))
-                    .font(.custom("BalooDa-Regular", size: 34))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(34)))
                     .foregroundColor(Color.darkGreen)
-                    .frame(width: 130, alignment: .leading)
+                    .frame(width: Sizing.isPhone ? 96 : 130, alignment: .leading)
                 Slider(value: Binding(get: { Double(progress.audioOffsetMs) },
                                       set: { progress.audioOffsetMs = Int($0.rounded()) }),
                        in: Double(AudioCalibration.offsetRange.lowerBound)...Double(AudioCalibration.offsetRange.upperBound),
@@ -234,27 +252,31 @@ struct SettingsView: View {
                     .accessibilityLabel(Text("Audio timing"))
                     .accessibilityValue(Text(Self.offsetText(progress.audioOffsetMs)))
             }
-            HStack(spacing: 14) {
+            HStack(spacing: Sizing.s(14)) {
                 SoundButton {
                     isCalibrating = true
                 } label: {
                     Text("Tap to the beat")
-                        .padding(.horizontal, 28)
-                        .frame(height: 60)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .padding(.horizontal, Sizing.s(28))
+                        .frame(height: Sizing.tap(60))
                         .background(Color.yellow)
                         .foregroundColor(Color.darkGreen)
-                        .cornerRadius(18)
+                        .cornerRadius(Sizing.s(18))
                         .font(Font.headline)
                 }
                 SoundButton {
                     progress.audioOffsetMs = 0
                 } label: {
                     Text("Reset")
-                        .padding(.horizontal, 28)
-                        .frame(height: 60)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .padding(.horizontal, Sizing.s(28))
+                        .frame(height: Sizing.tap(60))
                         .background(Color.softBlue.opacity(0.5))
                         .foregroundColor(Color.darkGreen)
-                        .cornerRadius(18)
+                        .cornerRadius(Sizing.s(18))
                         .font(Font.headline)
                 }
                 .disabled(progress.audioOffsetMs == 0)
@@ -276,11 +298,13 @@ struct SettingsView: View {
                 isConfirmingReset = true
             } label: {
                 Text("Reset progress")
-                    .padding(.horizontal, 28)
-                    .frame(height: 60)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .padding(.horizontal, Sizing.s(28))
+                    .frame(height: Sizing.tap(60))
                     .background(Color.red)
                     .foregroundColor(.white)
-                    .cornerRadius(18)
+                    .cornerRadius(Sizing.s(18))
                     .font(Font.headline)
             }
             if didReset {

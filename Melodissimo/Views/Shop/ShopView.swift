@@ -16,21 +16,17 @@ struct ShopView: View {
     /// Achievements a purchase just unlocked (the Kolektor), shown for a few seconds.
     @State private var unlockedTitles: [String] = []
 
-    private let columns = [GridItem(.adaptive(minimum: 230), spacing: 20)]
+    private let columns = [GridItem(.adaptive(minimum: Sizing.isPhone ? 150 : 230), spacing: Sizing.isPhone ? 10 : 20)]
 
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.softBlue)
-                .ignoresSafeArea()
-            Image("bgMusic")
-                .scaledToFit()
+            ScreenBackdrop(color: Color.softBlue)
 
-            VStack(spacing: 18) {
+            VStack(spacing: Sizing.s(18)) {
                 topBar
                 tabs
                 ScrollView {
-                    LazyVGrid(columns: columns, spacing: 20) {
+                    LazyVGrid(columns: columns, spacing: Sizing.isPhone ? 10 : 20) {
                         ForEach(ShopCatalog.items(in: category)) { item in
                             card(for: item)
                         }
@@ -38,12 +34,12 @@ struct ShopView: View {
                     .padding(.vertical, 4)
                 }
             }
-            .padding(30)
+            .padding(Sizing.s(30))
         }
         .overlay(alignment: .bottom) {
             if !unlockedTitles.isEmpty {
                 AchievementBanner(titles: unlockedTitles)
-                    .padding(.bottom, 24)
+                    .padding(.bottom, Sizing.s(24))
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
@@ -70,31 +66,31 @@ struct ShopView: View {
                     router.pop()
                 } label: {
                     Text("Menu")
-                        .frame(width: 120, height: 80)
+                        .buttonFrame(width: 120, height: 80)
                         .background(Color.darkGreen)
                         .foregroundColor(.white)
-                        .cornerRadius(20)
+                        .cornerRadius(Sizing.s(20))
                         .font(Font.headline)
                 }
                 Spacer()
-                CoinBadge(height: 80)
+                CoinBadge(height: Sizing.tap(80))
             }
         }
     }
 
     private var tabs: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: Sizing.s(14)) {
             ForEach(ShopCategory.allCases, id: \.self) { tab in
                 SoundButton {
                     category = tab
                 } label: {
                     Text(Self.title(of: tab))
                         .frame(maxWidth: .infinity)
-                        .frame(height: 60)
+                        .frame(height: Sizing.tap(60))
                         .background(category == tab ? Color.darkGreen : Color.white)
                         .foregroundColor(category == tab ? .white : Color.darkGreen)
-                        .cornerRadius(20)
-                        .font(.custom("BalooDa-Regular", size: 28))
+                        .cornerRadius(Sizing.s(20))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
                 }
             }
         }
@@ -109,17 +105,29 @@ struct ShopView: View {
     }
 
     private func card(for item: ShopItem) -> some View {
-        VStack(spacing: 10) {
-            preview(for: item)
-                .frame(height: 130)
+        VStack(spacing: Sizing.isPhone ? 4 : 10) {
+            Group {
+                if Sizing.isPhone {
+                    // The previews are drawn at the iPad's size; here they are shrunk to a small thumbnail.
+                    preview(for: item)
+                        .frame(width: 190, height: 130)
+                        .scaleEffect(0.55)
+                        .frame(width: 105, height: 72)
+                } else {
+                    preview(for: item)
+                        .frame(height: 130)
+                }
+            }
             Text(LocalizedStringKey(item.name))
-                .font(.custom("BalooDa-Regular", size: 28))
+                .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
                 .foregroundColor(Color.darkGreen)
             actionButton(for: item)
         }
-        .padding(16)
+        .padding(Sizing.isPhone ? 8 : 16)
         .frame(maxWidth: .infinity)
-        .background(RoundedRectangle(cornerRadius: 28).fill(Color.white))
+        .background(RoundedRectangle(cornerRadius: Sizing.s(28)).fill(Color.white))
     }
 
     @ViewBuilder
@@ -144,7 +152,7 @@ struct ShopView: View {
         if progress.equippedItem(item.category) == item {
             Label("Equipped", systemImage: "checkmark.circle.fill")
                 .frame(maxWidth: .infinity)
-                .frame(height: 52)
+                .frame(height: Sizing.tap(52))
                 .foregroundColor(Color.green)
                 .font(.headline)
         } else if progress.owns(item) {
@@ -153,10 +161,10 @@ struct ShopView: View {
             } label: {
                 Text("Equip")
                     .frame(maxWidth: .infinity)
-                    .frame(height: 52)
+                    .frame(height: Sizing.tap(52))
                     .background(Color.darkGreen)
                     .foregroundColor(.white)
-                    .cornerRadius(16)
+                    .cornerRadius(Sizing.s(16))
                     .font(.headline)
             }
         } else {
@@ -166,15 +174,15 @@ struct ShopView: View {
             } label: {
                 HStack(spacing: 8) {
                     AssetImage(name: "icon_coin", fallbackEmoji: "🪙")
-                        .frame(width: 30, height: 30)
+                        .frame(width: Sizing.s(30), height: Sizing.s(30))
                     Text("\(item.price)")
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height: 52)
+                .frame(height: Sizing.tap(52))
                 .background(canAfford ? Color.yellow : Color.gray.opacity(0.35))
                 .foregroundColor(canAfford ? Color.darkGreen : Color.darkGreen.opacity(0.5))
-                .cornerRadius(16)
-                .font(.custom("BalooDa-Regular", size: 26))
+                .cornerRadius(Sizing.s(16))
+                .font(.custom("BalooDa-Regular", size: Sizing.f(26)))
             }
             .disabled(!canAfford)
             .accessibilityHint(canAfford ? Text("") : Text("Not enough coins"))
