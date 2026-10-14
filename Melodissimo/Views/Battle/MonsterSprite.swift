@@ -23,7 +23,7 @@ struct MonsterSprite<Hit: Equatable, Lunge: Equatable>: View {
     @State private var lunge: CGFloat = 0
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: Sizing.s(10)) {
             if let health, health.maximum > 0 {
                 healthBar(current: health.current, maximum: health.maximum)
             }
@@ -39,7 +39,7 @@ struct MonsterSprite<Hit: Equatable, Lunge: Equatable>: View {
         }
         .onChange(of: lungeTrigger) { _ in
             guard !reduceMotion else { return }
-            withAnimation(.easeIn(duration: 0.12)) { lunge = -90 }
+            withAnimation(.easeIn(duration: 0.12)) { lunge = -Sizing.s(90) }
             withAnimation(.spring(response: 0.3, dampingFraction: 0.5).delay(0.14)) { lunge = 0 }
         }
     }
@@ -50,10 +50,10 @@ struct MonsterSprite<Hit: Equatable, Lunge: Equatable>: View {
             Capsule().fill(Color.black.opacity(0.25))
             Capsule()
                 .fill(fraction > 0.5 ? Color.green : (fraction > 0.25 ? Color.yellow : Color.red))
-                .frame(width: 220 * fraction)
+                .frame(width: Sizing.s(220) * fraction)
                 .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: current)
         }
-        .frame(width: 220, height: 18)
+        .frame(width: Sizing.s(220), height: Sizing.s(18))
         .overlay(Capsule().stroke(Color.white.opacity(0.8), lineWidth: 2))
     }
 }

@@ -136,8 +136,9 @@ enum QARoutes {
                   case .battle(let config) = stage.kind else { return nil }
             return [.play(PlayRequest(kind: .battle(config), campaignStageId: stage.id))]
         case "battleBoss":
-            // A boss battle: the timer shrinks with every answer.
-            var config = BattleConfig(newPool: [5, 6, 7, 8, 9], questionCount: 10, timePerNote: 4, seed: 7)
+            // A boss battle: the timer shrinks with every answer. Two minutes a note, so a screenshot is never
+            // taken after the hearts have run out.
+            var config = BattleConfig(newPool: [5, 6, 7, 8, 9], questionCount: 10, timePerNote: 120, seed: 7)
             config.isBoss = true
             return [.play(PlayRequest(kind: .battle(config)))]
         case "echo":

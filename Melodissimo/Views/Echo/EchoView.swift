@@ -33,12 +33,7 @@ struct EchoView: View {
 
     var body: some View {
         ZStack {
-            Color.softBlue
-                .ignoresSafeArea()
-                .overlay {
-                    Image("bgMusic")
-                        .scaledToFit()
-                }
+            ScreenBackdrop(color: Color.softBlue, overlaysColor: true)
 
             VStack(spacing: 0) {
                 topBar
@@ -52,7 +47,8 @@ struct EchoView: View {
                                   if frames != keyFrames { keyFrames = frames }
                               })
             }
-            .ignoresSafeArea(edges: .bottom)
+            // The iPad keyboard runs to the bottom edge; on iPhone it stays above the home indicator.
+            .ignoresSafeArea(edges: Sizing.isPhone ? [] : .bottom)
 
             nameOverlay
         }
@@ -102,17 +98,17 @@ struct EchoView: View {
     // MARK: Pieces
 
     private var topBar: some View {
-        HStack(spacing: 20) {
+        HStack(spacing: Sizing.s(20)) {
             SoundButton {
                 leave()
             } label: {
                 Text("< Back")
                     .lineLimit(1)
                     .padding(.horizontal, 14)
-                    .frame(minWidth: 120, minHeight: 64, maxHeight: 64)
+                    .frame(minWidth: Sizing.tap(120), minHeight: Sizing.tap(64), maxHeight: Sizing.tap(64))
                     .background(Color.darkGreen)
                     .foregroundColor(.white)
-                    .cornerRadius(20)
+                    .cornerRadius(Sizing.s(20))
                     .font(Font.headline)
             }
 
@@ -124,25 +120,25 @@ struct EchoView: View {
                 Text("Round")
                     .font(.subheadline)
                 Text("\(viewModel.roundsCleared + 1)")
-                    .font(.custom("BalooDa-Regular", size: 36))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(36)))
             }
             .foregroundColor(Color.darkGreen)
         }
-        .padding(.horizontal, 24)
-        .padding(.top, 8)
-        .frame(height: 80)
+        .padding(.horizontal, Sizing.s(24))
+        .padding(.top, Sizing.s(8))
+        .frame(height: Sizing.isPhone ? 52 : 80)
     }
 
     /// Alpanica, the big "Listen… / Your turn!" status and the phrase's progress dots.
     private var statusPanel: some View {
         GeometryReader { geo in
-            HStack(alignment: .center, spacing: 32) {
+            HStack(alignment: .center, spacing: Sizing.s(32)) {
                 AlpanicaView(mood: mood, hopTrigger: viewModel.roundsCleared, height: min(240, geo.size.height * 0.9))
                     .frame(maxWidth: .infinity)
 
-                VStack(spacing: 14) {
+                VStack(spacing: Sizing.s(14)) {
                     Text(statusText)
-                        .font(.custom("BalooDa-Regular", size: 52))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(52)))
                         .foregroundColor(Color.darkGreen)
                         .multilineTextAlignment(.center)
                         .minimumScaleFactor(0.6)
@@ -152,7 +148,7 @@ struct EchoView: View {
 
                 Color.clear.frame(maxWidth: .infinity)
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, Sizing.s(24))
             .frame(width: geo.size.width, height: geo.size.height)
         }
     }
@@ -171,15 +167,15 @@ struct EchoView: View {
     /// One dot per note of the phrase: filled as it plays, then as the player gets each note right.
     private var progressDots: some View {
         let count = viewModel.phrase.count
-        return HStack(spacing: 12) {
+        return HStack(spacing: Sizing.s(12)) {
             ForEach(0..<count, id: \.self) { index in
                 Circle()
                     .fill(dotColor(for: index))
-                    .frame(width: 26, height: 26)
+                    .frame(width: Sizing.s(26), height: Sizing.s(26))
                     .overlay(Circle().stroke(Color.darkGreen.opacity(0.5), lineWidth: 2))
             }
         }
-        .frame(height: 30)
+        .frame(height: Sizing.s(30))
     }
 
     private func dotColor(for index: Int) -> Color {
@@ -201,11 +197,11 @@ struct EchoView: View {
             let origin = geo.frame(in: .global).origin
             if let key = correctFlashKey, let frame = keyFrames[key] {
                 Text(NoteCatalog.note(key).label)
-                    .font(.custom("BalooDa-Regular", size: 56))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(56)))
                     .foregroundColor(Color.darkGreen)
-                    .padding(.horizontal, 18)
+                    .padding(.horizontal, Sizing.s(18))
                     .background(Capsule().fill(Color.white))
-                    .position(x: frame.midX - origin.x, y: frame.minY - origin.y - 36)
+                    .position(x: frame.midX - origin.x, y: frame.minY - origin.y - Sizing.s(36))
                     .transition(.opacity)
             }
         }

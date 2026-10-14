@@ -37,12 +37,7 @@ struct BattleView: View {
 
     var body: some View {
         ZStack {
-            Color.red
-                .ignoresSafeArea()
-                .overlay {
-                    Image("bgMusic")
-                        .scaledToFit()
-                }
+            ScreenBackdrop(color: Color.red, overlaysColor: true)
 
             VStack(spacing: 0) {
                 topBar
@@ -56,7 +51,8 @@ struct BattleView: View {
                               })
                     .coachTarget(.keyboard)
             }
-            .ignoresSafeArea(edges: .bottom)
+            // The iPad keyboard runs to the bottom edge; on iPhone it stays above the home indicator.
+            .ignoresSafeArea(edges: Sizing.isPhone ? [] : .bottom)
             .offset(x: nudge)
         }
         .overlayPreferenceValue(CoachTargetKey.self) { anchors in
@@ -100,7 +96,7 @@ struct BattleView: View {
     // MARK: Pieces
 
     private var topBar: some View {
-        HStack(spacing: 20) {
+        HStack(spacing: Sizing.s(20)) {
             SoundButton {
                 // Off screen first, so nothing sounds during the transition; the navigation then silences any note.
                 isOnScreen = false
@@ -109,10 +105,10 @@ struct BattleView: View {
                 Text("< Back")
                     .lineLimit(1)
                     .padding(.horizontal, 14)
-                    .frame(minWidth: 120, minHeight: 64, maxHeight: 64)
+                    .frame(minWidth: Sizing.tap(120), minHeight: Sizing.tap(64), maxHeight: Sizing.tap(64))
                     .background(Color.darkGreen)
                     .foregroundColor(.white)
-                    .cornerRadius(20)
+                    .cornerRadius(Sizing.s(20))
                     .font(Font.headline)
             }
 
@@ -126,7 +122,7 @@ struct BattleView: View {
                     Text("Combo")
                         .font(.subheadline)
                     Text("\(viewModel.combo)")
-                        .font(.custom("BalooDa-Regular", size: 32))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(32)))
                 }
                 .foregroundColor(.white)
             }
@@ -135,15 +131,15 @@ struct BattleView: View {
                 Text("Score")
                     .font(.subheadline)
                 Text("\(viewModel.score)")
-                    .font(.custom("BalooDa-Regular", size: 36))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(36)))
                     .contentTransition(.numericText())
                     .animation(.default, value: viewModel.score)
             }
             .foregroundColor(.white)
         }
-        .padding(.horizontal, 24)
-        .padding(.top, 8)
-        .frame(height: 80)
+        .padding(.horizontal, Sizing.s(24))
+        .padding(.top, Sizing.s(8))
+        .frame(height: Sizing.isPhone ? 52 : 80)
     }
 
     /// Alpanica on the left, the question in a speech bubble, the monster on the right.
@@ -165,17 +161,17 @@ struct BattleView: View {
                               height: spriteHeight * (viewModel.config.isBoss ? 1 : 0.85))
                     .frame(maxWidth: .infinity)
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, Sizing.s(24))
             .frame(width: geo.size.width, height: geo.size.height, alignment: .bottom)
         }
     }
 
     private func questionBubble(height: CGFloat) -> some View {
-        VStack(spacing: 10) {
+        VStack(spacing: Sizing.s(10)) {
             Text(NoteCatalog.note(viewModel.currentQuestion).label)
-                .font(.custom("BalooDa-Regular", size: 70))
+                .font(.custom("BalooDa-Regular", size: Sizing.f(70)))
                 .foregroundColor(Color.darkGreen)
-                .frame(minWidth: 150)
+                .frame(minWidth: Sizing.s(150))
 
             // The time left for this note, draining towards the right.
             TimelineView(.animation) { timeline in
@@ -185,16 +181,16 @@ struct BattleView: View {
                         Capsule().fill(Color.darkGreen.opacity(0.15))
                         Capsule()
                             .fill(fraction > 0.3 ? Color.green : Color.red)
-                            .frame(width: 150 * fraction)
+                            .frame(width: Sizing.s(150) * fraction)
                     }
-                    .frame(width: 150, height: 12)
+                    .frame(width: Sizing.s(150), height: Sizing.s(12))
                 } else {
-                    Color.clear.frame(width: 150, height: 12)
+                    Color.clear.frame(width: Sizing.s(150), height: Sizing.s(12))
                 }
             }
         }
-        .padding(.horizontal, 28)
-        .padding(.vertical, 18)
+        .padding(.horizontal, Sizing.s(28))
+        .padding(.vertical, Sizing.s(18))
         .background(SpeechBubble().fill(Color.white))
         .coachTarget(.question)
         .frame(height: height, alignment: .center)
@@ -273,12 +269,12 @@ struct BattleView: View {
 /// A rounded speech bubble with a small tail pointing right, at the monster.
 private struct SpeechBubble: Shape {
     func path(in rect: CGRect) -> Path {
-        let tail: CGFloat = 22
+        let tail: CGFloat = Sizing.s(22)
         let body = CGRect(x: rect.minX, y: rect.minY, width: rect.width - tail, height: rect.height)
-        var path = Path(roundedRect: body, cornerRadius: 34)
-        path.move(to: CGPoint(x: body.maxX - 2, y: rect.midY - 18))
+        var path = Path(roundedRect: body, cornerRadius: Sizing.s(34))
+        path.move(to: CGPoint(x: body.maxX - 2, y: rect.midY - Sizing.s(18)))
         path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-        path.addLine(to: CGPoint(x: body.maxX - 2, y: rect.midY + 18))
+        path.addLine(to: CGPoint(x: body.maxX - 2, y: rect.midY + Sizing.s(18)))
         path.closeSubpath()
         return path
     }
