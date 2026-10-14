@@ -21,7 +21,7 @@
 "- The questions will appear only ONCE and change automatically once you pressed the answer tiles." = "- Pertanyaan hanya muncul SEKALI dan akan berubah otomatis saat kamu mengeklik tuts pianika sebagai jawaban.";
 "- Remember, you CAN'T undo the answer." = "- Ingat, kamu TIDAK DAPAT merubah jawaban kamu sekali kamu mengekliknya.";
 "Why my tiles won’t make sound?" = "Kenapa tuts saya tidak dapat keluar suara?";
-"Make sure the volume of your iPad is turned up. Each tile plays as soon as you touch it." = "Pastikan volume iPad kamu dinyalakan. Setiap tuts langsung berbunyi begitu kamu menyentuhnya.";
+"Make sure your device's volume is turned up. Each tile plays as soon as you touch it." = "Pastikan volume perangkatmu dinyalakan. Setiap tuts langsung berbunyi begitu kamu menyentuhnya.";
 "Can I pressed more than one tiles in one time?" = "Bisakah saya mengeklik lebih dari satu tuts secara bersamaan?";
 "Yes! You can press several tiles at the same time with different fingers, and you can also slide your finger from one tile to the next." = "Bisa! Kamu dapat menekan beberapa tuts sekaligus dengan jari yang berbeda, dan kamu juga bisa menggeser jarimu dari satu tuts ke tuts berikutnya.";
 "How to read the numeral notation in Song feature?" = "Bagaimana cara membaca notasi angka pada fitur Song?";
@@ -29,10 +29,9 @@
 "- If you see '0' notation, just ignore it. The 0 notation means is tone beat." = "- Jika kamu melihat notassi '0', abaikan saja. Notasi itu merupakan beat nada.";
 "- If you see 2 notation number that connected by a wave line above it, only pay attention to the first number, ignore the second number." = "- Jika kamu melihat 2 notasi angka yang menyambung dengan garis gelombang di atasnya, perhatikan hanya angka pertamanya saja, abaikan angka kedua.";
 "- If you see the number that has diagona strikethrough, it means # (in major chord). Example: '4̷' means '4#'" = "- Jika kamu melihat notasi angka yang memiliki coretan miri, itu artinya nada # (tangga nada mayor). Contoh: '4̷' artinya '4#'";
-"If I move to another iPad, will my progress saved?" = "Jika aku pindah ke iPad lain, apakah progressku akan tersimpan?";
+"If I move to another device, will my progress be saved?" = "Jika aku pindah ke perangkat lain, apakah progressku akan tersimpan?";
 "Unfortunately, you'll lose your progress because we didn't do any cloud system. But we will make sure to update that feature in the future app update. Please stay tune with us." = "Sayangnya, kamu akan kehilangan progress permainan kamu, karena sistem kami tidak menggunakan cloud. Namun kami akan memastikan untuk memperbarui fitur tersebut pada pembaruan aplikasi mendatang. Tolong terus bersama kami.";
 "Contact us for further assist!" = "Hubungi kami untuk bantuan lebih lanjut!";
-"Learn melodica (pianika) in more fun way with Melodissimo! Download it on App Store (only available on iPad)https://s.id/GetMelodissimo" = "Belajar Pianika lebih menyenangkan dengan game Melodissimo! Ayo download di App Store (hanya tersedia pada iPad) https://s.id/GetMelodissimo";
 "Share" = "Bagikan";
 "Help" = "Bantuan";
 "Thank you for learn with Melodissimo! Now, let's test your skill again in Post-Play Quiz, it's similar when you do it on Pre-Play Quiz~" = "Terima kasih telah belajar bersama Melodissimo! Sekarang, ayo tes kemampuanmu lagi di Post-Play Quiz, bentukannya sama seperti saat kamu mengerjakan Pre-Play Quiz~";
@@ -306,16 +305,16 @@
 "Start Quiz" = "Mulai Kuis";
 "Learn Song Notation Repository" = "Pelajari Koleksi Notasi Lagu";
 "Email us on: appmelodissimo@gmail.com" = "Email kami di: appmelodissimo@gmail.com";
-"Learn melodica (pianika) in a more fun way with Melodissimo! Download it on the App Store (only available on iPad) https://s.id/GetMelodissimo" = "Belajar Pianika lebih menyenangkan dengan game Melodissimo! Ayo download di App Store (hanya tersedia pada iPad) https://s.id/GetMelodissimo";
+"Learn melodica (pianika) in a more fun way with Melodissimo! Download it on the App Store (iPhone & iPad) https://s.id/GetMelodissimo" = "Belajar Pianika lebih menyenangkan dengan game Melodissimo! Ayo download di App Store (iPhone & iPad) https://s.id/GetMelodissimo";
 
 /* Task 8.1: real pianika via microphone */
 "Input" = "Cara bermain";
 "Touch" = "Sentuh";
 "Real pianika" = "Pianika asli";
 "Test the microphone" = "Coba mikrofon";
-"Play the songs on your own pianika. The iPad listens through the microphone, so play in a quiet room." = "Mainkan lagu di pianika milikmu. iPad mendengarkan lewat mikrofon, jadi bermainlah di ruangan yang tenang.";
+"Play the songs on your own pianika. Your device listens through the microphone, so play in a quiet room." = "Mainkan lagu di pianika milikmu. Perangkatmu mendengarkan lewat mikrofon, jadi bermainlah di ruangan yang tenang.";
 "Play 1 (C) on your pianika" = "Mainkan nada 1 (C) di pianikamu";
 "Perfect! The game hears you." = "Mantap! Permainan mendengarmu.";
 "Hold the note steady for a moment." = "Tahan nadanya sebentar.";
-"Microphone access is off. Turn it on in the iPad's Settings to play with a real pianika." = "Akses mikrofon mati. Nyalakan di Pengaturan iPad untuk bermain dengan pianika asli.";
+"Microphone access is off. Turn it on in your device's Settings to play with a real pianika." = "Akses mikrofon mati. Nyalakan di Pengaturan perangkatmu untuk bermain dengan pianika asli.";
 "The microphone could not start." = "Mikrofon tidak bisa dinyalakan.";

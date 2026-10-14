@@ -12,27 +12,27 @@ extension Font {
     
     /// Create a font with the large title text style.
     public static var largeTitle: Font {
-        return Font.custom("BalooDa-Regular", size: 50)
+        return Font.custom("BalooDa-Regular", size: Sizing.f(50))
     }
 
     /// Create a font with the title text style.
     public static var title: Font {
-        return Font.custom("BalooDa-Regular", size: 40)
+        return Font.custom("BalooDa-Regular", size: Sizing.f(40))
     }
 
     /// Create a font with the headline text style.
     public static var headline: Font {
-        return Font.custom("BalooDa-Regular", size: 30)
+        return Font.custom("BalooDa-Regular", size: Sizing.f(30))
     }
 
     /// Create a font with the subheadline text style.
     public static var subheadline: Font {
-        return Font.custom("BalooDa-Regular", size: 20)
+        return Font.custom("BalooDa-Regular", size: Sizing.f(20))
     }
 
     /// Create a font with the body text style.
     public static var body: Font {
-           return Font.custom("BalooDa-Regular", size: 15)
+           return Font.custom("BalooDa-Regular", size: Sizing.f(15))
        }
 
     /// Create a font with the callout text style.

@@ -8,10 +8,12 @@
 import Foundation
 import SwiftUI
 
-/// The device screen width, read once. The tile layouts reference this many times
-/// per render; caching it avoids repeatedly hitting `UIScreen.main` (which is also
-/// deprecated) on every layout pass. The game runs in portrait, so the width is stable.
-let screenWidth = UIScreen.main.bounds.width
+/// The screen's long edge, read once. The app is landscape-only, so this is the landscape width on every device,
+/// even if it is read before the window has rotated. The tile layouts reference it many times per render;
+/// caching it avoids repeatedly hitting `UIScreen.main` (which is also deprecated) on every layout pass.
+let screenWidth = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+/// The screen's short edge: the landscape height.
+let screenHeight = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
 
 struct CornerRadiusShape: Shape {
     var radius = CGFloat.infinity

@@ -75,7 +75,7 @@ struct MicCalibrationView: View {
     private var statusText: some View {
         switch mic.status {
         case .denied:
-            Text("Microphone access is off. Turn it on in the iPad's Settings to play with a real pianika.")
+            Text("Microphone access is off. Turn it on in your device's Settings to play with a real pianika.")
                 .multilineTextAlignment(.center)
                 .foregroundColor(.yellow)
                 .padding(.horizontal, 60)

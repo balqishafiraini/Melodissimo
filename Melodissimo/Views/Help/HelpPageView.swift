@@ -55,7 +55,7 @@ struct HelpPageView: View {
             .text(NSLocalizedString("Open Settings (the gear on Home). You can change how fast the notes fall, show key labels in Perform, fix the timing of your taps and switch sound effects on or off.", comment: "")),
         ]),
         ExpandableSectionData(title: NSLocalizedString("Why my tiles won’t make sound?", comment: ""), items: [
-            .text(NSLocalizedString("Make sure the volume of your iPad is turned up. Each tile plays as soon as you touch it.", comment: "")),
+            .text(NSLocalizedString("Make sure your device's volume is turned up. Each tile plays as soon as you touch it.", comment: "")),
         ]),
         ExpandableSectionData(title: NSLocalizedString("Can I pressed more than one tiles in one time?", comment: ""), items: [
             .text(NSLocalizedString("Yes! You can press several tiles at the same time with different fingers, and you can also slide your finger from one tile to the next.", comment: "")),
@@ -66,7 +66,7 @@ struct HelpPageView: View {
             .text(NSLocalizedString("- If you see 2 notation number that connected by a wave line above it, only pay attention to the first number, ignore the second number.", comment: "")),
             .text(NSLocalizedString("- If you see the number that has diagona strikethrough, it means # (in major chord). Example: '4̷' means '4#'", comment: ""))
         ]),
-        ExpandableSectionData(title: NSLocalizedString("If I move to another iPad, will my progress saved?", comment: ""), items: [
+        ExpandableSectionData(title: NSLocalizedString("If I move to another device, will my progress be saved?", comment: ""), items: [
             .text(NSLocalizedString("Unfortunately, you'll lose your progress because we didn't do any cloud system. But we will make sure to update that feature in the future app update. Please stay tune with us.", comment: "")),
         ]),
         ExpandableSectionData(title: NSLocalizedString("Contact us for further assist!", comment: ""), items: [

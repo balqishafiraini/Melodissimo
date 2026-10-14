@@ -163,7 +163,7 @@ struct SettingsView: View {
                         .font(Font.headline)
                 }
             }
-            caption("Play the songs on your own pianika. The iPad listens through the microphone, so play in a quiet room.")
+            caption("Play the songs on your own pianika. Your device listens through the microphone, so play in a quiet room.")
         }
     }
 

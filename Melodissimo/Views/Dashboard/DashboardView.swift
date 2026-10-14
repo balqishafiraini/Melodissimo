@@ -137,7 +137,7 @@ struct DashboardView: View {
 
     /// Opens the system share sheet with the app's invitation text.
     private func shareApp() {
-        let shareText = NSLocalizedString("Learn melodica (pianika) in a more fun way with Melodissimo! Download it on the App Store (only available on iPad) https://s.id/GetMelodissimo", comment: "")
+        let shareText = NSLocalizedString("Learn melodica (pianika) in a more fun way with Melodissimo! Download it on the App Store (iPhone & iPad) https://s.id/GetMelodissimo", comment: "")
         // Finding the key window scene
         if let keyWindowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             // Accessing the key window from the window scene
