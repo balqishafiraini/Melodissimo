@@ -64,28 +64,46 @@ final class SFX {
         nextPlayer(for: resource) != nil
     }
 
-    /// Decodes every effect now so the first one in a play doesn't hitch. Call once at launch.
-    func preload() {
-        for effect in Effect.allCases {
-            _ = nextPlayer(for: effect.rawValue)
+    /// Decodes every effect on a background queue, then hands the players over on the main thread, so the first
+    /// effect in a play doesn't hitch and launch isn't held up by the decoding (about a second on a simulator).
+    /// An effect played before this finishes just builds its own players, as it always did. Call once at launch;
+    /// `completion` runs on the main thread when the pools are warm.
+    func preload(completion: (() -> Void)? = nil) {
+        let bundle = self.bundle
+        DispatchQueue.global(qos: .userInitiated).async {
+            var decoded: [String: [AVAudioPlayer]] = [:]
+            for effect in Effect.allCases {
+                if let players = Self.makePlayers(for: effect.rawValue, in: bundle) {
+                    decoded[effect.rawValue] = players
+                }
+            }
+            DispatchQueue.main.async {
+                for (resource, players) in decoded where self.pools[resource] == nil {
+                    self.pools[resource] = players
+                }
+                completion?()
+            }
         }
+    }
+
+    /// A sound's few ready-to-play players, or `nil` when the file isn't in the bundle or doesn't decode.
+    /// Touches no state, so it is safe off the main thread.
+    private static func makePlayers(for resource: String, in bundle: Bundle) -> [AVAudioPlayer]? {
+        guard let url = bundle.url(forResource: resource, withExtension: fileExtension) else { return nil }
+        let players: [AVAudioPlayer] = (0..<voicesPerEffect).compactMap { _ in
+            guard let player = try? AVAudioPlayer(contentsOf: url) else { return nil }
+            player.volume = volume
+            player.prepareToPlay()
+            return player
+        }
+        return players.isEmpty ? nil : players
     }
 
     /// The next of a sound's few players, taking turns so a fast repeat doesn't restart the one still sounding.
     private func nextPlayer(for resource: String) -> AVAudioPlayer? {
         if missing.contains(resource) { return nil }
         if pools[resource] == nil {
-            guard let url = bundle.url(forResource: resource, withExtension: Self.fileExtension) else {
-                missing.insert(resource)
-                return nil
-            }
-            let players: [AVAudioPlayer] = (0..<Self.voicesPerEffect).compactMap { _ in
-                guard let player = try? AVAudioPlayer(contentsOf: url) else { return nil }
-                player.volume = Self.volume
-                player.prepareToPlay()
-                return player
-            }
-            guard !players.isEmpty else {
+            guard let players = Self.makePlayers(for: resource, in: bundle) else {
                 missing.insert(resource)
                 return nil
             }

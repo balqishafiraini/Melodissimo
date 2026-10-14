@@ -19,6 +19,22 @@ final class SFXTests: XCTestCase {
         }
     }
 
+    func testPreloadDecodesOffTheMainThreadAndHandsTheEffectsOverOnMain() {
+        let sfx = SFX(bundle: .main, isEnabled: { true })
+        let done = expectation(description: "preload finished")
+        sfx.preload {
+            XCTAssertTrue(Thread.isMainThread, "the pools are only touched on the main thread")
+            done.fulfill()
+        }
+        // Launch isn't held up: `preload` returns before the decoding is done, and an effect is playable at once.
+        XCTAssertTrue(sfx.canPlay(SFX.Effect.button.rawValue))
+        wait(for: [done], timeout: 10)
+        for effect in SFX.Effect.allCases {
+            XCTAssertTrue(sfx.canPlay(effect.rawValue), effect.rawValue)
+        }
+        XCTAssertTrue(sfx.play(SFX.Effect.button.rawValue))
+    }
+
     func testAMissingFileIsSilentlySkipped() {
         let sfx = SFX(bundle: .main, isEnabled: { true })
         XCTAssertFalse(sfx.canPlay("sfx_does_not_exist"))

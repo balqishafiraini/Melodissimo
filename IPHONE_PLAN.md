@@ -45,7 +45,7 @@ Finish with: build + tests passing, iPhone AND iPad screenshots checked, checkbo
 
 I1 and I2 are independent of each other. After I3, the tasks I4–I10 can run in any order.
 
-- [x] I0  - [ ] I1  - [ ] I2  - [ ] I3  - [ ] I4  - [ ] I5  - [ ] I6  - [ ] I7  - [ ] I8  - [ ] I9  - [ ] I10  - [ ] I11
+- [x] I0  - [x] I1  - [ ] I2  - [ ] I3  - [ ] I4  - [ ] I5  - [ ] I6  - [ ] I7  - [ ] I8  - [ ] I9  - [ ] I10  - [ ] I11
 
 ---
 
@@ -561,3 +561,9 @@ These are old screens built on `UIScreen.main` and `NavigationView`. They all sh
   - Simulators used (UDIDs in `Scripts/iphone/devices.txt`): SE 3rd gen, iPhone 15 Pro (both iOS 17.5; SE 3rd gen does not exist on 18/26), iPhone 17 Pro Max (26.1), iPad mini A17 Pro and iPad Air M3 (18.6), iPad Pro 13" M5 (26.1). The baseline was built from a copy of the tree without any I2 change, so it is a true "before".
   - Test device note: the iPad Air and iPad mini simulators are set to Indonesian, so the English-title tests (`AchievementTests`, `LocalizationTests`) fail there for that reason alone. Run the unit tests on **iPad Pro 13-inch (M5)** and **iPhone 15 Pro**, which are English (iPad Pro passes at the I0 state). Screens use `stageSolemn` (Indonesia Raya) for the calm stage; every other stage route uses the first non-solemn song (Bagimu Negeri). The iPad Pro (iOS 26.1) simulator does not rotate its framebuffer: it shows the landscape app upright and letterboxed, so `devices.txt` marks it `letterbox` and `shot.sh` crops the black bars instead of rotating (its screenshots are 4:3 at 1200×900).
   - Machine note: six simulators at once on this 16 GB Mac is slow (about 15 min for 37 screens × 6 devices) and the iPad Pro (iOS 26.1) once hung under load; it was shut down and re-run.
+- **I1 (14 Oct 2026).** Measured with temporary `NSLog` timing (removed) on iPhone 15 Pro (iOS 17.5) and iPad Air M3 (iOS 18.6), quiet machine, Debug build, two to three launches each. Milliseconds since process start unless noted:
+  - **Before:** pre-main to `init` 270–870 ms; `preloadAllSounds()` call 5–32 ms (async); **`SFX.shared.preload()` 750 ms (iPhone) / 1030–1100 ms (iPad)**, synchronous on the main thread; both migrations ≤ 1 ms; `CloudSync.start` 10–27 ms; `GameCenter.authenticate` 11–49 ms; splash on screen at 1.2–1.8 s (iPhone) / 1.6–2.3 s (iPad).
+  - **Fix:** `SFX.preload(completion:)` now decodes on a background queue and hands the players to the shared pools on the main thread, the same pattern as `preloadAllSounds`. An effect played before it finishes builds its own players, as before. `CloudSync` and `GameCenter` take < 50 ms, so they stay where they were.
+  - **After:** `SFX.preload` call 0 ms; splash on screen at 0.48–0.92 s (iPhone) / 0.61–1.3 s (iPad) after process start, i.e. 1.3–1.4 s after `simctl launch` on both (the script's own overhead is about 0.8 s).
+  - **The ±20 s white screen did not reproduce.** It happened when many simulators were booted at once and the Mac was saturated (load average in the hundreds): cold launches then took 20 s or more regardless of what our code does. On a quiet machine the launch was already under 2.5 s before the fix. So the "20 s" was the machine, not the app; the real finding is the 0.75–1.1 s of audio decoding that blocked the first frame, which is fixed. New test: `SFXTests.testPreloadDecodesOffTheMainThreadAndHandsTheEffectsOverOnMain`; `SFXTests` and `SoundModelTests` pass on iPhone 15 Pro.
+  - Not verified: launch time and the first key tap on a real device; the SFX clicks can't be heard in the simulator (the test proves `play` succeeds after preload).
