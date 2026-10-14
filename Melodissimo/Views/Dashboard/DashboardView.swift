@@ -47,6 +47,9 @@ struct DashboardView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear(perform: startFirstStageIfNeeded)
+            .onReceive(NotificationCenter.default.publisher(for: .skillTestFinished)) { _ in
+                router.popToRoot()
+            }
             #if DEBUG
             .onAppear { QARoutes.applyLaunchRoute(to: router) }
             #endif

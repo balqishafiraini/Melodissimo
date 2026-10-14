@@ -14,10 +14,30 @@ struct SplashscreenView: View {
     var body: some View {
         VStack {
             VStack {
-                Image("splashscreen")
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
+                if Sizing.isPhone {
+                    // The 4:3 art would lose "Welcome to" and the fence on a 2.2:1 phone screen, so the whole picture is
+                    // shown, with a blurred copy of itself filling the sides.
+                    // Overlays, not a ZStack: the zoomed copy must not make the layout bigger than the screen.
+                    Color.softBlue
+                        .overlay {
+                            Image("splashscreen")
+                                .resizable()
+                                .scaledToFill()
+                                .blur(radius: 20)
+                        }
+                        .overlay {
+                            Image("splashscreen")
+                                .resizable()
+                                .scaledToFit()
+                        }
+                        .clipped()
+                        .ignoresSafeArea()
+                } else {
+                    Image("splashscreen")
+                        .resizable()
+                        .scaledToFill()
+                        .ignoresSafeArea()
+                }
             }
             .onAppear{
                 withAnimation(.easeInOut(duration: 3.0)) {

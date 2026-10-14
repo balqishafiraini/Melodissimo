@@ -16,106 +16,130 @@ struct OnboardPostplayView: View {
 
     var body: some View {
         NavigationView {
-            ZStack {
-                Rectangle()
-                    .fill(Color.softGreen)
-                    .scaledToFill()
-                
-                Image("bgMusic")
-                    .scaledToFill()
-                
-                VStack{
-                    HStack{
-                        Button {
-                            dismiss()
-                        } label: {
-                            Text("< Back")
-                                .lineLimit(1)
-                                .padding(.horizontal, 14)
-                                .frame(minWidth: 120, minHeight: 80, maxHeight: 80)
-                                .background(Color.darkGreen)
-                                .foregroundColor(.white)
-                                .cornerRadius(20)
-                                .font(Font.headline)
+            if Sizing.isPhone { phoneBody } else { ipadBody }
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
+    }
+
+    /// iPhone: the two cards, the button and Alpanica share the screen (see `PhoneStoryPage`).
+    private var phoneBody: some View {
+        ZStack {
+            ScreenBackdrop(color: Color.softGreen)
+            PhoneStoryPage(art: "alpanica", buttonTitle: "Next",
+                           onButton: { isPresenting = true },
+                           onHelp: { isPresentingHelp = true },
+                           onBack: { dismiss() }) {
+                Text("Thank you for learn with Melodissimo! Now, let's test your skill again in Post-Play Quiz, it's similar when you do it on Pre-Play Quiz~")
+                    .phoneCard()
+                Text("Pre-Play score: \(UserDefaults.standard.integer(forKey: "preplayScore"))\n Post-Play Score: \(UserDefaults.standard.integer(forKey: "postplayScore"))")
+                    .phoneCard()
+            }
+            NavigationLink(destination: HelpPageView().navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) { EmptyView() }
+                .hidden()
+            NavigationLink(destination: PostplayView(levelNo: 1).navigationBarBackButtonHidden(true), isActive: $isPresenting) { EmptyView() }
+                .hidden()
+        }
+        .navigationBarHidden(true)
+    }
+
+    /// iPad: the v2 layout, unchanged.
+    private var ipadBody: some View {
+        ZStack {
+            Rectangle()
+                .fill(Color.softGreen)
+                .scaledToFill()
+            
+            Image("bgMusic")
+                .scaledToFill()
+            
+            VStack{
+                HStack{
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("< Back")
+                            .lineLimit(1)
+                            .padding(.horizontal, 14)
+                            .frame(minWidth: 120, minHeight: 80, maxHeight: 80)
+                            .background(Color.darkGreen)
+                            .foregroundColor(.white)
+                            .cornerRadius(20)
+                            .font(Font.headline)
+                    }
+                    
+                    Spacer()
+                    
+                    Button {
+                        isPresentingHelp = true
+                    } label: {
+                        Text("?")
+                            .frame(width: 80, height: 80)
+                            .background(Color.darkGreen)
+                            .foregroundColor(.white)
+                            .cornerRadius(20)
+                            .font(Font.title)
+                    }
+                    NavigationLink(destination: HelpPageView()
+                        .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
+                            EmptyView()
                         }
+                    
+                }
+                .padding()
+                
+                Spacer()
+                                                                
+                HStack{
+                    Spacer()
+                    VStack {
+                        Spacer()
+                        Text("Thank you for learn with Melodissimo! Now, let's test your skill again in Post-Play Quiz, it's similar when you do it on Pre-Play Quiz~")
+                            .padding()
+                            .foregroundStyle(.black)
+                            .font(.headline)
+                            .frame(width: UIScreen.main.bounds.width * 0.5)
+                            .background(RoundedRectangle(cornerRadius: 40).fill(.white))
+                        
+                        Spacer()
+                        
+                        Text("Pre-Play score: \(UserDefaults.standard.integer(forKey: "preplayScore"))\n Post-Play Score: \(UserDefaults.standard.integer(forKey: "postplayScore"))")
+                            .padding()
+                            .foregroundStyle(.black)
+                            .font(.headline)
+                            .frame(width: UIScreen.main.bounds.width * 0.5, alignment: .leading)
+                            .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                         
                         Spacer()
                         
                         Button {
-                            isPresentingHelp = true
+                            isPresenting = true
+
                         } label: {
-                            Text("?")
-                                .frame(width: 80, height: 80)
-                                .background(Color.darkGreen)
-                                .foregroundColor(.white)
+                            Text("Next")
+                                .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
+                                .background(Color.yellow)
+                                .foregroundColor(Color.red)
                                 .cornerRadius(20)
                                 .font(Font.title)
                         }
-                        NavigationLink(destination: HelpPageView()
-                            .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
+                        NavigationLink(destination: PostplayView(levelNo: 1)
+                            .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
                                 EmptyView()
                             }
                         
+                        Spacer()
+                        
                     }
-                    .padding()
-                    
                     Spacer()
-                                                                    
-                    HStack{
-                        Spacer()
-                        VStack {
-                            Spacer()
-                            Text("Thank you for learn with Melodissimo! Now, let's test your skill again in Post-Play Quiz, it's similar when you do it on Pre-Play Quiz~")
-                                .padding()
-                                .foregroundStyle(.black)
-                                .font(.headline)
-                                .frame(width: UIScreen.main.bounds.width * 0.5)
-                                .background(RoundedRectangle(cornerRadius: 40).fill(.white))
-                            
-                            Spacer()
-                            
-                            Text("Pre-Play score: \(UserDefaults.standard.integer(forKey: "preplayScore"))\n Post-Play Score: \(UserDefaults.standard.integer(forKey: "postplayScore"))")
-                                .padding()
-                                .foregroundStyle(.black)
-                                .font(.headline)
-                                .frame(width: UIScreen.main.bounds.width * 0.5, alignment: .leading)
-                                .background(RoundedRectangle(cornerRadius: 40).fill(.white))
-                            
-                            Spacer()
-                            
-                            Button {
-                                isPresenting = true
-
-                            } label: {
-                                Text("Next")
-                                    .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
-                                    .background(Color.yellow)
-                                    .foregroundColor(Color.red)
-                                    .cornerRadius(20)
-                                    .font(Font.title)
-                            }
-                            NavigationLink(destination: PostplayView(levelNo: 1)
-                                .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
-                                    EmptyView()
-                                }
-                            
-                            Spacer()
-                            
-                        }
-                        Spacer()
-                        Image("alpanica")
-                            .scaledToFit()
-                        Spacer()
-                    }
+                    Image("alpanica")
+                        .scaledToFit()
+                    Spacer()
                 }
-                .padding()
-                .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
-
             }
+            .padding()
+            .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
+
         }
-        .navigationViewStyle(StackNavigationViewStyle())
-        
-        
     }
     
 }

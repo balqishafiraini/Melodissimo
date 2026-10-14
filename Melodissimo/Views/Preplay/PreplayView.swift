@@ -17,12 +17,7 @@ struct PreplayView: View {
     
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.softBlue)
-                .scaledToFill()
-            
-            Image("bgMusic")
-                .scaledToFit()
+            backdrop
             
             VStack{
                 HStack{
@@ -32,29 +27,29 @@ struct PreplayView: View {
                         isPresentingHelp = true
                     } label: {
                         Text("?")
-                            .frame(width: 80, height: 80)
+                            .frame(width: Sizing.tap(80), height: Sizing.tap(80))
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
-                            .cornerRadius(20)
+                            .cornerRadius(Sizing.s(20))
                             .font(Font.title)
                     }
-                    .padding()
+                    .padding(.all, Sizing.isPhone ? 4 : nil)
                     NavigationLink(destination: HelpPageView()
                         .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
                             EmptyView()
                         }
                     
                 }
-                .padding(.trailing)
+                .padding(.trailing, Sizing.isPhone ? 0 : nil)
                 
                 Spacer()
                 
                 ZStack {
                     Text("\(tilesViewModel.currentLevel?.question[tilesViewModel.currentQuestionIndex] ?? "N/A")")
                         .foregroundStyle(.black)
-                        .font(.custom("BalooDa-Regular", size: 70))
-                        .frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height * 0.15)
-                        .background(RoundedRectangle(cornerRadius: 40).fill(.white))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(70)))
+                        .frame(width: screenWidth * 0.5, height: Sizing.isPhone ? max(screenHeight * 0.15, 64) : screenHeight * 0.15)
+                        .background(RoundedRectangle(cornerRadius: Sizing.s(40)).fill(.white))
                 }
                 
                 Spacer()
@@ -64,8 +59,8 @@ struct PreplayView: View {
                 Spacer()
                 
             }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
+            .padding(.all, Sizing.isPhone ? 6 : nil)
+            .frame(maxWidth: .infinity, maxHeight: screenHeight, alignment: .topLeading)
         }
         .onAppear {
             tilesViewModel.getLevel(currentLevelNo: levelNo, currentLevelCat: "preplay")
@@ -74,3 +69,19 @@ struct PreplayView: View {
     
 }
 
+extension PreplayView {
+    /// The flat colour and the music-note pattern. iPad draws them as two layers, as always; iPhone fits the pattern to the screen.
+    @ViewBuilder
+    fileprivate var backdrop: some View {
+        if Sizing.isPhone {
+            ScreenBackdrop(color: Color.softBlue)
+        } else {
+            Rectangle()
+                .fill(Color.softBlue)
+                .scaledToFill()
+            
+            Image("bgMusic")
+                .scaledToFit()
+        }
+    }
+}
