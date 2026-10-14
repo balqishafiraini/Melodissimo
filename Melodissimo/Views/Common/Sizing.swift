@@ -33,6 +33,12 @@ extension Sizing {
 }
 
 extension View {
+    /// The old screens' "fill the screen" frame. iPad: as wide as it can be and exactly the screen's height (what
+    /// `UIScreen.main.bounds.size.height` gave). iPhone: whatever the safe area leaves.
+    func fillsScreenHeight(alignment: Alignment = .topLeading) -> some View {
+        frame(maxWidth: .infinity, maxHeight: Sizing.isPhone ? .infinity : screenHeight, alignment: alignment)
+    }
+
     /// A button label's frame. On iPad exactly `width × height`, as drawn. On iPhone it is at least the scaled size
     /// (never under 44 pt) and grows to fit its one line of text, so a long label such as an Indonesian one never clips.
     func buttonFrame(width: CGFloat, height: CGFloat) -> some View {

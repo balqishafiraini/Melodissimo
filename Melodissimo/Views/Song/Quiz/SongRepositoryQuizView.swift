@@ -21,12 +21,7 @@ struct SongRepositoryQuizView: View {
 
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.yellow)
-                .scaledToFill()
-            
-            Image("bgMusic")
-                .scaledToFit()
+            LegacyBackdrop(color: Color.yellow)
             
             VStack{
                 ZStack {
@@ -39,10 +34,10 @@ struct SongRepositoryQuizView: View {
                             router.popToRoot()
                         } label: {
                             Text("Menu")
-                                .frame(width: 120, height: 80)
+                                .buttonFrame(width: 120, height: 80)
                                 .background(Color.darkGreen)
                                 .foregroundColor(.white)
-                                .cornerRadius(20)
+                                .cornerRadius(Sizing.s(20))
                                 .font(Font.headline)
                         }
 
@@ -52,22 +47,22 @@ struct SongRepositoryQuizView: View {
                             router.push(.help)
                         } label: {
                             Text("?")
-                                .frame(width: 80, height: 80)
+                                .frame(width: Sizing.tap(80), height: Sizing.tap(80))
                                 .background(Color.darkGreen)
                                 .foregroundColor(.white)
-                                .cornerRadius(20)
+                                .cornerRadius(Sizing.s(20))
                                 .font(Font.title)
                         }
                     }
                 }
-                .padding()
+                .padding(.all, Sizing.isPhone ? 4 : nil)
                 
                 ScrollView {
                     LazyVGrid(
                         columns: [
-                            GridItem(.adaptive(minimum: UIScreen.main.bounds.width * 0.4), spacing: 10)
+                            GridItem(.adaptive(minimum: Sizing.isPhone ? 190 : screenWidth * 0.4), spacing: Sizing.isPhone ? 8 : 10)
                         ],
-                        spacing: 20
+                        spacing: Sizing.isPhone ? 8 : 20
                     ) {
                         ForEach(filteredSongLevels) { level in
                             SoundButton {
@@ -75,16 +70,25 @@ struct SongRepositoryQuizView: View {
                             } label: {
                                 VStack(spacing: 1) {
                                     if trophyRepository.isTrophyEarned(songTitle: level.songTitle ?? "") {
-                                        Image("trophy")
+                                        if Sizing.isPhone {
+                                            Image("trophy").resizable().scaledToFit().frame(height: 26)
+                                        } else {
+                                            Image("trophy")
+                                        }
                                     }
                                     Text(level.songTitle ?? "Unknown Song Title")
+                                        .lineLimit(Sizing.isPhone ? 2 : nil)
+                                        .minimumScaleFactor(Sizing.isPhone ? 0.6 : 1)
+                                        .multilineTextAlignment(.center)
                                     stars(for: level.songTitle ?? "")
                                 }
                                 .foregroundStyle(.white)
                                 .font(.largeTitle)
-                                .frame(width: UIScreen.main.bounds.width * 0.45, height: 250)
+                                .padding(.horizontal, Sizing.isPhone ? 8 : 0)
+                                .frame(width: Sizing.isPhone ? nil : screenWidth * 0.45, height: Sizing.s(250))
+                                .frame(maxWidth: Sizing.isPhone ? .infinity : nil)
                                 .background(
-                                    RoundedRectangle(cornerRadius: 40)
+                                    RoundedRectangle(cornerRadius: Sizing.s(40))
                                         .fill(Color.green)
                                 )
                             }
@@ -96,8 +100,8 @@ struct SongRepositoryQuizView: View {
                 }
 
             }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
+            .padding(.all, Sizing.isPhone ? 6 : nil)
+            .fillsScreenHeight()
             
         }
         

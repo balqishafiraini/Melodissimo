@@ -45,3 +45,22 @@ struct ScreenBackdrop: View {
         }
     }
 }
+
+/// The backdrop of the older screens (a flat colour and `bgMusic` as two layers). iPad draws them as it always did;
+/// iPhone uses `ScreenBackdrop`, which fits the pattern to the screen.
+struct LegacyBackdrop: View {
+    var color: Color
+
+    var body: some View {
+        if Sizing.isPhone {
+            ScreenBackdrop(color: color)
+        } else {
+            Rectangle()
+                .fill(color)
+                .scaledToFill()
+
+            Image("bgMusic")
+                .scaledToFit()
+        }
+    }
+}
