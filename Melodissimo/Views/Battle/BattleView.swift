@@ -63,6 +63,9 @@ struct BattleView: View {
                                      onFinish: finishCoaching)
                 }
             }
+            // The overlay draws edge to edge, so the frames it is given must be measured from the screen's corner too.
+            // (On iPad they have always been measured from the safe area; that is left as it was.)
+            .ignoresSafeArea(.all, edges: Sizing.isPhone ? .all : [])
         }
         .onReceive(ticker) { _ in
             // The timer keeps firing through the exit transition; a timeout then would sound the revealed key on the next screen.

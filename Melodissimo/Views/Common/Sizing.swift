@@ -18,6 +18,16 @@ enum Sizing {
 }
 
 extension Sizing {
+    /// The window's safe-area insets, for views that draw over the whole screen and so can't ask their own
+    /// geometry (it reports 0 inside `.ignoresSafeArea()`). Zero on iPad, where the landscape sides have no inset.
+    static var windowInsets: EdgeInsets {
+        guard isPhone,
+              let window = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first?.keyWindow
+        else { return EdgeInsets() }
+        let insets = window.safeAreaInsets
+        return EdgeInsets(top: insets.top, leading: insets.left, bottom: insets.bottom, trailing: insets.right)
+    }
+
     /// The shortest phones (iPhone SE, 375 pt tall) get slimmer bars so the play screens keep their room.
     static var isCompactHeight: Bool { isPhone && screenHeight < 380 }
 }

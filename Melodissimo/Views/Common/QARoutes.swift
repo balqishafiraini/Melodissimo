@@ -20,6 +20,7 @@ import SwiftUI
 /// | `-qaOnboarding <name>` | shows that first-run screen instead of the normal flow |
 /// | `-qaOverlay story\|storyBoss\|certificate` | the campaign map opens that overlay on appear |
 /// | `-qaCover calibration\|micCalibration` | with `-qaRoute settings`, Settings opens that full-screen calibration |
+/// | `-qaCoachStep N` | the first-stage tour opens on its Nth bubble (use with `-qaRoute battle`, no seed) |
 /// | `-qaSeed YES` | fills the profile with a mid-game player (see `seedProfile()`) |
 ///
 /// The scripts also pass `-AppleLanguages (en)` so every device renders English, whatever the simulator's language.
@@ -177,9 +178,16 @@ enum QARoutes {
         case "tutorial": NavigationView { TutorialView() }.navigationViewStyle(.stack)
         case "preplay": NavigationView { PreplayView(levelNo: 1) }.navigationViewStyle(.stack)
         case "preplayScore": NavigationView { PreplayScoreView(score: 6) }.navigationViewStyle(.stack)
-        case "onboardPostplay": NavigationView { OnboardPostplayView() }.navigationViewStyle(.stack)
-        case "postplay": NavigationView { PostplayView(levelNo: 1) }.navigationViewStyle(.stack)
-        case "postplayScore": NavigationView { PostplayScoreView(score: 8) }.navigationViewStyle(.stack)
+        // The skill test: on iPhone one self-contained screen (it needs a router for Back and "?"), on iPad the old pages.
+        case "onboardPostplay":
+            if Sizing.isPhone { PhoneSkillTestView().environmentObject(AppRouter()) }
+            else { NavigationView { OnboardPostplayView() }.navigationViewStyle(.stack) }
+        case "postplay":
+            if Sizing.isPhone { PhoneSkillTestView(step: .quiz).environmentObject(AppRouter()) }
+            else { NavigationView { PostplayView(levelNo: 1) }.navigationViewStyle(.stack) }
+        case "postplayScore":
+            if Sizing.isPhone { PhoneSkillTestView(step: .score(8)).environmentObject(AppRouter()) }
+            else { NavigationView { PostplayScoreView(score: 8) }.navigationViewStyle(.stack) }
         default: EmptyView()
         }
     }

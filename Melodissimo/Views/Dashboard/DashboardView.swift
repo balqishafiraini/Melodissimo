@@ -18,11 +18,11 @@ struct DashboardView: View {
 
     var body: some View {
         NavigationStack(path: $router.path) {
-            VStack(spacing: 20) {
+            VStack(spacing: Sizing.s(20)) {
                 topBar
                 tourCard
                 Spacer(minLength: 0)
-                HStack(spacing: 20) {
+                HStack(spacing: Sizing.s(20)) {
                     dailyCard
                     HomeCard(title: "Free Play", subtitle: "Songs, levels, Echo and Rush", icon: "icon_stage_echo",
                              fill: Color.red, text: .white) {
@@ -33,10 +33,12 @@ struct DashboardView: View {
                         router.push(.learnHub)
                     }
                 }
-                .frame(height: 210)
+                .frame(height: Sizing.isPhone ? 104 : 210)
             }
-            .padding(30)
-            .frame(height: UIScreen.main.bounds.height, alignment: .top)
+            .padding(Sizing.s(30))
+            // iPad: exactly the screen's height, as always. iPhone: whatever the safe area leaves.
+            .frame(height: Sizing.isPhone ? nil : screenHeight, alignment: .top)
+            .frame(maxHeight: Sizing.isPhone ? .infinity : nil, alignment: .top)
             // Background (not a ZStack child) so the scaledToFill image can't widen the
             // layout past the screen on aspect ratios that differ from the artwork's.
             .background {
@@ -47,9 +49,6 @@ struct DashboardView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear(perform: startFirstStageIfNeeded)
-            .onReceive(NotificationCenter.default.publisher(for: .skillTestFinished)) { _ in
-                router.popToRoot()
-            }
             #if DEBUG
             .onAppear { QARoutes.applyLaunchRoute(to: router) }
             #endif
@@ -83,16 +82,16 @@ struct DashboardView: View {
 
     /// Streak and coins on the left; achievements, settings, help and share on the right.
     private var topBar: some View {
-        HStack(spacing: 14) {
-            HStack(spacing: 8) {
+        HStack(spacing: Sizing.s(14)) {
+            HStack(spacing: Sizing.s(8)) {
                 Image(systemName: "flame.fill")
                     .foregroundColor(.orange)
                 Text("\(progress.currentStreak)")
                     .foregroundColor(.white)
                     .font(Font.headline)
             }
-            .padding(.horizontal, 20)
-            .frame(height: 72)
+            .padding(.horizontal, Sizing.s(20))
+            .frame(height: Sizing.tap(72))
             .background(Capsule().fill(Color.darkGreen))
             .accessibilityElement(children: .combine)
             .accessibilityLabel(Text("Day streak"))
@@ -129,10 +128,10 @@ struct DashboardView: View {
                             action: @escaping () -> Void) -> some View {
         SoundButton(action: action) {
             Image(systemName: symbol)
-                .frame(width: 72, height: 72)
+                .frame(width: Sizing.tap(72), height: Sizing.tap(72))
                 .background(fill)
                 .foregroundColor(tint)
-                .cornerRadius(20)
+                .cornerRadius(Sizing.s(20))
                 .font(Font.title2)
         }
         .accessibilityLabel(Text(label))
@@ -149,7 +148,7 @@ struct DashboardView: View {
 
                 // Adjust popover presentation on iPad
                 activityViewController.popoverPresentationController?.sourceView = rootViewController.view
-                activityViewController.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2, width: 0, height: 0)
+                activityViewController.popoverPresentationController?.sourceRect = CGRect(x: screenWidth / 2, y: screenHeight / 2, width: 0, height: 0)
 
                 // Presenting the share sheet
                 rootViewController.present(activityViewController, animated: true, completion: nil)
@@ -189,27 +188,33 @@ struct DashboardView: View {
         return SoundButton {
             router.push(.campaignMap)
         } label: {
-            HStack(spacing: 30) {
-                AlpanicaView(mood: .idle, outfit: .equipped, hopTrigger: 0, height: 210)
-                    .frame(width: 230)
+            HStack(spacing: Sizing.s(30)) {
+                AlpanicaView(mood: .idle, outfit: .equipped, hopTrigger: 0, height: Sizing.s(210))
+                    .frame(width: Sizing.s(230))
 
-                VStack(alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: Sizing.isPhone ? 2 : 10) {
                     Text("Nusantara Tour")
-                        .font(.custom("BalooDa-Regular", size: 52))
+                        .font(.custom("BalooDa-Regular", size: Sizing.isPhone ? 30 : 52))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                         .foregroundColor(.white)
 
                     if progress.isTourComplete {
                         Label("Tour Complete", systemImage: "checkmark.seal.fill")
-                            .font(.custom("BalooDa-Regular", size: 30))
+                            .font(.custom("BalooDa-Regular", size: Sizing.f(30)))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
                             .foregroundColor(Color.yellow)
                     } else {
-                        HStack(spacing: 10) {
+                        HStack(spacing: Sizing.s(10)) {
                             Image(systemName: chapter.symbol)
-                                .frame(width: 44, height: 44)
+                                .frame(width: Sizing.tap(44), height: Sizing.tap(44))
                                 .background(Circle().fill(Color(hex: chapter.tintHex)))
                                 .foregroundColor(.white)
                             Text(chapter.name)
-                                .font(.custom("BalooDa-Regular", size: 32))
+                                .font(.custom("BalooDa-Regular", size: Sizing.f(32)))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
                                 .foregroundColor(.white)
                         }
                         HStack(spacing: 6) {
@@ -217,6 +222,8 @@ struct DashboardView: View {
                             Text(current.title)
                         }
                         .font(.headline)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                         .foregroundColor(.white.opacity(0.9))
                     }
 
@@ -224,6 +231,7 @@ struct DashboardView: View {
                         Image(systemName: "star.fill")
                             .foregroundColor(Color.yellow)
                         Text("\(progress.tourStars) / \(CampaignCatalog.allStages.count * 3)")
+                            .lineLimit(1)
                             .foregroundColor(.white)
                     }
                     .font(.title3)
@@ -232,15 +240,15 @@ struct DashboardView: View {
                 Spacer(minLength: 0)
 
                 Text(progress.tourStars == 0 ? "Start" : "Continue")
-                    .font(.custom("BalooDa-Regular", size: 34))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(34)))
                     .foregroundColor(Color.darkGreen)
-                    .frame(width: 210, height: 76)
+                    .buttonFrame(width: 210, height: 76)
                     .background(Capsule().fill(Color.yellow))
             }
-            .padding(.horizontal, 36)
+            .padding(.horizontal, Sizing.s(36))
             .frame(maxWidth: .infinity)
-            .frame(minHeight: 240, maxHeight: 300)
-            .background(RoundedRectangle(cornerRadius: 40).fill(Color.darkGreen))
+            .frame(minHeight: Sizing.isPhone ? 140 : 240, maxHeight: Sizing.isPhone ? 190 : 300)
+            .background(RoundedRectangle(cornerRadius: Sizing.s(40)).fill(Color.darkGreen))
             .shadow(color: .black.opacity(0.25), radius: 8, y: 4)
         }
     }
@@ -265,7 +273,8 @@ struct DashboardView: View {
         case .achievements:
             AchievementsView()
         case .postplay:
-            OnboardPostplayView()
+            // iPhone: one self-contained screen (a NavigationView inside this stack does not work there).
+            if Sizing.isPhone { PhoneSkillTestView() } else { OnboardPostplayView() }
         case .play(let request):
             PlayDestinationView(request: request)
         case .result(let result, let rewards):
@@ -320,35 +329,66 @@ private struct HomeCard: View {
 
     var body: some View {
         SoundButton(action: action) {
-            VStack(alignment: .leading, spacing: 6) {
-                AssetImage(name: icon, fallbackEmoji: "🎵")
-                    .frame(width: 84, height: 84)
-                    .saturation(isEnabled ? 1 : 0)
-                    .overlay(alignment: .topTrailing) {
-                        if isDone {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.title)
-                                .foregroundColor(.green)
-                                .background(Circle().fill(Color.white))
-                                .offset(x: 10, y: -6)
-                        }
+            // iPad: the badge above the words. iPhone has too little height for that, so the badge sits beside them.
+            if Sizing.isPhone {
+                HStack(spacing: 8) {
+                    badge
+                    VStack(alignment: .leading, spacing: 0) {
+                        titleText
+                        subtitleText
                     }
-                Text(title)
-                    .font(.custom("BalooDa-Regular", size: 36))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                Text(subtitle)
-                    .font(.subheadline)
-                    .lineLimit(2)
-                    .opacity(0.9)
+                    // A Button centres its label's text by default; the phone card reads left to right.
+                    .multilineTextAlignment(.leading)
+                    Spacer(minLength: 0)
+                }
+                .foregroundColor(text.opacity(isEnabled ? 1 : 0.55))
+                .padding(Sizing.s(22))
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                .background(RoundedRectangle(cornerRadius: Sizing.s(36)).fill(fill))
+                .shadow(color: .black.opacity(0.2), radius: 6, y: 3)
+            } else {
+                VStack(alignment: .leading, spacing: Sizing.s(6)) {
+                    badge
+                    titleText
+                    subtitleText
+                }
+                // A card that isn't open yet keeps its solid fill and only fades its contents.
+                .foregroundColor(text.opacity(isEnabled ? 1 : 0.55))
+                .padding(Sizing.s(22))
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .background(RoundedRectangle(cornerRadius: Sizing.s(36)).fill(fill))
+                .shadow(color: .black.opacity(0.2), radius: 6, y: 3)
             }
-            // A card that isn't open yet keeps its solid fill and only fades its contents.
-            .foregroundColor(text.opacity(isEnabled ? 1 : 0.55))
-            .padding(22)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(RoundedRectangle(cornerRadius: 36).fill(fill))
-            .shadow(color: .black.opacity(0.2), radius: 6, y: 3)
         }
         .disabled(!isEnabled)
+    }
+    private var badge: some View {
+        AssetImage(name: icon, fallbackEmoji: "🎵")
+            .frame(width: Sizing.s(84), height: Sizing.s(84))
+            .saturation(isEnabled ? 1 : 0)
+            .overlay(alignment: .topTrailing) {
+                if isDone {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title)
+                        .foregroundColor(.green)
+                        .background(Circle().fill(Color.white))
+                        .offset(x: Sizing.s(10), y: -Sizing.s(6))
+                }
+            }
+    }
+
+    private var titleText: some View {
+        Text(title)
+            .font(.custom("BalooDa-Regular", size: Sizing.f(36)))
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+    }
+
+    private var subtitleText: some View {
+        Text(subtitle)
+            .font(.subheadline)
+            .lineLimit(2)
+            .minimumScaleFactor(Sizing.isPhone ? 0.8 : 1)
+            .opacity(0.9)
     }
 }

@@ -12,13 +12,9 @@ struct LearnHubView: View {
 
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.softGreen)
-                .ignoresSafeArea()
-            Image("bgMusic")
-                .scaledToFit()
+            ScreenBackdrop(color: Color.softGreen)
 
-            VStack(spacing: 24) {
+            VStack(spacing: Sizing.s(24)) {
                 ZStack {
                     Text("Learn")
                         .font(Font.largeTitle)
@@ -29,10 +25,10 @@ struct LearnHubView: View {
                             router.pop()
                         } label: {
                             Text("Menu")
-                                .frame(width: 120, height: 80)
+                                .buttonFrame(width: 120, height: 80)
                                 .background(Color.darkGreen)
                                 .foregroundColor(.white)
-                                .cornerRadius(20)
+                                .cornerRadius(Sizing.s(20))
                                 .font(Font.headline)
                         }
                         Spacer()
@@ -40,16 +36,16 @@ struct LearnHubView: View {
                             router.push(.help)
                         } label: {
                             Text("?")
-                                .frame(width: 80, height: 80)
+                                .frame(width: Sizing.tap(80), height: Sizing.tap(80))
                                 .background(Color.darkGreen)
                                 .foregroundColor(.white)
-                                .cornerRadius(20)
+                                .cornerRadius(Sizing.s(20))
                                 .font(Font.title)
                         }
                     }
                 }
 
-                VStack(spacing: 24) {
+                VStack(spacing: Sizing.s(24)) {
                     HubCard(title: "Notes", subtitle: "Read and play every note", icon: "icon_stage_battle",
                             color: Color.darkGreen) {
                         router.push(.notationLearn)
@@ -65,7 +61,7 @@ struct LearnHubView: View {
                 }
                 .frame(maxHeight: .infinity)
             }
-            .padding(30)
+            .padding(Sizing.s(30))
         }
     }
 }

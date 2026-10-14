@@ -8,10 +8,10 @@ import SwiftUI
 /// The coin balance in a yellow capsule, for Home and the shop.
 struct CoinBadge: View {
     @ObservedObject private var progress = ProgressStore.shared
-    var height: CGFloat = 72
+    var height: CGFloat = Sizing.tap(72)
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: Sizing.s(8)) {
             AssetImage(name: "icon_coin", fallbackEmoji: "🪙")
                 .frame(width: height * 0.53, height: height * 0.53)
             Text("\(progress.coinBalance)")
@@ -20,7 +20,7 @@ struct CoinBadge: View {
                 .contentTransition(.numericText())
                 .animation(.default, value: progress.coinBalance)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, Sizing.s(20))
         .frame(height: height)
         .background(Capsule().fill(Color.yellow))
         .accessibilityElement(children: .combine)
@@ -43,11 +43,11 @@ struct CoinCountUp: View {
     var body: some View {
         HStack(spacing: 8) {
             Text("+\(shown)")
-                .font(.custom("BalooDa-Regular", size: 40))
+                .font(.custom("BalooDa-Regular", size: Sizing.f(40)))
                 .foregroundColor(Color.darkGreen)
                 .contentTransition(.numericText())
             AssetImage(name: "icon_coin", fallbackEmoji: "🪙")
-                .frame(width: 40, height: 40)
+                .frame(width: Sizing.s(40), height: Sizing.s(40))
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text("Coins earned"))

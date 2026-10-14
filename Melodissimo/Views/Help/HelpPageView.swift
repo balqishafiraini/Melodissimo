@@ -86,12 +86,7 @@ struct HelpPageView: View {
     var body: some View {
         
         ZStack{
-            Rectangle()
-                .fill(Color.softBlue)
-                .scaledToFill()
-            
-            Image("bgMusic")
-                .scaledToFit()
+            backdrop
             VStack {
                 HStack{
                     Button {
@@ -100,17 +95,17 @@ struct HelpPageView: View {
                         Text("< Back")
                             .lineLimit(1)
                             .padding(.horizontal, 14)
-                            .frame(minWidth: 120, minHeight: 80, maxHeight: 80)
+                            .frame(minWidth: Sizing.tap(120), minHeight: Sizing.tap(80), maxHeight: Sizing.tap(80))
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
-                            .cornerRadius(20)
+                            .cornerRadius(Sizing.s(20))
                             .font(Font.headline)
                     }
                     
                     Spacer()
                     
                 }
-                .padding()
+                .padding(.all, Sizing.isPhone ? 6 : nil)
                 
                 ScrollView {
                     VStack(alignment: .leading) {
@@ -119,13 +114,30 @@ struct HelpPageView: View {
                             ExpandableSectionView(data: section, isExpanded: $isExpanded[index])
                         }
                     }
-                    .padding()
+                    .padding(.all, Sizing.isPhone ? 6 : nil)
                 }
             }
-            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height, alignment: .topLeading)
+            // iPad keeps its fixed full-screen frame; on iPhone the page takes what the safe area leaves.
+            .frame(width: Sizing.isPhone ? nil : screenWidth, height: Sizing.isPhone ? nil : screenHeight, alignment: .topLeading)
+            .frame(maxWidth: Sizing.isPhone ? .infinity : nil, maxHeight: Sizing.isPhone ? .infinity : nil, alignment: .topLeading)
             
         }
         
+    }
+
+    /// The flat colour and the music-note pattern. iPad draws them as two layers, as always; iPhone fits the pattern to the screen.
+    @ViewBuilder
+    private var backdrop: some View {
+        if Sizing.isPhone {
+            ScreenBackdrop(color: Color.softBlue)
+        } else {
+            Rectangle()
+                .fill(Color.softBlue)
+                .scaledToFill()
+            
+            Image("bgMusic")
+                .scaledToFit()
+        }
     }
 }
 

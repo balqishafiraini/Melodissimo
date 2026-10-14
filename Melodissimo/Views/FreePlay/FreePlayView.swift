@@ -14,13 +14,9 @@ struct FreePlayView: View {
 
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.yellow)
-                .ignoresSafeArea()
-            Image("bgMusic")
-                .scaledToFit()
+            ScreenBackdrop(color: Color.yellow)
 
-            VStack(spacing: 24) {
+            VStack(spacing: Sizing.s(24)) {
                 ZStack {
                     Text("Free Play")
                         .font(Font.largeTitle)
@@ -31,10 +27,10 @@ struct FreePlayView: View {
                             router.pop()
                         } label: {
                             Text("Menu")
-                                .frame(width: 120, height: 80)
+                                .buttonFrame(width: 120, height: 80)
                                 .background(Color.darkGreen)
                                 .foregroundColor(.white)
-                                .cornerRadius(20)
+                                .cornerRadius(Sizing.s(20))
                                 .font(Font.headline)
                         }
                         Spacer()
@@ -42,16 +38,16 @@ struct FreePlayView: View {
                             router.push(.help)
                         } label: {
                             Text("?")
-                                .frame(width: 80, height: 80)
+                                .frame(width: Sizing.tap(80), height: Sizing.tap(80))
                                 .background(Color.darkGreen)
                                 .foregroundColor(.white)
-                                .cornerRadius(20)
+                                .cornerRadius(Sizing.s(20))
                                 .font(Font.title)
                         }
                     }
                 }
 
-                Grid(horizontalSpacing: 24, verticalSpacing: 24) {
+                Grid(horizontalSpacing: Sizing.s(24), verticalSpacing: Sizing.s(24)) {
                     GridRow {
                         HubCard(title: "Songs", subtitle: "Pick any of the \(SongLibrary.all.count) songs", icon: "icon_stage_song") {
                             router.push(.songRepositoryQuiz)
@@ -71,7 +67,7 @@ struct FreePlayView: View {
                 }
                 .frame(maxHeight: .infinity)
             }
-            .padding(30)
+            .padding(Sizing.s(30))
         }
         .confirmationDialog("Echo", isPresented: $isChoosingEchoLevel, titleVisibility: .visible) {
             Button("Easy: the keys light up") { startEcho(glow: true) }

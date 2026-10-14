@@ -11,8 +11,6 @@ extension Notification.Name {
     /// Posted by the iPhone version of the pre-play score page: the new player's first-run flow is over and Home should
     /// become the root screen (a `Home` pushed inside the old `NavigationView` stack comes up blank on iPhone).
     static let onboardingFinished = Notification.Name("melodissimo.onboardingFinished")
-    /// Posted by the iPhone version of the post-play score page: back to Home, whatever the stack held.
-    static let skillTestFinished = Notification.Name("melodissimo.skillTestFinished")
 }
 
 struct CoordinatorView: View {

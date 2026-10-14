@@ -10,7 +10,7 @@ struct AchievementBanner: View {
     let titles: [String]
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: Sizing.s(12)) {
             Image(systemName: "trophy.fill")
                 .font(.title2)
                 .foregroundColor(Color.yellow)
@@ -19,14 +19,14 @@ struct AchievementBanner: View {
                     .font(.caption)
                     .opacity(0.85)
                 Text(titles.joined(separator: " · "))
-                    .font(.custom("BalooDa-Regular", size: 24))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(24)))
                     .lineLimit(2)
                     .minimumScaleFactor(0.7)
             }
         }
         .foregroundColor(.white)
-        .padding(.horizontal, 22)
-        .padding(.vertical, 8)
+        .padding(.horizontal, Sizing.s(22))
+        .padding(.vertical, Sizing.s(8))
         .background(Capsule().fill(Color.darkGreen))
         .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
         .accessibilityElement(children: .combine)

@@ -19,126 +19,98 @@ struct PostplayScoreView: View {
     
     var body: some View {
         NavigationView {
-            if Sizing.isPhone { phoneBody } else { ipadBody }
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-    }
-
-    /// iPhone: the score, the card, the button and Alpanica share the screen (see `PhoneStoryPage`).
-    private var phoneBody: some View {
-        ZStack {
-            ScreenBackdrop(color: Color.softGreen)
-            PhoneStoryPage(art: "alpanicaGlasses", buttonTitle: "Menu",
-                           onButton: finish,
-                           onHelp: { isPresentingHelp = true }) {
-                HStack(spacing: 8) {
-                    PhoneScoreCircle(score: score)
-                    Text("Thank you! Great job for finishing it and congratulations on your score!")
-                        .phoneCard(alignment: .center)
-                }
-            }
-            NavigationLink(destination: HelpPageView().navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) { EmptyView() }
-                .hidden()
-        }
-        .navigationBarHidden(true)
-    }
-
-    /// iPhone: back to Home by popping the Home stack (see `Notification.Name.skillTestFinished`) instead of pushing a second Home.
-    private func finish() {
-        UserDefaults.standard.set(score, forKey: "postplayScore")
-        NotificationCenter.default.post(name: .skillTestFinished, object: nil)
-    }
-
-    /// iPad: the v2 layout, unchanged.
-    private var ipadBody: some View {
-        ZStack {
-            Rectangle()
-                .fill(Color.softGreen)
-                .scaledToFill()
-            
-            Image("bgMusic")
-                .scaledToFill()
-            
-            VStack{
-                HStack{
-                    Spacer()
-                    
-                    Button {
-                        isPresentingHelp = true
-                    } label: {
-                        Text("?")
-                            .frame(width: 80, height: 80)
-                            .background(Color.darkGreen)
-                            .foregroundColor(.white)
-                            .cornerRadius(20)
-                            .font(Font.title)
-                    }
-                    NavigationLink(destination: HelpPageView()
-                        .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
-                            EmptyView()
-                        }
-                    
-                }
-                .padding()
+            ZStack {
+                Rectangle()
+                    .fill(Color.softGreen)
+                    .scaledToFill()
                 
-                Spacer()
+                Image("bgMusic")
+                    .scaledToFill()
                 
-                HStack{
-                    Spacer()
-                    VStack (spacing: 10) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.yellow)
-                                .frame(width: 200, height: 200)
-                            VStack{
-                                Text("Score:")
-                                    .font(.subheadline)
-                                Text("\(score)")
-                                    .font(.custom("BalooDa-Regular", size: 80))
-                            }
-                            
-                        }
-                        Text("Thank you! Great job for finishing it and congratulations on your score!")
-                            .multilineTextAlignment(.center)
-                            .padding()
-                            .foregroundStyle(.black)
-                            .font(.headline)
-                            .frame(width: UIScreen.main.bounds.width * 0.5, height: 300)
-                            .background(RoundedRectangle(cornerRadius: 40).fill(.white))
-                        
+                VStack{
+                    HStack{
                         Spacer()
                         
                         Button {
-                            isPresenting = true
-                            UserDefaults.standard.set(score, forKey: "postplayScore")
-                            
+                            isPresentingHelp = true
                         } label: {
-                            Text("Menu")
-                                .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
-                                .background(Color.yellow)
-                                .foregroundColor(Color.red)
+                            Text("?")
+                                .frame(width: 80, height: 80)
+                                .background(Color.darkGreen)
+                                .foregroundColor(.white)
                                 .cornerRadius(20)
                                 .font(Font.title)
                         }
-                        NavigationLink(destination: DashboardView()
-                            .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
+                        NavigationLink(destination: HelpPageView()
+                            .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
                                 EmptyView()
                             }
                         
-                        Spacer()
-                        
                     }
+                    .padding()
+                    
                     Spacer()
-                    Image("alpanicaGlasses")
-                        .resizable()
-                        .scaledToFit()
-                    Spacer()
+                    
+                    HStack{
+                        Spacer()
+                        VStack (spacing: 10) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.yellow)
+                                    .frame(width: 200, height: 200)
+                                VStack{
+                                    Text("Score:")
+                                        .font(.subheadline)
+                                    Text("\(score)")
+                                        .font(.custom("BalooDa-Regular", size: 80))
+                                }
+                                
+                            }
+                            Text("Thank you! Great job for finishing it and congratulations on your score!")
+                                .multilineTextAlignment(.center)
+                                .padding()
+                                .foregroundStyle(.black)
+                                .font(.headline)
+                                .frame(width: UIScreen.main.bounds.width * 0.5, height: 300)
+                                .background(RoundedRectangle(cornerRadius: 40).fill(.white))
+                            
+                            Spacer()
+                            
+                            Button {
+                                isPresenting = true
+                                UserDefaults.standard.set(score, forKey: "postplayScore")
+                                
+                            } label: {
+                                Text("Menu")
+                                    .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
+                                    .background(Color.yellow)
+                                    .foregroundColor(Color.red)
+                                    .cornerRadius(20)
+                                    .font(Font.title)
+                            }
+                            NavigationLink(destination: DashboardView()
+                                .navigationBarBackButtonHidden(true), isActive: $isPresenting) {
+                                    EmptyView()
+                                }
+                            
+                            Spacer()
+                            
+                        }
+                        Spacer()
+                        Image("alpanicaGlasses")
+                            .resizable()
+                            .scaledToFit()
+                        Spacer()
+                    }
                 }
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
+                
             }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
-            
         }
+        .navigationViewStyle(StackNavigationViewStyle())
+        
+        
     }
     
 }

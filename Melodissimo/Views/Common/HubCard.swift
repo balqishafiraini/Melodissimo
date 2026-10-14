@@ -18,22 +18,26 @@ struct HubCard: View {
 
     var body: some View {
         SoundButton(action: action) {
-            HStack(spacing: 20) {
+            HStack(spacing: Sizing.s(20)) {
                 AssetImage(name: icon, fallbackEmoji: "🎵")
-                    .frame(width: 110, height: 110)
+                    .frame(width: Sizing.s(110), height: Sizing.s(110))
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.custom("BalooDa-Regular", size: 44))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(44)))
+                        .lineLimit(Sizing.isPhone ? 1 : nil)
+                        .minimumScaleFactor(Sizing.isPhone ? 0.7 : 1)
                     Text(subtitle)
                         .font(.headline)
+                        .lineLimit(Sizing.isPhone ? 3 : nil)
+                        .minimumScaleFactor(Sizing.isPhone ? 0.75 : 1)
                         .opacity(0.9)
                 }
                 Spacer(minLength: 0)
             }
             .foregroundColor(.white)
-            .padding(24)
+            .padding(Sizing.s(24))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(RoundedRectangle(cornerRadius: 36).fill(isEnabled ? color : Color.gray))
+            .background(RoundedRectangle(cornerRadius: Sizing.s(36)).fill(isEnabled ? color : Color.gray))
             .opacity(isEnabled ? 1 : 0.7)
         }
         .disabled(!isEnabled)

@@ -12,7 +12,8 @@
 #
 # Names: any `-qaRoute` name (see Views/Common/QARoutes.swift), `dashboard`, `splash`,
 #        `onboard-<first|tutorial|preplay|preplayScore|onboardPostplay|postplay|postplayScore>`,
-#        `overlay-<story|storyBoss|certificate>`, `cover-<calibration|micCalibration>`.
+#        `overlay-<story|storyBoss|certificate>`, `cover-<calibration|micCalibration>`, `coach-<0|1|2>` (the first-stage tour;
+#        run it without SEED=1, which would mark the tour as seen).
 set -euo pipefail
 
 udid="$1"
@@ -29,7 +30,7 @@ default_names=(
     battle battleBoss echo rush classic result3 result0
     onboard-first onboard-tutorial onboard-preplay onboard-preplayScore
     onboard-onboardPostplay onboard-postplay onboard-postplayScore
-    overlay-story overlay-storyBoss overlay-certificate cover-calibration cover-micCalibration
+    overlay-story overlay-storyBoss overlay-certificate cover-calibration cover-micCalibration coach-0 coach-1 coach-2
 )
 if [ "$#" -gt 0 ]; then names=("$@"); else names=("${default_names[@]}"); fi
 
@@ -52,6 +53,7 @@ for name in "${names[@]}"; do
         splash) args=(-isPreplayDone YES) ;;
         onboard-*) args=(-qaSkipSplash YES -qaOnboarding "${name#onboard-}") ;;
         overlay-*) args+=(-qaSkipSplash YES -qaRoute campaignMap -qaOverlay "${name#overlay-}") ;;
+        coach-*) args+=(-qaSkipSplash YES -qaRoute battle -coach_seen_firstStage NO -stage_stars_c1-01 0 -qaCoachStep "${name#coach-}") ;;
         cover-*) args+=(-qaSkipSplash YES -qaRoute settings -qaCover "${name#cover-}") ;;
         *) args+=(-qaSkipSplash YES -qaRoute "$name") ;;
     esac

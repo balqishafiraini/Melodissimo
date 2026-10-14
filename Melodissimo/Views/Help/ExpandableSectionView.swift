@@ -31,9 +31,9 @@ struct ExpandableSectionView: View {
             }) {
                 HStack {
                     Text(data.title)
-                        .padding()
+                        .padding(.all, Sizing.isPhone ? 4 : nil)
                         .font(.title)
-                        .padding(.horizontal)
+                        .padding(.horizontal, Sizing.isPhone ? 4 : nil)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.leading)
                     
@@ -42,7 +42,7 @@ struct ExpandableSectionView: View {
                         .foregroundColor(.black)
                 }
             }
-            .padding()
+            .padding(.all, Sizing.isPhone ? 6 : nil)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.white)
 
@@ -62,17 +62,17 @@ struct ExpandableSectionView: View {
                                 .frame(height: 100)
                         }
                     }
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, Sizing.s(40))
                     Spacer()
                 }
-                .padding()
+                .padding(.all, Sizing.isPhone ? 8 : nil)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.white)
             }
         }
         .frame(maxWidth: .infinity)
         .background(Color.white)
-        .cornerRadius(30)
-        .padding()
+        .cornerRadius(Sizing.s(30))
+        .padding(.all, Sizing.isPhone ? 6 : nil)
     }
 }
