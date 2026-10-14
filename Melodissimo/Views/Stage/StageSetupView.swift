@@ -26,6 +26,11 @@ struct StageSetupView: View {
     private var isPracticed: Bool { progress.isSongPracticed(song.id) }
 
     var body: some View {
+        if Sizing.isPhone { phoneBody } else { ipadBody }
+    }
+
+    /// iPad: the v2 layout, unchanged.
+    private var ipadBody: some View {
         ZStack {
             Rectangle()
                 .fill(Color.softBlue)
@@ -51,6 +56,130 @@ struct StageSetupView: View {
             }
             .padding(.top)
         }
+    }
+
+    /// iPhone: the score sheet on the left and the controls in a compact column on the right, so everything fits in
+    /// 340 pt without scrolling (the column scrolls only if a very long translation needs more room).
+    private var phoneBody: some View {
+        ZStack {
+            ScreenBackdrop(color: Color.softBlue)
+
+            VStack(spacing: 6) {
+                phoneTopBar
+
+                HStack(alignment: .top, spacing: 12) {
+                    NotAngkaSheetView(chart: SongChart.load(for: song))
+                        .padding(8)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(RoundedRectangle(cornerRadius: 18).fill(Color.white))
+
+                    ViewThatFits(in: .vertical) {
+                        phoneControls
+                        ScrollView(showsIndicators: false) { phoneControls }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.horizontal, 10)
+                .padding(.bottom, 6)
+            }
+        }
+    }
+
+    private var phoneTopBar: some View {
+        HStack {
+            SoundButton {
+                router.pop()
+            } label: {
+                Text("< Back")
+                    .lineLimit(1)
+                    .padding(.horizontal, 14)
+                    .frame(minWidth: 88, minHeight: 44, maxHeight: 44)
+                    .background(Color.darkGreen)
+                    .foregroundColor(.white)
+                    .cornerRadius(14)
+                    .font(Font.headline)
+            }
+            Spacer()
+            Text(song.title)
+                .font(.custom("BalooDa-Regular", size: 24))
+                .foregroundColor(Color.darkGreen)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+            Spacer()
+            // Keeps the title centred.
+            Color.clear.frame(width: 88, height: 44)
+        }
+        .padding(.horizontal, 10)
+    }
+
+    private var phoneControls: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            statsRow
+
+            HStack(spacing: 8) {
+                Text("Speed")
+                    .font(.headline)
+                    .foregroundColor(Color.darkGreen)
+                ForEach(Self.speeds, id: \.value) { option in
+                    SoundButton {
+                        speed = option.value
+                    } label: {
+                        Text(option.title)
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                            .background(speed == option.value ? Color.darkGreen : Color.white)
+                            .foregroundColor(speed == option.value ? .white : Color.darkGreen)
+                            .cornerRadius(12)
+                            .font(.custom("BalooDa-Regular", size: 18))
+                    }
+                }
+            }
+            Text("Slower speeds earn fewer stars")
+                .font(.footnote)
+                .foregroundColor(Color.darkGreen.opacity(0.8))
+            if let campaignStageId, progress.stageStars(campaignStageId) == 0 {
+                Label("Perform with at least 60% accuracy (1★) to open the next stage", systemImage: "lock.open.fill")
+                    .font(.footnote.bold())
+                    .foregroundColor(Color.darkGreen)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Toggle(isOn: Binding(get: { showLabels }, set: { showLabels = $0; labelsTouched = true })) {
+                Text("Show key labels")
+                    .font(.headline)
+                    .foregroundColor(Color.darkGreen)
+            }
+            .tint(Color.darkGreen)
+
+            HStack(spacing: 8) {
+                phoneModeButton(.listen, title: "Listen", symbol: "ear.fill", color: Color.softGreen)
+                phoneModeButton(.practice, title: "Practice", symbol: "hand.tap.fill", color: Color.yellow)
+                phoneModeButton(.perform, title: "Perform", symbol: "star.fill", color: Color.red, locked: !isPracticed)
+            }
+            if !isPracticed {
+                Label("Finish Practice once to unlock Perform", systemImage: "lock.fill")
+                    .font(.footnote)
+                    .foregroundColor(Color.darkGreen)
+            }
+        }
+    }
+
+    private func phoneModeButton(_ mode: StageMode, title: LocalizedStringKey, symbol: String, color: Color, locked: Bool = false) -> some View {
+        SoundButton {
+            start(mode)
+        } label: {
+            VStack(spacing: 2) {
+                Image(systemName: locked ? "lock.fill" : symbol)
+                    .font(.custom("BalooDa-Regular", size: 22))
+                Text(title)
+                    .font(.custom("BalooDa-Regular", size: 16))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            }
+            .frame(maxWidth: .infinity, minHeight: 58)
+            .background(RoundedRectangle(cornerRadius: 14).fill(locked ? Color.gray.opacity(0.45) : color))
+            .foregroundColor(locked ? Color.darkGreen.opacity(0.5) : Color.darkGreen)
+        }
+        .disabled(locked)
     }
 
     // MARK: Pieces
@@ -93,7 +222,7 @@ struct StageSetupView: View {
     }
 
     private var statsRow: some View {
-        HStack(spacing: 24) {
+        HStack(spacing: Sizing.s(24)) {
             HStack(spacing: 6) {
                 ForEach(0..<3, id: \.self) { index in
                     Image(systemName: index < progress.songStars(song.id) ? "star.fill" : "star")
@@ -104,9 +233,9 @@ struct StageSetupView: View {
 
             if progress.songBestAccuracy(song.id) > 0 {
                 HStack(spacing: 6) {
-                    Text("Best")
+                    Text("Best").lineLimit(1)
                     Text("\(Int(progress.songBestAccuracy(song.id).rounded()))%")
-                        .font(.custom("BalooDa-Regular", size: 28))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
                 }
                 .foregroundColor(Color.darkGreen)
             }
@@ -115,6 +244,10 @@ struct StageSetupView: View {
                 Label("Practiced", systemImage: "checkmark.circle.fill")
                     .foregroundColor(Color.darkGreen)
                     .font(.headline)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    // On a phone the tick says it; the word has no room next to the stars and the best score.
+                    .labelStyle(PracticedLabelStyle())
             }
             Spacer()
         }
@@ -205,5 +338,16 @@ struct StageSetupView: View {
             campaignStageId: campaignStageId,
             showKeyLabels: labels)
         router.push(.play(request))
+    }
+}
+
+/// "✓ Practiced" in full on iPad; on iPhone only the tick (the label stays for VoiceOver).
+private struct PracticedLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        if Sizing.isPhone {
+            configuration.icon
+        } else {
+            Label(configuration)
+        }
     }
 }

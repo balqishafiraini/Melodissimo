@@ -10,7 +10,8 @@ import SwiftUI
 struct NotAngkaSheetView: View {
     let chart: SongChart
 
-    private let barsPerRow = 4
+    /// Four bars to a row on iPad; two on iPhone, where a row of four would leave each note a few points to stand in.
+    private let barsPerRow = Sizing.isPhone ? 2 : 4
     private var bars: [NotAngkaBar] { NotAngkaLayout.bars(for: chart) }
     private var rows: [[NotAngkaBar]] {
         stride(from: 0, to: bars.count, by: barsPerRow).map { Array(bars[$0..<min($0 + barsPerRow, bars.count)]) }
@@ -19,7 +20,7 @@ struct NotAngkaSheetView: View {
     var body: some View {
         VStack(spacing: 10) {
             Text(headerText)
-                .font(.custom("BalooDa-Regular", size: 22))
+                .font(.custom("BalooDa-Regular", size: Sizing.f(22)))
                 .foregroundColor(Color.darkGreen.opacity(0.8))
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -49,7 +50,7 @@ struct NotAngkaSheetView: View {
     }
 
     private var barline: some View {
-        Rectangle().fill(Color.darkGreen.opacity(0.7)).frame(width: 2, height: 52)
+        Rectangle().fill(Color.darkGreen.opacity(0.7)).frame(width: 2, height: Sizing.isPhone ? 46 : 52)
     }
 
     /// "do = C · 4/4 · ♩ = 112"
@@ -79,10 +80,10 @@ private struct BeatView: View {
 
     private var fontSize: CGFloat {
         switch beat.slots.count {
-        case 1: return 32
-        case 2: return 26
-        case 3: return 22
-        default: return 18
+        case 1: return Sizing.isPhone ? 24 : 32
+        case 2: return Sizing.isPhone ? 20 : 26
+        case 3: return Sizing.isPhone ? 17 : 22
+        default: return Sizing.isPhone ? 14 : 18
         }
     }
 
