@@ -16,12 +16,12 @@ struct BossBadgeView<Hit: Equatable>: View {
     /// 0...1, or `nil` to show the boss without a bar (Listen and Practice).
     var health: Double?
     var hitTrigger: Hit
-    var height: CGFloat = 76
+    var height: CGFloat = Sizing.s(76)
 
-    private let barWidth: CGFloat = 190
+    private let barWidth: CGFloat = Sizing.s(190)
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: Sizing.s(12)) {
             if let health {
                 healthBar(fraction: health)
             }
@@ -43,10 +43,10 @@ struct BossBadgeView<Hit: Equatable>: View {
             // Below this line the boss is beaten.
             Rectangle()
                 .fill(Color.white)
-                .frame(width: 3, height: 24)
+                .frame(width: 3, height: Sizing.s(24))
                 .offset(x: barWidth * BossHealth.defeatFraction - 1.5)
         }
-        .frame(width: barWidth, height: 16)
+        .frame(width: barWidth, height: Sizing.s(16))
         .overlay(Capsule().stroke(Color.white.opacity(0.8), lineWidth: 2))
         .accessibilityElement()
         .accessibilityLabel(Text("Boss health"))

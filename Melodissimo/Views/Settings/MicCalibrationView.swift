@@ -30,45 +30,76 @@ struct MicCalibrationView: View {
                         dismiss()
                     } label: {
                         Text("Close")
-                            .frame(width: 120, height: 60)
+                            .buttonFrame(width: 120, height: 60)
                             .background(Color.yellow)
                             .foregroundColor(Color.darkGreen)
-                            .cornerRadius(20)
+                            .cornerRadius(Sizing.s(20))
                             .font(Font.headline)
                     }
                     Spacer()
                 }
-                .padding(.horizontal, 30)
-                .padding(.top, 20)
+                .padding(.horizontal, Sizing.s(30))
+                .padding(.top, Sizing.s(20))
 
-                VStack(spacing: 18) {
-                    Text("Test the microphone")
-                        .font(.custom("BalooDa-Regular", size: 44))
-                        .foregroundColor(.white)
-                    Text("Play 1 (C) on your pianika")
-                        .font(Font.title2)
-                        .foregroundColor(.white.opacity(0.85))
-                    ZStack {
-                        Circle()
-                            .fill(heardTarget ? Color.green : Color.white.opacity(0.15))
-                            .frame(width: 190, height: 190)
-                        Text(heardLabel ?? "…")
-                            .font(.custom("BalooDa-Regular", size: 80))
-                            .foregroundColor(.white)
-                    }
-                    statusText
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                centerContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                 PianoKeyboard(metrics: .stage,
                               showLabels: true,
                               playsSound: false,
                               pressedFromOutside: mic.currentKeyId.map { [$0] } ?? [])
             }
-            .ignoresSafeArea(edges: .bottom)
+            .ignoresSafeArea(edges: Sizing.isPhone ? [] : .bottom)
         }
         .onAppear { mic.start() }
         .onDisappear { mic.stop() }
+    }
+
+    /// The title, the note to play, the circle that lights when it is heard, and the status line. The iPad stacks
+    /// them; the iPhone has too little height for that, so the circle sits beside the text.
+    @ViewBuilder
+    private var centerContent: some View {
+        if Sizing.isPhone {
+            HStack(spacing: 24) {
+                heardCircle
+                VStack(spacing: 4) {
+                    title
+                    prompt
+                    statusText
+                }
+            }
+            .padding(.horizontal, 24)
+        } else {
+            VStack(spacing: 18) {
+                title
+                prompt
+                heardCircle
+                statusText
+            }
+        }
+    }
+
+    private var title: some View {
+        Text("Test the microphone")
+            .font(.custom("BalooDa-Regular", size: Sizing.f(44)))
+            .foregroundColor(.white)
+    }
+
+    private var prompt: some View {
+        Text("Play 1 (C) on your pianika")
+            .font(Font.title2)
+            .foregroundColor(.white.opacity(0.85))
+    }
+
+    private var heardCircle: some View {
+        ZStack {
+            Circle()
+                .fill(heardTarget ? Color.green : Color.white.opacity(0.15))
+                .frame(width: Sizing.isPhone ? 100 : 190, height: Sizing.isPhone ? 100 : 190)
+            Text(heardLabel ?? "…")
+                .font(.custom("BalooDa-Regular", size: Sizing.isPhone ? 44 : 80))
+                .foregroundColor(.white)
+        }
     }
 
     @ViewBuilder
@@ -78,7 +109,7 @@ struct MicCalibrationView: View {
             Text("Microphone access is off. Turn it on in your device's Settings to play with a real pianika.")
                 .multilineTextAlignment(.center)
                 .foregroundColor(.yellow)
-                .padding(.horizontal, 60)
+                .padding(.horizontal, Sizing.s(60))
         case .failed:
             Text("The microphone could not start.")
                 .foregroundColor(.yellow)

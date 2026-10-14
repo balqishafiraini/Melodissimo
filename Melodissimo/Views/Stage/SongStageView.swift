@@ -92,13 +92,13 @@ struct SongStageView: View {
 
             VStack(spacing: 0) {
                 hud
-                    .frame(height: isBoss ? 92 : 72)
+                    .frame(height: hudHeight)
 
                 NoteHighwayView(engine: engine, keyFrames: keyFrames,
                                 showsPopups: mode == .perform, isSolemn: isSolemn,
                                 laneFlashes: isSolemn ? nil : laneFlashes, reduceMotion: reduceMotion)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(isSolemn ? Color.navy.opacity(0.55) : Color.black.opacity(0.35))
+                    .background((isSolemn ? Color.navy.opacity(0.55) : Color.black.opacity(0.35)).ignoresSafeArea(edges: .horizontal))
 
                 PianoKeyboard(metrics: .stage,
                               showLabels: showLabels,
@@ -114,7 +114,8 @@ struct SongStageView: View {
                               },
                               pressedFromOutside: pressedFromOutside)
             }
-            .ignoresSafeArea(edges: .bottom)
+            // The iPad keyboard runs to the bottom edge; on iPhone it stays above the home indicator.
+            .ignoresSafeArea(edges: Sizing.isPhone ? [] : .bottom)
 
             if engine.phase == .countIn {
                 countInOverlay
@@ -246,10 +247,11 @@ struct SongStageView: View {
 
     @ViewBuilder
     private var background: some View {
+        // `ignoresSafeArea` goes last: `.clipped()` clips to the layout bounds, which stay inside the safe area when
+        // the view only extends itself, leaving white strips beside the Dynamic Island on iPhone.
         if isSolemn {
             // Calm: sky and grass, a faint flag, no characters.
             Color.vanila
-                .ignoresSafeArea()
                 .overlay {
                     Image("stage_bg_ceremony")
                         .resizable()
@@ -257,21 +259,22 @@ struct SongStageView: View {
                 }
                 .overlay(alignment: .top) {
                     Image(systemName: "flag.fill")
-                        .font(.custom("BalooDa-Regular", size: 120))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(120)))
                         .foregroundColor(Color.red.opacity(0.18))
-                        .padding(.top, 90)
+                        .padding(.top, Sizing.s(90))
                 }
                 .clipped()
+                .ignoresSafeArea()
         } else {
             // Background (not a ZStack child) so the scaledToFill image can't widen the layout.
             Color.navy
-                .ignoresSafeArea()
                 .overlay {
                     Image("stage_bg_concert")
                         .resizable()
                         .scaledToFill()
                 }
                 .clipped()
+                .ignoresSafeArea()
         }
     }
 
@@ -282,15 +285,15 @@ struct SongStageView: View {
     /// Pause, title, score and combo (or the mode's name when nothing is scored), with a thin
     /// progress bar along the bottom edge.
     private var hud: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: Sizing.s(16)) {
             SoundButton {
                 engine.pause(now: CACurrentMediaTime())
             } label: {
                 Image(systemName: "pause.fill")
-                    .frame(width: 56, height: 56)
+                    .frame(width: Sizing.tap(56), height: Sizing.tap(56))
                     .background(Color.yellow)
                     .foregroundColor(Color.darkGreen)
-                    .cornerRadius(20)
+                    .cornerRadius(Sizing.s(20))
                     .font(Font.title2)
             }
             .disabled(engine.phase == .finished)
@@ -299,9 +302,10 @@ struct SongStageView: View {
             Spacer()
 
             Text(song.title)
-                .font(.custom("BalooDa-Regular", size: 28))
+                .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
                 .foregroundColor(hudTextColor)
                 .lineLimit(1)
+                .minimumScaleFactor(0.7)
 
             Spacer()
 
@@ -314,10 +318,18 @@ struct SongStageView: View {
                               hitTrigger: engine.counts.perfect + engine.counts.great + engine.counts.good)
             }
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, Sizing.s(24))
         .overlay(alignment: .bottom) {
             progressBar
         }
+    }
+
+    /// The HUD's height. On iPhone it is slim so the highway keeps at least 180 pt: 48 pt (56 with a boss),
+    /// and 44 pt (48 with a boss) on the shortest phone.
+    private var hudHeight: CGFloat {
+        guard Sizing.isPhone else { return isBoss ? 92 : 72 }
+        if Sizing.isCompactHeight { return isBoss ? 48 : 44 }
+        return isBoss ? 56 : 48
     }
 
     /// Which island's Fals this boss is: the chapter of the campaign stage (the first one in Free Play).
@@ -338,7 +350,7 @@ struct SongStageView: View {
                     Text("Score")
                         .font(.subheadline)
                     Text("\(engine.score)")
-                        .font(.custom("BalooDa-Regular", size: 28))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
                         .contentTransition(.numericText())
                         .animation(.default, value: engine.score)
                 }
@@ -348,17 +360,17 @@ struct SongStageView: View {
                         Text("Combo")
                             .font(.subheadline)
                         Text("\(engine.combo)")
-                            .font(.custom("BalooDa-Regular", size: 22))
+                            .font(.custom("BalooDa-Regular", size: Sizing.f(22)))
                             .scaleEffect(comboScale, anchor: .leading)
                     }
                 }
             }
         case .practice:
             Text("Practice")
-                .font(.custom("BalooDa-Regular", size: 28))
+                .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
         case .listen:
             Text("Listen")
-                .font(.custom("BalooDa-Regular", size: 28))
+                .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
         }
     }
 
@@ -377,7 +389,7 @@ struct SongStageView: View {
             }
             .frame(height: 4)
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, Sizing.s(24))
     }
 
     /// A big 3-2-1 while the song clock is still negative. Each number starts large and shrinks over its beat.
@@ -387,7 +399,7 @@ struct SongStageView: View {
             let secondsPerBeat = engine.countInDuration / RhythmEngine.countInBeats
             if let count = CountIn.display(songTime: engine.songTime(now: CACurrentMediaTime()), secondsPerBeat: secondsPerBeat) {
                 Text("\(count.number)")
-                    .font(.custom("BalooDa-Regular", size: 180))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(180)))
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.5), radius: 6, y: 3)
                     .scaleEffect(1.3 - 0.3 * count.progress)
@@ -400,9 +412,9 @@ struct SongStageView: View {
     private var pauseOverlay: some View {
         ZStack {
             Color.black.opacity(0.55).ignoresSafeArea()
-            VStack(spacing: 20) {
+            VStack(spacing: Sizing.s(20)) {
                 Text("Paused")
-                    .font(.custom("BalooDa-Regular", size: 48))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(48)))
                     .foregroundColor(Color.darkGreen)
                 SoundButton {
                     engine.resume(now: CACurrentMediaTime())
@@ -420,17 +432,17 @@ struct SongStageView: View {
                     overlayButtonLabel("Quit", filled: false)
                 }
             }
-            .padding(40)
-            .background(RoundedRectangle(cornerRadius: 30).fill(Color.vanila))
+            .padding(Sizing.s(40))
+            .background(RoundedRectangle(cornerRadius: Sizing.s(30)).fill(Color.vanila))
         }
     }
 
     private func overlayButtonLabel(_ title: LocalizedStringKey, filled: Bool) -> some View {
         Text(title)
-            .frame(width: 240, height: 64)
+            .buttonFrame(width: 240, height: 64)
             .background(filled ? Color.darkGreen : Color.yellow)
             .foregroundColor(filled ? .white : Color.darkGreen)
-            .cornerRadius(20)
+            .cornerRadius(Sizing.s(20))
             .font(Font.headline)
     }
 
@@ -475,11 +487,11 @@ struct SongStageView: View {
 
     /// Per-mode end screen. Perform only shows a short banner before the results screen.
     private var finishedOverlay: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: Sizing.s(16)) {
             switch mode {
             case .listen:
                 Text("Nice listening!")
-                    .font(.custom("BalooDa-Regular", size: 48))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(48)))
                 overlayRow {
                     SoundButton {
                         router.replaceTop(with: .play(request(for: .practice)))
@@ -494,7 +506,7 @@ struct SongStageView: View {
                 }
             case .practice:
                 Text("Practice complete!")
-                    .font(.custom("BalooDa-Regular", size: 48))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(48)))
                 Text("Perform is unlocked")
                     .font(.headline)
                 overlayRow {
@@ -512,26 +524,26 @@ struct SongStageView: View {
             case .perform:
                 // The results screen follows in a moment.
                 Text("Finished!")
-                    .font(.custom("BalooDa-Regular", size: 64))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(64)))
             }
         }
         .foregroundColor(Color.darkGreen)
-        .padding(40)
-        .background(RoundedRectangle(cornerRadius: 30).fill(Color.vanila))
+        .padding(Sizing.s(40))
+        .background(RoundedRectangle(cornerRadius: Sizing.s(30)).fill(Color.vanila))
     }
 
     private func overlayRow<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        HStack(spacing: 16) {
+        HStack(spacing: Sizing.s(16)) {
             content()
         }
     }
 
     private func finishedButtonLabel(_ title: LocalizedStringKey, filled: Bool) -> some View {
         Text(title)
-            .frame(width: 180, height: 64)
+            .buttonFrame(width: 180, height: 64)
             .background(filled ? Color.darkGreen : Color.yellow)
             .foregroundColor(filled ? .white : Color.darkGreen)
-            .cornerRadius(20)
+            .cornerRadius(Sizing.s(20))
             .font(Font.headline)
     }
 }

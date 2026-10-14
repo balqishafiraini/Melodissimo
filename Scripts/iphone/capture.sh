@@ -12,7 +12,7 @@
 #
 # Names: any `-qaRoute` name (see Views/Common/QARoutes.swift), `dashboard`, `splash`,
 #        `onboard-<first|tutorial|preplay|preplayScore|onboardPostplay|postplay|postplayScore>`,
-#        `overlay-<story|storyBoss|certificate>`.
+#        `overlay-<story|storyBoss|certificate>`, `cover-<calibration|micCalibration>`.
 set -euo pipefail
 
 udid="$1"
@@ -29,7 +29,7 @@ default_names=(
     battle battleBoss echo rush classic result3 result0
     onboard-first onboard-tutorial onboard-preplay onboard-preplayScore
     onboard-onboardPostplay onboard-postplay onboard-postplayScore
-    overlay-story overlay-storyBoss overlay-certificate
+    overlay-story overlay-storyBoss overlay-certificate cover-calibration cover-micCalibration
 )
 if [ "$#" -gt 0 ]; then names=("$@"); else names=("${default_names[@]}"); fi
 
@@ -52,6 +52,7 @@ for name in "${names[@]}"; do
         splash) args=(-isPreplayDone YES) ;;
         onboard-*) args=(-qaSkipSplash YES -qaOnboarding "${name#onboard-}") ;;
         overlay-*) args+=(-qaSkipSplash YES -qaRoute campaignMap -qaOverlay "${name#overlay-}") ;;
+        cover-*) args+=(-qaSkipSplash YES -qaRoute settings -qaCover "${name#cover-}") ;;
         *) args+=(-qaSkipSplash YES -qaRoute "$name") ;;
     esac
     if [ "${SEED:-0}" = "1" ]; then args+=(-qaSeed YES); fi

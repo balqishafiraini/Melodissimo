@@ -24,7 +24,7 @@ struct ChartRecorderView: View {
         ZStack {
             Color.softBlue.ignoresSafeArea()
 
-            VStack(spacing: 12) {
+            VStack(spacing: Sizing.s(12)) {
                 topBar
                 switch model.phase {
                 case .setup: setupPanel
@@ -39,7 +39,7 @@ struct ChartRecorderView: View {
                                   onNoteOn: { model.keyDown($0, now: CACurrentMediaTime()) })
                 }
             }
-            .ignoresSafeArea(edges: .bottom)
+            .ignoresSafeArea(edges: Sizing.isPhone ? [] : .bottom)
         }
         .onReceive(ticker) { _ in tickMetronome() }
         .onChange(of: model.phase) { phase in
@@ -59,25 +59,25 @@ struct ChartRecorderView: View {
                 Text("< Back")
                     .lineLimit(1)
                     .padding(.horizontal, 14)
-                    .frame(minWidth: 120, minHeight: 64, maxHeight: 64)
+                    .frame(minWidth: Sizing.tap(120), minHeight: Sizing.tap(64), maxHeight: Sizing.tap(64))
                     .background(Color.darkGreen)
                     .foregroundColor(.white)
-                    .cornerRadius(20)
+                    .cornerRadius(Sizing.s(20))
                     .font(Font.headline)
             }
             Spacer()
             Text("Chart Recorder (DEBUG)")
-                .font(.custom("BalooDa-Regular", size: 32))
+                .font(.custom("BalooDa-Regular", size: Sizing.f(32)))
                 .foregroundColor(Color.darkGreen)
             Spacer()
-            Color.clear.frame(width: 120, height: 64)
+            Color.clear.frame(width: Sizing.tap(120), height: Sizing.tap(64))
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, Sizing.s(24))
         .padding(.top, 8)
     }
 
     private var setupPanel: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: Sizing.s(18)) {
             HStack {
                 Text("Song").font(.headline)
                 Picker("Song", selection: $model.song) {
@@ -93,10 +93,10 @@ struct ChartRecorderView: View {
             HStack(spacing: 16) {
                 Text("BPM").font(.headline)
                 Slider(value: $model.bpm, in: 60...160, step: 1)
-                    .frame(maxWidth: 420)
+                    .frame(maxWidth: Sizing.s(420))
                 Text("\(Int(model.bpm))")
-                    .font(.custom("BalooDa-Regular", size: 32))
-                    .frame(width: 60)
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(32)))
+                    .frame(width: Sizing.s(60))
             }
 
             HStack(spacing: 16) {
@@ -106,7 +106,7 @@ struct ChartRecorderView: View {
                     Text("1/4 beat").tag(0.25)
                 }
                 .pickerStyle(.segmented)
-                .frame(maxWidth: 300)
+                .frame(maxWidth: Sizing.s(300))
             }
 
             Text("Press Start, count along with the four metronome beats, then play the melody. A wrong key flashes red and is ignored.")
@@ -115,15 +115,15 @@ struct ChartRecorderView: View {
 
             Button { model.start(now: CACurrentMediaTime()) } label: {
                 Text("Start")
-                    .frame(width: 220, height: 64)
+                    .buttonFrame(width: 220, height: 64)
                     .background(Color.darkGreen)
                     .foregroundColor(.white)
-                    .cornerRadius(20)
+                    .cornerRadius(Sizing.s(20))
                     .font(Font.headline)
             }
         }
         .foregroundColor(Color.darkGreen)
-        .padding(.horizontal, 32)
+        .padding(.horizontal, Sizing.s(32))
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -132,28 +132,30 @@ struct ChartRecorderView: View {
             let _ = timeline.date
             let now = CACurrentMediaTime()
             let counting = model.isCountingIn(now: now)
-            HStack(spacing: 40) {
+            HStack(spacing: Sizing.s(40)) {
                 Circle()
                     .fill(counting ? Color.red : Color.darkGreen)
                     .opacity(1 - 0.8 * model.beatProgress(now: now))
-                    .frame(width: 70, height: 70)
+                    .frame(width: Sizing.s(70), height: Sizing.s(70))
 
                 VStack(spacing: 2) {
                     Text(counting ? "Count-in \(model.metronomeBeat(now: now) + 1)" : "Play")
                         .font(.headline)
                     Text(expectedLabel)
-                        .font(.custom("BalooDa-Regular", size: 130))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(130)))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                     Text("\(model.recordedCount) / \(model.song.keyIds.count)")
-                        .font(.custom("BalooDa-Regular", size: 28))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
                 }
                 .foregroundColor(Color.darkGreen)
 
                 Button { model.stop() } label: {
                     Text("Stop")
-                        .frame(width: 140, height: 64)
+                        .buttonFrame(width: 140, height: 64)
                         .background(Color.red)
                         .foregroundColor(.white)
-                        .cornerRadius(20)
+                        .cornerRadius(Sizing.s(20))
                         .font(Font.headline)
                 }
             }
@@ -165,10 +167,10 @@ struct ChartRecorderView: View {
     }
 
     private var finishedPanel: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: Sizing.s(14)) {
             if let chart = model.chart {
                 Text("\(chart.notes.count) notes recorded at \(Int(chart.bpm)) bpm")
-                    .font(.custom("BalooDa-Regular", size: 30))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(30)))
                 Text("JSON printed to the console and copied to the clipboard.")
                 if let savedURL {
                     Text("Saved to:").font(.headline)
@@ -182,7 +184,7 @@ struct ChartRecorderView: View {
                 if !model.chart!.matchesMelody(of: model.song) {
                     Text("Warning: the recorded keys differ from the song's melody.").foregroundColor(Color.red)
                 }
-                HStack(spacing: 16) {
+                HStack(spacing: Sizing.s(16)) {
                     Button { router.push(.chartPreview(chart)) } label: {
                         buttonLabel("Preview (Listen)", filled: true)
                     }
@@ -199,16 +201,16 @@ struct ChartRecorderView: View {
             }
         }
         .foregroundColor(Color.darkGreen)
-        .padding(.horizontal, 32)
+        .padding(.horizontal, Sizing.s(32))
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func buttonLabel(_ title: String, filled: Bool) -> some View {
         Text(title)
-            .frame(width: 240, height: 64)
+            .buttonFrame(width: 240, height: 64)
             .background(filled ? Color.darkGreen : Color.yellow)
             .foregroundColor(filled ? .white : Color.darkGreen)
-            .cornerRadius(20)
+            .cornerRadius(Sizing.s(20))
             .font(Font.headline)
     }
 

@@ -19,6 +19,7 @@ import SwiftUI
 /// | `-qaSong <slug>` | which song `songLearn`, `stage*` and `result*` use (default: the first non-solemn one) |
 /// | `-qaOnboarding <name>` | shows that first-run screen instead of the normal flow |
 /// | `-qaOverlay story\|storyBoss\|certificate` | the campaign map opens that overlay on appear |
+/// | `-qaCover calibration\|micCalibration` | with `-qaRoute settings`, Settings opens that full-screen calibration |
 /// | `-qaSeed YES` | fills the profile with a mid-game player (see `seedProfile()`) |
 ///
 /// The scripts also pass `-AppleLanguages (en)` so every device renders English, whatever the simulator's language.

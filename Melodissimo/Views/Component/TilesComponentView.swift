@@ -12,22 +12,57 @@ import SwiftUI
 
 /// Sizing for one keyboard variant. The full keyboard is used on the big play
 /// screens; the mini keyboard is used on the compact song screens; the stage keyboard sits under the note highway.
-struct PianoMetrics {
-    let whiteWidth = screenWidth * 0.048
-    let blackWidth = screenWidth * 0.042
+///
+/// On iPad the width is the screen's and the heights are the v2 numbers, unchanged. On iPhone the heights are
+/// much shorter (the screen is only 375–440 pt tall) and `PianoKeyboard` replaces the width with the safe-area
+/// width it is given, so the 32 keys never run under the Dynamic Island or the rounded corners.
+struct PianoMetrics: Equatable {
+    enum Variant { case full, mini, stage }
+
+    /// The keyboard's full width.
+    let width: CGFloat
+    var whiteWidth: CGFloat { width * 0.048 }
+    var blackWidth: CGFloat { width * 0.042 }
     let whiteHeight: CGFloat
     let blackHeight: CGFloat
     let containerHeight: CGFloat
     let whiteRowHeight: CGFloat
     let blackRowHeight: CGFloat
 
-    static let full = PianoMetrics(whiteHeight: 350, blackHeight: 220,
-                                   containerHeight: 450, whiteRowHeight: 450, blackRowHeight: 350)
-    static let mini = PianoMetrics(whiteHeight: 200, blackHeight: 120,
-                                   containerHeight: 300, whiteRowHeight: 300, blackRowHeight: 200)
+    /// The same keyboard at another width (the heights stay).
+    func resized(to newWidth: CGFloat) -> PianoMetrics {
+        PianoMetrics(width: newWidth, whiteHeight: whiteHeight, blackHeight: blackHeight,
+                     containerHeight: containerHeight, whiteRowHeight: whiteRowHeight, blackRowHeight: blackRowHeight)
+    }
+
+    /// The gap between neighbouring black keys. `nil` on iPad, which keeps the stack's default (8 pt). On iPhone it is
+    /// worked out so the black keys keep the iPad's pitch relative to the white ones (98.3 % of a white key plus its 2 pt gap).
+    var blackSpacing: CGFloat? {
+        guard Sizing.isPhone else { return nil }
+        return 0.983 * (whiteWidth + 2) - blackWidth
+    }
+
+    /// The keyboard for a variant. `isPhone` picks the iPhone heights; tests call it with both values.
+    /// White keys fill their row from the top and the black keys line up with their tops, so the black row is
+    /// as tall as a white key and the white row as tall as the container.
+    static func make(_ variant: Variant, width: CGFloat, isPhone: Bool) -> PianoMetrics {
+        let (white, black, container): (CGFloat, CGFloat, CGFloat)
+        switch (variant, isPhone) {
+        case (.full, false): (white, black, container) = (350, 220, 450)
+        case (.mini, false): (white, black, container) = (200, 120, 300)
+        case (.stage, false): (white, black, container) = (230, 145, 290)
+        case (.full, true): (white, black, container) = (150, 95, 170)
+        case (.mini, true): (white, black, container) = (110, 68, 125)
+        case (.stage, true): (white, black, container) = (120, 76, 136)
+        }
+        return PianoMetrics(width: width, whiteHeight: white, blackHeight: black,
+                            containerHeight: container, whiteRowHeight: container, blackRowHeight: white)
+    }
+
+    static let full = make(.full, width: screenWidth, isPhone: Sizing.isPhone)
+    static let mini = make(.mini, width: screenWidth, isPhone: Sizing.isPhone)
     /// A shorter keyboard for the song stage, leaving room for the falling notes above it.
-    static let stage = PianoMetrics(whiteHeight: 230, blackHeight: 145,
-                                    containerHeight: 290, whiteRowHeight: 290, blackRowHeight: 230)
+    static let stage = make(.stage, width: screenWidth, isPhone: Sizing.isPhone)
 }
 
 // MARK: - Touch tracking
@@ -86,7 +121,7 @@ private struct KeyTile: View {
             .frame(width: width, height: height, alignment: .bottom)
             .background(keyColor)
             .foregroundColor(textColor)
-            .cornerRadius(radius: 12, corners: [.bottomLeft, .bottomRight])
+            .cornerRadius(radius: Sizing.s(12), corners: [.bottomLeft, .bottomRight])
             .background(
                 GeometryReader { geo in
                     Color.clear.preference(
@@ -258,15 +293,27 @@ struct PianoKeyboard: View {
     @State private var skin = KeyboardSkin.equipped
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 30)
-                .fill(skin.body)
-                .padding()
-                .frame(width: screenWidth, height: metrics.containerHeight)
-                .cornerRadius(50)
+        if Sizing.isPhone {
+            // The keyboard takes the width it is offered (inside the safe area), not the screen's.
+            GeometryReader { geo in
+                keyboard(metrics.resized(to: geo.size.width))
+            }
+            .frame(height: metrics.containerHeight)
+        } else {
+            keyboard(metrics)
+        }
+    }
 
-            whiteRow
-            blackRow
+    private func keyboard(_ metrics: PianoMetrics) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: Sizing.s(30))
+                .fill(skin.body)
+                .padding(.all, Sizing.isPhone ? 2 : nil)
+                .frame(width: metrics.width, height: metrics.containerHeight)
+                .cornerRadius(Sizing.s(50))
+
+            whiteRow(metrics)
+            blackRow(metrics)
         }
         .frame(maxWidth: .infinity, minHeight: metrics.containerHeight, alignment: .topLeading)
         .coordinateSpace(name: "keyboard")
@@ -290,31 +337,31 @@ struct PianoKeyboard: View {
         [30, 31, 32]
     ]
 
-    private var whiteRow: some View {
+    private func whiteRow(_ metrics: PianoMetrics) -> some View {
         HStack(spacing: 2) {
             ForEach(NoteCatalog.whiteKeyIDs, id: \.self) { id in
-                key(id)
+                key(id, metrics)
             }
         }
-        .frame(width: screenWidth, height: metrics.whiteRowHeight)
+        .frame(width: metrics.width, height: metrics.whiteRowHeight)
     }
 
-    private var blackRow: some View {
+    private func blackRow(_ metrics: PianoMetrics) -> some View {
         HStack {
-            HStack(spacing: screenWidth * 0.06) {
+            HStack(spacing: metrics.width * 0.06) {
                 ForEach(Self.blackKeyGroups.indices, id: \.self) { group in
-                    HStack {
+                    HStack(spacing: metrics.blackSpacing) {
                         ForEach(Self.blackKeyGroups[group], id: \.self) { id in
-                            key(id)
+                            key(id, metrics)
                         }
                     }
                 }
             }
         }
-        .frame(width: screenWidth * 0.88, height: metrics.blackRowHeight, alignment: .topLeading)
+        .frame(width: metrics.width * 0.88, height: metrics.blackRowHeight, alignment: .topLeading)
     }
 
-    private func key(_ id: Int) -> KeyTile {
+    private func key(_ id: Int, _ metrics: PianoMetrics) -> KeyTile {
         let note = NoteCatalog.note(id)
         return KeyTile(id: id,
                        label: note.label,

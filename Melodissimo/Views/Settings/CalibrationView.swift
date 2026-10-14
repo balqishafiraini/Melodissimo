@@ -27,20 +27,20 @@ struct CalibrationView: View {
                         dismiss()
                     } label: {
                         Text("Close")
-                            .frame(width: 120, height: 60)
+                            .buttonFrame(width: 120, height: 60)
                             .background(Color.yellow)
                             .foregroundColor(Color.darkGreen)
-                            .cornerRadius(20)
+                            .cornerRadius(Sizing.s(20))
                             .font(Font.headline)
                     }
                     Spacer()
                 }
-                .padding(.horizontal, 30)
-                .padding(.top, 20)
+                .padding(.horizontal, Sizing.s(30))
+                .padding(.top, Sizing.s(20))
 
-                VStack(spacing: 18) {
+                VStack(spacing: Sizing.s(18)) {
                     Text("Tap to the beat")
-                        .font(.custom("BalooDa-Regular", size: 44))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(44)))
                         .foregroundColor(.white)
                     centerPiece
                     dots
@@ -52,7 +52,7 @@ struct CalibrationView: View {
                               playsSound: false,
                               onNoteOn: { _ in model.tap(now: CACurrentMediaTime()) })
             }
-            .ignoresSafeArea(edges: .bottom)
+            .ignoresSafeArea(edges: Sizing.isPhone ? [] : .bottom)
         }
         .onAppear {
             model.onBeat = { _ in
@@ -78,25 +78,27 @@ struct CalibrationView: View {
     private var centerPiece: some View {
         switch model.phase {
         case .idle:
-            VStack(spacing: 16) {
+            VStack(spacing: Sizing.s(16)) {
                 Text("Listen to the clicks and tap any key on every click.")
                     .font(.title3)
                     .foregroundColor(.white.opacity(0.9))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, Sizing.s(30))
                 Button {
                     model.start(now: CACurrentMediaTime())
                 } label: {
                     Text("Start")
-                        .frame(width: 220, height: 70)
+                        .buttonFrame(width: 220, height: 70)
                         .background(Color.yellow)
                         .foregroundColor(Color.darkGreen)
-                        .cornerRadius(24)
-                        .font(.custom("BalooDa-Regular", size: 34))
+                        .cornerRadius(Sizing.s(24))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(34)))
                 }
             }
         case .running:
             Circle()
                 .fill(Color.yellow)
-                .frame(width: 130, height: 130)
+                .frame(width: Sizing.s(130), height: Sizing.s(130))
                 .opacity(flash ? 1 : 0.25)
                 .accessibilityHidden(true)
         case .finished:
@@ -105,11 +107,11 @@ struct CalibrationView: View {
     }
 
     private var dots: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: Sizing.s(12)) {
             ForEach(0..<AudioCalibration.beatCount, id: \.self) { index in
                 Circle()
                     .fill(index < model.beatsPlayed ? Color.yellow : Color.white.opacity(0.25))
-                    .frame(width: 18, height: 18)
+                    .frame(width: Sizing.s(18), height: Sizing.s(18))
             }
         }
         .accessibilityHidden(true)
@@ -117,7 +119,7 @@ struct CalibrationView: View {
 
     @ViewBuilder
     private var result: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: Sizing.s(14)) {
             if let suggestion = model.suggestion {
                 if suggestion == 0 {
                     Text("Right on the beat!")
@@ -126,7 +128,7 @@ struct CalibrationView: View {
                 } else {
                     Text("You tap about \(-suggestion) ms early")
                 }
-                HStack(spacing: 14) {
+                HStack(spacing: Sizing.s(14)) {
                     Button {
                         progress.audioOffsetMs = suggestion
                         dismiss()
@@ -148,17 +150,17 @@ struct CalibrationView: View {
                 }
             }
         }
-        .font(.custom("BalooDa-Regular", size: 32))
+        .font(.custom("BalooDa-Regular", size: Sizing.f(32)))
         .foregroundColor(.white)
     }
 
     private func actionLabel(_ text: Text, filled: Bool) -> some View {
         text
-            .padding(.horizontal, 28)
-            .frame(height: 64)
+            .padding(.horizontal, Sizing.s(28))
+            .frame(height: Sizing.tap(64))
             .background(filled ? Color.yellow : Color.white.opacity(0.2))
             .foregroundColor(filled ? Color.darkGreen : .white)
-            .cornerRadius(20)
+            .cornerRadius(Sizing.s(20))
             .font(Font.headline)
     }
 }

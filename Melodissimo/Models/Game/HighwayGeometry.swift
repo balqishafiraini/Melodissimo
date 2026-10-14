@@ -23,9 +23,11 @@ enum HighwayGeometry {
         hitY - CGFloat((noteTime - songTime) / approachTime) * hitY
     }
 
-    /// Height of a note: `max(24, duration / approachTime × hitY × 0.9)`.
-    static func length(duration: Double, approachTime: Double, hitY: CGFloat) -> CGFloat {
-        max(minimumNoteLength, CGFloat(duration / approachTime) * hitY * lengthFactor)
+    /// Height of a note: `max(24, duration / approachTime × hitY × 0.9)`. `minimumLength` lets a short highway (an
+    /// iPhone's) use a smaller floor than the iPad's 24 pt.
+    static func length(duration: Double, approachTime: Double, hitY: CGFloat,
+                       minimumLength: CGFloat = minimumNoteLength) -> CGFloat {
+        max(minimumLength, CGFloat(duration / approachTime) * hitY * lengthFactor)
     }
 
     /// Whether a note could be on screen: it has entered at the top and hasn't fully left past the hit line.
@@ -35,9 +37,10 @@ enum HighwayGeometry {
 
     /// The rectangle of a note in highway coordinates, inset a little so neighbouring lanes don't touch.
     static func noteRect(noteTime: Double, duration: Double, songTime: Double, approachTime: Double,
-                         hitY: CGFloat, keyFrame: CGRect, highwayOriginX: CGFloat, inset: CGFloat = 3) -> CGRect {
+                         hitY: CGFloat, keyFrame: CGRect, highwayOriginX: CGFloat, inset: CGFloat = 3,
+                         minimumLength: CGFloat = minimumNoteLength) -> CGRect {
         let bottom = bottomY(noteTime: noteTime, songTime: songTime, approachTime: approachTime, hitY: hitY)
-        let height = length(duration: duration, approachTime: approachTime, hitY: hitY)
+        let height = length(duration: duration, approachTime: approachTime, hitY: hitY, minimumLength: minimumLength)
         return CGRect(x: keyFrame.minX - highwayOriginX + inset,
                       y: bottom - height,
                       width: max(0, keyFrame.width - inset * 2),

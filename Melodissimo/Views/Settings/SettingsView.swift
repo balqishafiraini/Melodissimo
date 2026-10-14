@@ -48,6 +48,16 @@ struct SettingsView: View {
         .fullScreenCover(isPresented: $isTestingMicrophone) {
             MicCalibrationView()
         }
+        #if DEBUG
+        .onAppear {
+            // `-qaCover calibration|micCalibration` opens a calibration screen for the screenshot scripts.
+            switch UserDefaults.standard.string(forKey: "qaCover") {
+            case "calibration": isCalibrating = true
+            case "micCalibration": isTestingMicrophone = true
+            default: break
+            }
+        }
+        #endif
         .alert("Reset progress?", isPresented: $isConfirmingReset) {
             Button("Continue", role: .destructive) { isReallyConfirmingReset = true }
             Button("Cancel", role: .cancel) {}

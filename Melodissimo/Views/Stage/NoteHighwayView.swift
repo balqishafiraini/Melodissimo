@@ -48,7 +48,7 @@ struct NoteHighwayView: View {
     static let popupDuration = 0.5
 
     /// Space under the hit line, so the line itself isn't clipped by the bottom edge.
-    private static let hitLineInset: CGFloat = 10
+    private static let hitLineInset: CGFloat = Sizing.s(10)
 
     var body: some View {
         GeometryReader { geo in
@@ -63,7 +63,7 @@ struct NoteHighwayView: View {
                     ForEach(usedKeyIds, id: \.self) { keyId in
                         let note = NoteCatalog.note(keyId)
                         Text(note.label)
-                            .font(.custom("BalooDa-Regular", size: 22))
+                            .font(.custom("BalooDa-Regular", size: Sizing.f(22)))
                             .foregroundColor(note.isBlack ? .white : .darkGreen)
                             .tag(note.id)
                     }
@@ -72,7 +72,7 @@ struct NoteHighwayView: View {
                             .tag(Self.popupSymbolID(judgment))
                     }
                     Image(systemName: "checkmark")
-                        .font(.custom("BalooDa-Regular", size: 26))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(26)))
                         .foregroundColor(.white)
                         .tag(Self.solemnCheckID)
                 }
@@ -99,7 +99,7 @@ struct NoteHighwayView: View {
             }
         }()
         return Text(text)
-            .font(.custom("BalooDa-Regular", size: 28))
+            .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
             .foregroundColor(color)
             .shadow(color: .black.opacity(0.6), radius: 2, y: 1)
     }
@@ -176,7 +176,7 @@ struct NoteHighwayView: View {
             let progress = CGFloat(age / Self.popupDuration)
             var layer = context
             layer.opacity = Double(1 - progress) * (isSolemn ? 0.5 : 1)
-            layer.draw(symbol, at: CGPoint(x: keyFrame.midX - originX, y: hitY - 40 - 50 * progress))
+            layer.draw(symbol, at: CGPoint(x: keyFrame.midX - originX, y: hitY - Sizing.s(40) - Sizing.s(50) * progress))
         }
     }
 
@@ -197,7 +197,8 @@ struct NoteHighwayView: View {
     }
 
     private func drawHitLine(_ context: inout GraphicsContext, size: CGSize, hitY: CGFloat) {
-        context.fill(Path(CGRect(x: 0, y: hitY - 7, width: size.width, height: 14)), with: .color(Color.yellow.opacity(0.22)))
+        let glow: CGFloat = Sizing.isPhone ? 8 : 14
+        context.fill(Path(CGRect(x: 0, y: hitY - glow / 2, width: size.width, height: glow)), with: .color(Color.yellow.opacity(0.22)))
         context.fill(Path(CGRect(x: 0, y: hitY - 2, width: size.width, height: 4)), with: .color(Color.white.opacity(0.9)))
     }
 
@@ -210,18 +211,19 @@ struct NoteHighwayView: View {
 
         let rect = HighwayGeometry.noteRect(noteTime: note.time, duration: note.duration,
                                             songTime: songTime, approachTime: engine.approachTime,
-                                            hitY: hitY, keyFrame: keyFrame, highwayOriginX: originX)
+                                            hitY: hitY, keyFrame: keyFrame, highwayOriginX: originX,
+                                            minimumLength: Sizing.s(HighwayGeometry.minimumNoteLength))
         let key = NoteCatalog.note(note.keyId)
         let isBlack = key.isBlack
         let fill: Color = note.judgment == .miss
             ? Color.gray.opacity(0.55)
             : (noteSkin.color(semitone: key.semitone, isBlack: isBlack) ?? (isBlack ? .navy : .yellow))
-        let shape = Path(roundedRect: rect, cornerRadius: 10)
+        let shape = Path(roundedRect: rect, cornerRadius: Sizing.s(10))
         context.fill(shape, with: .color(fill))
         context.stroke(shape, with: .color(Color.white.opacity(0.85)), lineWidth: 2)
 
         if labelsOnNotes, let label = context.resolveSymbol(id: note.keyId) {
-            context.draw(label, at: CGPoint(x: rect.midX, y: max(rect.minY + 14, rect.maxY - 20)))
+            context.draw(label, at: CGPoint(x: rect.midX, y: max(rect.minY + Sizing.s(14), rect.maxY - Sizing.s(20))))
         }
     }
 }
