@@ -47,6 +47,9 @@ struct DashboardView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear(perform: startFirstStageIfNeeded)
+            #if DEBUG
+            .onAppear { QARoutes.applyLaunchRoute(to: router) }
+            #endif
             .navigationDestination(for: Route.self) { route in
                 destination(for: route)
                     .navigationBarBackButtonHidden(true)

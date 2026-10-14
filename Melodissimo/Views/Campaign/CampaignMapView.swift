@@ -79,6 +79,14 @@ struct CampaignMapView: View {
             lastSeenStageId = currentId
             // A beat after arriving, so the avatar's hop to the new stage is seen before the story starts.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { showNextStory() }
+            #if DEBUG
+            // `-qaOverlay story|storyBoss|certificate`: open that overlay for the screenshot scripts.
+            if let overlay = QARoutes.mapOverlay() {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    if let card = overlay.card { story = .card(card) } else if overlay.certificate { story = .certificate }
+                }
+            }
+            #endif
         }
         .onDisappear { isOnScreen = false }
         .sheet(item: $selectedStage) { stage in

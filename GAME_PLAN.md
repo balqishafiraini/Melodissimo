@@ -216,7 +216,7 @@ HOME
 
 ### 3.1 Constraints (do not violate)
 
-- **Deployment target iOS 16.6, iPad only, landscape only.** Don't change any of these.
+- **Deployment target iOS 16.6, iPhone + iPad, landscape only.** On iPad, layouts must stay identical to v2 (see `IPHONE_PLAN.md` D2). Don't change any of these.
 - **Forbidden APIs** (they need iOS 17+): `@Observable`, the `Observation` framework, SwiftData, `.onChange(of:initial:_:)` (the two-parameter form), `.sensoryFeedback`, `ContentUnavailableView`, `PhaseAnimator`, `KeyframeAnimator`, `.scrollPosition`, `.containerRelativeFrame`, `#Preview` with macro-only features. Use `ObservableObject` + `@Published`, `.onChange(of:) { newValue in }`, `withAnimation`, and `ScrollViewReader`.
 - **Allowed and recommended:** `NavigationStack`, `TimelineView(.animation)`, `Canvas`, `Grid`, `ImageRenderer`, `ShareLink`, `CADisplayLink`, `Task.sleep(nanoseconds:)`.
 - **Persistence stays `UserDefaults`.** Follow the `ProgressStore` / `AchievementStore` pattern: an `ObservableObject` singleton with `static let shared`.

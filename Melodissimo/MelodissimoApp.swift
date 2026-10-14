@@ -11,6 +11,10 @@ import SwiftUI
 struct MelodissimoApp: App {
 
     init() {
+        #if DEBUG
+        // `-qaSeed YES` fills a mid-game profile for the screenshot scripts; a no-op without the argument.
+        QARoutes.seedProfile()
+        #endif
         // Warm the note-sample cache so the first tap on any key plays instantly.
         preloadAllSounds()
         SFX.shared.preload()
@@ -27,6 +31,9 @@ struct MelodissimoApp: App {
     var body: some Scene {
         WindowGroup {
             CoordinatorView()
+            #if DEBUG
+                .onAppear { QARoutes.recordOrientation() }
+            #endif
         }
     }
 }

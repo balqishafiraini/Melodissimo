@@ -92,3 +92,6 @@ iOSInjectionProject/
 # Backsound pipeline (BACKSOUND_PLAN.md)
 Scripts/backsound/work/
 Scripts/backsound/.venv/
+
+# iPhone/iPad QA screenshots (IPHONE_PLAN.md)
+Scripts/iphone/shots/

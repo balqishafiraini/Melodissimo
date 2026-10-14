@@ -25,6 +25,12 @@ struct SplashscreenView: View {
                 }
             }
         }.onAppear {
+            #if DEBUG
+            if QARoutes.skipsSplash {
+                isActive = true
+                return
+            }
+            #endif
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 withAnimation {
                     self.isActive = true
