@@ -69,7 +69,7 @@ struct OnboardPostplayView: View {
                                 .padding()
                                 .foregroundStyle(.black)
                                 .font(.headline)
-                                .frame(width: UIScreen.main.bounds.width * 0.5)
+                                .frame(width: screenWidth * 0.5)
                                 .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                             
                             Spacer()
@@ -78,7 +78,7 @@ struct OnboardPostplayView: View {
                                 .padding()
                                 .foregroundStyle(.black)
                                 .font(.headline)
-                                .frame(width: UIScreen.main.bounds.width * 0.5, alignment: .leading)
+                                .frame(width: screenWidth * 0.5, alignment: .leading)
                                 .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                             
                             Spacer()
@@ -88,7 +88,7 @@ struct OnboardPostplayView: View {
 
                             } label: {
                                 Text("Next")
-                                    .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
+                                    .frame(width: screenWidth * 0.5, height: 100)
                                     .background(Color.yellow)
                                     .foregroundColor(Color.red)
                                     .cornerRadius(20)
@@ -109,7 +109,7 @@ struct OnboardPostplayView: View {
                     }
                 }
                 .padding()
-                .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
+                .frame(maxWidth: .infinity, maxHeight: screenHeight, alignment: .topLeading)
 
             }
         }

@@ -217,6 +217,7 @@ HOME
 ### 3.1 Constraints (do not violate)
 
 - **Deployment target iOS 16.6, iPhone + iPad, landscape only.** On iPad, layouts must stay identical to v2 (see `IPHONE_PLAN.md` D2). Don't change any of these.
+- **iPhone rules (since the iPhone port, `IPHONE_PLAN.md`):** fixed sizes in views go through `Sizing.s(_)` / `Sizing.f(_)` / `Sizing.tap(_)` (identity on iPad); never read `UIScreen.main` in a view (use `screenWidth` / `screenHeight` or a `GeometryReader`); background art is `.resizable().scaledToFill()` in a clipped frame (`ScreenBackdrop`), character art `.resizable().scaledToFit()`; a screen that doesn't fit 375 pt of height gets an iPhone-only layout behind `Sizing.isPhone`, with the iPad layout left as it was.
 - **Forbidden APIs** (they need iOS 17+): `@Observable`, the `Observation` framework, SwiftData, `.onChange(of:initial:_:)` (the two-parameter form), `.sensoryFeedback`, `ContentUnavailableView`, `PhaseAnimator`, `KeyframeAnimator`, `.scrollPosition`, `.containerRelativeFrame`, `#Preview` with macro-only features. Use `ObservableObject` + `@Published`, `.onChange(of:) { newValue in }`, `withAnimation`, and `ScrollViewReader`.
 - **Allowed and recommended:** `NavigationStack`, `TimelineView(.animation)`, `Canvas`, `Grid`, `ImageRenderer`, `ShareLink`, `CADisplayLink`, `Task.sleep(nanoseconds:)`.
 - **Persistence stays `UserDefaults`.** Follow the `ProgressStore` / `AchievementStore` pattern: an `ObservableObject` singleton with `static let shared`.

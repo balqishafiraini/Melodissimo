@@ -128,6 +128,8 @@ struct SettingsView: View {
         Text(text)
             .font(.subheadline)
             .foregroundColor(Color.darkGreen.opacity(0.75))
+            // On iPhone the two columns are narrow and a longer (Indonesian) caption must wrap, not end in "…".
+            .fixedSize(horizontal: false, vertical: Sizing.isPhone)
     }
 
     // MARK: Note speed

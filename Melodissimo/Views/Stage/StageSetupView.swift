@@ -120,6 +120,10 @@ struct StageSetupView: View {
                 Text("Speed")
                     .font(.headline)
                     .foregroundColor(Color.darkGreen)
+                    // "Kecepatan" in Indonesian: it keeps its width and shrinks before it wraps.
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.55)
+                    .layoutPriority(1)
                 ForEach(Self.speeds, id: \.value) { option in
                     SoundButton {
                         speed = option.value

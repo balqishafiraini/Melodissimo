@@ -66,7 +66,7 @@ struct PostplayView: View {
                     Text("\(tilesViewModel.currentLevel?.question[tilesViewModel.currentQuestionIndex] ?? "N/A")")
                         .foregroundStyle(.black)
                         .font(.custom("BalooDa-Regular", size: 70))
-                        .frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height * 0.15)
+                        .frame(width: screenWidth * 0.5, height: screenHeight * 0.15)
                         .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                 }
                 
@@ -78,7 +78,7 @@ struct PostplayView: View {
                 
             }
             .padding()
-            .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
+            .frame(maxWidth: .infinity, maxHeight: screenHeight, alignment: .topLeading)
         }
         .onAppear {
             tilesViewModel.getLevel(currentLevelNo: levelNo, currentLevelCat: "postplay")
