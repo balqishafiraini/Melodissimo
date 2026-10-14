@@ -76,7 +76,7 @@ struct StageNodeView: View {
     let isUnlocked: Bool
     let isCurrent: Bool
 
-    private var size: CGFloat { stage.isLandmark ? 96 : 76 }
+    private var size: CGFloat { Sizing.s(stage.isLandmark ? 96 : 76) }
 
     var body: some View {
         VStack(spacing: 2) {
@@ -88,21 +88,21 @@ struct StageNodeView: View {
 
                 if !isUnlocked {
                     Image(systemName: "lock.fill")
-                        .font(.custom("BalooDa-Regular", size: 30))
+                        .font(.custom("BalooDa-Regular", size: Sizing.isPhone ? 14 : 30))
                         .foregroundColor(.white)
                         .shadow(color: .black.opacity(0.4), radius: 2)
                 }
             }
             .overlay(
                 Circle()
-                    .stroke(Color.white, lineWidth: isCurrent ? 5 : 0)
+                    .stroke(Color.white, lineWidth: isCurrent ? (Sizing.isPhone ? 3 : 5) : 0)
                     .frame(width: size - 4, height: size - 4)
             )
 
             HStack(spacing: 2) {
                 ForEach(0..<3, id: \.self) { index in
                     Image(systemName: index < stars ? "star.fill" : "star")
-                        .font(.custom("BalooDa-Regular", size: 16))
+                        .font(.custom("BalooDa-Regular", size: Sizing.isPhone ? 10 : 16))
                         .foregroundColor(index < stars ? Color.yellow : Color.white.opacity(0.8))
                         .shadow(color: .black.opacity(0.25), radius: 1)
                 }

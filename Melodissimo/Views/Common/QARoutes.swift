@@ -18,7 +18,7 @@ import SwiftUI
 /// | `-qaRoute <name>` | Home pushes that screen on launch (names in `routes(for:)`) |
 /// | `-qaSong <slug>` | which song `songLearn`, `stage*` and `result*` use (default: the first non-solemn one) |
 /// | `-qaOnboarding <name>` | shows that first-run screen instead of the normal flow |
-/// | `-qaOverlay story\|storyBoss\|certificate` | the campaign map opens that overlay on appear |
+/// | `-qaOverlay story\|storyBoss\|certificate\|stageSheet\|stageSheetBoss` | the campaign map opens that overlay on appear |
 /// | `-qaCover calibration\|micCalibration` | with `-qaRoute settings`, Settings opens that full-screen calibration |
 /// | `-qaCoachStep N` | the first-stage tour opens on its Nth bubble (use with `-qaRoute battle`, no seed) |
 /// | `-qaSeed YES` | fills the profile with a mid-game player (see `seedProfile()`) |

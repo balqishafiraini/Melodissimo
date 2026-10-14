@@ -24,41 +24,57 @@ struct StoryCardView: View {
             Color.black.opacity(0.55)
                 .ignoresSafeArea()
 
-            VStack(spacing: 24) {
-                HStack(alignment: .center, spacing: 28) {
-                    AlpanicaView(mood: alpanicaMood, outfit: .equipped, hopTrigger: hop, height: 200, keepsOutfit: true)
-                        .frame(width: 200)
+            VStack(spacing: Sizing.s(24)) {
+                HStack(alignment: .center, spacing: Sizing.s(28)) {
+                    AlpanicaView(mood: alpanicaMood, outfit: .equipped, hopTrigger: hop, height: Sizing.isPhone ? 96 : 200, keepsOutfit: true)
+                        .frame(width: Sizing.isPhone ? 70 : 200)
 
-                    VStack(alignment: .leading, spacing: 14) {
-                        ForEach(card.lines, id: \.self) { line in
-                            Text(LocalizedStringKey(line))
-                                .font(.custom("BalooDa-Regular", size: 30))
-                                .foregroundColor(Color.darkGreen)
-                                .fixedSize(horizontal: false, vertical: true)
+                    // The words come first: on iPhone they get at least half of the card, and scroll if there are too many.
+                    Group {
+                        if Sizing.isPhone {
+                            ViewThatFits(in: .vertical) {
+                                lines
+                                ScrollView(showsIndicators: false) { lines }
+                            }
+                        } else {
+                            lines
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .layoutPriority(Sizing.isPhone ? 1 : 0)
 
                     monster
-                        .frame(width: 200, height: 210)
+                        .frame(width: Sizing.isPhone ? 80 : 200, height: Sizing.isPhone ? 96 : 210)
                 }
 
                 SoundButton(action: onContinue) {
                     Text("Continue")
-                        .frame(width: 260, height: 64)
+                        .buttonFrame(width: 260, height: 64)
                         .background(Color.darkGreen)
                         .foregroundColor(.white)
-                        .cornerRadius(20)
+                        .cornerRadius(Sizing.s(20))
                         .font(Font.headline)
                 }
             }
-            .padding(36)
-            .background(RoundedRectangle(cornerRadius: 36).fill(Color.vanila))
-            .padding(.horizontal, 50)
+            .padding(Sizing.isPhone ? 18 : 36)
+            .background(RoundedRectangle(cornerRadius: Sizing.s(36)).fill(Color.vanila))
+            .padding(.horizontal, Sizing.isPhone ? 12 : 50)
+            .padding(.vertical, Sizing.isPhone ? 8 : 0)
         }
         .onAppear {
             // Alpanica gives a little hop as the card opens.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { hop += 1 }
+        }
+    }
+
+    private var lines: some View {
+        VStack(alignment: .leading, spacing: Sizing.s(14)) {
+            ForEach(card.lines, id: \.self) { line in
+                Text(LocalizedStringKey(line))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(30)))
+                    .foregroundColor(Color.darkGreen)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
     }
 
@@ -75,11 +91,11 @@ struct StoryCardView: View {
                     .opacity(0.85)
                     .rotationEffect(.degrees(-12))
                 Text("💫")
-                    .font(.custom("BalooDa-Regular", size: 56))
+                    .font(.custom("BalooDa-Regular", size: Sizing.f(56)))
             }
         case .finale:
             Text("🇮🇩")
-                .font(.custom("BalooDa-Regular", size: 120))
+                .font(.custom("BalooDa-Regular", size: Sizing.f(120)))
         }
     }
 }
