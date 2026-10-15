@@ -37,7 +37,7 @@ This document is written for an AI executor (**Claude Sonnet 5.5**). It adds **P
 | S8 | iPhone top bar: "?" / Menu / Back buttons at one consistent inset | UI |
 | S9 | Memory & leak sweep, soak test, docs, device checklist | QA |
 
-- [x] S0  - [x] S1  - [x] S2  - [x] S3  - [x] S4  - [x] S5  - [ ] S6  - [ ] S7  - [ ] S8  - [ ] S9
+- [x] S0  - [x] S1  - [x] S2  - [x] S3  - [x] S4  - [x] S5  - [x] S6  - [ ] S7  - [ ] S8  - [ ] S9
 
 ---
 
@@ -306,12 +306,14 @@ To switch them on later:
 
 | Route | S0 baseline leaks | S0 footprint | S3 | S5 | S6 | S9 (10 cycles) |
 |---|---|---|---|---|---|---|
-| stagePerform | 1 (16 B) | 69 MB | 735 (29 KB)¹, 77 MB | 751 (30 KB)¹, 77 MB | | |
+| stagePerform | 1 (16 B) | 69 MB | 735 (29 KB)¹, 77 MB | 751 (30 KB)¹, 77 MB | 725 (29 KB)¹, 77 MB² | |
 | battle | 1 (16 B) | 67 MB | | | | |
 | result3 | 1 (16 B) | 76 MB | | | | |
 | campaignMap | 1 (16 B) | 80 MB | | | | |
 
 ¹ **Framework records, not growth.** From S3 on every run shows a few hundred small leaks (735 at 10 cycles, 369 at 20, 755 at 10 on another run; STACKS=1 shows every root is AudioToolbox's `ListenerMap::InsertEvent`, called from `AVAudioMixerNode` attach inside `NoteAudioEngine.buildGraph()` at launch). The count does not grow with the number of cycles. S9's pass criterion is therefore "no leak count growth between 5 and 30 cycles, none rooted in our own allocations".
+
+² Run with `-qaInputMode pianika` (the microphone open on every cycle).
 
 The single 16-byte "ROOT LEAK" is in every route including the plain campaign map, so it is a system allocation, not ours.
 
@@ -333,6 +335,8 @@ The single 16-byte "ROOT LEAK" is in every route including the plain campaign ma
 - **Online services in the working tree.** At S4 the user's working copy of `Info.plist` has `MelodissimoOnlineServices` set to `<true/>` (their edit, uncommitted; the committed value is `false`). With it on, the simulator shows Game Center's sign-in sheet over the app. QA runs therefore pass `-qaOnlineServices NO` (a DEBUG-only override in `OnlineServices`; `leaks.sh` and `capture.sh` pass it).
 - **S5 notes.** (a) `StageScoreboard` holds score/combo/maxCombo/counts/wrongPresses/judgedCount/lastWrongPress; the engine keeps read-only pass-throughs (`RhythmEngineTests` compiled unchanged). (b) `StageHUDScore` and `StageProgressBar` (private, in `SongStageView.swift`) observe it; the combo pulse moved into `StageHUDScore`. The progress bar's `TimelineView` and per-frame `reduce` are gone. (c) SFX are fired from `engine.onJudgment`, set in `onAppear` from two captured plain values (`mode`, `isSolemn`) and cleared in `onDisappear`; the practice wrong-key flash subscribes to `scoreboard.$lastWrongPress` with `.onReceive` (a subscription, not an observation, so the stage still doesn't re-render for score changes). Behaviour change: several misses in one frame now play one miss sound each (the old `onChange` collapsed them). (d) Highway: precomputed `RenderNote` lists (white/black, sorted by time) with a binary search for the first visible note (looking back by the longest note's length), skin colours resolved once, the lane `Path` cached until the highway's origin or height changes. (e) Keyboard: `onPreferenceChange` ignores identical frames; `KeyTile` is `Equatable` + `.equatable()`. (f) Backing track: tolerance 0.12 s, `DriftGate` (2 readings in a row, 3 s apart), `load` is `async` (file opened and primed on a detached task) and the stage starts the engine in `.task` after it returns (skipped if the view is gone or the engine is past `.ready`).
 - **S5 verification.** Build + tests green on iPad Pro 13 and iPhone 15 Pro. Screenshots of `stagePerform/Practice/Listen/Boss/Solemn` on the iPhone 15 Pro match `shots/final/15pro` in every position and size (the 3–7 % pixel differences are note positions, the Dynamic Island on the other side, and the hidden home indicator from S4). A Practice stage driven by simulator taps advances on the correct key. `leaks.sh stagePerform`: same framework-only leaks as S3 (¹). **Not done:** the optional `xctrace` Time Profiler before/after, so there is no main-thread % to report; the backing track's resync behaviour and SFX timing aren't audible here (§9 items 2 and 7).
+- **S6 notes.** (a) `PitchDetector` uses `vDSP_distancesq` (one call per lag, no scratch arrays) and `vDSP_rmsqv`; the algorithm, threshold and range are unchanged. The old scalar version lives in the test file as `detectReference`; `PitchDetectorTests` checks 175/440/1000 Hz at 44.1 and 48 kHz (and a tone with overtones plus noise) agree within 0.5 Hz. `PitchDetector.Workspace` is reused by `MicrophoneInput`. (b) **Backlog is bounded by the queue, not by the window.** `analyse` already drains its window on every call, so the window never grows; what piles up is the queue of pending chunks. The audio thread therefore counts pending samples under a lock and drops a new chunk (with `AudioDiag` "mic backlog dropped", and a fresh window afterwards) when more than `max(4 × 2048, 2 × chunk)` are waiting. (My first version dropped old samples out of the window and on this simulator, whose input taps arrive as ~9600-sample chunks, it dropped on every callback; the log showed it.) (c) The engine is created in `begin()` and released in `stop()`; the main thread is woken only when the heard key changes or an onset fires; a frame queued before `stop()` can't light a key afterwards. (d) `-qaInputMode pianika` (DEBUG) forces `ProgressStore.inputMode` for the launch, nothing stored. (e) The session in record mode uses `.default`, not `.measurement` (S2).
+- **S6 verification.** Simulator microphone (granted with `simctl privacy`): `leaks.sh stagePerform 10` with the mic mode shows the same framework-only leaks and footprint as without it; `AudioDiag` shows `session active: record` / `playback` switching on every cycle, no backlog drops, and a single note-engine start (the note engine stayed running across the category switches on the simulator). Detection quality with a real pianika, and whether `.default` mode detects as well as `.measurement` did, are **not verified** (§9 item 8).
 
 ## 9. Device checklist for Balqis (after S9)
 

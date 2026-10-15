@@ -4,35 +4,53 @@
 //
 
 import Foundation
+import Accelerate
 
 /// YIN pitch detection (de Cheveigné & Kawahara, 2002) limited to the pianika's range.
+///
+/// The difference function is the cost: for every lag τ up to ~290 it sums the squared difference of ~1750 sample
+/// pairs, about half a million multiply-adds per analysed hop, ~47 hops a second. It runs on Accelerate
+/// (`vDSP_distancesq`, one call per lag, no allocation); the maths is exactly the textbook algorithm's, only
+/// faster, which matters most in a Debug build on a phone where the scalar loop could fall behind the microphone.
 enum PitchDetector {
     /// Lowest and highest frequency worth looking for (F3 is 174.6 Hz, C6 is 1046.5 Hz).
     static let frequencyRange: ClosedRange<Double> = 165...1100
     static let threshold: Float = 0.15
 
+    /// Scratch memory for `detect`, so a long-lived caller (the microphone) allocates it once instead of per hop.
+    final class Workspace {
+        fileprivate var normalized: [Float] = []
+        init() {}
+    }
+
     /// The fundamental frequency of `samples` in Hz, or `nil` when there is no clear pitch.
     /// Needs at least `window + sampleRate / 165` samples; 2048 at 44.1 kHz or 48 kHz is plenty.
-    static func detect(samples: [Float], sampleRate: Double) -> Double? {
+    static func detect(samples: [Float], sampleRate: Double, workspace: Workspace = Workspace()) -> Double? {
+        samples.withUnsafeBufferPointer { detect(samples: $0, sampleRate: sampleRate, workspace: workspace) }
+    }
+
+    /// The same, for samples already in memory (a slice of the microphone window), without copying them.
+    static func detect(samples buffer: UnsafeBufferPointer<Float>, sampleRate: Double, workspace: Workspace) -> Double? {
         let tauMin = max(2, Int(sampleRate / frequencyRange.upperBound))
         let tauMax = Int(sampleRate / frequencyRange.lowerBound)
-        let window = samples.count - tauMax
-        guard window >= tauMax, tauMin < tauMax else { return nil }
+        let window = buffer.count - tauMax
+        guard window >= tauMax, tauMin < tauMax, let base = buffer.baseAddress else { return nil }
 
         // Difference function, then the cumulative mean normalised difference.
-        var normalized = [Float](repeating: 1, count: tauMax + 1)
+        if workspace.normalized.count != tauMax + 1 {
+            workspace.normalized = [Float](repeating: 1, count: tauMax + 1)
+        }
         var runningSum: Float = 0
-        samples.withUnsafeBufferPointer { buffer in
+        workspace.normalized.withUnsafeMutableBufferPointer { normalized in
+            normalized[0] = 1
             for tau in 1...tauMax {
                 var difference: Float = 0
-                for i in 0..<window {
-                    let delta = buffer[i] - buffer[i + tau]
-                    difference += delta * delta
-                }
+                vDSP_distancesq(base, 1, base + tau, 1, &difference, vDSP_Length(window))
                 runningSum += difference
                 normalized[tau] = runningSum > 0 ? difference * Float(tau) / runningSum : 1
             }
         }
+        let normalized = workspace.normalized
 
         // First dip below the threshold, followed down to its local minimum.
         var tau = tauMin
@@ -46,7 +64,7 @@ enum PitchDetector {
         return nil
     }
 
-    /// Parabolic interpolation around the minimum for sub-sample accuracy.
+/// Parabolic interpolation around the minimum for sub-sample accuracy.
     private static func refinedTau(_ tau: Int, in values: [Float]) -> Double {
         guard tau > 1, tau + 1 < values.count else { return Double(tau) }
         let before = Double(values[tau - 1]), here = Double(values[tau]), after = Double(values[tau + 1])
@@ -57,10 +75,14 @@ enum PitchDetector {
 
     /// Root-mean-square level of `samples` (0…1 for full-scale audio).
     static func rms(of samples: [Float]) -> Float {
-        guard !samples.isEmpty else { return 0 }
-        var sum: Float = 0
-        for sample in samples { sum += sample * sample }
-        return (sum / Float(samples.count)).squareRoot()
+        samples.withUnsafeBufferPointer { rms(of: $0) }
+    }
+
+    static func rms(of samples: UnsafeBufferPointer<Float>) -> Float {
+        guard let base = samples.baseAddress, !samples.isEmpty else { return 0 }
+        var result: Float = 0
+        vDSP_rmsqv(base, 1, &result, vDSP_Length(samples.count))
+        return result
     }
 }
 
