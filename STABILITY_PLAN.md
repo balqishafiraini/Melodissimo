@@ -37,7 +37,7 @@ This document is written for an AI executor (**Claude Sonnet 5.5**). It adds **P
 | S8 | iPhone top bar: "?" / Menu / Back buttons at one consistent inset | UI |
 | S9 | Memory & leak sweep, soak test, docs, device checklist | QA |
 
-- [x] S0  - [x] S1  - [x] S2  - [ ] S3  - [ ] S4  - [ ] S5  - [ ] S6  - [ ] S7  - [ ] S8  - [ ] S9
+- [x] S0  - [x] S1  - [x] S2  - [x] S3  - [ ] S4  - [ ] S5  - [ ] S6  - [ ] S7  - [ ] S8  - [ ] S9
 
 ---
 
@@ -306,10 +306,12 @@ To switch them on later:
 
 | Route | S0 baseline leaks | S0 footprint | S3 | S5 | S6 | S9 (10 cycles) |
 |---|---|---|---|---|---|---|
-| stagePerform | 1 (16 B) | 69 MB | | | | |
+| stagePerform | 1 (16 B) | 69 MB | 735 (29 KB)¹, 77 MB | | | |
 | battle | 1 (16 B) | 67 MB | | | | |
 | result3 | 1 (16 B) | 76 MB | | | | |
 | campaignMap | 1 (16 B) | 80 MB | | | | |
+
+¹ **Framework records, not growth.** From S3 on every run shows a few hundred small leaks (735 at 10 cycles, 369 at 20, 755 at 10 on another run; STACKS=1 shows every root is AudioToolbox's `ListenerMap::InsertEvent`, called from `AVAudioMixerNode` attach inside `NoteAudioEngine.buildGraph()` at launch). The count does not grow with the number of cycles. S9's pass criterion is therefore "no leak count growth between 5 and 30 cycles, none rooted in our own allocations".
 
 The single 16-byte "ROOT LEAK" is in every route including the plain campaign map, so it is a system allocation, not ours.
 
@@ -324,6 +326,8 @@ The single 16-byte "ROOT LEAK" is in every route including the plain campaign ma
 - **S2 verification.** `-qaFakeInterruption 5` with `-qaRoute stagePerform` on the iPhone 15 Pro simulator: `AudioDiag` logged `session active: playback` at launch, `interruption began` at 5 s, then (2 s later) `interruption ended, session restored: true` with a fresh `session active: playback` line. The screenshot after it shows the "Paused" overlay. A real call/Siri/Bluetooth change is **not verified** (§9 items 5 and 6).
 - **S2 scope.** Battle (which also runs Melody Rush) and Echo have no pause concept, so an interruption just silences their sounds (`stopAllSounds()` / `viewModel.silence()`). The `willResignActive → stopAllSounds()` observer moved into `AudioSessionController`.
 - **Concurrent Xcode edits (found during S1).** While S0/S1 ran, the working tree gained edits that aren't part of this plan: `Melodissimo/Melodissimo.entitlements` (Game Center + iCloud), `CODE_SIGN_ENTITLEMENTS` and `INFOPLIST_KEY_NSMicrophoneUsageDescription`/`INFOPLIST_KEY_UIUserInterfaceStyle` in `project.pbxproj`, and the matching removal of those keys from `Data/Info.plist` (Xcode's Signing & Capabilities UI does this). My first S0/S1 commits swept the entitlements file and the Info.plist removal in by mistake, so I rewrote the two local commits (nothing was pushed) to hold only my changes. Those edits stay **uncommitted** in the working tree and no task stages them (`git add` is by explicit path). Note: if the entitlements file is committed later, `MelodissimoOnlineServices` must be flipped to YES together with it (§7); and committing the Info.plist removal without the pbxproj hunks would drop the microphone usage text and Light style.
+- **S3 design deviations.** (a) Buffers are all **mono float 48 kHz** (the mixers resample to the hardware rate), so nothing is ever re-converted on a route change, and the "reconnect if the output format changed" step of §S3.7 is unnecessary: a configuration change just restarts the engine. (b) Note samples are 3.4–5.8 s on disk (32 files, 152 s in all, mono 48 kHz AAC); trimmed to 3.0 s with a 50 ms fade, the 32 buffers total about 17 MB, under the 20 MB limit. SFX files (0.05–0.54 s) are downmixed from stereo/44.1 kHz. (c) `SFX` keeps its API but owns its buffers; `NoteAudioEngine.playEffect(_ buffer:)` takes a buffer instead of a resource name. `SFX.play` returns true when the file exists and the setting is on (the engine's own failure is only logged), matching its old doc comment. (d) `SoundModel.swift` now only forwards to the engine; `stopSound()` releases the last played note.
+- **S3 verification.** `-qaRoute stageListen` for 22 s on the iPhone 15 Pro simulator: `AudioDiag` shows one `session active: playback` and one `note engine started` (the simulator's output is 96 kHz), no errors; the stage screenshot shows the song advancing. The sound itself can't be heard in this environment: **not verified by ear**. Footprint is 8 MB higher than the S0 baseline (the decoded buffers).
 
 ## 9. Device checklist for Balqis (after S9)
 
