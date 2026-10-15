@@ -7,6 +7,16 @@ import Foundation
 import Combine
 import QuartzCore
 
+/// What became of a hit long note.
+enum HoldState: Hashable {
+    /// The key is still down; the note stays at the hit line and shrinks as its tail comes down.
+    case holding
+    /// Held to the tail.
+    case completed
+    /// Let go at this song time, before the tail.
+    case broken(at: Double)
+}
+
 /// A note on the highway, with its judgment once it has been hit or missed.
 struct EngineNote: Hashable {
     let index: Int
@@ -14,7 +24,16 @@ struct EngineNote: Hashable {
     /// Seconds on the song clock.
     let time: Double
     let duration: Double
+    /// A long note: hitting it starts a hold that lasts until `holdEnd`.
+    var isHold = false
     var judgment: Judgment?
+    /// Set once a hold note has been hit.
+    var hold: HoldState?
+
+    /// Song time of the tail as drawn (notes are drawn `lengthFactor` of their duration long).
+    var holdEnd: Double {
+        time + duration * Double(HighwayGeometry.lengthFactor)
+    }
 }
 
 /// A judged press or an auto-miss, kept briefly so the highway can draw a popup.
@@ -89,6 +108,8 @@ final class RhythmEngine: ObservableObject {
     private var waitStartedAt: CFTimeInterval = 0
     private var wrongPressesOnCurrentNote = 0
     private var listenActiveIndex: Int?
+    /// Key id → index of the hold note that key is holding down.
+    private var holding: [Int: Int] = [:]
     private var ticker: DisplayLinkTicker?
 
     private let soundPlayer: (String) -> Void
@@ -114,7 +135,7 @@ final class RhythmEngine: ObservableObject {
         self.countInDuration = Self.countInBeats * 60 / (chart.bpm * speed)
         self.leadInDuration = max(countInDuration, leadIn)
         self.notes = chart.timedNotes(speed: speed).map {
-            EngineNote(index: $0.index, keyId: $0.keyId, time: $0.time, duration: $0.duration, judgment: nil)
+            EngineNote(index: $0.index, keyId: $0.keyId, time: $0.time, duration: $0.duration, isHold: $0.isHold)
         }
         clock.freeze(at: -leadInDuration)
     }
@@ -194,8 +215,9 @@ final class RhythmEngine: ObservableObject {
     /// Resets everything and begins a fresh count-in.
     func restart(now: CFTimeInterval) {
         stopListenSound()
-        notes = notes.map { EngineNote(index: $0.index, keyId: $0.keyId, time: $0.time, duration: $0.duration, judgment: nil) }
+        notes = notes.map { EngineNote(index: $0.index, keyId: $0.keyId, time: $0.time, duration: $0.duration, isHold: $0.isHold) }
         recentEvents = []
+        holding = [:]
         firstUnjudged = 0
         isWaiting = false
         wrongPressesOnCurrentNote = 0
@@ -250,6 +272,7 @@ final class RhythmEngine: ObservableObject {
         scoreboard.registerHit(judgment, points: Judge.points(for: judgment) * Judge.multiplier(forCombo: scoreboard.combo + 1))
         record(JudgmentEvent(keyId: notes[index].keyId, judgment: judgment, hostTime: now))
         onJudgment?(judgment)
+        beginHold(at: index)
         advanceFirstUnjudged()
         finishIfDone(now: now)
     }
@@ -264,6 +287,7 @@ final class RhythmEngine: ObservableObject {
             notes[firstUnjudged].judgment = .perfect
             scoreboard.noteJudged()
             record(JudgmentEvent(keyId: keyId, judgment: .perfect, hostTime: now))
+            beginHold(at: firstUnjudged)
             wrongPressesOnCurrentNote = 0
             if hintKeyId != nil { hintKeyId = nil }
             if isWaiting {
@@ -284,6 +308,47 @@ final class RhythmEngine: ObservableObject {
         }
     }
 
+    /// A key went up (the finger lifted or slid off). Ends the hold on that key, if any: at the tail it is
+    /// complete, earlier it is broken (Perform loses the combo and the hold bonus).
+    /// The microphone never calls this, so its holds always run to the tail.
+    func release(keyId: Int, now: CFTimeInterval) {
+        // A finger lifting onto the pause overlay mustn't break the hold; it ends at the tail instead.
+        guard phase == .countIn || phase == .playing, let index = holding[keyId] else { return }
+        holding[keyId] = nil
+        if inputTime(now: now) >= notes[index].holdEnd - Judge.holdReleaseTolerance {
+            completeHold(at: index)
+        } else {
+            notes[index].hold = .broken(at: songTime(now: now))
+            if mode == .perform { scoreboard.breakCombo() }
+        }
+        finishIfDone(now: now)
+    }
+
+    private func beginHold(at index: Int) {
+        guard notes[index].isHold else { return }
+        let keyId = notes[index].keyId
+        // A new hold on the same key ends the old one (two fingers, or Listen's repeated key).
+        if let previous = holding[keyId] { completeHold(at: previous) }
+        notes[index].hold = .holding
+        holding[keyId] = index
+    }
+
+    private func completeHold(at index: Int) {
+        holding[notes[index].keyId] = nil
+        notes[index].hold = .completed
+        if mode == .perform {
+            scoreboard.registerHoldBonus(points: Judge.holdBonus * Judge.multiplier(forCombo: scoreboard.combo))
+        }
+    }
+
+    /// Holds whose tail has reached the hit line are complete, released or not.
+    private func completeDueHolds(t: Double) {
+        guard !holding.isEmpty else { return }
+        for index in holding.values where t >= notes[index].holdEnd {
+            completeHold(at: index)
+        }
+    }
+
     // MARK: Frame step
 
     /// Advances the engine to `now`: count-in → playing, auto-misses, practice wait,
@@ -294,6 +359,7 @@ final class RhythmEngine: ObservableObject {
         if phase == .countIn, t >= 0 {
             phase = .playing
         }
+        completeDueHolds(t: mode == .listen ? t : inputTime(now: now))
         switch mode {
         case .perform: stepPerform(now: now)
         case .practice: stepPractice(now: now, t: t)
@@ -358,6 +424,7 @@ final class RhythmEngine: ObservableObject {
             soundPlayer(NoteCatalog.note(note.keyId).sound)
             listenActiveIndex = due
             hintKeyId = note.keyId
+            beginHold(at: due)
         }
         if let last = notes.last, t >= last.time + last.duration {
             stopListenSound()
@@ -394,9 +461,9 @@ final class RhythmEngine: ObservableObject {
         }
     }
 
-    /// Perform and Practice finish when every note has been judged.
+    /// Perform and Practice finish when every note has been judged and the last hold has ended.
     private func finishIfDone(now: CFTimeInterval) {
-        guard mode != .listen, firstUnjudged >= notes.count else { return }
+        guard mode != .listen, firstUnjudged >= notes.count, holding.isEmpty else { return }
         finish(now: now)
     }
 
@@ -405,6 +472,8 @@ final class RhythmEngine: ObservableObject {
         stopListenSound()
         clock.pause(at: now)
         isWaiting = false
+        for index in holding.values { notes[index].hold = .completed }
+        holding = [:]
         if hintKeyId != nil { hintKeyId = nil }
         phase = .finished
         onClockEvent?(.finished)

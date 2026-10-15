@@ -617,4 +617,97 @@ final class RhythmEngineTests: XCTestCase {
         engine.resume(now: 105)
         XCTAssertTrue(log.list.isEmpty)
     }
+
+    // MARK: Hold notes
+
+    /// 60 bpm: a 2-beat hold on key 5 at host 103 (tail drawn to 104.8), then a tap on key 6 at host 105.
+    private func holdEngine(_ mode: StageMode, notes: [ChartNote]? = nil) -> RhythmEngine {
+        let chart = SongChart(id: "hold", title: "Hold", bpm: 60,
+                              notes: notes ?? [ChartNote(k: 5, b: 0, d: 2), ChartNote(k: 6, b: 2, d: 1)])
+        let engine = RhythmEngine(chart: chart, mode: mode, soundPlayer: { _ in }, soundStopper: { _ in })
+        engine.start(now: start)
+        return engine
+    }
+
+    func testLongChartNotesAreHolds() {
+        let chart = SongChart(id: "hold", title: "Hold", bpm: 60,
+                              notes: [ChartNote(k: 5, b: 0, d: 1), ChartNote(k: 6, b: 1, d: 1.5), ChartNote(k: 7, b: 2.5, d: 2)])
+        XCTAssertEqual(chart.timedNotes(speed: 1).map(\.isHold), [false, true, true])
+    }
+
+    func testHitHoldNoteStaysHeldUntilReleasedAtTheTail() {
+        let engine = holdEngine(.perform)
+        engine.press(keyId: 5, now: 103)
+        XCTAssertEqual(engine.notes[0].judgment, .perfect)
+        XCTAssertEqual(engine.notes[0].hold, .holding)
+        engine.step(now: 104)
+        XCTAssertEqual(engine.notes[0].hold, .holding)
+        engine.release(keyId: 5, now: 104.7)
+        XCTAssertEqual(engine.notes[0].hold, .completed)
+        XCTAssertEqual(engine.score, 300 + Judge.holdBonus)
+        XCTAssertEqual(engine.combo, 1)
+    }
+
+    func testReleasingAHoldEarlyBreaksItAndTheCombo() {
+        let engine = holdEngine(.perform)
+        engine.press(keyId: 5, now: 103)
+        engine.release(keyId: 5, now: 103.5)
+        XCTAssertEqual(engine.notes[0].hold, .broken(at: 0.5))
+        XCTAssertEqual(engine.notes[0].judgment, .perfect)
+        XCTAssertEqual(engine.combo, 0)
+        XCTAssertEqual(engine.score, 300)
+    }
+
+    func testHoldCompletesAtTheTailWithoutARelease() {
+        let engine = holdEngine(.perform)
+        engine.press(keyId: 5, now: 103)
+        engine.step(now: 104.85)
+        XCTAssertEqual(engine.notes[0].hold, .completed)
+        XCTAssertEqual(engine.score, 300 + Judge.holdBonus)
+        engine.release(keyId: 5, now: 104.9)
+        XCTAssertEqual(engine.notes[0].hold, .completed)
+    }
+
+    func testShortNotesNeverHold() {
+        let engine = holdEngine(.perform)
+        engine.press(keyId: 6, now: 105)
+        XCTAssertNil(engine.notes[1].hold)
+    }
+
+    func testStageWaitsForTheLastHoldBeforeFinishing() {
+        let engine = holdEngine(.perform, notes: [ChartNote(k: 5, b: 0, d: 2)])
+        engine.press(keyId: 5, now: 103)
+        engine.step(now: 104)
+        XCTAssertEqual(engine.phase, .playing)
+        engine.step(now: 104.9)
+        XCTAssertEqual(engine.phase, .finished)
+    }
+
+    func testReleaseWhilePausedDoesNotBreakTheHold() {
+        let engine = holdEngine(.perform)
+        engine.press(keyId: 5, now: 103)
+        engine.pause(now: 103.3)
+        engine.release(keyId: 5, now: 103.4)
+        XCTAssertEqual(engine.notes[0].hold, .holding)
+    }
+
+    func testPracticeEarlyReleaseBreaksTheHoldWithoutPenalty() {
+        let engine = holdEngine(.practice)
+        engine.step(now: 103.1)
+        engine.press(keyId: 5, now: 104)
+        XCTAssertEqual(engine.notes[0].hold, .holding)
+        engine.release(keyId: 5, now: 104.2)
+        guard case .broken(let releasedAt)? = engine.notes[0].hold else { return XCTFail("hold should be broken") }
+        XCTAssertEqual(releasedAt, 0.2, accuracy: 1e-9)
+        XCTAssertEqual(engine.wrongPresses, 0)
+    }
+
+    func testRestartClearsHolds() {
+        let engine = holdEngine(.perform)
+        engine.press(keyId: 5, now: 103)
+        engine.restart(now: 110)
+        XCTAssertNil(engine.notes[0].hold)
+        engine.release(keyId: 5, now: 113.5)
+        XCTAssertNil(engine.notes[0].hold)
+    }
 }

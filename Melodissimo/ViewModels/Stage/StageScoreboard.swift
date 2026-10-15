@@ -56,6 +56,16 @@ final class StageScoreboard: ObservableObject {
         lastWrongPress = WrongPress(keyId: keyId, serial: wrongSerial)
     }
 
+    /// A long note held to its tail: extra points, no change to the counts.
+    func registerHoldBonus(points: Int) {
+        score += points
+    }
+
+    /// A long note let go too early in Perform.
+    func breakCombo() {
+        combo = 0
+    }
+
     /// A note judged without a score: a Practice hit, or a note Listen played.
     func noteJudged() {
         judgedCount += 1

@@ -108,6 +108,9 @@ struct SongStageView: View {
                                   laneFlashes.press(keyId: keyId, at: now)
                                   engine.press(keyId: keyId, now: now)
                               },
+                              onNoteOff: { keyId, _ in
+                                  engine.release(keyId: keyId, now: CACurrentMediaTime())
+                              },
                               onKeyFrames: { frames in
                                   if frames != keyFrames { keyFrames = frames }
                               },
