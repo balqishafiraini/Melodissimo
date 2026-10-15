@@ -16,7 +16,7 @@ struct StoryCard: Identifiable, Hashable {
         case finale
     }
 
-    /// `intro_1`…`intro_6`, `boss_1`…`boss_6`, `finale`. Also the suffix of the `story_seen_<id>` key.
+    /// `intro_1`…`intro_8`, `boss_1`…`boss_8`, `finale`. Also the suffix of the `story_seen_<id>` key.
     let id: String
     let kind: Kind
     let chapter: Int
@@ -27,7 +27,7 @@ struct StoryCard: Identifiable, Hashable {
 
 enum StoryCatalog {
 
-    /// The 13 cards in story order.
+    /// The 17 cards in story order.
     static let cards: [StoryCard] = [
         StoryCard(id: "intro_1", kind: .chapterIntro, chapter: 1, lines: [
             "Oh no! Fals the off-key monster has scrambled the songs of Nusantara!",
@@ -67,29 +67,49 @@ enum StoryCatalog {
         StoryCard(id: "boss_4", kind: .bossDefeated, chapter: 4, lines: [
             "Great job! The Sulawesi Fals sailed away.",
             "Maju Tak Gentar marches on again.",
-            "Next: Bali and Nusa Tenggara!"
+            "Next stop: Bali!"
         ]),
         StoryCard(id: "intro_5", kind: .chapterIntro, chapter: 5, lines: [
-            "Bali and Nusa Tenggara are full of dance and sunshine!",
+            "Bali is full of dance, temples and sunshine!",
             "Now you will meet the black keys.",
             "They sound a little different, so listen well!"
         ]),
         StoryCard(id: "boss_5", kind: .bossDefeated, chapter: 5, lines: [
-            "The Nusa Tenggara Fals is defeated!",
+            "The Bali Fals is defeated!",
             "Api Kemerdekaan burns bright again.",
-            "The last island is waiting: Maluku and Papua!"
+            "Let's hop over to Nusa Tenggara!"
         ]),
         StoryCard(id: "intro_6", kind: .chapterIntro, chapter: 6, lines: [
+            "Nusa Tenggara is home to the Komodo dragon!",
+            "More black keys are hiding here.",
+            "Can you find them all?"
+        ]),
+        StoryCard(id: "boss_6", kind: .bossDefeated, chapter: 6, lines: [
+            "The Nusa Tenggara Fals is defeated!",
+            "Tanah Airku sounds sweet again.",
+            "Sail on to the spice islands of Maluku!"
+        ]),
+        StoryCard(id: "intro_7", kind: .chapterIntro, chapter: 7, lines: [
+            "Maluku is the land of spices and coral reefs.",
+            "The notes climb high up here.",
+            "Fals is faster, too. Stay sharp!"
+        ]),
+        StoryCard(id: "boss_7", kind: .bossDefeated, chapter: 7, lines: [
+            "The Maluku Fals swam away!",
+            "Mars Harapan Bangsa marches on again.",
+            "The last island is waiting: Papua!"
+        ]),
+        StoryCard(id: "intro_8", kind: .chapterIntro, chapter: 8, lines: [
             "This is the far east, where Indonesia reaches Merauke.",
             "Every note you have learned is here.",
             "You are ready!"
         ]),
-        StoryCard(id: "boss_6", kind: .bossDefeated, chapter: 6, lines: [
+        StoryCard(id: "boss_8", kind: .bossDefeated, chapter: 8, lines: [
             "The last Fals is gone!",
             "From Sabang to Merauke, every song is back.",
             "Just one more song to play together."
         ]),
-        StoryCard(id: "finale", kind: .finale, chapter: 6, lines: [
+        StoryCard(id: "finale", kind: .finale, chapter: 8, lines: [
             "Indonesia Raya is our national anthem.",
             "We play it calmly and with respect.",
             "Play it from your heart."

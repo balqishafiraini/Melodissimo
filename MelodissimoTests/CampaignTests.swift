@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 @testable import Melodissimo
 
 final class CampaignTests: XCTestCase {
@@ -11,15 +12,37 @@ final class CampaignTests: XCTestCase {
 
     // MARK: Catalog shape
 
-    func testThereAreFortyNineStagesWithUniqueIds() {
-        XCTAssertEqual(stages.count, 49)
-        XCTAssertEqual(Set(stages.map(\.id)).count, 49)
-        XCTAssertEqual(CampaignCatalog.chapters.map { CampaignCatalog.stages(inChapter: $0.number).count }, [7, 11, 9, 9, 7, 6])
+    func testThereAreAHundredStagesWithUniqueIds() {
+        XCTAssertEqual(stages.count, 100)
+        XCTAssertEqual(Set(stages.map(\.id)).count, 100)
+        XCTAssertEqual(CampaignCatalog.chapters.map { CampaignCatalog.stages(inChapter: $0.number).count }, [17, 17, 12, 12, 10, 11, 11, 10])
+    }
+
+    func testStageCountsFollowTheCityCountsWithAFloor() {
+        let counts = CampaignCatalog.stageCounts
+        XCTAssertEqual(counts.reduce(0, +), CampaignCatalog.totalStages)
+        for (chapter, count) in zip(CampaignCatalog.chapters, counts) {
+            XCTAssertGreaterThanOrEqual(count, CampaignCatalog.minimumStages(in: chapter), chapter.name)
+        }
+        // More cities never means fewer stages.
+        for (a, b) in zip(CampaignCatalog.chapters, counts) {
+            for (c, d) in zip(CampaignCatalog.chapters, counts) where a.cityCount > c.cityCount {
+                XCTAssertGreaterThanOrEqual(b, d, "\(a.name) vs \(c.name)")
+            }
+        }
+    }
+
+    func testStageCountsShareByCitiesWhenNoFloorBites() {
+        let chapters = [CampaignCatalog.chapter(6), CampaignCatalog.chapter(7)]   // minimum 5 each, 3 and 4 cities
+        XCTAssertEqual(CampaignCatalog.stageCounts(for: chapters, total: 70, base: 0), [30, 40])
+        XCTAssertEqual(CampaignCatalog.stageCounts(for: chapters, total: 12, base: 0), [5, 7])
+        XCTAssertEqual(CampaignCatalog.stageCounts(for: chapters, total: 26, base: 6), [12, 14])
+        XCTAssertEqual(CampaignCatalog.stageCounts(for: chapters, total: 10, base: 0), [5, 5])
     }
 
     func testStageIdsAreChapterAndTwoDigitIndex() {
         XCTAssertEqual(stages.first?.id, "c1-01")
-        XCTAssertEqual(stages.last?.id, "c6-06")
+        XCTAssertEqual(stages.last?.id, "c8-10")
         XCTAssertNotNil(CampaignCatalog.stage(id: "c2-05"))
         XCTAssertNil(CampaignCatalog.stage(id: "c9-01"))
         for stage in stages {
@@ -46,9 +69,20 @@ final class CampaignTests: XCTestCase {
             XCTAssertEqual(e1.startLength, 2)
             XCTAssertTrue(e1.glowDuringPlayback)
 
-            // song, battle pairs
+            // Optional practice, then song, battle pairs.
             var cursor = 3
+            let boss = Stage.Kind.boss(songId: SongLibrary.slug(for: chapter.bossSongTitle))
+            // Practice stages are battles and echoes; the echo right before the boss is E2, not practice.
+            func skipPractice() {
+                while cursor + 1 < kinds.count, kinds[cursor + 1] != boss {
+                    switch kinds[cursor] {
+                    case .battle, .echo: cursor += 1
+                    default: return
+                    }
+                }
+            }
             for title in chapter.songTitles {
+                skipPractice()
                 XCTAssertEqual(kinds[cursor], .song(songId: SongLibrary.slug(for: title)))
                 guard case .battle(let config) = kinds[cursor + 1] else { return XCTFail("a battle follows each song") }
                 XCTAssertEqual(config.questionCount, 10)
@@ -57,6 +91,7 @@ final class CampaignTests: XCTestCase {
                 cursor += 2
             }
 
+            skipPractice()
             guard case .echo(let e2) = kinds[cursor] else { return XCTFail("a second echo comes before the boss") }
             XCTAssertEqual(e2.roundsToClear, 5)
             XCTAssertEqual(e2.startLength, 3)
@@ -89,7 +124,7 @@ final class CampaignTests: XCTestCase {
     }
 
     func testChapterTimersFollowThePlan() {
-        XCTAssertEqual(CampaignCatalog.chapters.map(\.timer), [nil, 6, 5, 4.5, 4, 3.5])
+        XCTAssertEqual(CampaignCatalog.chapters.map(\.timer), [nil, 6, 5, 4.5, 4, 4, 3.5, 3.5])
     }
 
     func testEchoPoolsAddOnlyNearbyReviewNotes() {
@@ -140,7 +175,7 @@ final class CampaignTests: XCTestCase {
         }
         XCTAssertEqual(Set(used), Set(SongLibrary.all.map(\.title)))
         XCTAssertEqual(used.count, 16)
-        XCTAssertEqual(Set(CampaignCatalog.notesTaught(through: 6)), Set(1...32))
+        XCTAssertEqual(Set(CampaignCatalog.notesTaught(through: 8)), Set(1...32))
         XCTAssertEqual(CampaignCatalog.chapters.flatMap(\.newNotes).count, 32, "no note is taught twice")
     }
 
@@ -170,7 +205,7 @@ final class CampaignTests: XCTestCase {
     }
 
     func testOnlyTheTwoSolemnSongsAreInSolemnPlaces() {
-        // Mengheningkan Cipta is an ordinary song stage in chapter 5; Indonesia Raya is the finale.
+        // Mengheningkan Cipta and Gugur Bunga are ordinary song stages, never bosses; Indonesia Raya is the finale.
         let finales = stages.compactMap { stage -> String? in
             if case .finale(let id) = stage.kind { return id }
             return nil
@@ -178,13 +213,21 @@ final class CampaignTests: XCTestCase {
         XCTAssertEqual(finales, ["indonesia-raya"])
         XCTAssertTrue(SongLibrary.song(id: "indonesia-raya")!.isSolemn)
         XCTAssertTrue(SongLibrary.song(id: "mengheningkan-cipta")!.isSolemn)
+        for stage in stages {
+            if case .boss(let id) = stage.kind { XCTAssertFalse(SongLibrary.song(id: id)!.isSolemn, stage.id) }
+        }
     }
 
     func testChapterSymbolsFollowThePlan() {
         XCTAssertEqual(CampaignCatalog.chapters.map(\.symbol),
-                       ["leaf.fill", "building.columns.fill", "tree.fill", "sailboat.fill", "sun.max.fill", "mountain.2.fill"])
+                       ["leaf.fill", "building.columns.fill", "tree.fill", "sailboat.fill", "sun.max.fill",
+                        "beach.umbrella.fill", "fish.fill", "mountain.2.fill"])
         XCTAssertEqual(CampaignCatalog.chapters.map(\.name),
-                       ["Sumatra", "Jawa", "Kalimantan", "Sulawesi", "Bali & Nusa Tenggara", "Maluku & Papua"])
+                       ["Sumatra", "Jawa", "Kalimantan", "Sulawesi", "Bali", "Nusa Tenggara", "Maluku", "Papua"])
+        for chapter in CampaignCatalog.chapters {
+            XCTAssertNotNil(UIImage(named: "map_island_\(chapter.number)"), "every island has its own map picture")
+            XCTAssertNotNil(UIImage(named: "fals_boss_\(chapter.number)"), "every island has its own boss")
+        }
     }
 
     // MARK: Unlocking
@@ -214,7 +257,7 @@ final class CampaignTests: XCTestCase {
     }
 
     func testMigrationThresholds() {
-        let expected = [(0, 1), (19, 1), (20, 2), (39, 2), (40, 3), (59, 3), (60, 4), (79, 4), (80, 5), (94, 5), (95, 6), (100, 6)]
+        let expected = [(0, 1), (19, 1), (20, 2), (39, 2), (40, 3), (59, 3), (60, 4), (79, 4), (80, 5), (94, 5), (95, 7), (100, 7)]
         for (cleared, chapter) in expected {
             XCTAssertEqual(CampaignCatalog.grantedChapter(forClearedClassicLevels: cleared), chapter, "\(cleared) levels")
         }
@@ -243,12 +286,12 @@ final class CampaignTests: XCTestCase {
 
     func testCurrentStageIsTheLastStageWhenTheTourIsDone() {
         let all = Dictionary(uniqueKeysWithValues: stages.map { ($0.id, 1) })
-        XCTAssertEqual(CampaignCatalog.currentStage(grantedChapter: 1) { all[$0] ?? 0 }.id, "c6-06")
+        XCTAssertEqual(CampaignCatalog.currentStage(grantedChapter: 1) { all[$0] ?? 0 }.id, "c8-10")
     }
 
     func testPreviousStageCrossesChapters() {
         XCTAssertNil(CampaignCatalog.previousStage(of: stages[0]))
-        XCTAssertEqual(CampaignCatalog.previousStage(of: CampaignCatalog.stage(id: "c2-01")!)?.id, "c1-07")
+        XCTAssertEqual(CampaignCatalog.previousStage(of: CampaignCatalog.stage(id: "c2-01")!)?.id, "c1-17")
         XCTAssertEqual(CampaignCatalog.previousStage(of: CampaignCatalog.stage(id: "c2-02")!)?.id, "c2-01")
     }
 }

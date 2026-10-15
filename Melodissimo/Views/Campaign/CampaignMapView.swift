@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// The Nusantara Tour: six island panels side by side on an ocean. Each shows its stage nodes along
+/// The Nusantara Tour: eight island panels side by side on an ocean. Each shows its stage nodes along
 /// a dashed zig-zag path; Alpanica stands on the stage the player is up to.
 struct CampaignMapView: View {
     @EnvironmentObject private var router: AppRouter
@@ -103,7 +103,7 @@ struct CampaignMapView: View {
         }
     }
 
-    /// The six island panels side by side, scrolled to the one the player is up to.
+    /// The eight island panels side by side, scrolled to the one the player is up to.
     private func islands(panelWidth: CGFloat, sidePadding: CGFloat) -> some View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {

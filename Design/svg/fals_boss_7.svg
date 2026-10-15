@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 420" width="420" height="420">
+<g transform="scale(1.4)">
+ 
+ <g id="stem"><rect x="196" y="40" width="12" height="130" rx="6" fill="#1f6a66"/>
+  <path d="M208 42 Q250 52 246 92 Q232 70 208 74Z" fill="#1f6a66"/></g>
+ <g id="body"><path d="M60 170 Q52 100 120 92 Q196 84 212 150 Q228 222 150 236 Q70 248 60 170Z" fill="#3fb8b0"/>
+  <path d="M84 150 Q90 110 128 106 Q100 120 96 152Z" fill="#8ee0da"/></g>
+ <ellipse cx="115" cy="160" rx="16" ry="19" fill="#fff"/><circle cx="119" cy="163" r="9" fill="#2d2440"/><circle cx="122" cy="159" r="3" fill="#fff"/>
+ <ellipse cx="170" cy="155" rx="13" ry="15" fill="#fff"/><circle cx="167" cy="158" r="7" fill="#2d2440"/><circle cx="169" cy="155" r="2.5" fill="#fff"/>
+ <path d="M98 132 L132 142" stroke="#2d2440" stroke-width="7" stroke-linecap="round"/><path d="M188 138 L158 146" stroke="#2d2440" stroke-width="7" stroke-linecap="round"/><path d="M120 200 Q145 186 170 200" fill="none" stroke="#2d2440" stroke-width="6" stroke-linecap="round"/><path d="M132 196 l4 8 l4 -9 M150 194 l4 9 l4 -8" fill="#fff" stroke="#2d2440" stroke-width="2"/>
+ <ellipse cx="98" cy="190" rx="11" ry="7" fill="#ffb3d1" opacity=".8"/><ellipse cx="185" cy="184" rx="10" ry="6" fill="#ffb3d1" opacity=".8"/>
+ <g id="feet" fill="#1f6a66"><ellipse cx="110" cy="240" rx="20" ry="10"/><ellipse cx="170" cy="238" rx="20" ry="10"/></g>
+ <g id="sour-notes" fill="none" stroke="#ff6b8b" stroke-width="4" stroke-linecap="round">
+  <path d="M250 120 l10 -6 l-4 12 l10 -4"/><path d="M30 100 l8 8 l-10 2 l8 8"/></g>
+ <path d="M92 104 L96 64 L112 90 L126 56 L140 88 L154 56 L168 90 L184 64 L186 104 Q140 92 92 104Z" fill="#8a4a2a" stroke="#5a2e18" stroke-width="3" stroke-linejoin="round"/><g fill="#ffd34d"><circle cx="96" cy="62" r="6"/><circle cx="126" cy="54" r="6"/><circle cx="154" cy="54" r="6"/><circle cx="184" cy="62" r="6"/></g><g transform="translate(236 212)"><circle r="20" fill="#b07a3a"/><path d="M-14 -12 Q0 -30 14 -12 M-18 2 Q0 -18 18 2" fill="none" stroke="#e8343a" stroke-width="5" stroke-linecap="round"/></g><path d="M52 212 l6 -16 l6 16 l16 2 l-12 10 l4 16 l-14 -8 l-14 8 l4 -16 l-12 -10Z" fill="#ff8a5b" stroke="#c9563a" stroke-width="2" stroke-linejoin="round"/>
+</g>
+</svg>

@@ -217,7 +217,7 @@ final class SettingsStoreTests: XCTestCase {
         progress.recordStageStars("c1-01", stars: 3)
         defaults.set(95, forKey: "currentLevel")
         progress.runMigrationIfNeeded()
-        XCTAssertEqual(progress.grantedChapter, 6)
+        XCTAssertEqual(progress.grantedChapter, 7)
 
         progress.resetProgress()
 

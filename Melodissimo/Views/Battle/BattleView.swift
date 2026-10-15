@@ -28,8 +28,8 @@ struct BattleView: View {
 
     init(request: PlayRequest, config: BattleConfig) {
         self.request = request
-        // A stage always shows the same monster: minions 1–3 and bosses 1–6 are picked from the seed.
-        self.monsterKind = Int(config.seed % (config.isBoss ? 6 : 3)) + 1
+        // A stage always shows the same monster: minions 1–3 and bosses 1–8 are picked from the seed.
+        self.monsterKind = Int(config.seed % UInt64(config.isBoss ? CampaignCatalog.chapters.count : 3)) + 1
         _viewModel = StateObject(wrappedValue: BattleViewModel(config: config))
     }
 

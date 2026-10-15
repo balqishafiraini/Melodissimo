@@ -43,13 +43,13 @@ final class BossHealthTests: XCTestCase {
 
 final class StoryCardTests: XCTestCase {
 
-    func testThereAreThirteenCardsWithUniqueIds() {
-        XCTAssertEqual(StoryCatalog.cards.count, 13)
-        XCTAssertEqual(Set(StoryCatalog.cards.map(\.id)).count, 13)
+    func testThereAreSeventeenCardsWithUniqueIds() {
+        XCTAssertEqual(StoryCatalog.cards.count, 17)
+        XCTAssertEqual(Set(StoryCatalog.cards.map(\.id)).count, 17)
     }
 
     func testEveryChapterHasAnIntroAndABossCard() {
-        for chapter in 1...6 {
+        for chapter in 1...8 {
             XCTAssertEqual(StoryCatalog.cards.filter { $0.chapter == chapter && $0.kind == .chapterIntro }.count, 1, "intro \(chapter)")
             XCTAssertEqual(StoryCatalog.cards.filter { $0.chapter == chapter && $0.kind == .bossDefeated }.count, 1, "boss \(chapter)")
         }
@@ -114,13 +114,13 @@ final class StoryCardTests: XCTestCase {
     }
 
     func testTheLastBossShowsItsCardThenTheFinaleCard() {
-        let beaten = [bossId(6): 2]
-        XCTAssertEqual(pending(chapter: 6, stars: beaten, seen: ["intro_6"]), ["boss_6", "finale"])
+        let beaten = [bossId(8): 2]
+        XCTAssertEqual(pending(chapter: 8, stars: beaten, seen: ["intro_8"]), ["boss_8", "finale"])
     }
 
     func testTheCertificateWaitsForAStarOnTheFinale() {
         let finale = StoryCatalog.finaleStage()!
-        XCTAssertEqual(finale.chapter, 6)
+        XCTAssertEqual(finale.chapter, 8)
         XCTAssertFalse(StoryCatalog.shouldShowCertificate(stars: { _ in 0 }, seen: { _ in false }))
         XCTAssertTrue(StoryCatalog.shouldShowCertificate(stars: { $0 == finale.id ? 1 : 0 }, seen: { _ in false }))
         XCTAssertFalse(StoryCatalog.shouldShowCertificate(stars: { $0 == finale.id ? 3 : 0 },

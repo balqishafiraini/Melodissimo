@@ -11,7 +11,7 @@ import SwiftUI
 struct BossBadgeView<Hit: Equatable>: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    /// 1–6, the island the boss belongs to.
+    /// 1–8, the island the boss belongs to.
     var kind: Int
     /// 0...1, or `nil` to show the boss without a bar (Listen and Practice).
     var health: Double?

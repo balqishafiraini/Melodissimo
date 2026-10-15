@@ -65,12 +65,25 @@ BOSSES = {
     # 4 Sulawesi — boat-sail hat (pinisi)
     "fals_boss_4": ("#5aa0e0", "#2a5a8a", "#9cc8f2", '<path d="M110 100 L140 20 L140 98Z" fill="#fff6d6" stroke="#c9b27a" stroke-width="3"/>'
                     '<path d="M146 98 L146 34 L186 96Z" fill="#fff6d6" stroke="#c9b27a" stroke-width="3"/><path d="M96 100 Q140 116 196 100 L188 112 Q140 124 104 112Z" fill="#8a5a2a"/>'),
-    # 5 Bali & Nusa Tenggara — sunglasses + hibiscus
+    # 5 Bali — sunglasses + hibiscus
     "fals_boss_5": ("#f06aa0", "#8a2a55", "#f7a8c8", crown() +
                     '<g><rect x="94" y="146" width="42" height="28" rx="12" fill="#2d2440"/><rect x="152" y="140" width="38" height="28" rx="12" fill="#2d2440"/><path d="M136 158 L152 154" stroke="#2d2440" stroke-width="5"/></g>'
                     '<g transform="translate(66 120)"><circle r="10" fill="#ff4d4d" cx="0" cy="-12"/><circle r="10" fill="#ff4d4d" cx="12" cy="0"/><circle r="10" fill="#ff4d4d" cx="0" cy="12"/><circle r="10" fill="#ff4d4d" cx="-12" cy="0"/><circle r="6" fill="#ffd34d"/></g>'),
-    # 6 Maluku & Papua — bird-of-paradise plume
-    "fals_boss_6": ("#7a5ad8", "#3a2a78", "#b597ee", crown(),),
+    # 6 Nusa Tenggara — komodo spikes and an ikat headband
+    "fals_boss_6": ("#9aa84a", "#55602a", "#c9d48a",
+                    '<g fill="#55602a"><path d="M62 150 l-22 -12 l16 26Z"/><path d="M66 124 l-20 -22 l6 32Z"/><path d="M82 102 l-12 -28 l22 22Z"/></g>'
+                    '<path d="M86 116 Q150 96 214 124 L210 142 Q150 116 90 134Z" fill="#7a2e2e"/>'
+                    '<g fill="none" stroke="#ffd34d" stroke-width="3"><path d="M100 126 l8 -8 l8 8 l-8 8Z"/><path d="M132 118 l8 -8 l8 8 l-8 8Z"/>'
+                    '<path d="M164 118 l8 -8 l8 8 l-8 8Z"/><path d="M194 126 l8 -8 l8 8 l-8 8Z"/></g>'
+                    '<path d="M150 214 q8 14 2 24 M158 214 q14 8 14 20" fill="none" stroke="#ff4d4d" stroke-width="4" stroke-linecap="round"/>'),
+    # 7 Maluku — clove crown, nutmeg and a starfish
+    "fals_boss_7": ("#3fb8b0", "#1f6a66", "#8ee0da",
+                    '<path d="M92 104 L96 64 L112 90 L126 56 L140 88 L154 56 L168 90 L184 64 L186 104 Q140 92 92 104Z" fill="#8a4a2a" stroke="#5a2e18" stroke-width="3" stroke-linejoin="round"/>'
+                    '<g fill="#ffd34d"><circle cx="96" cy="62" r="6"/><circle cx="126" cy="54" r="6"/><circle cx="154" cy="54" r="6"/><circle cx="184" cy="62" r="6"/></g>'
+                    '<g transform="translate(236 212)"><circle r="20" fill="#b07a3a"/><path d="M-14 -12 Q0 -30 14 -12 M-18 2 Q0 -18 18 2" fill="none" stroke="#e8343a" stroke-width="5" stroke-linecap="round"/></g>'
+                    '<path d="M52 212 l6 -16 l6 16 l16 2 l-12 10 l4 16 l-14 -8 l-14 8 l4 -16 l-12 -10Z" fill="#ff8a5b" stroke="#c9563a" stroke-width="2" stroke-linejoin="round"/>'),
+    # 8 Papua — bird-of-paradise plume
+    "fals_boss_8": ("#7a5ad8", "#3a2a78", "#b597ee", crown(),),
 }
 PLUME = ('<g id="plume"><path d="M200 200 Q290 170 286 90 Q262 150 210 180Z" fill="#ffb347"/>'
          '<path d="M206 214 Q296 214 296 140 Q270 190 212 200Z" fill="#ff6b8b"/>'
@@ -341,10 +354,18 @@ ISLAND_SHAPES = {  # stylised silhouettes on a 1000x600 card
     2: "M80 300 Q260 250 520 280 Q760 300 930 330 Q760 380 520 360 Q280 350 80 300Z",                       # Jawa: long horizontal
     3: "M300 110 Q560 70 720 200 Q780 360 620 480 Q420 540 290 420 Q190 300 300 110Z",                       # Kalimantan: big round
     4: "M380 110 Q470 140 440 260 L620 180 Q520 300 470 320 L620 450 Q500 440 440 380 L420 520 Q360 400 390 300 L260 360 Q340 280 380 110Z",  # Sulawesi: K shape
-    5: "M120 300 Q200 260 260 300 Q200 340 120 300Z M340 310 Q420 280 500 320 Q420 350 340 310Z M560 330 Q660 300 760 340 Q660 370 560 330Z M800 340 Q860 320 900 350 Q850 370 800 340Z",  # Bali & NT chain
-    6: "M90 260 Q180 230 220 280 Q170 320 90 260Z M260 200 Q330 180 360 240 Q300 270 260 200Z M440 260 Q620 170 820 230 Q930 280 900 380 Q760 430 620 380 Q500 340 440 260Z",  # Maluku + Papua
+    5: "M150 250 Q300 170 520 190 Q760 200 860 300 Q800 420 600 440 Q400 460 280 400 Q200 360 210 320 Q140 300 150 250Z "
+       "M760 470 Q820 450 860 480 Q820 510 760 470Z",                                                        # Bali (and Nusa Penida)
+    6: "M70 250 Q130 220 180 260 Q130 300 70 250Z M220 250 Q330 210 420 260 Q330 300 220 250Z "
+       "M470 270 Q640 230 800 270 Q640 320 470 270Z M300 400 Q400 370 480 410 Q400 440 300 400Z "
+       "M640 430 Q790 380 920 420 Q800 480 640 430Z",                                                       # Nusa Tenggara chain
+    7: "M300 110 Q360 90 380 160 Q350 230 400 290 Q340 280 320 220 Q300 170 260 160 Q260 130 300 110Z "
+       "M120 360 Q190 320 250 370 Q190 420 120 360Z M380 400 Q560 350 760 390 Q560 450 380 400Z "
+       "M600 230 Q640 215 660 240 Q630 260 600 230Z M820 300 Q860 285 880 310 Q850 330 820 300Z",            # Maluku islands
+    8: "M70 240 Q140 150 260 190 Q300 230 260 280 Q330 250 420 270 Q620 230 820 280 Q940 330 920 460 "
+       "Q760 520 560 470 Q420 430 330 380 Q240 330 160 330 Q60 310 70 240Z",                                # Papua: the bird
 }
-ISLAND_TINT = {1: "#7cc47a", 2: "#9ccf6a", 3: "#5fae6a", 4: "#86c98a", 5: "#b8d870", 6: "#6dba84"}
+ISLAND_TINT = {1: "#7cc47a", 2: "#9ccf6a", 3: "#5fae6a", 4: "#86c98a", 5: "#b8d870", 6: "#c9cf74", 7: "#79c79a", 8: "#6dba84"}
 
 
 def palm(x, y, s=1.0):
@@ -360,9 +381,22 @@ LANDMARK = {  # simple, non-sacred motifs
                for x, y in [(420, 260), (520, 220), (600, 320), (480, 380)]),
     4: '<g transform="translate(520 470)"><path d="M-80 0 Q0 40 80 0 L60 24 Q0 44 -60 24Z" fill="#8a5a2a"/>'
        '<path d="M-10 -4 V-110 L-70 -6Z" fill="#fff6d6"/><path d="M0 -4 V-120 L60 -6Z" fill="#fff6d6"/></g>',
-    5: '<circle cx="840" cy="120" r="54" fill="#ffd34d"/>' + palm(220, 300, .6) + palm(660, 330, .6),
-    6: '<path d="M600 330 L680 200 L760 330Z" fill="#7a8a9a"/><path d="M660 232 L680 200 L700 232 Q680 222 660 232Z" fill="#fff"/>'
-       '<g transform="translate(300 160) scale(.9)"><path d="M0 0 Q30 -30 60 0 Q30 10 0 0Z" fill="#ff6b8b"/><path d="M60 0 Q110 20 130 70 Q90 40 60 10Z" fill="#ffb347"/></g>',
+    5: '<circle cx="860" cy="110" r="54" fill="#ffd34d"/>'  # sun over rice terraces
+       + ''.join(f'<path d="M{430 - 20 * i} {250 + 26 * i} Q{520} {236 + 26 * i} {610 + 20 * i} {250 + 26 * i}" fill="none" stroke="#5fa84a" stroke-width="8" stroke-linecap="round"/>'
+                 for i in range(4))
+       + palm(250, 330, .6) + palm(760, 330, .6),
+    6: '<g transform="translate(560 262) scale(.9)" fill="#7b8a5a">'  # a komodo on Flores
+       '<path d="M-90 0 Q-40 -26 30 -18 Q60 -20 80 -8 Q60 4 30 2 Q-20 8 -90 0Z"/>'
+       '<path d="M-40 -6 l-12 22 M10 -6 l12 22 M-30 -12 l-16 -14 M20 -14 l14 -16" stroke="#7b8a5a" stroke-width="8" stroke-linecap="round"/>'
+       '<circle cx="66" cy="-12" r="3" fill="#fff"/></g>'
+       + '<circle cx="860" cy="110" r="44" fill="#ffd34d"/>' + palm(330, 250, .5),
+    7: '<g transform="translate(560 380)">'  # nutmeg with its red mace, and a spice-trade sailboat
+       '<circle r="30" fill="#b07a3a"/><path d="M-20 -18 Q0 -40 20 -18 M-26 0 Q0 -26 26 0" fill="none" stroke="#e8343a" stroke-width="6" stroke-linecap="round"/></g>'
+       '<g transform="translate(720 200)"><path d="M-50 0 Q0 26 50 0 L36 18 Q0 32 -36 18Z" fill="#8a5a2a"/>'
+       '<path d="M-4 -2 V-80 L-44 -4Z" fill="#fff6d6"/><path d="M4 -2 V-86 L42 -4Z" fill="#fff6d6"/></g>'
+       + palm(170, 360, .5),
+    8: '<path d="M600 430 L700 260 L800 430Z" fill="#7a8a9a"/><path d="M676 300 L700 260 L724 300 Q700 288 676 300Z" fill="#fff"/>'  # snowy peak
+       '<g transform="translate(380 230) scale(.9)"><path d="M0 0 Q30 -30 60 0 Q30 10 0 0Z" fill="#ff6b8b"/><path d="M60 0 Q110 20 130 70 Q90 40 60 10Z" fill="#ffb347"/></g>',  # bird of paradise
 }
 
 
@@ -410,7 +444,7 @@ def assets():
         out[name] = fals(b, d, l, accessory=acc)
     for name, spec in BOSSES.items():
         b, d, l, acc = spec
-        out[name] = fals(b, d, l, size=420, boss=True, accessory=acc, back=PLUME if name == "fals_boss_6" else "")
+        out[name] = fals(b, d, l, size=420, boss=True, accessory=acc, back=PLUME if name == "fals_boss_8" else "")
     out["alpanica_attack"] = alpanica_variant(ATTACK, drop_eyes=False, drop_mouth=True)
     out["alpanica_happy"] = alpanica_variant(HAPPY, drop_eyes=True, drop_mouth=True)
     out["alpanica_blink"] = alpanica_variant(BLINK, drop_eyes=True)
@@ -425,7 +459,7 @@ def assets():
         out[f"alpanica_outfit_{name}"] = alpanica_variant(layers)  # the shop and certificate picture
         out[f"alpanica_acc_{name}"] = overlay(layers)              # laid over any pose in the game
     out.update(ICONS)
-    for n in range(1, 7):
+    for n in range(1, 9):
         out[f"map_island_{n}"] = island(n)
     out["map_ocean"] = ocean_tile()
     out["stage_bg_concert"] = bg_concert()

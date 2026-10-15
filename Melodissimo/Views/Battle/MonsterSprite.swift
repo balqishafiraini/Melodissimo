@@ -11,7 +11,7 @@ import SwiftUI
 struct MonsterSprite<Hit: Equatable, Lunge: Equatable>: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    /// 1–3 for minions, 1–6 for the island bosses.
+    /// 1–3 for minions, 1–8 for the island bosses.
     var kind: Int
     var isBoss: Bool
     /// Remaining health and the maximum; `nil` hides the bar (endless Melody Rush).

@@ -41,13 +41,28 @@ final class MapLayoutTests: XCTestCase {
     }
 
     func testEveryChapterHasEnoughRoomForItsNodes() {
-        // The widest chapters have 11 stages; neighbours must stay at least 8 % of the panel apart horizontally.
+        // The biggest islands have 17 stages; neighbours on the path must stay at least 8 % of the panel apart,
+        // every node stays inside the panel and below the island's name.
         for chapter in CampaignCatalog.chapters {
             let count = CampaignCatalog.stages(inChapter: chapter.number).count
             let points = MapLayout.nodeFractions(count: count)
-            let gaps = zip(points, points.dropFirst()).map { $1.x - $0.x }
+            let gaps = zip(points, points.dropFirst()).map { hypot($1.x - $0.x, $1.y - $0.y) }
             XCTAssertGreaterThanOrEqual(gaps.min() ?? 1, 0.08, "chapter \(chapter.number)")
+            for point in points {
+                XCTAssertTrue((0.05...0.95).contains(point.x) && (0.4...0.92).contains(point.y), "chapter \(chapter.number)")
+            }
+            XCTAssertEqual(Set(points.map { "\($0.x),\($0.y)" }).count, count, "no two nodes overlap")
         }
+    }
+
+    func testABigIslandWindsBackAndForthInRows() {
+        let points = MapLayout.nodeFractions(count: 17)
+        XCTAssertEqual(points.count, 17)
+        // 2 rows of 9 and 8: the second row runs right to left.
+        XCTAssertLessThan(points[0].x, points[8].x)
+        XCTAssertEqual(points[8].x, points[9].x, accuracy: 1e-9)
+        XCTAssertGreaterThan(points[9].x, points[16].x)
+        XCTAssertGreaterThan(points[9].y, points[8].y)
     }
 }
 

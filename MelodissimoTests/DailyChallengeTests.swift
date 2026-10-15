@@ -66,12 +66,12 @@ final class DailyChallengeTests: XCTestCase {
     func testThePoolIsEverythingTaughtUpToTheChapter() {
         XCTAssertEqual(challenge(2026, 1, 1, chapter: 1).pool, CampaignCatalog.notesTaught(through: 1))
         XCTAssertEqual(challenge(2026, 1, 1, chapter: 4).pool, CampaignCatalog.notesTaught(through: 4))
-        XCTAssertEqual(challenge(2026, 1, 1, chapter: 6).pool.count, 32)
+        XCTAssertEqual(challenge(2026, 1, 1, chapter: 8).pool.count, 32)
     }
 
     func testTheChapterIsKeptInsideTheTour() {
         XCTAssertEqual(challenge(2026, 1, 1, chapter: 0).pool, CampaignCatalog.notesTaught(through: 1))
-        XCTAssertEqual(challenge(2026, 1, 1, chapter: 99).pool, CampaignCatalog.notesTaught(through: 6))
+        XCTAssertEqual(challenge(2026, 1, 1, chapter: 99).pool, CampaignCatalog.notesTaught(through: 8))
     }
 
     // MARK: What gets played
@@ -95,7 +95,7 @@ final class DailyChallengeTests: XCTestCase {
     }
 
     func testTheSongSprintPerformsTheFirstThirtyTwoNotesAtNormalSpeed() throws {
-        let day = challenge(2026, 1, 2, chapter: 6)
+        let day = challenge(2026, 1, 2, chapter: 8)
         guard case .song(let songId, let mode, let speed, let isBoss, let isSolemn, let noteLimit)? = day.playKind else {
             return XCTFail("expected a song")
         }
@@ -133,7 +133,7 @@ final class DailyChallengeTests: XCTestCase {
     }
 
     func testTheSprintSongVariesAcrossDays() {
-        let songs = Set((0..<12).compactMap { challenge(2026, 1, 2 + 3 * $0, chapter: 6).songId })
+        let songs = Set((0..<12).compactMap { challenge(2026, 1, 2 + 3 * $0, chapter: 8).songId })
         XCTAssertGreaterThan(songs.count, 3)
     }
 

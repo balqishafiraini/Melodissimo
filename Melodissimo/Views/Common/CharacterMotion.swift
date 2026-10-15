@@ -490,7 +490,7 @@ private struct MoodParticles: View {
 }
 
 /// A Fals monster that wobbles and flashes, with a damage number, when `hitTrigger` changes.
-/// `kind` is 1–3 for minions; set `isBoss` for the island bosses (1–6).
+/// `kind` is 1–3 for minions; set `isBoss` for the island bosses (1–8).
 struct FalsView<T: Equatable>: View {
     var kind: Int = 1
     var isBoss = false

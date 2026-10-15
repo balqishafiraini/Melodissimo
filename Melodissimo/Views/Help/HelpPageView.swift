@@ -13,7 +13,7 @@ struct HelpPageView: View {
     /// One section per mode, then the common questions. Every string is an English key in `Localizable.strings`.
     var sections = [
         ExpandableSectionData(title: NSLocalizedString("How to play the Nusantara Tour?", comment: ""), items: [
-            .text(NSLocalizedString("- Tap Start (or Continue) on Home. The map shows six islands, from Sumatra to Maluku and Papua.", comment: "")),
+            .text(NSLocalizedString("- Tap Start (or Continue) on Home. The map shows eight islands, from Sumatra to Papua.", comment: "")),
             .text(NSLocalizedString("- Tap a stage to play it. Earn at least 1 star to open the next stage.", comment: "")),
             .text(NSLocalizedString("- Each island ends with a boss song. Beat it to sail on to the next island.", comment: "")),
             .text(NSLocalizedString("- Finish the last stage, Indonesia Raya, to complete the tour and get your certificate.", comment: ""))
