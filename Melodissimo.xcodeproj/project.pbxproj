@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FAB6CE782AFC171C00C145AD /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = FAB6CE772AFC171C00C145AD /* ConfettiSwiftUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,7 +52,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAB6CE782AFC171C00C145AD /* ConfettiSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,7 +119,6 @@
 			);
 			name = Melodissimo;
 			packageProductDependencies = (
-				FAB6CE772AFC171C00C145AD /* ConfettiSwiftUI */,
 			);
 			productName = Melodissimo;
 			productReference = FAD89D022AC86E280019A99D /* Melodissimo.app */;
@@ -157,7 +154,6 @@
 			);
 			mainGroup = FAD89CF92AC86E280019A99D;
 			packageReferences = (
-				FAB6CE762AFC171B00C145AD /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
 			);
 			productRefGroup = FAD89D032AC86E280019A99D /* Products */;
 			projectDirPath = "";
@@ -469,25 +465,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		FAB6CE762AFC171B00C145AD /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		FAB6CE772AFC171C00C145AD /* ConfettiSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = FAB6CE762AFC171B00C145AD /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
-			productName = ConfettiSwiftUI;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FAD89CFA2AC86E280019A99D /* Project object */;
 }

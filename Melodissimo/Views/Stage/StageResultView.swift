@@ -4,7 +4,6 @@
 //
 
 import SwiftUI
-import ConfettiSwiftUI
 
 /// The results of a Perform run: stars popping in one by one, score, accuracy, combo and the
 /// Perfect / Great / Good / Miss / Wrong breakdown, plus "New best!" and FULL COMBO badges.
@@ -104,7 +103,7 @@ struct StageResultView: View {
             }
             .padding(10)
         }
-        .confettiCannon(counter: $confettiCounter, num: 30, confettiSize: 16, radius: 500, repetitions: 3)
+        .confettiBurst(trigger: confettiCounter)
         .onAppear(perform: popInStars)
     }
 
@@ -218,7 +217,7 @@ struct StageResultView: View {
             }
             .padding(32)
         }
-        .confettiCannon(counter: $confettiCounter, num: 30, confettiSize: 16, radius: 500, repetitions: 3)
+        .confettiBurst(trigger: confettiCounter)
         .onAppear(perform: popInStars)
     }
 
