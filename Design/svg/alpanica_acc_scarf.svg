@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 443.592 612.558" width="443.592" height="612.558">
+<g id="scarf">
+ <path d="M18 214 Q100 244 186 210 L190 246 Q100 282 16 250Z" fill="#c23b4e" stroke="#7a1f2c" stroke-width="4" stroke-linejoin="round"/>
+ <path d="M140 236 L176 330 L150 336 L124 246Z" fill="#c23b4e" stroke="#7a1f2c" stroke-width="4" stroke-linejoin="round"/>
+ <path d="M150 336 l2 12 M158 334 l4 12 M166 332 l5 11 M174 330 l6 10" stroke="#ffd34d" stroke-width="3" stroke-linecap="round"/>
+ <path d="M24 232 l14 6 l-6 10 l14 4 l-4 10 M60 242 l14 4 l-4 10 l14 2 M98 248 l14 2 l-2 10 l14 0 M138 244 l12 -2 l0 10 l12 -4" fill="none" stroke="#ffd34d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+ <g fill="#fff6d6"><circle cx="146" cy="270" r="4"/><circle cx="156" cy="296" r="4"/><circle cx="164" cy="318" r="3.5"/></g>
+</g>
+</svg>

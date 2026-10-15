@@ -32,7 +32,7 @@ struct ShopItem: Identifiable, Hashable {
     }
 }
 
-/// The shop's stock, following the game plan (§2.4): about 2,000 coins of cosmetics in all.
+/// The shop's stock, following the game plan (§2.4), plus Alpanica's later outfits.
 enum ShopCatalog {
 
     static let items: [ShopItem] = [
@@ -48,8 +48,15 @@ enum ShopCatalog {
         ShopItem(id: "notes_neon", category: .notes, name: "Neon", price: 250),
         // Alpanica's outfits.
         ShopItem(id: "outfit_none", category: .outfit, name: "Default", price: 0),
+        ShopItem(id: "outfit_bow", category: .outfit, name: "Pita", price: 100),
         ShopItem(id: "outfit_glasses", category: .outfit, name: "Kacamata", price: 150),
+        ShopItem(id: "outfit_headphones", category: .outfit, name: "Headphone", price: 200),
+        ShopItem(id: "outfit_sunglasses", category: .outfit, name: "Kacamata Hitam", price: 200),
+        ShopItem(id: "outfit_scarf", category: .outfit, name: "Syal Batik", price: 250),
+        ShopItem(id: "outfit_flowers", category: .outfit, name: "Mahkota Bunga", price: 250),
         ShopItem(id: "outfit_crown", category: .outfit, name: "Mahkota", price: 300),
+        ShopItem(id: "outfit_blangkon", category: .outfit, name: "Blangkon", price: 350),
+        ShopItem(id: "outfit_conductor", category: .outfit, name: "Dirigen", price: 400),
         ShopItem(id: "outfit_royal", category: .outfit, name: "Raja Gaya", price: 500)
     ]
 

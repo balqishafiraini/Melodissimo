@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 443.592 612.558" width="443.592" height="612.558">
+<g id="blangkon">
+ <path d="M26 96 Q18 8 112 4 Q206 8 198 96 Q112 78 26 96Z" fill="#6b3e1f" stroke="#3e2210" stroke-width="4" stroke-linejoin="round"/>
+ <g fill="none" stroke="#d9a441" stroke-width="5" stroke-linecap="round" opacity=".9">
+  <path d="M40 70 L70 26"/><path d="M66 78 L104 14"/><path d="M100 76 L140 12"/><path d="M136 78 L170 24"/><path d="M168 82 L190 50"/></g>
+ <g fill="#f2d48a"><circle cx="58" cy="52" r="4"/><circle cx="88" cy="42" r="4"/><circle cx="122" cy="40" r="4"/><circle cx="154" cy="50" r="4"/><circle cx="104" cy="66" r="3"/><circle cx="140" cy="66" r="3"/></g>
+ <path d="M24 96 Q112 74 200 96 L200 106 Q112 86 24 106Z" fill="#3e2210"/>
+ <path d="M14 74 Q2 92 16 104 Q28 94 26 78Z" fill="#6b3e1f" stroke="#3e2210" stroke-width="3"/>
+</g>
+</svg>

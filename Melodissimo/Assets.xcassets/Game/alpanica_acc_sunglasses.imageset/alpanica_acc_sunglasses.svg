@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 443.592 612.558" width="443.592" height="612.558">
+<g id="sunglasses">
+ <path d="M42 88 H98 Q100 122 82 130 H58 Q40 126 42 88Z" fill="#2d2440"/>
+ <path d="M107 88 H163 Q165 122 147 130 H123 Q105 126 107 88Z" fill="#2d2440"/>
+ <path d="M98 94 Q102 88 107 94" fill="none" stroke="#2d2440" stroke-width="6"/>
+ <path d="M42 90 L28 84 M163 90 L182 84" stroke="#2d2440" stroke-width="5" stroke-linecap="round"/>
+ <g stroke="#fff" stroke-opacity=".7" stroke-width="5" stroke-linecap="round"><path d="M54 98 L66 110"/><path d="M119 98 L131 110"/></g>
+ <g fill="#ffd34d"><path d="M84 96 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2Z"/></g>
+</g>
+</svg>

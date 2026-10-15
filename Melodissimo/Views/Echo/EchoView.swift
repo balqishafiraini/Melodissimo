@@ -141,7 +141,7 @@ struct EchoView: View {
     private var statusPanel: some View {
         GeometryReader { geo in
             HStack(alignment: .center, spacing: Sizing.s(32)) {
-                AlpanicaView(mood: mood, hopTrigger: viewModel.roundsCleared, height: min(240, geo.size.height * 0.9))
+                AlpanicaView(mood: alpanicaMood, outfit: .equipped, hopTrigger: viewModel.roundsCleared, height: min(240, geo.size.height * 0.9))
                     .frame(maxWidth: .infinity)
 
                 VStack(spacing: Sizing.s(14)) {
@@ -159,6 +159,12 @@ struct EchoView: View {
             .padding(.horizontal, Sizing.s(24))
             .frame(width: geo.size.width, height: geo.size.height)
         }
+    }
+
+    /// She listens hard while the phrase plays; reactions to the player's keys take over.
+    private var alpanicaMood: AlpanicaMood {
+        if mood == .idle, case .listening = viewModel.phase { return .think }
+        return mood
     }
 
     private var statusText: LocalizedStringKey {

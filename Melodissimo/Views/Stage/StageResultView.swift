@@ -70,6 +70,12 @@ struct StageResultView: View {
         isSong && result.accuracy != nil && result.miss == 0 && result.wrong == 0
     }
 
+    /// Hearts in her eyes for a perfect run, happy for any stars, sad for none.
+    private var alpanicaMood: AlpanicaMood {
+        if result.stars >= 3 { return .love }
+        return result.stars > 0 ? .happy : .sad
+    }
+
     var body: some View {
         if Sizing.isPhone { phoneBody } else { ipadBody }
     }
@@ -91,8 +97,7 @@ struct StageResultView: View {
 
             HStack(spacing: 10) {
                 // She hops each time a star lands.
-                AlpanicaView(mood: result.stars > 0 ? .happy : .sad, outfit: .equipped, hopTrigger: shownStars, height: 170,
-                             keepsOutfit: true)
+                AlpanicaView(mood: alpanicaMood, outfit: .equipped, hopTrigger: shownStars, height: 170)
                     .frame(width: 130)
 
                 ViewThatFits(in: .vertical) {
@@ -166,8 +171,7 @@ struct StageResultView: View {
 
             HStack(spacing: 32) {
                 // She hops each time a star lands.
-                AlpanicaView(mood: result.stars > 0 ? .happy : .sad, outfit: .equipped, hopTrigger: shownStars, height: 380,
-                             keepsOutfit: true)
+                AlpanicaView(mood: alpanicaMood, outfit: .equipped, hopTrigger: shownStars, height: 380)
                     .frame(maxWidth: .infinity)
 
                 VStack(spacing: 18) {

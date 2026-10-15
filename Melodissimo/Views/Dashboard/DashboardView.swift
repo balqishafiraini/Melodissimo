@@ -191,7 +191,7 @@ struct DashboardView: View {
             router.push(.campaignMap)
         } label: {
             HStack(spacing: Sizing.s(30)) {
-                AlpanicaView(mood: .idle, outfit: .equipped, hopTrigger: 0, height: Sizing.s(210))
+                AlpanicaView(mood: .idle, outfit: .equipped, hopTrigger: 0, height: Sizing.s(210), fidgets: true)
                     .frame(width: Sizing.s(230))
 
                 VStack(alignment: .leading, spacing: Sizing.isPhone ? 2 : 10) {

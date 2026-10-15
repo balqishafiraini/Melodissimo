@@ -26,7 +26,7 @@ struct StoryCardView: View {
 
             VStack(spacing: Sizing.s(24)) {
                 HStack(alignment: .center, spacing: Sizing.s(28)) {
-                    AlpanicaView(mood: alpanicaMood, outfit: .equipped, hopTrigger: hop, height: Sizing.isPhone ? 96 : 200, keepsOutfit: true)
+                    AlpanicaView(mood: alpanicaMood, outfit: .equipped, hopTrigger: hop, height: Sizing.isPhone ? 96 : 200)
                         .frame(width: Sizing.isPhone ? 70 : 200)
 
                     // The words come first: on iPhone they get at least half of the card, and scroll if there are too many.

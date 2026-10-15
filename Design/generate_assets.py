@@ -5,7 +5,7 @@ Run:  python3 Design/generate_assets.py
 Writes Design/svg/*.svg and installs each one as a vector imageset in
 Melodissimo/Assets.xcassets/Game/. Re-run after tweaking; it overwrites only its own files.
 """
-import json, os, re
+import json, math, os, re
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "svg")
@@ -85,12 +85,14 @@ MINIONS = {
 
 # ---------------------------------------------------------------- Alpanica
 
-def alpanica_variant(extra, *, drop_eyes=False, drop_mouth=False):
+def alpanica_variant(extra, *, drop_eyes=False, drop_mouth=False, drop_smile=False):
     src = open(ALPANICA).read()
     if drop_eyes:
         src = re.sub(r'<path [^>]*layerName="Oval 1[45]"[^>]*/>', '', src)
     if drop_mouth:
         src = re.sub(r'<path [^>]*fill="#6b665d"[^>]*/>', '', src)
+    if drop_smile:  # just the line mouth; the nose stays
+        src = re.sub(r'<path [^>]*stroke="#6b665d"[^>]*/>', '', src)
     return src.replace('</svg>', extra + '\n</svg>')
 
 
@@ -113,6 +115,199 @@ GLASSES = '''<g id="glasses" fill="#bfe6ff" fill-opacity=".35" stroke="#2d2440" 
  <path d="M94 104 Q102 96 111 104" fill="none"/></g>'''
 CROWN = '''<g id="crown"><path d="M84 46 L90 6 L108 30 L124 0 L140 30 L158 6 L162 46 Q124 38 84 46Z" fill="#ffd34d" stroke="#e0a800" stroke-width="3" stroke-linejoin="round"/>
  <circle cx="124" cy="26" r="6" fill="#ff6b8b"/><circle cx="100" cy="36" r="4" fill="#5aa0e0"/><circle cx="148" cy="36" r="4" fill="#4fb38a"/></g>'''
+
+# More accessories. All sit on Alpanica's 443x612 canvas: eyes at (71,108) and (134,109),
+# nose at (101,136), ears at x 41-72 and 157-187 (tips at y 9), neck below y 215.
+EYE_INK = "#494949"
+HEADPHONES = '''<g id="headphones">
+ <path d="M22 118 Q8 14 112 12 Q216 14 202 118" fill="none" stroke="#2d2440" stroke-width="13" stroke-linecap="round"/>
+ <path d="M22 118 Q8 14 112 12 Q216 14 202 118" fill="none" stroke="#5a4a80" stroke-width="5" stroke-linecap="round"/>
+ <rect x="-2" y="96" width="34" height="62" rx="15" fill="#ff6b8b" stroke="#2d2440" stroke-width="5"/>
+ <rect x="192" y="96" width="34" height="62" rx="15" fill="#ff6b8b" stroke="#2d2440" stroke-width="5"/>
+ <rect x="6" y="106" width="10" height="40" rx="5" fill="#ffb3d1"/><rect x="208" y="106" width="10" height="40" rx="5" fill="#ffb3d1"/>
+ <path d="M212 112 v14 l8 -2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="210" cy="128" r="3.5" fill="#fff"/>
+</g>'''
+BOW = '''<g id="bow" stroke="#c23b6e" stroke-width="3" stroke-linejoin="round">
+ <path d="M176 74 L142 52 Q128 74 142 98Z" fill="#ff6b9d"/><path d="M176 74 L210 52 Q224 74 210 98Z" fill="#ff6b9d"/>
+ <g fill="#fff" stroke="none"><circle cx="144" cy="66" r="4"/><circle cx="148" cy="84" r="3.5"/><circle cx="208" cy="66" r="4"/><circle cx="204" cy="84" r="3.5"/></g>
+ <path d="M170 80 L162 108 L172 102 L178 110 L182 80Z" fill="#ff6b9d"/>
+ <rect x="166" y="64" width="20" height="20" rx="8" fill="#ff8fb4"/>
+</g>'''
+SUNGLASSES = '''<g id="sunglasses">
+ <path d="M42 88 H98 Q100 122 82 130 H58 Q40 126 42 88Z" fill="#2d2440"/>
+ <path d="M107 88 H163 Q165 122 147 130 H123 Q105 126 107 88Z" fill="#2d2440"/>
+ <path d="M98 94 Q102 88 107 94" fill="none" stroke="#2d2440" stroke-width="6"/>
+ <path d="M42 90 L28 84 M163 90 L182 84" stroke="#2d2440" stroke-width="5" stroke-linecap="round"/>
+ <g stroke="#fff" stroke-opacity=".7" stroke-width="5" stroke-linecap="round"><path d="M54 98 L66 110"/><path d="M119 98 L131 110"/></g>
+ <g fill="#ffd34d"><path d="M84 96 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2Z"/></g>
+</g>'''
+
+
+def flower(x, y, petal, r=11):
+    petals = ''.join(f'<ellipse cx="{x}" cy="{y - r * .7:.1f}" rx="{r * .55:.1f}" ry="{r * .8:.1f}" fill="{petal}" transform="rotate({a} {x} {y})"/>'
+                     for a in range(0, 360, 72))
+    return petals + f'<circle cx="{x}" cy="{y}" r="{r * .38:.1f}" fill="#ffd34d"/>'
+
+
+FLOWERS = ('<g id="flower-crown"><path d="M30 92 Q40 50 110 40 Q180 50 192 92" fill="none" stroke="#3a9a5b" stroke-width="7" stroke-linecap="round"/>'
+           '<g fill="#5fbf6a"><path d="M48 66 q-14 -4 -16 -18 q14 2 16 18Z"/><path d="M172 64 q14 -6 18 -18 q-16 2 -18 18Z"/><path d="M110 40 q-4 -14 6 -22 q4 14 -6 22Z"/></g>'
+           + flower(34, 88, "#fff") + flower(56, 60, "#ffb3d1", 12) + flower(84, 44, "#fff", 12) + flower(114, 38, "#ff8fb4", 14)
+           + flower(144, 44, "#fff", 12) + flower(170, 58, "#ffb3d1", 12) + flower(190, 86, "#fff") + '</g>')
+BLANGKON = '''<g id="blangkon">
+ <path d="M26 96 Q18 8 112 4 Q206 8 198 96 Q112 78 26 96Z" fill="#6b3e1f" stroke="#3e2210" stroke-width="4" stroke-linejoin="round"/>
+ <g fill="none" stroke="#d9a441" stroke-width="5" stroke-linecap="round" opacity=".9">
+  <path d="M40 70 L70 26"/><path d="M66 78 L104 14"/><path d="M100 76 L140 12"/><path d="M136 78 L170 24"/><path d="M168 82 L190 50"/></g>
+ <g fill="#f2d48a"><circle cx="58" cy="52" r="4"/><circle cx="88" cy="42" r="4"/><circle cx="122" cy="40" r="4"/><circle cx="154" cy="50" r="4"/><circle cx="104" cy="66" r="3"/><circle cx="140" cy="66" r="3"/></g>
+ <path d="M24 96 Q112 74 200 96 L200 106 Q112 86 24 106Z" fill="#3e2210"/>
+ <path d="M14 74 Q2 92 16 104 Q28 94 26 78Z" fill="#6b3e1f" stroke="#3e2210" stroke-width="3"/>
+</g>'''
+SCARF = '''<g id="scarf">
+ <path d="M18 214 Q100 244 186 210 L190 246 Q100 282 16 250Z" fill="#c23b4e" stroke="#7a1f2c" stroke-width="4" stroke-linejoin="round"/>
+ <path d="M140 236 L176 330 L150 336 L124 246Z" fill="#c23b4e" stroke="#7a1f2c" stroke-width="4" stroke-linejoin="round"/>
+ <path d="M150 336 l2 12 M158 334 l4 12 M166 332 l5 11 M174 330 l6 10" stroke="#ffd34d" stroke-width="3" stroke-linecap="round"/>
+ <path d="M24 232 l14 6 l-6 10 l14 4 l-4 10 M60 242 l14 4 l-4 10 l14 2 M98 248 l14 2 l-2 10 l14 0 M138 244 l12 -2 l0 10 l12 -4" fill="none" stroke="#ffd34d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+ <g fill="#fff6d6"><circle cx="146" cy="270" r="4"/><circle cx="156" cy="296" r="4"/><circle cx="164" cy="318" r="3.5"/></g>
+</g>'''
+CONDUCTOR = '''<g id="conductor">
+ <g transform="rotate(-8 116 34)">
+  <ellipse cx="116" cy="34" rx="54" ry="10" fill="#2d2440"/>
+  <path d="M88 34 L92 4 H140 L144 34Z" fill="#2d2440"/><rect x="90" y="20" width="52" height="9" fill="#c23b4e"/>
+  <path d="M98 10 H112" stroke="#5a4a80" stroke-width="4" stroke-linecap="round"/></g>
+ <g transform="translate(104 232)" stroke="#1b1528" stroke-width="3" stroke-linejoin="round">
+  <path d="M0 0 L-30 -16 Q-36 0 -30 16Z" fill="#2d2440"/><path d="M0 0 L30 -16 Q36 0 30 16Z" fill="#2d2440"/>
+  <rect x="-8" y="-8" width="16" height="16" rx="5" fill="#c23b4e"/></g>
+</g>'''
+
+# Every outfit, as the layers laid over whatever pose Alpanica is in.
+OUTFITS = {
+    "glasses": GLASSES, "crown": CROWN, "royal": GLASSES + CROWN,
+    "bow": BOW, "headphones": HEADPHONES, "sunglasses": SUNGLASSES, "scarf": SCARF,
+    "flowers": FLOWERS, "blangkon": BLANGKON, "conductor": CONDUCTOR,
+}
+
+
+def overlay(extra):
+    """An outfit alone on Alpanica's clear canvas, so the app can lay it over any pose."""
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" '
+            f'viewBox="0 0 443.592 612.558" width="443.592" height="612.558">\n{extra}\n</svg>\n')
+
+
+# ---------------------------------------------------------------- Alpanica poses
+# Each pose swaps her face (drop_eyes / drop_smile remove the original features). Moving extras
+# (rising notes, hearts, Zzz) are drawn by the app (CharacterMotion.swift), not baked in here.
+
+def closed_eye(cx, cy, down=True, w=13.5):
+    bend = 9 if down else -18
+    return f'<path d="M{cx - w} {cy} Q{cx} {cy + bend} {cx + w} {cy}" fill="none" stroke="{EYE_INK}" stroke-width="6" stroke-linecap="round"/>'
+
+
+def heart(cx, cy, s, fill):
+    return (f'<path d="M{cx} {cy + s * .9:.1f} C{cx - s * 1.6:.1f} {cy - s * .1:.1f} {cx - s * .9:.1f} {cy - s * 1.2:.1f} {cx} {cy - s * .45:.1f} '
+            f'C{cx + s * .9:.1f} {cy - s * 1.2:.1f} {cx + s * 1.6:.1f} {cy - s * .1:.1f} {cx} {cy + s * .9:.1f}Z" fill="{fill}"/>')
+
+
+def spiral(cx, cy, turns=2.2, r=14):
+    pts = []
+    for i in range(90):
+        t = i / 89 * turns * 2 * math.pi
+        rr = r * i / 89
+        pts.append(f"{cx + rr * math.cos(t):.1f} {cy + rr * math.sin(t):.1f}")
+    return f'<path d="M{" L".join(pts)}" fill="none" stroke="{EYE_INK}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>'
+
+
+def star(cx, cy, r, fill="#ffd34d"):
+    pts = [f"{cx + (r if i % 2 == 0 else r * .45) * math.sin(i * math.pi / 5):.1f} {cy - (r if i % 2 == 0 else r * .45) * math.cos(i * math.pi / 5):.1f}"
+           for i in range(10)]
+    return f'<path d="M{" L".join(pts)}Z" fill="{fill}" stroke="#e0a800" stroke-width="2" stroke-linejoin="round"/>'
+
+
+BLINK = f'<g id="blink">{closed_eye(71.5, 108)}{closed_eye(134, 109)}</g>'
+SURPRISED = f'''<g id="surprised-face">
+ <ellipse cx="71.5" cy="106" rx="15" ry="19" fill="{EYE_INK}"/><ellipse cx="134" cy="107" rx="15" ry="19" fill="{EYE_INK}"/>
+ <circle cx="77" cy="99" r="5.5" fill="#fff"/><circle cx="66" cy="114" r="2.5" fill="#fff"/>
+ <circle cx="139.5" cy="100" r="5.5" fill="#fff"/><circle cx="128.5" cy="115" r="2.5" fill="#fff"/>
+ <path d="M56 78 Q70 68 84 76" fill="none" stroke="{EYE_INK}" stroke-width="5" stroke-linecap="round"/>
+ <path d="M120 76 Q134 68 148 78" fill="none" stroke="{EYE_INK}" stroke-width="5" stroke-linecap="round"/>
+ <ellipse cx="101" cy="151" rx="7.5" ry="9.5" fill="#6b665d"/><ellipse cx="101" cy="155" rx="4.5" ry="4" fill="#ff9fc4"/>
+ <g fill="#ff6b8b"><path d="M206 30 L222 30 L216 76 L210 76Z"/><circle cx="213" cy="90" r="7"/>
+  <path d="M234 54 L246 56 L236 90 L232 89Z" opacity=".8"/><circle cx="232" cy="100" r="5" opacity=".8"/></g>
+</g>'''
+SING = f'''<g id="sing-face">
+ {closed_eye(71.5, 110, down=False)}{closed_eye(134, 110, down=False)}
+ <ellipse cx="101" cy="149" rx="10" ry="12" fill="#6b665d"/><ellipse cx="101" cy="155" rx="6" ry="5" fill="#ff9fc4"/>
+</g>'''
+SLEEPY = f'''<g id="sleepy-face">
+ {closed_eye(71.5, 112, w=12)}{closed_eye(134, 113, w=12)}
+ <path d="M58 104 Q71.5 100 85 104 M120.5 105 Q134 101 147.5 105" fill="none" stroke="{EYE_INK}" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+ <ellipse cx="101" cy="150" rx="5" ry="4" fill="#6b665d"/>
+</g>'''
+LOVE = f'''<g id="love-face">
+ {heart(71.5, 108, 15, "#ff4d7d")}{heart(134, 109, 15, "#ff4d7d")}
+ <circle cx="65" cy="101" r="3.5" fill="#fff"/><circle cx="127.5" cy="102" r="3.5" fill="#fff"/>
+ <path d="M91 141 Q101 144 111 141 Q110 155 101 156 Q92 155 91 141Z" fill="#6b665d"/>
+ <path d="M95 150 Q101 146 107 150 Q104 155 101 155 Q98 155 95 150Z" fill="#ff9fc4"/>
+</g>'''
+DIZZY = f'''<g id="dizzy-face">
+ {spiral(71.5, 108)}{spiral(134, 109)}
+ <path d="M86 150 q5 -6 10 0 t10 0 t10 0" fill="none" stroke="#6b665d" stroke-width="4" stroke-linecap="round"/>
+ <ellipse cx="112" cy="30" rx="84" ry="16" fill="none" stroke="#ffd34d" stroke-width="3" stroke-dasharray="8 10" opacity=".8"/>
+ {star(40, 34, 12)}{star(150, 16, 10)}{star(186, 40, 8)}
+</g>'''
+THINK = f'''<g id="think-face">
+ <ellipse cx="74" cy="104" rx="13.5" ry="16" fill="{EYE_INK}"/><ellipse cx="136.5" cy="105" rx="13.5" ry="16" fill="{EYE_INK}"/>
+ <circle cx="79" cy="96" r="5" fill="#fff"/><circle cx="141.5" cy="97" r="5" fill="#fff"/>
+ <path d="M120 80 Q134 70 150 78" fill="none" stroke="{EYE_INK}" stroke-width="5" stroke-linecap="round"/>
+ <path d="M92 150 Q98 146 104 150 T114 148" fill="none" stroke="#6b665d" stroke-width="3.5" stroke-linecap="round"/>
+ <g stroke="#2d2440" stroke-width="4"><circle cx="188" cy="82" r="6" fill="#fff"/><circle cx="204" cy="62" r="9" fill="#fff"/>
+  <ellipse cx="246" cy="30" rx="36" ry="26" fill="#fff"/></g>
+ <path d="M236 22 Q236 10 247 10 Q258 10 258 21 Q258 29 249 32 L248 38" fill="none" stroke="#8f6ad8" stroke-width="6" stroke-linecap="round"/>
+ <circle cx="248" cy="47" r="4" fill="#8f6ad8"/>
+</g>'''
+
+
+# ---------------------------------------------------------------- Alpanica walking and running
+# The legs are part of her one-piece outline, so these frames cut the outline off at the belly and
+# draw four separate legs that swing from the hip. The app flips through the frames (CharacterMotion.swift)
+# and adds the bob and lean, so outfits still line up.
+
+HIP_Y = 470
+LEGS = [  # hoof centre x, near (in front) or far
+    (56, True), (157, False), (298, True), (391, False),
+]
+
+
+def leg(cx, near, angle):
+    fill = "#ffffff" if near else "#e9e9e9"
+    shade = "#f0f0f0" if near else "#dcdcdc"
+    bottom = 604 if near else 594
+    return (f'<g transform="rotate({angle} {cx} {HIP_Y})">'
+            f'<rect x="{cx - 21}" y="440" width="42" height="{bottom - 440 - 10}" rx="21" fill="{fill}"/>'
+            f'<circle cx="{cx - 17}" cy="512" r="12" fill="{fill}"/><circle cx="{cx + 17}" cy="540" r="11" fill="{fill}"/>'
+            f'<circle cx="{cx - 16}" cy="556" r="10" fill="{shade}"/>'
+            f'<rect x="{cx - 21}" y="{bottom - 30}" width="42" height="28" rx="13" fill="#000"/></g>')
+
+
+def gait_frame(angles, face=""):
+    """Alpanica with her legs at `angles` (degrees, + swings a foot forward, which is to her left),
+    in the order of LEGS."""
+    src = open(ALPANICA).read()
+    src = re.sub(r'<path [^>]*layerName="Rectangle [3-6]"[^>]*/>', '', src)  # the standing hooves
+    if face:
+        src = re.sub(r'<path [^>]*stroke="#6b665d"[^>]*/>', '', src)
+    clip = ('<defs><clipPath id="above-legs"><rect x="-60" y="-60" width="600" height="562"/>'
+            '<rect x="400" y="500" width="60" height="60"/></clipPath></defs>')
+    far = ''.join(leg(x, n, a) for (x, n), a in zip(LEGS, angles) if not n)
+    near = ''.join(leg(x, n, a) for (x, n), a in zip(LEGS, angles) if n)
+    src = src.replace('<defs/>', clip, 1)
+    src = src.replace('<g id="Layer-1"', f'<g id="legs-far">{far}</g>\n<g id="legs-near">{near}</g>\n<g clip-path="url(#above-legs)" id="Layer-1"', 1)
+    return src.replace('</svg>', face + '\n</svg>')
+
+
+RUN_FACE = '<g id="run-face"><ellipse cx="101" cy="149" rx="8" ry="7" fill="#6b665d"/><ellipse cx="101" cy="152" rx="4.5" ry="3" fill="#ff9fc4"/></g>'
+# A walk swings diagonal pairs; the app plays frames 1-2-3-2.
+WALK = {1: (16, -16, -16, 16), 2: (2, -2, -2, 2), 3: (-16, 16, 16, -16)}
+# A gallop: stretched out, passing, gathered under; the app plays frames 1-2-3-2.
+RUN = {1: (22, 22, -34, -26), 2: (8, -4, -6, 6), 3: (-20, -12, 24, 16)}
 
 
 # ---------------------------------------------------------------- UI icons
@@ -218,9 +413,17 @@ def assets():
         out[name] = fals(b, d, l, size=420, boss=True, accessory=acc, back=PLUME if name == "fals_boss_6" else "")
     out["alpanica_attack"] = alpanica_variant(ATTACK, drop_eyes=False, drop_mouth=True)
     out["alpanica_happy"] = alpanica_variant(HAPPY, drop_eyes=True, drop_mouth=True)
-    out["alpanica_outfit_glasses"] = alpanica_variant(GLASSES)
-    out["alpanica_outfit_crown"] = alpanica_variant(CROWN)
-    out["alpanica_outfit_royal"] = alpanica_variant(GLASSES + CROWN)
+    out["alpanica_blink"] = alpanica_variant(BLINK, drop_eyes=True)
+    for name, face in [("surprised", SURPRISED), ("sing", SING), ("sleepy", SLEEPY),
+                       ("love", LOVE), ("dizzy", DIZZY), ("think", THINK)]:
+        out[f"alpanica_{name}"] = alpanica_variant(face, drop_eyes=True, drop_smile=True)
+    for n, angles in WALK.items():
+        out[f"alpanica_walk_{n}"] = gait_frame(angles)
+    for n, angles in RUN.items():
+        out[f"alpanica_run_{n}"] = gait_frame(angles, face=RUN_FACE)
+    for name, layers in OUTFITS.items():
+        out[f"alpanica_outfit_{name}"] = alpanica_variant(layers)  # the shop and certificate picture
+        out[f"alpanica_acc_{name}"] = overlay(layers)              # laid over any pose in the game
     out.update(ICONS)
     for n in range(1, 7):
         out[f"map_island_{n}"] = island(n)

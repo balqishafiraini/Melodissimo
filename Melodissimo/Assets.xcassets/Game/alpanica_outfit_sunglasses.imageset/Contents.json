@@ -1,0 +1,15 @@
+{
+  "images": [
+    {
+      "filename": "alpanica_outfit_sunglasses.svg",
+      "idiom": "universal"
+    }
+  ],
+  "info": {
+    "author": "xcode",
+    "version": 1
+  },
+  "properties": {
+    "preserves-vector-representation": true
+  }
+}

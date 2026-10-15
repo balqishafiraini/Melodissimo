@@ -29,11 +29,13 @@ final class ShopCatalogTests: XCTestCase {
         XCTAssertEqual(prices["outfit_glasses"], 150)
         XCTAssertEqual(prices["outfit_crown"], 300)
         XCTAssertEqual(prices["outfit_royal"], 500)
+        XCTAssertEqual(prices["outfit_bow"], 100)
+        XCTAssertEqual(prices["outfit_conductor"], 400)
     }
 
-    func testTheWholeShopCostsAboutTwoThousandCoins() {
+    func testTheWholeShopCost() {
         let total = ShopCatalog.items.reduce(0) { $0 + $1.price }
-        XCTAssertEqual(total, 2_100)
+        XCTAssertEqual(total, 3_850)
     }
 
     func testKeyboardSkinsCarryABodyAndAPressedColour() {
@@ -43,7 +45,9 @@ final class ShopCatalogTests: XCTestCase {
     }
 
     func testOutfitVariantsMatchTheAlpanicaOutfitNames() {
-        XCTAssertEqual(ShopCatalog.items(in: .outfit).map(\.variant), ["none", "glasses", "crown", "royal"])
+        // Every outfit on sale can be worn, and every outfit Alpanica has is on sale.
+        XCTAssertEqual(Set(ShopCatalog.items(in: .outfit).map(\.variant)), Set(AlpanicaOutfit.allCases.map(\.rawValue)))
+        XCTAssertEqual(ShopCatalog.items(in: .outfit).first?.variant, "none")
         XCTAssertEqual(ShopCatalog.item(id: "keyboard_batik")?.variant, "batik")
     }
 

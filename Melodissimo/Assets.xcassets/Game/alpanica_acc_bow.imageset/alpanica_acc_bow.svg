@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 443.592 612.558" width="443.592" height="612.558">
+<g id="bow" stroke="#c23b6e" stroke-width="3" stroke-linejoin="round">
+ <path d="M176 74 L142 52 Q128 74 142 98Z" fill="#ff6b9d"/><path d="M176 74 L210 52 Q224 74 210 98Z" fill="#ff6b9d"/>
+ <g fill="#fff" stroke="none"><circle cx="144" cy="66" r="4"/><circle cx="148" cy="84" r="3.5"/><circle cx="208" cy="66" r="4"/><circle cx="204" cy="84" r="3.5"/></g>
+ <path d="M170 80 L162 108 L172 102 L178 110 L182 80Z" fill="#ff6b9d"/>
+ <rect x="166" y="64" width="20" height="20" rx="8" fill="#ff8fb4"/>
+</g>
+</svg>

@@ -190,53 +190,302 @@ struct FloatingText<T: Equatable>: View {
 
 // MARK: - Characters
 
-/// Alpanica's outfits, matching the `alpanica_outfit_*` assets.
+/// Alpanica's outfits. Each has a full picture (`alpanica_outfit_*`, for the shop and certificate) and the
+/// outfit alone (`alpanica_acc_*`), which `AlpanicaView` lays over whatever pose she is in.
 enum AlpanicaOutfit: String, CaseIterable {
-    case none, glasses, crown, royal
+    case none, glasses, crown, royal, bow, headphones, sunglasses, scarf, flowers, blangkon, conductor
 
     var assetName: String {
         self == .none ? "alpanica" : "alpanica_outfit_\(rawValue)"
     }
-}
 
-/// Alpanica's moods. Pose art overrides the outfit for a moment, then returns to it.
-enum AlpanicaMood {
-    case idle, happy, attack, sad
-
-    func assetName(outfit: AlpanicaOutfit) -> String {
-        switch self {
-        case .idle: return outfit.assetName
-        case .happy: return "alpanica_happy"
-        case .attack: return "alpanica_attack"
-        case .sad: return "alpanicaSad"
-        }
+    /// The outfit on a clear canvas the size of the pose art, or `nil` for no outfit.
+    var overlayName: String? {
+        self == .none ? nil : "alpanica_acc_\(rawValue)"
     }
 }
 
-/// Alpanica with idle breathing; she hops whenever `hopTrigger` changes.
+/// Alpanica's moods: each has its own face, and most have their own motion and floating extras.
+/// The outfit stays on in every mood.
+enum AlpanicaMood: CaseIterable {
+    case idle, happy, attack, sad, surprised, sing, sleepy, love, dizzy, think
+
+    var assetName: String {
+        switch self {
+        case .idle: return "alpanica"
+        case .happy: return "alpanica_happy"
+        case .attack: return "alpanica_attack"
+        case .sad: return "alpanicaSad"
+        case .surprised: return "alpanica_surprised"
+        case .sing: return "alpanica_sing"
+        case .sleepy: return "alpanica_sleepy"
+        case .love: return "alpanica_love"
+        case .dizzy: return "alpanica_dizzy"
+        case .think: return "alpanica_think"
+        }
+    }
+
+    /// The short flourishes she plays now and then while idling on screens that allow it.
+    static let fidgets: [AlpanicaMood] = [.sing, .think, .love, .happy]
+}
+
+/// How Alpanica gets about. Walking and running flip through leg frames (`alpanica_walk_*`, `alpanica_run_*`).
+enum AlpanicaGait: CaseIterable {
+    case stand, walk, run
+
+    /// The leg frames of one full stride, in order.
+    var frames: [String] {
+        switch self {
+        case .stand: return ["alpanica"]
+        case .walk: return ["alpanica_walk_1", "alpanica_walk_2", "alpanica_walk_3", "alpanica_walk_2"]
+        case .run: return ["alpanica_run_1", "alpanica_run_2", "alpanica_run_3", "alpanica_run_2"]
+        }
+    }
+
+    /// Seconds each frame shows.
+    var frameTime: Double { self == .run ? 0.085 : 0.16 }
+}
+
+/// Alpanica with idle breathing and blinking; she hops whenever `hopTrigger` changes.
 struct AlpanicaView<T: Equatable>: View {
     var mood: AlpanicaMood = .idle
     var outfit: AlpanicaOutfit = .none
     var hopTrigger: T
     var height: CGFloat = 260
-    /// The happy and sad poses have no outfit art, so by default they replace the outfit. Screens that
-    /// stay open for a while (results, story, Home) set this to keep the outfit on in those moods.
-    var keepsOutfit = false
+    /// While idle, now and then sing, think or beam for a moment. For calm screens like Home and the map.
+    var fidgets = false
+    /// Walking or running in place; move the view to make her travel. Her face follows the gait, not `mood`.
+    var gait: AlpanicaGait = .stand
+    /// The art faces left; set this to mirror her, for example when she walks to the right.
+    var facesRight = false
 
-    private var artName: String {
-        if keepsOutfit, outfit != .none, mood == .happy || mood == .sad {
-            return outfit.assetName
-        }
-        return mood.assetName(outfit: outfit)
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// Width over height of all the Alpanica art.
+    static var aspect: CGFloat { 443.592 / 612.558 }
+
+    @State private var isBlinking = false
+    @State private var fidget: AlpanicaMood?
+
+    private var shownMood: AlpanicaMood {
+        mood == .idle ? fidget ?? .idle : mood
     }
 
     var body: some View {
-        Image(artName)
-            .resizable()
-            .scaledToFit()
-            .frame(height: height)
-            .idleBreathe()
-            .hop(on: hopTrigger, height: height * 0.25)
+        Group {
+            if gait == .stand {
+                figure(shownMood == .idle && isBlinking ? "alpanica_blink" : shownMood.assetName)
+                    .overlay(MoodParticles(mood: shownMood, height: height))
+                    .modifier(MoodMotion(mood: shownMood, height: height))
+                    .idleBreathe(period: shownMood == .sleepy ? 3.6 : 2.4)
+            } else {
+                TimelineView(.animation(minimumInterval: gait.frameTime / 3, paused: reduceMotion)) { context in
+                    gaitFrame(at: reduceMotion ? 0 : context.date.timeIntervalSinceReferenceDate)
+                }
+            }
+        }
+        .scaleEffect(x: facesRight ? -1 : 1)
+        .hop(on: hopTrigger, height: height * 0.25)
+        .task(id: [mood.hashValue, gait.hashValue]) { await blinkAndFidget() }
+    }
+
+    /// The pose art with the outfit laid on top.
+    private func figure(_ art: String) -> some View {
+        ZStack {
+            Image(art)
+                .resizable()
+                .scaledToFit()
+            if let overlay = outfit.overlayName {
+                Image(overlay)
+                    .resizable()
+                    .scaledToFit()
+            }
+        }
+        .frame(height: height)
+    }
+
+    /// One moment of a walk or run: the leg frame, plus a bob on each footfall and a lean into the run.
+    private func gaitFrame(at time: Double) -> some View {
+        let frames = gait.frames
+        let cycle = gait.frameTime * Double(frames.count)
+        let step = Int(time / gait.frameTime) % frames.count
+        let wave = sin(time / cycle * 2 * .pi)
+        // A walk bobs on both footfalls of a stride; a gallop bounds once, off the ground.
+        let lift = gait == .run ? max(0, wave) * 0.045 : abs(wave) * 0.012
+        return figure(frames[step])
+            .rotationEffect(.degrees(gait == .run ? -5 + 2 * wave : 0), anchor: .bottom)
+            .offset(y: -height * CGFloat(lift))
+    }
+
+    /// Blinks every few seconds while idle and, if allowed, slips into a short flourish now and then.
+    private func blinkAndFidget() async {
+        isBlinking = false
+        fidget = nil
+        guard mood == .idle, gait == .stand else { return }
+        var blinksUntilFidget = Int.random(in: 3...5)
+        while !Task.isCancelled {
+            try? await Task.sleep(nanoseconds: UInt64.random(in: 2_200_000_000...4_500_000_000))
+            guard !Task.isCancelled else { return }
+            if fidgets, blinksUntilFidget == 0 {
+                fidget = AlpanicaMood.fidgets.randomElement()
+                try? await Task.sleep(nanoseconds: 1_800_000_000)
+                fidget = nil
+                blinksUntilFidget = Int.random(in: 3...5)
+            } else {
+                isBlinking = true
+                try? await Task.sleep(nanoseconds: 130_000_000)
+                isBlinking = false
+                blinksUntilFidget -= 1
+            }
+        }
+    }
+}
+
+// MARK: - Mood motion and extras
+
+/// The whole-body motion of each mood: swaying while she sings, a heartbeat when in love, a slow nod
+/// when sleepy, a slump when sad, a jolt when surprised, a lunge on attack. Still under Reduce Motion.
+private struct MoodMotion: ViewModifier {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    var mood: AlpanicaMood
+    var height: CGFloat
+    @State private var start = Date()
+
+    private var isStill: Bool { reduceMotion || mood == .idle || mood == .happy }
+
+    func body(content: Content) -> some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 60, paused: isStill)) { context in
+            let pose = isStill ? .rest : Pose(mood: mood, time: context.date.timeIntervalSince(start), height: height)
+            content
+                .scaleEffect(x: pose.scaleX, y: pose.scaleY, anchor: .bottom)
+                .rotationEffect(.degrees(pose.angle), anchor: .bottom)
+                .offset(x: pose.x, y: pose.y)
+        }
+        .onChange(of: mood) { _ in start = Date() }
+    }
+
+    private struct Pose {
+        var angle = 0.0
+        var scaleX: CGFloat = 1
+        var scaleY: CGFloat = 1
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+
+        static let rest = Pose()
+
+        init() {}
+
+        init(mood: AlpanicaMood, time t: Double, height: CGFloat) {
+            /// 0 → 1 → 0 over `length` seconds, then 0: a one-off bump when the mood begins.
+            func bump(_ length: Double) -> CGFloat { t < length ? CGFloat(sin(t / length * .pi)) : 0 }
+            func wave(_ period: Double) -> Double { sin(t / period * 2 * .pi) }
+
+            switch mood {
+            case .idle, .happy:
+                break
+            case .sing:
+                angle = 4 * wave(0.9)
+                y = -height * 0.02 * CGFloat(abs(wave(0.9)))
+            case .love:
+                let beat = CGFloat(pow(max(0, wave(0.8)), 6))
+                scaleX = 1 + 0.04 * beat
+                scaleY = 1 + 0.04 * beat
+            case .sleepy:
+                angle = -2 + 2 * wave(3.6)
+            case .sad:
+                scaleY = 1 - 0.04 * min(1, CGFloat(t / 0.3))
+                angle = -2 * min(1, t / 0.3)
+            case .dizzy:
+                angle = 5 * wave(1.1)
+                x = height * 0.015 * CGFloat(wave(0.55))
+            case .think:
+                angle = 2.5 * min(1, t / 0.4) + 0.6 * wave(2.4)
+            case .surprised:
+                y = -height * 0.08 * bump(0.3)
+                scaleY = 1 + 0.06 * bump(0.3)
+                scaleX = 1 - 0.04 * bump(0.3)
+            case .attack:
+                x = height * 0.06 * bump(0.25)
+                angle = 4 * Double(bump(0.25))
+            }
+        }
+    }
+}
+
+/// Little things that drift around Alpanica's head: notes when she sings, hearts in love, Zzz when
+/// sleepy, sparkles when happy and stars circling when dizzy. Frozen mid-air under Reduce Motion.
+private struct MoodParticles: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    var mood: AlpanicaMood
+    var height: CGFloat
+
+    private struct Style {
+        var symbols: [String]
+        var colors: [Color]
+        var period: Double
+        var orbits = false
+    }
+
+    private var style: Style? {
+        switch mood {
+        case .sing:
+            return Style(symbols: ["music.note", "music.quarternote.3", "music.note"],
+                         colors: [Color(hex: 0xFF6B8B), Color(hex: 0x5AA0E0), Color(hex: 0xF2A33A)], period: 1.6)
+        case .love:
+            return Style(symbols: ["heart.fill", "heart.fill", "heart.fill"],
+                         colors: [Color(hex: 0xFF4D7D), Color(hex: 0xFF8FB4), Color(hex: 0xFF4D7D)], period: 1.8)
+        case .sleepy:
+            return Style(symbols: ["zzz", "zzz"], colors: [Color(hex: 0x8F6AD8), Color(hex: 0xB597EE)], period: 2.6)
+        case .happy:
+            return Style(symbols: ["sparkle", "sparkle", "sparkle"], colors: [Color(hex: 0xFFD34D)], period: 1.2)
+        case .dizzy:
+            return Style(symbols: ["star.fill", "star.fill", "star.fill"], colors: [Color(hex: 0xFFD34D)], period: 1.4, orbits: true)
+        default:
+            return nil
+        }
+    }
+
+    var body: some View {
+        if let style {
+            let size = CGSize(width: height * AlpanicaView<Int>.aspect, height: height)
+            TimelineView(.animation(minimumInterval: 1.0 / 30, paused: reduceMotion)) { context in
+                let time = reduceMotion ? style.period * 0.4 : context.date.timeIntervalSinceReferenceDate
+                ZStack {
+                    ForEach(0..<style.symbols.count, id: \.self) { index in
+                        particle(index, of: style, time: time, in: size)
+                    }
+                }
+            }
+            .frame(width: size.width, height: size.height)
+            .allowsHitTesting(false)
+            .transition(.opacity)
+        }
+    }
+
+    private func particle(_ index: Int, of style: Style, time: Double, in size: CGSize) -> some View {
+        let count = Double(style.symbols.count)
+        let phase = (time / style.period + Double(index) / count).truncatingRemainder(dividingBy: 1)
+        let glyph = Image(systemName: style.symbols[index])
+            .font(.system(size: size.height * (style.orbits ? 0.045 : 0.07), weight: .bold))
+            .foregroundColor(style.colors[index % style.colors.count])
+            .shadow(color: .white, radius: 1)
+
+        if style.orbits {
+            // Round the top of her head, in front on the lower half of the loop.
+            let angle = phase * 2 * .pi
+            return glyph
+                .scaleEffect(0.75 + 0.35 * sin(angle))
+                .position(x: size.width * (0.24 + 0.19 * cos(angle)), y: size.height * (0.05 + 0.025 * sin(angle)))
+                .opacity(1)
+        }
+        // Rise from beside her head, drifting and fading.
+        let lane = Double(index) / max(1, count - 1)
+        let x = size.width * (0.42 + 0.14 * lane) + size.width * 0.03 * sin(phase * 2 * .pi + Double(index))
+        let y = size.height * (0.24 - 0.2 * phase)
+        return glyph
+            .scaleEffect(0.6 + 0.6 * phase)
+            .position(x: x, y: y)
+            .opacity(sin(phase * .pi))
     }
 }
 
@@ -266,15 +515,27 @@ struct FalsView<T: Equatable>: View {
 struct CharacterMotionPlayground: View {
     @State private var hops = 0
     @State private var hits = 0
+    @State private var moodIndex = 0
+    @State private var outfitIndex = 3
+    @State private var gaitIndex = 0
+
+    private var mood: AlpanicaMood { AlpanicaMood.allCases[moodIndex] }
+    private var outfit: AlpanicaOutfit { AlpanicaOutfit.allCases[outfitIndex] }
 
     var body: some View {
         VStack(spacing: 30) {
             HStack(alignment: .bottom, spacing: 60) {
-                AlpanicaView(mood: hops % 2 == 0 ? .idle : .happy, outfit: .royal, hopTrigger: hops)
+                AlpanicaView(mood: mood, outfit: outfit, hopTrigger: hops, fidgets: true,
+                             gait: AlpanicaGait.allCases[gaitIndex])
                 FalsView(kind: 1, hitTrigger: hits)
                 FalsView(kind: 6, isBoss: true, hitTrigger: hits, height: 300)
             }
             HStack(spacing: 20) {
+                Button("Mood: \(String(describing: mood))") { moodIndex = (moodIndex + 1) % AlpanicaMood.allCases.count }
+                Button("Outfit: \(outfit.rawValue)") { outfitIndex = (outfitIndex + 1) % AlpanicaOutfit.allCases.count }
+                Button("Gait: \(String(describing: AlpanicaGait.allCases[gaitIndex]))") {
+                    gaitIndex = (gaitIndex + 1) % AlpanicaGait.allCases.count
+                }
                 Button("Correct!") { hops += 1 }
                 Button("Hit Fals") { hits += 1 }
             }

@@ -244,6 +244,12 @@ private struct ChapterPanel: View {
     let progress: ProgressStore
     let onSelect: (Stage) -> Void
 
+    /// Alpanica walks (or, for longer trips, runs) to a new stage, facing the way she goes.
+    @State private var gait: AlpanicaGait = .stand
+    @State private var facesRight = false
+    @State private var arrivals = 0
+    @State private var shownStageIndex: Int?
+
     /// The island art is 1000 × 600.
     private var height: CGFloat { width * 0.6 }
 
@@ -253,6 +259,24 @@ private struct ChapterPanel: View {
     }
 
     private var earnedStars: Int { progress.chapterStars(chapter.number) }
+
+    /// About a second a stage at a walk; more than one stage away, she runs.
+    private func travelTime(stages count: Int) -> Double {
+        count > 1 ? min(1.6, 0.45 * Double(count)) : 1.1
+    }
+
+    private func travel(to offset: Int, points: [CGPoint]) {
+        let from = shownStageIndex ?? offset
+        shownStageIndex = offset
+        guard from != offset else { return }
+        let count = abs(offset - from)
+        facesRight = points[offset].x > points[from].x
+        gait = count > 1 ? .run : .walk
+        DispatchQueue.main.asyncAfter(deadline: .now() + travelTime(stages: count)) {
+            gait = .stand
+            arrivals += 1
+        }
+    }
 
     var body: some View {
         let points = MapLayout.points(count: stages.count, in: CGSize(width: width, height: height))
@@ -282,12 +306,15 @@ private struct ChapterPanel: View {
                     }
             }
 
-            // Alpanica waits on the stage the player is up to and hops over when it changes.
+            // Alpanica waits on the stage the player is up to and walks over when it changes, hopping as she arrives.
             if current.chapter == chapter.number, let offset = stages.firstIndex(where: { $0.id == current.id }) {
-                AlpanicaView(mood: .idle, outfit: .equipped, hopTrigger: current.id, height: Sizing.s(110))
+                AlpanicaView(mood: .idle, outfit: .equipped, hopTrigger: arrivals, height: Sizing.s(110), fidgets: true,
+                             gait: gait, facesRight: facesRight)
                     .position(x: points[offset].x, y: points[offset].y - Sizing.s(current.isLandmark ? 118 : 100))
-                    .animation(.spring(response: 0.6, dampingFraction: 0.6), value: current.id)
+                    .animation(.easeInOut(duration: travelTime(stages: abs(offset - (shownStageIndex ?? offset)))), value: current.id)
                     .allowsHitTesting(false)
+                    .onAppear { shownStageIndex = offset }
+                    .onChange(of: current.id) { _ in travel(to: offset, points: points) }
             }
 
             header

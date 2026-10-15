@@ -222,7 +222,8 @@ struct BattleView: View {
             setMood(.attack, for: 0.6)
             SFX.play(.monsterHit)
         case .wrong, .timeout:
-            setMood(.sad, for: 0.8)
+            // Too slow catches her by surprise; a wrong key makes her sad.
+            setMood(outcome.kind == .timeout ? .surprised : .sad, for: 0.8)
             SFX.play(.playerHurt)
             if isOnScreen, let key = viewModel.revealKeyId {
                 playSound(key: NoteCatalog.note(key).sound)
