@@ -75,9 +75,11 @@ struct ResultRecorder {
                 coins += CoinRewards.echoEndless(rounds: result.score)
             }
         case .quiz(let config):
-            // `score` is the number of right answers.
-            summary.isNewBest = progress.recordQuizBest(config.variant, score: result.score)
-            coins += CoinRewards.quiz(correctAnswers: result.correctCount)
+            // `score` is the number of right answers. Tour quizzes pay by their stars below, like the other stages.
+            if result.request.campaignStageId == nil {
+                summary.isNewBest = progress.recordQuizBest(config.variant, score: result.score)
+                coins += CoinRewards.quiz(correctAnswers: result.correctCount)
+            }
         case .battle, .daily:
             break   // each mode records its own results in its own task
         }

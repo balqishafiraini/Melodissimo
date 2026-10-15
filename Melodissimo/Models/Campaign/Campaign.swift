@@ -34,6 +34,7 @@ struct Stage: Identifiable, Hashable {
     enum Kind: Hashable {
         case battle(BattleConfig)
         case echo(EchoConfig)
+        case quiz(QuizConfig)
         case song(songId: String)
         case boss(songId: String)
         case finale(songId: String)
@@ -158,7 +159,7 @@ enum CampaignCatalog {
 
     /// The chapter's stages, built by the rule in the game plan:
     /// two battles, an echo, then a song + battle per song, a harder echo, the boss and (last chapter) the finale.
-    /// Bigger islands get extra practice stages (battles and echoes, taking turns) spread before each song and
+    /// Bigger islands get extra practice stages (battles, echoes and listening quizzes) spread before each song and
     /// before the closing echo, so the chapter has exactly `count` stages (never fewer than `minimumStages`).
     static func stages(in chapter: Chapter, count: Int) -> [Stage] {
         let new = chapter.newNotes
@@ -211,9 +212,17 @@ enum CampaignCatalog {
         }
     }
 
-    /// Extra practice stage number `index` of `total`: battles and echoes taking turns, getting a little harder as
-    /// the island goes on. With nothing to review yet (the first island) the battles widen the new-note pool step by step.
+    /// Extra practice stage number `index` of `total`: battles and echoes taking turns, with every third one a
+    /// listening quiz (and the last one, on islands with fewer than three, so every island has a quiz). They get a
+    /// little harder as the island goes on. With nothing to review yet (the first island) the battles widen the
+    /// new-note pool step by step.
     private static func practiceStage(_ index: Int, of total: Int, chapter: Chapter, review: [Int]) -> Stage.Kind {
+        if index % quizEvery == quizEvery - 1 {
+            return quizStage(index / quizEvery, chapter: chapter)
+        }
+        if total < quizEvery, index == total - 1 {
+            return quizStage(0, chapter: chapter)
+        }
         let new = chapter.newNotes
         let progress = total > 1 ? Double(index) / Double(total - 1) : 1
         if index % 2 == 0 {
@@ -229,6 +238,36 @@ enum CampaignCatalog {
                                 roundsToClear: late ? 4 : 3, startLength: late ? 3 : 2, glowDuringPlayback: !late, seed: 0))
     }
 
+    /// Every this-many extra practice stages, one is a quiz.
+    static let quizEvery = 3
+
+    /// Questions per tour quiz (Free Play's runs have ten).
+    static let quizQuestions = 8
+
+    /// Songs met on earlier islands (their songs, boss and finale): every one has been played by then.
+    static func songsHeard(before chapter: Int) -> [String] {
+        chapters.prefix(chapter - 1).flatMap { $0.songTitles + [$0.bossSongTitle] + ($0.finaleSongTitle.map { [$0] } ?? []) }
+    }
+
+    /// The quizzes an island can hold: Guess the Song once enough songs are known for a full set of choices,
+    /// Spot Fals once there is a known song he may touch (never a solemn one), and Higher or lower always.
+    static func quizVariants(in chapter: Chapter) -> [QuizVariant] {
+        let heard = songsHeard(before: chapter.number)
+        var variants: [QuizVariant] = []
+        if heard.count >= QuizQuestionGenerator.titleChoices { variants.append(.guessSong) }
+        if heard.contains(where: { !SongLibrary.solemnTitles.contains($0) }) { variants.append(.spotFals) }
+        variants.append(.higherLower)
+        return variants
+    }
+
+    /// The island's quiz number `number`, taking turns through `quizVariants`; each island starts on a different one.
+    private static func quizStage(_ number: Int, chapter: Chapter) -> Stage.Kind {
+        let variants = quizVariants(in: chapter)
+        let variant = variants[(chapter.number + number) % variants.count]
+        return .quiz(QuizConfig(variant: variant, questionCount: quizQuestions, seed: 0,
+                                songTitles: variant == .higherLower ? nil : songsHeard(before: chapter.number)))
+    }
+
     private static func seeded(_ kind: Stage.Kind, seed: UInt64) -> Stage.Kind {
         switch kind {
         case .battle(var config):
@@ -237,6 +276,9 @@ enum CampaignCatalog {
         case .echo(var config):
             config.seed = seed
             return .echo(config)
+        case .quiz(var config):
+            config.seed = seed
+            return .quiz(config)
         case .song, .boss, .finale:
             return kind
         }

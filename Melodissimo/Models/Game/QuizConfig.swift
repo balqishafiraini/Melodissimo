@@ -21,6 +21,9 @@ struct QuizConfig: Hashable {
     var questionCount = 10
     var hearts = 3
     var seed: UInt64
+    /// The songs Guess the Song and Spot Fals may use, by title. `nil` uses the whole library;
+    /// tour stages pass only the songs the player has met so far.
+    var songTitles: [String]? = nil
 }
 
 /// One question: what plays, and the answer buttons.

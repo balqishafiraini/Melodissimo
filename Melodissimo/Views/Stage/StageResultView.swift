@@ -283,7 +283,7 @@ struct StageResultView: View {
             if !isEcho {
                 stat("Max combo", "\(result.maxCombo)")
             }
-            if case .quiz(let config) = result.request.kind {
+            if case .quiz(let config) = result.request.kind, result.request.campaignStageId == nil {
                 stat("Best", "\(ProgressStore.shared.quizBest(config.variant))")
             } else if isRush {
                 stat("High score", "\(ProgressStore.shared.rushHighScore)")

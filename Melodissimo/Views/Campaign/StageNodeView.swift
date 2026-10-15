@@ -13,6 +13,7 @@ extension Stage {
         switch kind {
         case .battle: return "icon_stage_battle"
         case .echo: return "icon_stage_echo"
+        case .quiz(let config): return config.variant == .guessSong ? "icon_stage_song" : "icon_stage_echo"
         case .song: return "icon_stage_song"
         case .boss: return "icon_stage_boss"
         case .finale: return "icon_stage_finale"
@@ -23,6 +24,7 @@ extension Stage {
         switch kind {
         case .battle: return "⚡️"
         case .echo: return "👂"
+        case .quiz: return "❓"
         case .song: return "🎵"
         case .boss: return "👑"
         case .finale: return "🏳️"
@@ -33,6 +35,7 @@ extension Stage {
         switch kind {
         case .battle: return "Battle"
         case .echo: return "Echo"
+        case .quiz: return "Quiz"
         case .song: return "Song"
         case .boss: return "Boss"
         case .finale: return "Finale"
@@ -43,7 +46,7 @@ extension Stage {
     var song: Song? {
         switch kind {
         case .song(let id), .boss(let id), .finale(let id): return SongLibrary.song(id: id)
-        case .battle, .echo: return nil
+        case .battle, .echo, .quiz: return nil
         }
     }
 
@@ -53,6 +56,8 @@ extension Stage {
             return index == 1 ? "Meet the notes" : "Note Battle"
         case .echo(let config):
             return config.glowDuringPlayback ? "Echo" : "Echo: no peeking"
+        case .quiz(let config):
+            return config.variant.title
         case .song, .boss, .finale:
             return LocalizedStringKey(song?.title ?? "")
         }
@@ -62,7 +67,7 @@ extension Stage {
     var isLandmark: Bool {
         switch kind {
         case .boss, .finale: return true
-        case .battle, .echo, .song: return false
+        case .battle, .echo, .quiz, .song: return false
         }
     }
 }

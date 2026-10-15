@@ -56,7 +56,8 @@ final class QuizViewModel: ObservableObject {
          soundPlayer: @escaping (String) -> Void = { playSound(key: $0) },
          soundStopper: @escaping (String) -> Void = { stopSound(key: $0) }) {
         self.config = config
-        self.questions = QuizQuestionGenerator.questions(for: config, songs: songs)
+        let pool = config.songTitles.map { titles in songs.filter { titles.contains($0.title) } } ?? songs
+        self.questions = QuizQuestionGenerator.questions(for: config, songs: pool)
         self.hearts = config.hearts
         self.soundPlayer = soundPlayer
         self.soundStopper = soundStopper

@@ -145,6 +145,8 @@ struct StageSheetView: View {
             Text("· \(config.totalQuestions) questions")
         case .echo(let config):
             Text("· \(config.roundsToClear ?? 0) rounds")
+        case .quiz(let config):
+            Text("· \(config.questionCount) questions")
         case .song, .boss, .finale:
             if let song = stage.song {
                 Text("· \(song.keyIds.count) notes")

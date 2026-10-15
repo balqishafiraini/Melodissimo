@@ -226,6 +226,8 @@ struct CampaignMapView: View {
             router.push(.play(PlayRequest(kind: .battle(config), campaignStageId: stage.id)))
         case .echo(let config):
             router.push(.play(PlayRequest(kind: .echo(config), campaignStageId: stage.id)))
+        case .quiz(let config):
+            router.push(.play(PlayRequest(kind: .quiz(config), campaignStageId: stage.id)))
         case .song(let songId), .finale(let songId):
             router.push(.stageSetup(songId: songId, campaignStageId: stage.id, isBoss: false))
         case .boss(let songId):

@@ -72,11 +72,11 @@ final class CampaignTests: XCTestCase {
             // Optional practice, then song, battle pairs.
             var cursor = 3
             let boss = Stage.Kind.boss(songId: SongLibrary.slug(for: chapter.bossSongTitle))
-            // Practice stages are battles and echoes; the echo right before the boss is E2, not practice.
+            // Practice stages are battles, echoes and quizzes; the echo right before the boss is E2, not practice.
             func skipPractice() {
                 while cursor + 1 < kinds.count, kinds[cursor + 1] != boss {
                     switch kinds[cursor] {
-                    case .battle, .echo: cursor += 1
+                    case .battle, .echo, .quiz: cursor += 1
                     default: return
                     }
                 }
@@ -155,15 +155,35 @@ final class CampaignTests: XCTestCase {
             switch stage.kind {
             case .battle(let config): XCTAssertEqual(config.seed, SeededRandom.seed(from: stage.id))
             case .echo(let config): XCTAssertEqual(config.seed, SeededRandom.seed(from: stage.id))
+            case .quiz(let config): XCTAssertEqual(config.seed, SeededRandom.seed(from: stage.id))
             default: break
             }
         }
         let seeds = stages.compactMap { stage -> UInt64? in
             if case .battle(let config) = stage.kind { return config.seed }
             if case .echo(let config) = stage.kind { return config.seed }
+            if case .quiz(let config) = stage.kind { return config.seed }
             return nil
         }
         XCTAssertEqual(Set(seeds).count, seeds.count)
+    }
+
+    // MARK: Quizzes
+
+    func testEveryIslandHasAQuizThatBuildsAFullRun() {
+        for chapter in CampaignCatalog.chapters {
+            let quizzes = CampaignCatalog.stages(inChapter: chapter.number).compactMap { stage -> QuizConfig? in
+                if case .quiz(let config) = stage.kind { return config }
+                return nil
+            }
+            XCTAssertFalse(quizzes.isEmpty, "\(chapter.name) has no quiz")
+            for config in quizzes {
+                let viewModel = QuizViewModel(config: config, soundPlayer: { _ in }, soundStopper: { _ in })
+                XCTAssertEqual(viewModel.questions.count, CampaignCatalog.quizQuestions, "\(chapter.name) \(config.variant)")
+            }
+        }
+        // The first island has no songs behind it yet, so its quizzes are Higher or lower.
+        XCTAssertEqual(CampaignCatalog.quizVariants(in: CampaignCatalog.chapter(1)), [.higherLower])
     }
 
     // MARK: Curriculum
@@ -191,6 +211,10 @@ final class CampaignTests: XCTestCase {
                 XCTAssertTrue(Set(config.newPool + config.reviewPool).isSubset(of: taught), stage.id)
             case .echo(let config):
                 XCTAssertTrue(Set(config.pool).isSubset(of: taught), stage.id)
+            case .quiz(let config):
+                // Quizzes only use songs from islands already finished.
+                let heard = Set(CampaignCatalog.songsHeard(before: stage.chapter))
+                XCTAssertTrue(Set(config.songTitles ?? []).isSubset(of: heard), stage.id)
             }
         }
     }
