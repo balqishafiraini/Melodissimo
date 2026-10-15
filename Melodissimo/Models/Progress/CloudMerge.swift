@@ -30,7 +30,7 @@ enum CloudMerge {
         "coins_earnedTotal", "coins_spentTotal", "rush_highScore", "echo_highScore",
         "preplayScore", "postplayScore",
     ]
-    private static let maxPrefixes = ["bestScore_", "song_bestScore_", "song_bestAccuracy_", "song_stars_", "stage_stars_", "stat_"]
+    private static let maxPrefixes = ["bestScore_", "song_bestScore_", "song_bestAccuracy_", "song_stars_", "stage_stars_", "stat_", "quiz_best_"]
     private static let orKeys: Set<String> = ["isPreplayDone"]
     private static let orPrefixes = ["achievement_", "song_practiced_", "song_fullCombo_", "daily_done_", "story_seen_", "coach_seen_"]
     private static let keepLocalKeys: Set<String> = ["equip_keyboard", "equip_notes", "equip_outfit"]

@@ -23,6 +23,7 @@ struct PlayRequest: Hashable {
         /// The old 100-level grid, rendered by the battle screen.
         case classic(levelNo: Int)
         case echo(EchoConfig)
+        case quiz(QuizConfig)
         case rush
         case daily(dateKey: String)
     }

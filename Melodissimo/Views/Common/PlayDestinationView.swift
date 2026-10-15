@@ -19,6 +19,13 @@ struct PlayDestinationView: View {
         return fresh
     }
 
+    /// Quizzes are new questions every time.
+    private func quizConfig(_ config: QuizConfig) -> QuizConfig {
+        var fresh = config
+        fresh.seed = freshSeed
+        return fresh
+    }
+
     var body: some View {
         switch request.kind {
         case .song(let songId, let mode, let speed, let isBoss, let isSolemn, let noteLimit):
@@ -42,6 +49,8 @@ struct PlayDestinationView: View {
             BattleView(request: request, config: .rush(seed: freshSeed))
         case .echo(let config):
             EchoView(request: request, config: echoConfig(config))
+        case .quiz(let config):
+            QuizView(request: request, config: quizConfig(config))
         case .daily(let dateKey):
             // Play the day's mode; the date key rides along so the result pays the daily reward.
             if let challenge = DailyChallenge.make(dateKey: dateKey, chapter: ProgressStore.shared.currentStage.chapter),

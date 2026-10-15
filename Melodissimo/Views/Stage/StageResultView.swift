@@ -37,6 +37,8 @@ struct StageResultView: View {
             return "Echo"
         case .rush:
             return "Melody Rush"
+        case .quiz(let config):
+            return config.variant.title
         case .daily:
             return "Daily Challenge"
         }
@@ -281,7 +283,9 @@ struct StageResultView: View {
             if !isEcho {
                 stat("Max combo", "\(result.maxCombo)")
             }
-            if isRush {
+            if case .quiz(let config) = result.request.kind {
+                stat("Best", "\(ProgressStore.shared.quizBest(config.variant))")
+            } else if isRush {
                 stat("High score", "\(ProgressStore.shared.rushHighScore)")
             } else if isEndlessEcho {
                 stat("High score", "\(ProgressStore.shared.echoHighScore)")

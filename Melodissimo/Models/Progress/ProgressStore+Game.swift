@@ -110,6 +110,20 @@ extension ProgressStore {
         return true
     }
 
+    // MARK: - Quizzes
+
+    /// The most right answers in one run of a quiz.
+    func quizBest(_ variant: QuizVariant) -> Int { defaults.integer(forKey: "quiz_best_\(variant.rawValue)") }
+
+    /// Keeps the best run. Returns `true` when `score` is a new best.
+    @discardableResult
+    func recordQuizBest(_ variant: QuizVariant, score: Int) -> Bool {
+        guard score > quizBest(variant) else { return false }
+        defaults.set(score, forKey: "quiz_best_\(variant.rawValue)")
+        objectWillChange.send()
+        return true
+    }
+
     // MARK: - Stats (feed the achievements)
 
     /// The most rounds cleared in any Echo play, endless or campaign (feeds "Telinga Emas").

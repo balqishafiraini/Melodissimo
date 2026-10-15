@@ -328,3 +328,22 @@
 "Hold the note steady for a moment." = "Tahan nadanya sebentar.";
 "Microphone access is off. Turn it on in your device's Settings to play with a real pianika." = "Akses mikrofon mati. Nyalakan di Pengaturan perangkatmu untuk bermain dengan pianika asli.";
 "The microphone could not start." = "Mikrofon tidak bisa dinyalakan.";
+
+/* Listening quizzes */
+"Guess the Song" = "Tebak Lagu";
+"Spot Fals's Note" = "Cari Nada Fals";
+"Higher or Lower?" = "Naik atau Turun?";
+"Ear Quiz" = "Kuis Telinga";
+"Hear the opening, name the song" = "Dengar awalnya, tebak judulnya";
+"Spot Fals's note, or higher or lower?" = "Cari nada Fals, atau naik atau turun?";
+"Best %lld/10" = "Terbaik %lld/10";
+"Question" = "Soal";
+"Play again" = "Putar lagi";
+"Which song is it?" = "Lagu apa ini?";
+"Fals changed one note! Which one?" = "Fals mengubah satu nada! Yang mana?";
+"Was the second note higher or lower?" = "Nada kedua lebih tinggi atau lebih rendah?";
+"⭐ Correct!" = "⭐ Benar!";
+"Oops! Here's the right one" = "Ups! Ini jawaban yang benar";
+"Higher" = "Lebih tinggi";
+"Lower" = "Lebih rendah";
+"Same" = "Sama";

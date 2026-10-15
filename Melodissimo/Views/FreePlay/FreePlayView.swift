@@ -5,12 +5,13 @@
 
 import SwiftUI
 
-/// Everything outside the campaign, always open: any song, any of the 100 classic levels, Echo
-/// and Melody Rush. Teachers assign specific songs, so nothing here is ever locked behind the tour.
+/// Everything outside the campaign, always open: any song, any of the 100 classic levels, Echo,
+/// Melody Rush and the listening quizzes. Teachers assign specific songs, so nothing here is ever locked behind the tour.
 struct FreePlayView: View {
     @EnvironmentObject private var router: AppRouter
     @ObservedObject private var progress = ProgressStore.shared
     @State private var isChoosingEchoLevel = false
+    @State private var isChoosingEarQuiz = false
 
     var body: some View {
         ZStack {
@@ -64,6 +65,16 @@ struct FreePlayView: View {
                             router.push(.play(PlayRequest(kind: .rush)))
                         }
                     }
+                    GridRow {
+                        HubCard(title: QuizVariant.guessSong.title, subtitle: quizSubtitle(.guessSong, fresh: "Hear the opening, name the song"),
+                                icon: "icon_stage_song", color: .orange) {
+                            startQuiz(.guessSong)
+                        }
+                        HubCard(title: "Ear Quiz", subtitle: "Spot Fals's note, or higher or lower?",
+                                icon: "icon_stage_echo", color: .orange) {
+                            isChoosingEarQuiz = true
+                        }
+                    }
                 }
                 .frame(maxHeight: .infinity)
             }
@@ -74,6 +85,20 @@ struct FreePlayView: View {
             Button("Hard: listen only") { startEcho(glow: false) }
             Button("Cancel", role: .cancel) {}
         }
+        .confirmationDialog("Ear Quiz", isPresented: $isChoosingEarQuiz, titleVisibility: .visible) {
+            Button(QuizVariant.spotFals.title) { startQuiz(.spotFals) }
+            Button(QuizVariant.higherLower.title) { startQuiz(.higherLower) }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+
+    /// Ten questions, three hearts. `PlayDestinationView` gives every run a fresh seed.
+    private func startQuiz(_ variant: QuizVariant) {
+        router.push(.play(PlayRequest(kind: .quiz(QuizConfig(variant: variant, seed: 0)))))
+    }
+
+    private func quizSubtitle(_ variant: QuizVariant, fresh: LocalizedStringKey) -> LocalizedStringKey {
+        progress.quizBest(variant) > 0 ? "Best \(progress.quizBest(variant))/10" : fresh
     }
 
     /// An endless Echo run over the middle notes (1 2 3 4 5 6 7 1˙); later rounds use phrases from real songs.

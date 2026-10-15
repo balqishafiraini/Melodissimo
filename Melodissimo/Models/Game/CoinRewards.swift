@@ -22,6 +22,8 @@ enum CoinRewards {
     static let rushAnswersPerCoin = 5
     /// Endless Echo pays this much for every round cleared.
     static let perEchoRound = 2
+    /// The listening quizzes pay this much for every right answer.
+    static let perQuizAnswer = 1
     /// Daily challenge: a flat reward plus a bonus for each day of the streak, up to a cap.
     static let dailyBase = 50
     static let dailyPerStreakDay = 10
@@ -43,6 +45,10 @@ enum CoinRewards {
 
     static func echoEndless(rounds: Int) -> Int {
         max(0, rounds) * perEchoRound
+    }
+
+    static func quiz(correctAnswers: Int) -> Int {
+        max(0, correctAnswers) * perQuizAnswer
     }
 
     static func daily(streak: Int) -> Int {

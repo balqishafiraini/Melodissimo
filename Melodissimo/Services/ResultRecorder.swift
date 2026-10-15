@@ -74,6 +74,10 @@ struct ResultRecorder {
                 summary.isNewBest = progress.recordEchoHighScore(result.score)
                 coins += CoinRewards.echoEndless(rounds: result.score)
             }
+        case .quiz(let config):
+            // `score` is the number of right answers.
+            summary.isNewBest = progress.recordQuizBest(config.variant, score: result.score)
+            coins += CoinRewards.quiz(correctAnswers: result.correctCount)
         case .battle, .daily:
             break   // each mode records its own results in its own task
         }
@@ -97,8 +101,8 @@ struct ResultRecorder {
             }
         }
 
-        // Winning a campaign stage or performing a song pays by the stars it adds. Practice, Rush and
-        // endless Echo were paid above, and the classic levels pay nothing.
+        // Winning a campaign stage or performing a song pays by the stars it adds. Practice, Rush,
+        // endless Echo and the quizzes were paid above, and the classic levels pay nothing.
         if result.didWin, result.stars >= 1, isSongPerform || result.request.campaignStageId != nil {
             coins += CoinRewards.clear(newStars: starGain,
                                        isFirstStageClear: isFirstStageClear,

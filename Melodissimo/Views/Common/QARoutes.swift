@@ -192,6 +192,9 @@ enum QARoutes {
                   case .echo(let config) = stage.kind else { return nil }
             return [.play(PlayRequest(kind: .echo(config), campaignStageId: stage.id))]
         case "rush": return [.play(PlayRequest(kind: .rush))]
+        case "quizGuessSong": return [.play(PlayRequest(kind: .quiz(QuizConfig(variant: .guessSong, seed: 0))))]
+        case "quizSpotFals": return [.play(PlayRequest(kind: .quiz(QuizConfig(variant: .spotFals, seed: 0))))]
+        case "quizHigherLower": return [.play(PlayRequest(kind: .quiz(QuizConfig(variant: .higherLower, seed: 0))))]
         case "classic": return [.play(PlayRequest(kind: .classic(levelNo: 1)))]
         case "result3": return [result(stars: 3)]
         case "result0": return [result(stars: 0)]
