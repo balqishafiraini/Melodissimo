@@ -17,7 +17,7 @@ struct FreePlayView: View {
             ScreenBackdrop(color: Color.yellow)
 
             VStack(spacing: Sizing.s(24)) {
-                ZStack {
+                ZStack(alignment: Sizing.isPhone ? .top : .center) {
                     Text("Free Play")
                         .font(Font.largeTitle)
                         .foregroundColor(Color.darkGreen)
@@ -67,7 +67,7 @@ struct FreePlayView: View {
                 }
                 .frame(maxHeight: .infinity)
             }
-            .padding(Sizing.s(30))
+            .topBarScreenPadding(ipad: 30)
         }
         .confirmationDialog("Echo", isPresented: $isChoosingEchoLevel, titleVisibility: .visible) {
             Button("Easy: the keys light up") { startEcho(glow: true) }

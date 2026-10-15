@@ -19,7 +19,7 @@ struct SongRepositoryLearnView: View {
             LegacyBackdrop(color: Color.yellow)
             
             VStack{
-                HStack{
+                HStack(alignment: Sizing.isPhone ? .top : .center) {
                     Button {
                         dismiss()
                     } label: {
@@ -56,7 +56,7 @@ struct SongRepositoryLearnView: View {
                     }
 
                 }
-                .padding(.all, Sizing.isPhone ? 4 : nil)
+                .padding(.all, Sizing.isPhone ? 0 : nil)
                 
                 ScrollView {
                     LazyVGrid(
@@ -90,7 +90,7 @@ struct SongRepositoryLearnView: View {
                 }
                 
             }
-            .padding(.all, Sizing.isPhone ? 6 : nil)
+            .topBarScreenPadding(ipad: nil)
             .fillsScreenHeight()
             
         }

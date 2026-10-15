@@ -88,7 +88,6 @@ struct PhoneSkillTestView: View {
                         .font(Font.title)
                 }
             }
-            .padding(.horizontal, 4)
 
             Spacer()
 
@@ -107,7 +106,7 @@ struct PhoneSkillTestView: View {
 
             Spacer()
         }
-        .padding(6)
+        .topBarScreenPadding(ipad: 6)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 

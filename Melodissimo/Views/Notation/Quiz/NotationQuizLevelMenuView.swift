@@ -38,7 +38,7 @@ struct NotationQuizLevelMenuView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 6) {
-                ZStack {
+                ZStack(alignment: Sizing.isPhone ? .top : .center) {
                     VStack(spacing: 0) {
                         Text("Classic Levels")
                             .foregroundColor(.white)
@@ -62,7 +62,7 @@ struct NotationQuizLevelMenuView: View {
                                 .buttonFrame(width: 120, height: 80)
                                 .background(Color.darkGreen)
                                 .foregroundColor(.white)
-                                .cornerRadius(14)
+                                .cornerRadius(Sizing.s(20))
                                 .font(Font.headline)
                         }
 
@@ -72,15 +72,15 @@ struct NotationQuizLevelMenuView: View {
                             router.push(.help)
                         } label: {
                             Text("?")
-                                .frame(width: 44, height: 44)
+                                .frame(width: Sizing.topBarButton, height: Sizing.topBarButton)
                                 .background(Color.darkGreen)
                                 .foregroundColor(.white)
-                                .cornerRadius(14)
+                                .cornerRadius(Sizing.s(20))
                                 .font(Font.title)
                         }
                     }
                 }
-                .padding(.horizontal, 10)
+                .phoneTopBarRow()
 
                 ScrollView {
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 104), spacing: 8)], spacing: 8) {

@@ -32,7 +32,7 @@ struct NotationLearnView: View {
                             .foregroundColor(.white)
                             .cornerRadius(Sizing.s(20))
                             .font(Font.headline)
-                    }.padding(.all, Sizing.isPhone ? 4 : nil)
+                    }.padding(.all, Sizing.isPhone ? 0 : nil)
                     
                     Spacer()
                     
@@ -45,10 +45,10 @@ struct NotationLearnView: View {
                             .foregroundColor(.white)
                             .cornerRadius(Sizing.s(20))
                             .font(Font.title)
-                    }.padding(.all, Sizing.isPhone ? 4 : nil)
+                    }.padding(.all, Sizing.isPhone ? 0 : nil)
 
                 }
-                .padding(.all, Sizing.isPhone ? 4 : nil)
+                .padding(.all, Sizing.isPhone ? 0 : nil)
                 
                 Spacer()
                 
@@ -58,7 +58,7 @@ struct NotationLearnView: View {
                 
                 
             }
-            .padding(.all, Sizing.isPhone ? 6 : nil)
+            .topBarScreenPadding(ipad: nil)
             .fillsScreenHeight()
         }
     }

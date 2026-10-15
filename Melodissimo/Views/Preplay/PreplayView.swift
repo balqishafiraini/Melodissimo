@@ -33,7 +33,7 @@ struct PreplayView: View {
                             .cornerRadius(Sizing.s(20))
                             .font(Font.title)
                     }
-                    .padding(.all, Sizing.isPhone ? 4 : nil)
+                    .padding(.all, Sizing.isPhone ? 0 : nil)
                     NavigationLink(destination: HelpPageView()
                         .navigationBarBackButtonHidden(true), isActive: $isPresentingHelp) {
                             EmptyView()
@@ -59,7 +59,7 @@ struct PreplayView: View {
                 Spacer()
                 
             }
-            .padding(.all, Sizing.isPhone ? 6 : nil)
+            .topBarScreenPadding(ipad: nil)
             .frame(maxWidth: .infinity, maxHeight: screenHeight, alignment: .topLeading)
         }
         .onAppear {

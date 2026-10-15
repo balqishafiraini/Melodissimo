@@ -15,7 +15,7 @@ struct LearnHubView: View {
             ScreenBackdrop(color: Color.softGreen)
 
             VStack(spacing: Sizing.s(24)) {
-                ZStack {
+                ZStack(alignment: Sizing.isPhone ? .top : .center) {
                     Text("Learn")
                         .font(Font.largeTitle)
                         .foregroundColor(Color.darkGreen)
@@ -61,7 +61,7 @@ struct LearnHubView: View {
                 }
                 .frame(maxHeight: .infinity)
             }
-            .padding(Sizing.s(30))
+            .topBarScreenPadding(ipad: 30)
         }
     }
 }

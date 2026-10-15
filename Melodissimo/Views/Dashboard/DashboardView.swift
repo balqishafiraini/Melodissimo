@@ -35,7 +35,7 @@ struct DashboardView: View {
                 }
                 .frame(height: Sizing.isPhone ? 104 : 210)
             }
-            .padding(Sizing.s(30))
+            .topBarScreenPadding(ipad: 30)
             // iPad: exactly the screen's height, as always. iPhone: whatever the safe area leaves.
             .frame(height: Sizing.isPhone ? nil : screenHeight, alignment: .top)
             .frame(maxHeight: Sizing.isPhone ? .infinity : nil, alignment: .top)

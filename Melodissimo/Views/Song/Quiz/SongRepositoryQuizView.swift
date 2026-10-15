@@ -24,7 +24,7 @@ struct SongRepositoryQuizView: View {
             LegacyBackdrop(color: Color.yellow)
             
             VStack{
-                ZStack {
+                ZStack(alignment: Sizing.isPhone ? .top : .center) {
                     Text("Song Stage")
                         .foregroundColor(Color.darkGreen)
                         .font(Font.largeTitle)
@@ -55,7 +55,7 @@ struct SongRepositoryQuizView: View {
                         }
                     }
                 }
-                .padding(.all, Sizing.isPhone ? 4 : nil)
+                .padding(.all, Sizing.isPhone ? 0 : nil)
                 
                 ScrollView {
                     LazyVGrid(
@@ -100,7 +100,7 @@ struct SongRepositoryQuizView: View {
                 }
 
             }
-            .padding(.all, Sizing.isPhone ? 6 : nil)
+            .topBarScreenPadding(ipad: nil)
             .fillsScreenHeight()
             
         }

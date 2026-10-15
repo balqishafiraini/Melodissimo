@@ -32,7 +32,37 @@ extension Sizing {
     static var isCompactHeight: Bool { isPhone && screenHeight < 380 }
 }
 
+extension Sizing {
+    /// The top bar (Menu / Back, title, "?") on every iPhone screen sits this far below the safe area's top edge,
+    /// this far in from its sides, and its buttons are this tall. iPad keeps each screen's own numbers.
+    static let topBarInset: CGFloat = 12
+    static let topBarSide: CGFloat = 16
+    static var topBarButton: CGFloat { tap(56) }
+}
+
 extension View {
+    /// The padding of a screen whose first row is the top bar. iPad: `.padding(.all, ipad)` exactly as before
+    /// (`nil` is the system default). iPhone: `topBarInset` above, `topBarSide` beside, a little below, so the
+    /// row lands at the same place on every screen.
+    @ViewBuilder
+    func topBarScreenPadding(ipad: CGFloat?) -> some View {
+        if Sizing.isPhone {
+            padding(.top, Sizing.topBarInset).padding(.horizontal, Sizing.topBarSide).padding(.bottom, 6)
+        } else {
+            padding(.all, ipad)
+        }
+    }
+
+    /// The same placement for a top bar that carries its own padding. iPhone only; iPad is left as drawn.
+    @ViewBuilder
+    func phoneTopBarRow() -> some View {
+        if Sizing.isPhone {
+            padding(.top, Sizing.topBarInset).padding(.horizontal, Sizing.topBarSide)
+        } else {
+            self
+        }
+    }
+
     /// The old screens' "fill the screen" frame. iPad: as wide as it can be and exactly the screen's height (what
     /// `UIScreen.main.bounds.size.height` gave). iPhone: whatever the safe area leaves.
     func fillsScreenHeight(alignment: Alignment = .topLeading) -> some View {

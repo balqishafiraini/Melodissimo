@@ -44,7 +44,8 @@ struct PhoneStoryPage<Cards: View>: View {
                     }
                 }
             }
-            .frame(height: 44)
+            .frame(height: Sizing.topBarButton)
+            .padding(.top, Sizing.topBarInset)
 
             HStack(alignment: .bottom, spacing: 12) {
                 ViewThatFits(in: .vertical) {
@@ -59,8 +60,13 @@ struct PhoneStoryPage<Cards: View>: View {
                     .frame(maxWidth: 240, maxHeight: .infinity, alignment: .bottom)
             }
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, Sizing.topBarSide)
         .padding(.bottom, 8)
+        // Pinned to the top, so the top bar sits where it does on every other screen even when the page is short.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        // A `NavigationView` nested in another (the score page's) keeps a hidden 44 pt bar's room at the top; the
+        // landscape phone has no real top inset, so give it back and the top bar sits where it does everywhere else.
+        .ignoresSafeArea(.container, edges: .top)
     }
 
     private var column: some View {

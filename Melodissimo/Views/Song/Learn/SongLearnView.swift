@@ -34,7 +34,7 @@ struct SongLearnView: View {
                             .foregroundColor(.white)
                             .cornerRadius(Sizing.s(20))
                             .font(Font.headline)
-                    }.padding(.all, Sizing.isPhone ? 4 : nil)
+                    }.padding(.all, Sizing.isPhone ? 0 : nil)
                     
                     Spacer()
                     
@@ -57,16 +57,16 @@ struct SongLearnView: View {
                             .cornerRadius(Sizing.s(20))
                             .font(Font.title)
                     }
-                    .padding(.all, Sizing.isPhone ? 4 : nil)
+                    .padding(.all, Sizing.isPhone ? 0 : nil)
 
                 }
-                .padding([.leading, .trailing])
+                .padding(.horizontal, Sizing.isPhone ? 0 : nil)
                 
                 sheet
                 
                 PianikaStackLearningMini()
             }
-            .padding(.all, Sizing.isPhone ? 6 : nil)
+            .topBarScreenPadding(ipad: nil)
             .fillsScreenHeight()
         }
         .onAppear {

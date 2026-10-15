@@ -171,7 +171,7 @@ struct CampaignMapView: View {
     // MARK: Pieces
 
     private var topBar: some View {
-        ZStack {
+        ZStack(alignment: Sizing.isPhone ? .top : .center) {
             VStack(spacing: 2) {
                 Text("Nusantara Tour")
                     .font(Font.largeTitle)
@@ -212,8 +212,8 @@ struct CampaignMapView: View {
                 }
             }
         }
-        .padding(.horizontal, Sizing.s(30))
-        .padding(.top, Sizing.s(12))
+        .padding(.horizontal, Sizing.isPhone ? Sizing.topBarSide : Sizing.s(30))
+        .padding(.top, Sizing.isPhone ? Sizing.topBarInset : Sizing.s(12))
         .padding(.bottom, Sizing.s(8))
     }
 
