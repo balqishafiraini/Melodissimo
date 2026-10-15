@@ -22,8 +22,6 @@ struct TimedNote: Hashable {
     let keyId: Int
     let time: Double
     let duration: Double
-    /// A long note: the key must be held down until its tail reaches the hit line.
-    var isHold = false
 }
 
 /// Rhythm data for a song: a tempo and the notes with their beats. Stored as
@@ -114,9 +112,6 @@ struct SongChart: Codable, Hashable {
         (offset ?? 0) + songTime * speed
     }
 
-    /// Notes this many beats long or longer are hold notes, played like a long tile in Piano Tiles.
-    static let holdMinimumBeats = 1.5
-
     /// The notes on the song clock: `time = seconds(atBeat: b) / speed`.
     func timedNotes(speed: Double) -> [TimedNote] {
         notes.enumerated().map { index, note in
@@ -124,8 +119,7 @@ struct SongChart: Codable, Hashable {
             return TimedNote(index: index,
                              keyId: note.k,
                              time: start / speed,
-                             duration: (seconds(atBeat: note.b + note.d) - start) / speed,
-                             isHold: note.d >= Self.holdMinimumBeats)
+                             duration: (seconds(atBeat: note.b + note.d) - start) / speed)
         }
     }
 }

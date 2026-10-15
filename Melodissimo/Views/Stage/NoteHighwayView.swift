@@ -9,9 +9,8 @@ import SwiftUI
 /// redrawn every frame from the engine's song clock: there is never one SwiftUI view per note.
 ///
 /// Notes fall in lanes lined up with the keyboard keys (`keyFrames` are the keys' frames in the
-/// window's coordinate space) and reach the hit line just above the keyboard. Hit notes vanish;
-/// missed notes turn grey and keep falling. A hit long note stays on the hit line while its key is held, shrinking
-/// as its tail comes down; let go early, the rest turns grey and falls away.
+/// window's coordinate space) and reach the hit line just above the keyboard. Notes are never
+/// erased on a hit: they keep falling past the hit line until they leave on their own. Missed notes turn grey.
 struct NoteHighwayView: View {
     let engine: RhythmEngine
     /// Key id → frame in window coordinates, reported by `PianoKeyboard`.
@@ -40,7 +39,6 @@ struct NoteHighwayView: View {
         let keyId: Int
         let time: Double
         let duration: Double
-        let isHold: Bool
         let fill: Color
     }
 
@@ -70,8 +68,7 @@ struct NoteHighwayView: View {
         for note in engine.notes {
             let key = NoteCatalog.note(note.keyId)
             let fill = skin.color(semitone: key.semitone, isBlack: key.isBlack) ?? (key.isBlack ? .navy : .yellow)
-            let render = RenderNote(index: note.index, keyId: note.keyId, time: note.time, duration: note.duration,
-                                    isHold: note.isHold, fill: fill)
+            let render = RenderNote(index: note.index, keyId: note.keyId, time: note.time, duration: note.duration, fill: fill)
             if key.isBlack { black.append(render) } else { white.append(render) }
         }
         self.whiteNotes = white.sorted { $0.time < $1.time }
@@ -246,57 +243,20 @@ struct NoteHighwayView: View {
     }
 
     private func drawNote(_ note: RenderNote, _ context: inout GraphicsContext, songTime: Double, hitY: CGFloat, originX: CGFloat) {
-        // Hit notes vanish; missed ones stay and turn grey. A hit long note is cut off at the hit line while held,
-        // or at the point it was let go.
-        let engineNote = engine.notes[note.index]
-        let judgment = engineNote.judgment
-        var cutOffAt: Double?
-        var isGrey = judgment == .miss
-        var isHeld = false
-        if let judgment, judgment != .miss {
-            switch engineNote.hold {
-            case .holding?:
-                cutOffAt = songTime
-                isHeld = true
-            case .broken(let releasedAt)?:
-                cutOffAt = releasedAt
-                isGrey = true
-            default:
-                return
-            }
-        }
+        // Every note keeps falling until it leaves the highway; missed ones turn grey.
+        let judgment = engine.notes[note.index].judgment
         guard HighwayGeometry.isVisible(noteTime: note.time, duration: note.duration,
                                         songTime: songTime, approachTime: engine.approachTime),
               let keyFrame = keyFrames[note.keyId] else { return }
 
-        var rect = HighwayGeometry.noteRect(noteTime: note.time, duration: note.duration,
+        let rect = HighwayGeometry.noteRect(noteTime: note.time, duration: note.duration,
                                             songTime: songTime, approachTime: engine.approachTime,
                                             hitY: hitY, keyFrame: keyFrame, highwayOriginX: originX,
                                             minimumLength: Sizing.s(HighwayGeometry.minimumNoteLength))
-        if let cutOffAt {
-            let cutY = HighwayGeometry.bottomY(noteTime: cutOffAt, songTime: songTime,
-                                               approachTime: engine.approachTime, hitY: hitY)
-            rect.size.height = min(rect.maxY, cutY) - rect.minY
-            guard rect.height > 1 else { return }
-        }
-        let fill: Color = isGrey ? Color.gray.opacity(0.55) : note.fill
-        let shape = Path(roundedRect: rect, cornerRadius: min(Sizing.s(10), rect.height / 2))
+        let fill: Color = judgment == .miss ? Color.gray.opacity(0.55) : note.fill
+        let shape = Path(roundedRect: rect, cornerRadius: Sizing.s(10))
         context.fill(shape, with: .color(fill))
-        if note.isHold, rect.height > Sizing.s(30) {
-            // A line down the middle marks a note to hold, like a long tile.
-            let line = CGRect(x: rect.midX - Sizing.s(2), y: rect.minY + Sizing.s(8),
-                              width: Sizing.s(4), height: rect.height - Sizing.s(16))
-            context.fill(Path(roundedRect: line, cornerRadius: Sizing.s(2)),
-                         with: .color(Color.white.opacity(isGrey ? 0.25 : 0.55)))
-        }
-        if isHeld {
-            // Glowing while held, so it reads as "keep the key down until this ends".
-            context.fill(Path(CGRect(x: rect.minX, y: hitY - Sizing.s(6), width: rect.width, height: Sizing.s(12))),
-                         with: .color(Color.yellow.opacity(0.8)))
-            context.stroke(shape, with: .color(Color.yellow), lineWidth: 3)
-        } else {
-            context.stroke(shape, with: .color(Color.white.opacity(0.85)), lineWidth: 2)
-        }
+        context.stroke(shape, with: .color(Color.white.opacity(0.85)), lineWidth: 2)
 
         if labelsOnNotes, let label = context.resolveSymbol(id: note.keyId) {
             context.draw(label, at: CGPoint(x: rect.midX, y: max(rect.minY + Sizing.s(14), rect.maxY - Sizing.s(20))))

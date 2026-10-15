@@ -68,12 +68,6 @@ enum Judge {
         }
     }
 
-    /// Base points for holding a long note all the way to its tail, before the combo multiplier.
-    static let holdBonus = 100
-
-    /// A hold counts as complete when the key comes up no earlier than this many seconds before the tail.
-    static let holdReleaseTolerance = 0.15
-
     /// `1 + min(combo / 10, 3)` (integer division): ×1 below 10, ×2 from 10, ×3 from 20, ×4 from 30.
     static func multiplier(forCombo combo: Int) -> Int {
         1 + min(max(combo, 0) / 10, 3)
