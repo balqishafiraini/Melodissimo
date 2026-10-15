@@ -51,6 +51,7 @@ struct MicCalibrationView: View {
             }
             .ignoresSafeArea(edges: Sizing.isPhone ? [] : .bottom)
         }
+        .playScreen()
         .onAppear { mic.start() }
         .onDisappear { mic.stop() }
     }

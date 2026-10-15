@@ -27,7 +27,7 @@ container="$(xcrun simctl get_app_container "$udid" "$bundle" data)"
 rm -f "$container/Documents/qa-cycle-done.txt"
 
 # shellcheck disable=SC2086
-SIMCTL_CHILD_MallocStackLogging="${STACKS:-0}" xcrun simctl launch "$udid" "$bundle" -AppleLanguages "(en)" -isPreplayDone YES -qaSkipSplash YES -qaSeed YES \
+SIMCTL_CHILD_MallocStackLogging="${STACKS:-0}" xcrun simctl launch "$udid" "$bundle" -AppleLanguages "(en)" -isPreplayDone YES -qaSkipSplash YES -qaSeed YES -qaOnlineServices NO \
     -qaRoute "$route" -qaCycle "$cycles" ${EXTRA:-} >/dev/null
 
 # Each cycle is ~4.6 s, plus the first push and the final wait.

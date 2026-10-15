@@ -57,6 +57,7 @@ for name in "${names[@]}"; do
         cover-*) args+=(-qaSkipSplash YES -qaRoute settings -qaCover "${name#cover-}") ;;
         *) args+=(-qaSkipSplash YES -qaRoute "$name") ;;
     esac
+    args+=(-qaOnlineServices NO)   # DEBUG only: keeps the Game Center sign-in sheet out of the shots
     if [ "${SEED:-0}" = "1" ]; then args+=(-qaSeed YES); fi
     # shellcheck disable=SC2206
     args+=(${EXTRA:-})

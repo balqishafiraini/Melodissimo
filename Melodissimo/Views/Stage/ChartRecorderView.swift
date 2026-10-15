@@ -41,6 +41,7 @@ struct ChartRecorderView: View {
             }
             .ignoresSafeArea(edges: Sizing.isPhone ? [] : .bottom)
         }
+        .playScreen()
         .onReceive(ticker) { _ in tickMetronome() }
         .onChange(of: model.phase) { phase in
             if phase == .finished { saveOutputs() }

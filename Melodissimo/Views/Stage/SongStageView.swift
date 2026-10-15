@@ -129,6 +129,7 @@ struct SongStageView: View {
                 finishedOverlay
             }
         }
+        .playScreen()
         .onChange(of: scenePhase) { newPhase in
             // Leaving the app (or an alert / Control Center covering it) must not let the song run on.
             if newPhase != .active {

@@ -60,6 +60,7 @@ struct DashboardView: View {
             }
         }
         .environmentObject(router)
+        .playSessionSystemUI()
     }
 
     // MARK: First stage

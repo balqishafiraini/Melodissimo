@@ -34,9 +34,17 @@ final class CloudSyncStore: SyncStore {
 /// current signing profile doesn't have, and calling them anyway makes the system log errors and burn CPU
 /// at launch. So they run only when the Info.plist key `MelodissimoOnlineServices` is `YES`; see
 /// `STABILITY_PLAN.md` §7 for how to switch them on.
+///
+/// Debug builds also read the launch argument `-qaOnlineServices YES|NO`, so the QA scripts can run without
+/// Game Center's sign-in sheet covering the screen whatever the Info.plist says.
 enum OnlineServices {
     static var isEnabled: Bool {
-        Bundle.main.object(forInfoDictionaryKey: "MelodissimoOnlineServices") as? Bool ?? false
+        #if DEBUG
+        if UserDefaults.standard.object(forKey: "qaOnlineServices") != nil {
+            return UserDefaults.standard.bool(forKey: "qaOnlineServices")
+        }
+        #endif
+        return Bundle.main.object(forInfoDictionaryKey: "MelodissimoOnlineServices") as? Bool ?? false
     }
 }
 

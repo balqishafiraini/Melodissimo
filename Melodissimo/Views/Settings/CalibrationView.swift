@@ -54,6 +54,7 @@ struct CalibrationView: View {
             }
             .ignoresSafeArea(edges: Sizing.isPhone ? [] : .bottom)
         }
+        .playScreen()
         .onAppear {
             model.onBeat = { _ in
                 // The same sample path the song stage uses, so the click shares its audio latency.

@@ -52,6 +52,7 @@ struct EchoView: View {
 
             nameOverlay
         }
+        .playScreen()
         .onReceive(ticker) { _ in
             // The timer keeps firing through the exit transition; a phrase note started then would outlive the screen.
             guard isOnScreen else { return }

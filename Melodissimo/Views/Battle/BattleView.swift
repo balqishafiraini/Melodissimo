@@ -67,6 +67,7 @@ struct BattleView: View {
             // (On iPad they have always been measured from the safe area; that is left as it was.)
             .ignoresSafeArea(.all, edges: Sizing.isPhone ? .all : [])
         }
+        .playScreen()
         .onReceive(ticker) { _ in
             // The timer keeps firing through the exit transition; a timeout then would sound the revealed key on the next screen.
             guard isOnScreen else { return }
