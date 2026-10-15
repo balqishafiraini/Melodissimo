@@ -76,7 +76,7 @@ struct SettingsView: View {
             Button("Continue", role: .destructive) { isReallyConfirmingReset = true }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Your stars, coins, purchases and trophies will be erased.")
+            Text("Your stars, coins, shop items and trophies will be erased. What you bought with real money stays.")
         }
         .alert("Are you really sure?", isPresented: $isReallyConfirmingReset) {
             Button("Erase everything", role: .destructive) { resetProgress() }
@@ -314,7 +314,7 @@ struct SettingsView: View {
                     .font(Font.headline)
                     .foregroundColor(Color.darkGreen)
             }
-            caption("Starts the game over: stars, coins, shop items, trophies and achievements. Your settings stay.")
+            caption("Starts the game over: stars, coins, shop items, trophies and achievements. Your settings and what you bought with real money stay.")
         }
     }
 

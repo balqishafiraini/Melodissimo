@@ -219,12 +219,12 @@
 "Slide right if you always hit a little late, left if you hit early. Or let the game measure it for you." = "Geser ke kanan jika kamu selalu menekan sedikit terlambat, ke kiri jika terlalu cepat. Atau biarkan permainan mengukurnya untukmu.";
 "Reset progress" = "Atur ulang progres";
 "Reset progress?" = "Atur ulang progres?";
-"Your stars, coins, purchases and trophies will be erased." = "Bintang, koin, barang yang dibeli, dan pialamu akan dihapus.";
+"Your stars, coins, shop items and trophies will be erased. What you bought with real money stays." = "Bintang, koin, barang toko, dan pialamu akan dihapus. Yang kamu beli dengan uang asli tetap ada.";
 "Are you really sure?" = "Kamu benar-benar yakin?";
 "This cannot be undone." = "Ini tidak bisa dibatalkan.";
 "Erase everything" = "Hapus semuanya";
 "Progress was reset" = "Progres sudah diatur ulang";
-"Starts the game over: stars, coins, shop items, trophies and achievements. Your settings stay." = "Memulai permainan dari awal: bintang, koin, barang toko, piala, dan pencapaian. Pengaturanmu tetap ada.";
+"Starts the game over: stars, coins, shop items, trophies and achievements. Your settings and what you bought with real money stay." = "Memulai permainan dari awal: bintang, koin, barang toko, piala, dan pencapaian. Pengaturan dan yang kamu beli dengan uang asli tetap ada.";
 "About" = "Tentang";
 "Version %@" = "Versi %@";
 "Close" = "Tutup";

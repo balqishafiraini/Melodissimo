@@ -565,7 +565,7 @@ Goal: everything the shop sells is described by data with the **same shape as th
 - **Manual QA:** Shop, Home, map, certificate and the walk/run frames with 3 different outfits look exactly as before.
 
 #### Task E3 — Wallet v2 + inventory
-- [ ] done
+- [x] done
 - **Touches:** `Models/Progress/ProgressStore+Game.swift` (coins), `Models/Progress/ProgressStore+Shop.swift`, `Models/Progress/CloudMerge.swift`, `Views/Settings/SettingsView.swift` (reset progress), tests.
 - Add `coins_purchasedTotal` and the balance formula from §5.4. Add `inventoryCount(_:)`, `addToInventory(_:count:)`, `useFromInventory(_:) -> Bool`, `buyConsumable(_ item:, count:) -> Bool` (pays coins, adds to the inventory, respects `maxStack`).
 - `CloudMerge`: `coins_purchasedTotal` → max; prefixes `inv_gained_` and `inv_used_` → max; `iap_granted` → union.
@@ -919,6 +919,9 @@ Goal: everything the shop sells is described by data with the **same shape as th
 ## 9. Executor notes
 
 _(Executors record decisions, deviations and the user's answers to §1 here.)_
+
+- **2026-10-15, E3:** "Reset progress" still resets `coins_spentTotal` (as today) and keeps `coins_purchasedTotal`, so after a reset the purchased coins are spendable again while the shop items bought with them are gone. `CloudSync.forgetProgress()` now skips keys a reset keeps, so paid things also stay in iCloud. `buyConsumable` takes `maxStack` as a parameter (default 99) until E1 adds `ShopItem.maxStack`. The settings reset texts changed ("What you bought with real money stays.").
+- **2026-10-15, test baseline:** `SongChartTests.testAllSixteenSongsLoadAChartMatchingTheirMelody` ("Indonesia Raya: chart keys differ from the melody") already fails on a clean checkout of `27ef748`. It is not caused by Phase E work.
 
 - **2026-10-15, D2:** no Kids Category; keep age rating 4+ in Music/Education.
 - **2026-10-15, D1:** Melodissimo Plus subscription (monthly + yearly) + one-time song packs, no ads.

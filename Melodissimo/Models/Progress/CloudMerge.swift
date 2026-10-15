@@ -27,10 +27,10 @@ enum CloudMerge {
 
     private static let maxKeys: Set<String> = [
         "currentLevel", "bestCombo", "longestStreak", "campaign_grantedChapter",
-        "coins_earnedTotal", "coins_spentTotal", "rush_highScore", "echo_highScore",
+        "coins_earnedTotal", "coins_spentTotal", "coins_purchasedTotal", "rush_highScore", "echo_highScore",
         "preplayScore", "postplayScore",
     ]
-    private static let maxPrefixes = ["bestScore_", "song_bestScore_", "song_bestAccuracy_", "song_stars_", "stage_stars_", "stat_", "quiz_best_"]
+    private static let maxPrefixes = ["bestScore_", "song_bestScore_", "song_bestAccuracy_", "song_stars_", "stage_stars_", "stat_", "quiz_best_", "inv_gained_", "inv_used_"]
     private static let orKeys: Set<String> = ["isPreplayDone"]
     private static let orPrefixes = ["achievement_", "song_practiced_", "song_fullCombo_", "daily_done_", "story_seen_", "coach_seen_"]
     private static let keepLocalKeys: Set<String> = ["equip_keyboard", "equip_notes", "equip_outfit"]
@@ -38,7 +38,7 @@ enum CloudMerge {
     /// How a key is merged, or `nil` when it does not sync. `songTitles` are the legacy trophy flags.
     static func rule(for key: String, songTitles: Set<String>) -> Rule? {
         if key == "stat_tourCompletedAt" { return .earliest }
-        if key == "shop_owned" { return .union }
+        if key == "shop_owned" || key == "iap_granted" { return .union }
         if keepLocalKeys.contains(key) { return .keepLocal }
         if maxKeys.contains(key) || maxPrefixes.contains(where: key.hasPrefix) { return .max }
         if orKeys.contains(key) || orPrefixes.contains(where: key.hasPrefix) || songTitles.contains(key) { return .or }
