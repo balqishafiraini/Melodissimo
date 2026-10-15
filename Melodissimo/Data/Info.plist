@@ -3,11 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>MelodissimoOnlineServices</key>
-	<false/>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Melodissimo listens to your pianika so you can play the songs on your real instrument.</string>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
+	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>BalooDa-Regular.ttf</string>
