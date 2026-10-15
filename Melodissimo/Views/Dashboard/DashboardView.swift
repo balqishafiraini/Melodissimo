@@ -278,7 +278,10 @@ struct DashboardView: View {
             // iPhone: one self-contained screen (a NavigationView inside this stack does not work there).
             if Sizing.isPhone { PhoneSkillTestView() } else { OnboardPostplayView() }
         case .play(let request):
+            // `replaceTop` from one play to another (Practice → Perform) keeps the same stack slot, so without a
+            // per-request identity SwiftUI reuses the old screen and its finished engine.
             PlayDestinationView(request: request)
+                .id(request)
         case .result(let result, let rewards):
             StageResultView(result: result, rewards: rewards)
         case .freePlay:
