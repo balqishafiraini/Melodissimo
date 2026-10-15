@@ -23,7 +23,7 @@
 
 | # | Song | Verdict | Shift | Align score | Pulse ratio | Onset med/p90 (ms) | Pitch % | Tempo | bpm | Cut (s) | m4a MB |
 |---|------|---------|-------|-------------|-------------|--------------------|---------|-------|-----|---------|--------|
-| 1 | Indonesia Raya | UNSURE | +5 | 0.60 | 1 | 29/67 | 46 | map | 97 | 69 | 1.13 |
+| 1 | Indonesia Raya | TAPPED | +5 | 0.59 | 1 | 42/84 | 41 | map | 193 | 68 | 1.13 |
 | 2 | Bagimu Negeri | UNSURE | +2 | 0.58 | 1 | 25/61 | 41 | map | 75 | 31 | 0.50 |
 | 3 | Hari Merdeka | LIKELY | -5 | 0.81 | 1 | 36/76 | 91 | map | 120 | 29 | 0.43 |
 | 4 | Garuda Pancasila | LIKELY | -5 | 0.88 | 1 | 5/34 | 98 | steady | 129 | 40 | 0.64 |
@@ -36,6 +36,6 @@
 | 11 | Api Kemerdekaan | UNSURE | -5 | 0.78 | 1 | 20/33 | 74 | steady | 129 | 37 | 0.59 |
 | 12 | Halo Halo Bandung | LIKELY | +0 | 0.80 | 1 | 7/20 | 80 | steady | 116 | 40 | 0.65 |
 | 13 | Tanah Airku | UNSURE | +5 | 0.49 | 1 | 37/89 | 26 | map | 70 | 54 | 0.88 |
-| 14 | Dari Sabang Sampai Merauke | UNSURE | +2 | 0.48 | 1 | 11/97 | 23 | steady | 125 | 37 | 0.61 |
-| 15 | Mengheningkan Cipta | UNSURE | +0 | 0.67 | 1 | 22/52 | 71 | map | 68 | 91 | 1.45 |
+| 14 | Dari Sabang Sampai Merauke | UNSURE | +2 | 0.48 | 1 | 27/95 | 23 | steady | 125 | 38 | 0.62 |
+| 15 | Mengheningkan Cipta | TAPPED | +0 | 0.86 | 1 | 0/62 | 94 | map | 66 | 91 | 1.48 |
 | 16 | Gugur Bunga | UNSURE | +0 | 0.83 | 1 | 30/47 | 71 | map | 61 | 43 | 0.70 |

@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backsound Tap Sync</title>
+<style>
+  :root { --bg:#f7f5f0; --fg:#222; --muted:#777; --card:#fff; --line:#ddd; --accent:#c0392b; --ok:#2e8b57; --cur:#1f6feb; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.45 -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--fg); }
+  main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .muted { color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin: 12px 0; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button, select, input { font: inherit; padding: 6px 10px; border-radius: 8px; border: 1px solid #bbb; background: #fff; }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button:disabled { opacity: .5; }
+  input[type=number] { width: 90px; }
+  #clock { font: 600 22px ui-monospace, Menlo, monospace; min-width: 110px; }
+  #tapzone { user-select: none; touch-action: manipulation; border: 3px dashed #bbb; border-radius: 14px; padding: 18px; text-align: center; cursor: pointer; }
+  #tapzone.live { border-color: var(--accent); }
+  #tapzone.flash { background: #fde7e4; }
+  #next { font: 700 40px ui-monospace, Menlo, monospace; letter-spacing: 6px; }
+  #next .n0 { color: var(--accent); }
+  #next .n1, #next .n2, #next .n3 { color: #bbb; font-size: 28px; }
+  #notes { display: flex; flex-wrap: wrap; gap: 4px 0; }
+  .bar { display: flex; gap: 2px; padding: 0 6px; border-left: 2px solid #999; margin-bottom: 6px; }
+  .bar .no { font-size: 10px; color: var(--muted); width: 16px; }
+  .note { min-width: 34px; padding: 2px 4px; border-radius: 6px; border: 1px solid var(--line); text-align: center; cursor: pointer; font: 600 15px ui-monospace, Menlo, monospace; }
+  .note small { display: block; font: 10px ui-monospace, Menlo, monospace; color: var(--muted); }
+  .note.tapped { background: #e6f4ea; border-color: #9fd3b0; }
+  .note.cursor { outline: 3px solid var(--cur); }
+  .note.bad { background: #fde7e4; border-color: var(--accent); }
+  .note.playing { background: #ffe58a; }
+  pre { white-space: pre-wrap; font: 12px ui-monospace, Menlo, monospace; background: #f3f3f3; padding: 8px; border-radius: 8px; max-height: 260px; overflow: auto; }
+  kbd { border: 1px solid #bbb; border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; font-size: 12px; background: #fff; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Backsound tap sync</h1>
+  <div class="muted">Play the recording and tap <kbd>Space</kbd> (or the box) on <b>every melody note</b>, the moment you hear it, like clapping each syllable when you sing along. Then switch on <b>Check</b> to hear the pianika play your taps over the music.</div>
+
+  <div class="card row">
+    <label>Song <select id="song"></select></label>
+    <span id="status" class="muted"></span>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <button id="play" class="primary">▶ Play</button>
+      <button id="stop">■ Stop</button>
+      <label>from <input id="from" type="number" step="0.5" min="0" value="0"> s</label>
+      <label>speed <select id="speed"><option value="1">1×</option><option value="0.75">0.75×</option><option value="0.5">0.5×</option></select></label>
+      <label><input id="check" type="checkbox"> Check (pianika plays the taps)</label>
+      <span id="clock">0.00</span>
+    </div>
+    <div class="muted" style="margin-top:6px">
+      <kbd>Space</kbd> tap · <kbd>Backspace</kbd> undo · <kbd>←</kbd>/<kbd>→</kbd> move the blue cursor · <kbd>Enter</kbd> play from 3 s before the cursor · <kbd>Esc</kbd> stop · click a note to tap again from there.
+      Slower speeds are easier to tap (the pitch drops; timing is still right). Check always plays at 1×.
+    </div>
+  </div>
+
+  <div id="tapzone" class="card">
+    <div class="muted">next notes</div>
+    <div id="next">–</div>
+    <div class="muted" id="count"></div>
+  </div>
+
+  <div class="card"><div id="notes"></div></div>
+
+  <div class="card">
+    <div class="row">
+      <button id="clearFrom">Clear taps from the cursor</button>
+      <button id="save">Save taps</button>
+      <button id="build" class="primary">Save + build + install in app</button>
+      <span id="saveStatus" class="muted"></span>
+    </div>
+    <div id="result" style="margin-top:8px"></div>
+  </div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+let ctx = null, gain = null, buf = null, src = null, voices = [];
+let playing = false, startCtx = 0, startPos = 0, rate = 1;
+let song = null, taps = [], cursor = 0, dirty = false;
+const samples = {};
+
+function audio() {
+  if (!ctx) {
+    ctx = new AudioContext({ latencyHint: "interactive" });
+    gain = ctx.createGain(); gain.gain.value = 0.9; gain.connect(ctx.destination);
+  }
+  return ctx;
+}
+
+async function loadSongs() {
+  const list = await (await fetch("/api/songs")).json();
+  $("song").innerHTML = list.map(s => `<option value="${s.slug}">${s.n}. ${s.title}${s.tapped ? " ✓" : ""}</option>`).join("");
+  const want = new URLSearchParams(location.search).get("song");
+  if (want) $("song").value = want;
+  await loadSong($("song").value);
+}
+
+async function loadSong(slug) {
+  stop();
+  song = await (await fetch(`/api/song/${slug}`)).json();
+  taps = song.notes.map(n => n.t ?? null);
+  cursor = taps.findIndex(t => t == null); if (cursor < 0) cursor = song.notes.length;
+  dirty = false;
+  history.replaceState(null, "", `?song=${slug}`);
+  $("result").innerHTML = "";
+  $("saveStatus").textContent = song.tapsSource ? `saved taps: ${song.tapsSource}` : "no saved taps yet";
+  const first = taps.find(t => t != null);
+  $("from").value = first != null ? Math.max(0, Math.floor(first - 3)) : 0;
+  render();
+  buf = null;
+  if (!song.hasAudio) { $("status").textContent = "no shifted audio yet: run build --only " + slug; return; }
+  $("status").textContent = "loading audio…";
+  const ab = await (await fetch(`/audio/${slug}.wav`)).arrayBuffer();
+  buf = await audio().decodeAudioData(ab);
+  $("status").textContent = `${buf.duration.toFixed(1)} s · ${song.notes.length} notes · ${song.beatsPerBar}/4`;
+  await Promise.all([...new Set(song.notes.map(n => n.sound))].map(loadSample));
+}
+
+async function loadSample(name) {
+  if (samples[name]) return;
+  try {
+    const ab = await (await fetch(`/sample/${name}.m4a`)).arrayBuffer();
+    samples[name] = await audio().decodeAudioData(ab);
+  } catch (e) { console.warn("sample", name, e); }
+}
+
+function badSet() {
+  const bad = new Set(); let last = -1, lastI = -1;
+  taps.forEach((t, i) => { if (t == null) return; if (t <= last) { bad.add(i); bad.add(lastI); } last = t; lastI = i; });
+  return bad;
+}
+
+function render() {
+  if (!song) return;
+  const bpb = song.beatsPerBar, bad = badSet();
+  let html = "", bar = null;
+  song.notes.forEach((n, i) => {
+    const b = Math.floor(n.b / bpb + 1e-6);
+    if (b !== bar) { if (bar !== null) html += "</div>"; html += `<div class="bar"><span class="no">${b}</span>`; bar = b; }
+    const cls = ["note", taps[i] != null ? "tapped" : "", i === cursor ? "cursor" : "", bad.has(i) ? "bad" : ""].join(" ");
+    html += `<div class="${cls}" data-i="${i}" title="beat ${n.b}">${n.label}<small>${taps[i] != null ? taps[i].toFixed(2) : "·"}</small></div>`;
+  });
+  html += "</div>";
+  $("notes").innerHTML = html;
+  const nx = song.notes.slice(cursor, cursor + 4).map((n, k) => `<span class="n${k}">${n.label}</span>`).join(" ");
+  $("next").innerHTML = nx || "done ✓";
+  const nt = taps.filter(t => t != null).length;
+  $("count").textContent = `${nt} / ${song.notes.length} notes tapped` + (bad.size ? ` · ${bad.size} taps out of order (red)` : "");
+}
+
+function pos() { return startPos + (ctx.currentTime - startCtx) * rate; }
+function heard() { return pos() - (ctx.outputLatency || ctx.baseLatency || 0) * rate; }
+
+function noteEnd(i) {
+  // end of note i in seconds, from the next tapped note (falls back to the reference tempo)
+  const n = song.notes[i], t = taps[i];
+  for (let j = i + 1; j < taps.length; j++) {
+    if (taps[j] != null) {
+      const spb = (taps[j] - t) / Math.max(song.notes[j].b - n.b, 1e-3);
+      return t + Math.min(n.d * spb, taps[j] - t) - 0.02;
+    }
+  }
+  return t + n.d * 60 / song.bpmHint;
+}
+
+function play(from) {
+  if (!buf) return;
+  stop();
+  audio().resume();
+  const check = $("check").checked;
+  rate = check ? 1 : parseFloat($("speed").value);
+  from = Math.max(0, Math.min(from, buf.duration - 0.5));
+  src = ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate; src.connect(gain);
+  startCtx = ctx.currentTime + 0.08; startPos = from;
+  src.start(startCtx, from);
+  src.onended = () => { if (playing) stop(); };
+  playing = true;
+  if (check) {
+    taps.forEach((t, i) => {
+      if (t == null || t < from) return;
+      const smp = samples[song.notes[i].sound]; if (!smp) return;
+      const at = startCtx + (t - from), end = startCtx + (noteEnd(i) - from);
+      const s = ctx.createBufferSource(), g = ctx.createGain();
+      s.buffer = smp; s.connect(g); g.connect(gain);
+      g.gain.setValueAtTime(0.8, at); g.gain.setValueAtTime(0.8, Math.max(at, end - 0.03)); g.gain.linearRampToValueAtTime(0, Math.max(at + 0.05, end));
+      s.start(at); s.stop(Math.max(at + 0.06, end) + 0.02);
+      voices.push(s);
+    });
+  }
+  $("tapzone").classList.toggle("live", !check);
+  requestAnimationFrame(tick);
+}
+
+function stop() {
+  playing = false;
+  try { src && src.stop(); } catch (e) {}
+  voices.forEach(v => { try { v.stop(); } catch (e) {} });
+  voices = []; src = null;
+  $("tapzone").classList.remove("live");
+  document.querySelectorAll(".note.playing").forEach(e => e.classList.remove("playing"));
+}
+
+function tick() {
+  if (!playing) return;
+  const p = Math.max(heard(), 0);
+  $("clock").textContent = p.toFixed(2);
+  if ($("check").checked) {
+    let cur = -1;
+    taps.forEach((t, i) => { if (t != null && t <= p) cur = i; });
+    document.querySelectorAll(".note").forEach(e => e.classList.toggle("playing", +e.dataset.i === cur));
+  }
+  requestAnimationFrame(tick);
+}
+
+function tap() {
+  if (!playing || $("check").checked || !song || cursor >= song.notes.length) return;
+  taps[cursor] = Math.round(heard() * 1000) / 1000;
+  cursor++; dirty = true;
+  const z = $("tapzone"); z.classList.add("flash"); setTimeout(() => z.classList.remove("flash"), 80);
+  render();
+}
+
+function moveCursor(i) {
+  cursor = Math.max(0, Math.min(song.notes.length, i));
+  let prev = null;
+  for (let j = cursor - 1; j >= 0; j--) if (taps[j] != null) { prev = taps[j]; break; }
+  const own = taps[cursor];
+  $("from").value = Math.max(0, Math.floor(((prev ?? own ?? 3) - 3) * 2) / 2);
+  render();
+}
+
+async function save() {
+  const pairs = song.notes.map((n, i) => [n.b, taps[i]]).filter(p => p[1] != null);
+  if (badSet().size) { $("saveStatus").textContent = "fix the red taps first (out of order)"; return false; }
+  const r = await fetch(`/api/taps/${song.slug}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ taps: pairs }) });
+  const j = await r.json();
+  $("saveStatus").textContent = r.ok ? `saved ${j.saved} taps` : j.error;
+  if (r.ok) dirty = false;
+  return r.ok;
+}
+
+async function build() {
+  if (!(await save())) return;
+  $("build").disabled = true;
+  $("result").innerHTML = "<span class='muted'>building (about 30–60 s)…</span>";
+  const j = await (await fetch(`/api/build/${song.slug}`, { method: "POST" })).json();
+  $("build").disabled = false;
+  const log = j.log.replace(/</g, "&lt;");
+  $("result").innerHTML = (j.ok
+    ? `<div><b>Built and installed.</b> This is what the app will play (Listen mode, 1×): backing + pianika.</div><audio controls src="/preview/${song.slug}.m4a?${Date.now()}" style="width:100%;margin:6px 0"></audio>`
+    : "<b style='color:var(--accent)'>Build failed</b>") + `<pre>${log}</pre>`;
+}
+
+$("song").onchange = (e) => {
+  if (dirty && !confirm("You have unsaved taps. Switch song anyway?")) { e.target.value = song.slug; return; }
+  loadSong(e.target.value);
+};
+$("play").onclick = (e) => { e.target.blur(); play(parseFloat($("from").value) || 0); };
+$("stop").onclick = (e) => { e.target.blur(); stop(); };
+$("save").onclick = (e) => { e.target.blur(); save(); };
+$("build").onclick = (e) => { e.target.blur(); build(); };
+$("clearFrom").onclick = (e) => { e.target.blur(); for (let i = cursor; i < taps.length; i++) taps[i] = null; dirty = true; render(); };
+$("check").onchange = (e) => { e.target.blur(); stop(); };
+$("speed").onchange = (e) => { e.target.blur(); };
+$("tapzone").addEventListener("pointerdown", (e) => { e.preventDefault(); tap(); });
+$("notes").addEventListener("click", (e) => { const el = e.target.closest(".note"); if (el) moveCursor(+el.dataset.i); });
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT" && e.target.type === "number") { if (e.key === "Enter") play(parseFloat($("from").value) || 0); return; }
+  if (e.code === "Space") { e.preventDefault(); if (!e.repeat) tap(); }
+  else if (e.key === "Backspace") { e.preventDefault(); if (cursor > 0) { cursor--; taps[cursor] = null; dirty = true; render(); } }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); moveCursor(cursor - 1); }
+  else if (e.key === "ArrowRight") { e.preventDefault(); moveCursor(cursor + 1); }
+  else if (e.key === "Enter") { e.preventDefault(); play(parseFloat($("from").value) || 0); }
+  else if (e.key === "Escape") { stop(); }
+});
+window.addEventListener("beforeunload", (e) => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+loadSongs();
+</script>
+</body>
+</html>

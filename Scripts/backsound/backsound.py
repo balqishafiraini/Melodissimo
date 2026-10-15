@@ -774,6 +774,43 @@ def dtw_align(feat, notes, bpm_hint, hyps=None):
     return out
 
 
+def taps_time_map(taps, feat):
+    """Beat -> seconds from [[beat, seconds], ...] note taps (shifted-file clock). Each tap is snapped to an
+    audio onset within 60 ms; taps that would run backwards are dropped. Outside the tapped range the edge
+    tempo (over at least 2 beats) continues. Returns (T, info)."""
+    import numpy as np
+    pts = sorted((float(b), float(t)) for b, t in taps if t is not None)
+    ons = feat.onsets
+    snapped, out = 0, []
+    for b, t in pts:
+        if len(ons):
+            o = float(ons[np.argmin(np.abs(ons - t))])
+            if abs(o - t) <= 0.04:
+                t, snapped = o, snapped + 1
+        if out and (b <= out[-1][0] + 1e-6 or t <= out[-1][1] + 0.02):
+            continue
+        out.append((b, t))
+    if len(out) < 2:
+        sys.exit("taps: need at least 2 increasing taps")
+    xb = np.array([b for b, _ in out])
+    xt = np.array([t for _, t in out])
+
+    def edge_slope(i0, step):
+        j = i0
+        while 0 <= j + step < len(xb) and abs(xb[j] - xb[i0]) < 2:
+            j += step
+        return (xt[j] - xt[i0]) / (xb[j] - xb[i0])
+    lo, hi = edge_slope(0, 1), edge_slope(len(xb) - 1, -1)
+
+    def T(b):
+        b = np.asarray(b, dtype=float)
+        y = np.interp(b, xb, xt)
+        y = np.where(b < xb[0], xt[0] + (b - xb[0]) * lo, y)
+        y = np.where(b > xb[-1], xt[-1] + (b - xb[-1]) * hi, y)
+        return y
+    return T, f"note taps ({len(out)} used, {snapped} snapped to an onset within 40 ms)"
+
+
 def lufs_normalize(src, dst):
     import json as _json
     flt = "loudnorm=I=-16:TP=-1.5:LRA=11"
@@ -889,55 +926,69 @@ def cmd_build(args):
         #    (c) the (smoothed) tracked beat grid supplies precision: pick the grid offset j0 that best fits the DTW times.
         b0 = np.array([x[1] for x in notes], dtype=float)
         dd = np.array([x[2] for x in notes], dtype=float)
-        r = min(RATIOS, key=lambda q: abs(math.log(q * feat.tempo / bpm_hint)))
-        dtws = dtw_align(feat, notes, bpm_hint, hyps=[round(feat.tempo * r, 1)])
-        dbest = dtws[0]
-        cands = []
-        from scipy.ndimage import gaussian_filter1d
-        tbs = gaussian_filter1d(feat.beats, 1.5, mode="nearest")      # tracker jitter out, tempo drift kept
-        hi = min(len(tbs) - 1 - (b0 + dd).max() * r - 2, 0.9 * len(tbs))
-        for j0 in np.arange(0.0, max(hi, 0.0) + 1e-9, 0.25):
-            T_ = beat_time_fn(tbs, j0, r)
-            t0_, t1_ = T_(b0), T_(b0 + dd)
-            if t1_.max() > feat.dur:
-                continue
-            sc_, *_ = feat.note_scores(pcs, t0_, t1_)
-            err_ = np.abs(t0_ - dbest["starts"])
-            head = np.argsort(b0)[:12]          # the start of a subsequence DTW is the reliable part
-            cands.append({"r": r, "j0": float(j0), "score": float(sc_.mean()), "dtw_err": float(np.median(err_[head])),
-                          "dtw_ok": float((err_[head] < 0.25).mean()), "dtw_all": float(np.median(err_))})
-        first_note = args.first_note if args.first_note is not None else ov.get("first_note")
-        if first_note is not None:
-            for c in cands:
-                c["dtw_err"] = abs(float(beat_time_fn(tbs, c["j0"], r)(b0.min())) - first_note)
-        best = max(cands, key=lambda c: c["score"])
-        if first_note is None:
-            # Melody chroma decides. DTW (global structure) is trusted only where it agrees with some candidate;
-            # among near-equal candidates take the earliest, so the first pass wins over a repeat (plan B5 step 5).
-            cons = [c for c in cands if c["dtw_all"] <= 0.5]
-            if cons and max(c["score"] for c in cons) >= 0.65:
-                top = max(c["score"] for c in cons)
-                good = [c for c in cons if c["score"] >= top - 0.02]
-                pick_how = f"chroma score among {len(cons)} candidates that agree with DTW; earliest of {len(good)} near-equal"
-            else:
-                top = best["score"]
-                good = [c for c in cands if c["score"] >= 0.95 * top]
-                pick_how = f"chroma score alone (DTW did not settle it); earliest of {len(good)} within 5% of the best"
-            pick = min(good, key=lambda c: c["j0"])
+        taps = ov.get("taps")
+        if taps:
+            # Human taps (tap tool) or autotap: one time per reference note, they ARE the time map.
+            T, info = taps_time_map(taps, feat)
+            r, j0, pick_how = 1.0, 0.0, "taps"
+            pick = {"score": 0.0, "dtw_err": 0.0, "dtw_ok": 1.0, "dtw_all": 0.0}
+            align_lines = [f"- alignment: {len(taps)} tapped notes ({ov.get('taps_source', 'tap tool')}); first note at {float(T(b0.min())):.2f} s"]
         else:
-            cands.sort(key=lambda c: c["dtw_err"])
-            pick = cands[0]
-            pick_how = "forced first note"
-        j0 = pick["j0"]
-        T = beat_time_fn(tbs, j0, r)
-        # global refinement (+-100 ms) of the grid against onsets/chroma
-        bestd, bests = 0.0, -1
-        for delta in np.arange(-0.1, 0.1001, 0.01):
-            sc_, *_ = feat.note_scores(pcs, T(b0) + delta, T(b0 + dd) + delta)
-            if sc_.mean() > bests + 1e-9:
-                bests, bestd = float(sc_.mean()), float(delta)
-        T = beat_time_fn(tbs, j0, r, bestd)
-        info = f"smoothed tracked grid (tracker {feat.tempo:.1f} bpm), refine {bestd * 1000:+.0f} ms"
+            r = min(RATIOS, key=lambda q: abs(math.log(q * feat.tempo / bpm_hint)))
+            dtws = dtw_align(feat, notes, bpm_hint, hyps=[round(feat.tempo * r, 1)])
+            dbest = dtws[0]
+            cands = []
+            from scipy.ndimage import gaussian_filter1d
+            tbs = gaussian_filter1d(feat.beats, 1.5, mode="nearest")      # tracker jitter out, tempo drift kept
+            hi = min(len(tbs) - 1 - (b0 + dd).max() * r - 2, 0.9 * len(tbs))
+            for j0 in np.arange(0.0, max(hi, 0.0) + 1e-9, 0.25):
+                T_ = beat_time_fn(tbs, j0, r)
+                t0_, t1_ = T_(b0), T_(b0 + dd)
+                if t1_.max() > feat.dur:
+                    continue
+                sc_, *_ = feat.note_scores(pcs, t0_, t1_)
+                err_ = np.abs(t0_ - dbest["starts"])
+                head = np.argsort(b0)[:12]          # the start of a subsequence DTW is the reliable part
+                cands.append({"r": r, "j0": float(j0), "score": float(sc_.mean()), "dtw_err": float(np.median(err_[head])),
+                              "dtw_ok": float((err_[head] < 0.25).mean()), "dtw_all": float(np.median(err_))})
+            first_note = args.first_note if args.first_note is not None else ov.get("first_note")
+            if first_note is not None:
+                for c in cands:
+                    c["dtw_err"] = abs(float(beat_time_fn(tbs, c["j0"], r)(b0.min())) - first_note)
+            best = max(cands, key=lambda c: c["score"])
+            if first_note is None:
+                # Melody chroma decides. DTW (global structure) is trusted only where it agrees with some candidate;
+                # among near-equal candidates take the earliest, so the first pass wins over a repeat (plan B5 step 5).
+                cons = [c for c in cands if c["dtw_all"] <= 0.5]
+                if cons and max(c["score"] for c in cons) >= 0.65:
+                    top = max(c["score"] for c in cons)
+                    good = [c for c in cons if c["score"] >= top - 0.02]
+                    pick_how = f"chroma score among {len(cons)} candidates that agree with DTW; earliest of {len(good)} near-equal"
+                else:
+                    top = best["score"]
+                    good = [c for c in cands if c["score"] >= 0.95 * top]
+                    pick_how = f"chroma score alone (DTW did not settle it); earliest of {len(good)} within 5% of the best"
+                pick = min(good, key=lambda c: c["j0"])
+            else:
+                cands.sort(key=lambda c: c["dtw_err"])
+                pick = cands[0]
+                pick_how = "forced first note"
+            j0 = pick["j0"]
+            T = beat_time_fn(tbs, j0, r)
+            # global refinement (+-100 ms) of the grid against onsets/chroma
+            bestd, bests = 0.0, -1
+            for delta in np.arange(-0.1, 0.1001, 0.01):
+                sc_, *_ = feat.note_scores(pcs, T(b0) + delta, T(b0 + dd) + delta)
+                if sc_.mean() > bests + 1e-9:
+                    bests, bestd = float(sc_.mean()), float(delta)
+            T = beat_time_fn(tbs, j0, r, bestd)
+            info = f"smoothed tracked grid (tracker {feat.tempo:.1f} bpm), refine {bestd * 1000:+.0f} ms"
+            align_lines = [
+                f"- alignment: pulse ratio {r:g} (tracker {feat.tempo:.1f} bpm vs hint {bpm_hint:g}); DTW at {dbest['bpm']} bpm: path slope {dbest['slope']:.2f}, cost {dbest['cost']:.3f}, melody starts at {dbest['begin']:.1f} s",
+                f"- grid pick ({pick_how}): j0 {j0:g}, first note at {float(T(b0.min())):.2f} s, median |grid - DTW| over the first 12 notes {pick['dtw_err'] * 1000:.0f} ms ({pick['dtw_ok'] * 100:.0f}% within 250 ms; over all notes {pick['dtw_all'] * 1000:.0f} ms)",
+                f"- top grid candidates (dtw err ms / chroma score): " + "; ".join(f"j0={c['j0']:g} {c['dtw_err'] * 1000:.0f}/{c['score']:.3f}" for c in cands[:4]),
+                f"- best by chroma score (first note s / dtw err ms / score): " + "; ".join(f"{float(beat_time_fn(tbs, c['j0'], c['r'])(b0.min())):.1f} s / {c['dtw_err'] * 1000:.0f} / {c['score']:.3f}" for c in sorted(cands, key=lambda c: -c['score'])[:6]),
+            ]
         # 7. anchors
         if anchors:
             starts = {num: s_ for num, s_, _ in bars}
@@ -963,8 +1014,8 @@ def cmd_build(args):
         slope, icpt = np.polyfit(grid, tg, 1)
         resid = tg - (slope * grid + icpt)
         steady = float(np.abs(resid).max()) <= 0.02
-        # smooth jitter, then re-test
-        if not steady:
+        # smooth jitter, then re-test (never for taps: their rubato is the point)
+        if not steady and not taps:
             from scipy.ndimage import gaussian_filter1d
             sm = gaussian_filter1d(tg, 1.0, mode="nearest")
             resid2 = sm - (slope * grid + icpt)
@@ -1039,11 +1090,7 @@ def cmd_build(args):
         worst = np.argsort(pm)[:10]
         bar_of = lambda beat: next((num for num, s, ln in reversed(bars) if s <= beat + 1e-6), 0)
         lines = ["", "## Build (B5)", "",
-                 f"- {key_note}", f"- pitch shift: {shift:+d} semitones ({how})",
-                 f"- alignment: pulse ratio {r:g} (tracker {feat.tempo:.1f} bpm vs hint {bpm_hint:g}); DTW at {dbest['bpm']} bpm: path slope {dbest['slope']:.2f}, cost {dbest['cost']:.3f}, melody starts at {dbest['begin']:.1f} s",
-                 f"- grid pick ({pick_how}): j0 {j0:g}, first note at {float(T(b0.min())):.2f} s, median |grid - DTW| over the first 12 notes {pick['dtw_err'] * 1000:.0f} ms ({pick['dtw_ok'] * 100:.0f}% within 250 ms; over all notes {pick['dtw_all'] * 1000:.0f} ms)",
-                 f"- top grid candidates (dtw err ms / chroma score): " + "; ".join(f"j0={c['j0']:g} {c['dtw_err'] * 1000:.0f}/{c['score']:.3f}" for c in cands[:4]),
-                 f"- best by chroma score (first note s / dtw err ms / score): " + "; ".join(f"{float(beat_time_fn(tbs, c['j0'], c['r'])(b0.min())):.1f} s / {c['dtw_err'] * 1000:.0f} / {c['score']:.3f}" for c in sorted(cands, key=lambda c: -c['score'])[:6]),
+                 f"- {key_note}", f"- pitch shift: {shift:+d} semitones ({how})"] + align_lines + [
                  f"- time map: {info}",
                  f"- timing: median onset error {med * 1000:.0f} ms, p90 {p90 * 1000:.0f} ms ({int(close.sum())}/{len(close)} notes within 150 ms of an onset)",
                  f"- melody-chroma agreement (duration weighted, notes with chroma >= 0.6): {pitch_agree * 100:.0f}%",
@@ -1061,12 +1108,19 @@ def cmd_build(args):
         txt = txt.split("\n## Build (B5)")[0].rstrip("\n") + "\n" + "\n".join(lines) + "\n"
         rp.write_text(txt, encoding="utf-8")
         # The onset test is easy to pass (a busy mix has an onset nearly everywhere), so the DTW consistency decides.
-        verdict = "LIKELY" if (pitch_agree >= 0.6 and pick["dtw_all"] <= 0.35 and ok and size < 3e6) else "UNSURE"
+        if taps:
+            pick["score"] = float(sc.mean())
+        verdict = "TAPPED" if taps else "LIKELY" if (pitch_agree >= 0.6 and pick["dtw_all"] <= 0.35 and ok and size < 3e6) else "UNSURE"
         row = {"n": n, "title": song["title"], "shift": shift, "score": round(pick["score"], 3), "ratio": round(r, 3), "dtwok": round(pick["dtw_ok"] * 100),
                       "med": round(med * 1000), "p90": round(p90 * 1000), "pitch": round(pitch_agree * 100),
                       "tempo": "steady" if steady else "map", "bpm": chart["bpm"], "len": round(end - start), "mb": round(size / 1e6, 2),
                       "lag": round(lag * 1000, 1), "verdict": verdict}
         (rows_dir / f"{slug}.json").write_text(json.dumps(row, indent=1, ensure_ascii=False))
+        if args.install:
+            import shutil
+            shutil.copyfile(WORK / "out" / f"chart_{slug}.json", ROOT / "Melodissimo" / "Data" / "Charts" / f"chart_{slug}.json")
+            shutil.copyfile(m4a, ROOT / "Melodissimo" / "Data" / "Sound" / "Backing" / f"bgm_{slug}.m4a")
+            print("   installed chart + m4a into the app", flush=True)
         print(f"   {verdict}: score {pick['score']:.3f}, ratio {r:g}, onset med {med * 1000:.0f}/p90 {p90 * 1000:.0f} ms, pitch {pitch_agree * 100:.0f}%, "
               f"{'steady' if steady else 'map'} {chart['bpm']:.1f} bpm, cut {end - start:.0f}s, {size / 1e6:.2f} MB, lag {lag * 1000:+.1f} ms", flush=True)
     write_build_summary()
@@ -1140,6 +1194,197 @@ def make_preview(slug, n, chart, dec_wav):
     wav.unlink()
 
 
+# --------------------------------------------------------------------------
+# Sync by ear: note taps (tap tool) and autotap (clear melodies only)
+# --------------------------------------------------------------------------
+
+def load_overrides():
+    p = BS / "overrides.json"
+    return json.loads(p.read_text()) if p.exists() else {}
+
+
+def save_taps(slug, taps, source):
+    """Store [[beat, seconds], ...] for `slug` in overrides.json (taps replace a forced first_note)."""
+    ov = load_overrides()
+    o = {k: v for k, v in ov.get(slug, {}).items() if k not in ("first_note", "taps", "taps_source")}
+    o["taps"] = [[round(float(b), 4), round(float(t), 3)] for b, t in taps]
+    o["taps_source"] = source
+    ov[slug] = o
+    (BS / "overrides.json").write_text(json.dumps(ov, indent=1, ensure_ascii=False) + "\n")
+
+
+def cmd_autotap(args):
+    """Note times from the recording's own melody line: Essentia Melodia pitch track, subsequence DTW against
+    the reference (pitch class, octave-free), then each note snapped to where that pitch starts. Works only
+    when the melody is clearly on top of the mix; refuses below 75 % pitch agreement (use the tap tool)."""
+    import librosa
+    import numpy as np
+    import essentia.standard as es
+    slug = args.only
+    header, notes, _, _ = parse_ref(BS / "reference" / f"{slug}.txt")
+    bpm = args.bpm or float(header["bpm_hint"])
+    wav = WORK / "shifted" / f"{slug}.wav"
+    if not wav.exists():
+        sys.exit(f"{wav} missing: run build --only {slug} first")
+    a = es.EqualLoudness()(es.MonoLoader(filename=str(wav), sampleRate=44100)())
+    f0, _ = es.PredominantPitchMelodia(frameSize=2048, hopSize=128, minFrequency=120, maxFrequency=1400,
+                                       guessUnvoiced=False)(a)
+    step = int(round(0.02 * 44100 / 128))
+    fr = step * 128 / 44100
+    m = np.full(len(f0) // step, np.nan)
+    for i in range(len(m)):
+        seg = f0[i * step:(i + 1) * step]
+        seg = seg[seg > 0]
+        if len(seg) > step // 2:
+            m[i] = librosa.hz_to_midi(float(np.median(seg)))
+    spf = 60.0 / bpm / fr
+    bmin = min(b for _, b, _ in notes)
+    bend = max(b + d for _, b, d in notes)
+    ref = np.full(int(math.ceil((bend - bmin) * spf)) + 1, np.nan)
+    for k, b, d in notes:
+        ref[int(round((b - bmin) * spf)):int(round((b + d - bmin) * spf))] = midi_of(k)
+    pcd = lambda x, y: np.abs((x - y + 6) % 12 - 6)
+    C = np.minimum(pcd(ref[:, None], m[None, :]), 2) / 2
+    C = np.where(np.isnan(m)[None, :], 0.6, C)
+    C = np.where(np.isnan(ref)[:, None], 0.3, C)
+    C = np.nan_to_num(C, nan=0.6)
+    _, wp = librosa.sequence.dtw(C=C, subseq=True, step_sizes_sigma=np.array([[1, 1], [1, 2], [2, 1]]),
+                                 weights_mul=np.array([1.0, 1.2, 1.2]))
+    wp = wp[::-1]
+    # 1. DTW frame of each note, snapped to the nearest start of its pitch within 200 ms
+    js, matches = [], []
+    for k, b, d in notes:
+        idx = np.where(wp[:, 0] >= int(round((b - bmin) * spf)))[0]
+        j = int(wp[idx[0], 1]) if len(idx) else int(wp[-1, 1])
+        match = pcd(m, midi_of(k)) < 0.6
+        starts = [x for x in range(max(1, j - 10), min(len(m) - 1, j + 10)) if match[x] and not match[x - 1]]
+        if starts:
+            j = min(starts, key=lambda x: abs(x - j))
+        js.append(j)
+        matches.append(match)
+    ok = lambda i, j: bool(matches[i][j:j + 5].mean() >= 0.6) if j + 5 <= len(m) else False
+    # 2. repair: a note whose pitch is not sounding at its DTW time moves to the first start of a >= 100 ms run
+    #    of its pitch between the previous note and the next note that does match (rubato the DTW missed)
+    for i in range(len(notes)):
+        if ok(i, js[i]):
+            continue
+        lo = js[i - 1] + 5 if i else max(1, js[i] - 50)
+        nxt = next((js[q] for q in range(i + 1, len(notes)) if ok(q, js[q])), len(m) - 5)
+        mt = matches[i]
+        for x in range(max(lo, 1), max(lo, nxt - 4)):
+            if mt[x] and not mt[x - 1] and mt[x:x + 5].all():
+                js[i] = x
+                break
+    # 3. the subsequence path may enter late: walk the first note back to where its pitch run begins
+    x, gap = js[0], 0
+    while x > 0 and gap <= 3:
+        x -= 1
+        gap = 0 if matches[0][x] else gap + 1
+        if matches[0][x]:
+            js[0] = x
+    taps, agree, total = [], 0.0, 0.0
+    for (k, b, d), j in zip(notes, js):
+        if taps and j * fr <= taps[-1][1]:
+            continue
+        taps.append((b, j * fr))
+        seg = m[j + 2:j + 2 + max(2, int(d * spf * 0.6))]
+        seg = seg[~np.isnan(seg)]
+        total += d
+        if len(seg) and np.median(pcd(seg, midi_of(k))) < 0.6:
+            agree += d
+    agree /= max(total, 1e-9)
+    print(f"{slug}: {len(taps)}/{len(notes)} notes, first at {taps[0][1]:.2f} s, last at {taps[-1][1]:.2f} s, pitch agreement {agree * 100:.0f}%")
+    if agree < 0.75:
+        sys.exit("melody not clear enough for autotap: tap it by ear (backsound.py tap)")
+    save_taps(slug, taps, f"autotap, Melodia pitch DTW, {agree * 100:.0f}% pitch agreement")
+    print("saved to overrides.json; now run build --only", slug, "--install")
+
+
+def cmd_tap(args):
+    """Serve tap.html: play the shifted recording, tap each melody note, check with pianika, save + build."""
+    import subprocess
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from urllib.parse import unquote
+    manifest = load_manifest()
+    slugs = {s["slug"]: s for s in manifest}
+    sound_by_id = {i: snd for i, _, snd, _ in NOTE_TABLE}
+
+    def song_info(slug):
+        header, notes, _, _ = parse_ref(BS / "reference" / f"{slug}.txt")
+        tapped = {round(float(b), 4): t for b, t in load_overrides().get(slug, {}).get("taps", [])}
+        return {"slug": slug, "title": slugs[slug]["title"], "beatsPerBar": int(header.get("beats_per_bar", 4)),
+                "pickup": float(header.get("pickup", 0)), "bpmHint": float(header["bpm_hint"]),
+                "tapsSource": load_overrides().get(slug, {}).get("taps_source"),
+                "hasAudio": (WORK / "shifted" / f"{slug}.wav").exists(),
+                "notes": [{"k": k, "b": b, "d": d, "label": LABEL_BY_ID[k], "sound": sound_by_id[k],
+                           "t": tapped.get(round(b, 4))} for k, b, d in notes]}
+
+    class H(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def send(self, code, body, ctype="application/json"):
+            if isinstance(body, (dict, list)):
+                body = json.dumps(body, ensure_ascii=False).encode()
+            elif isinstance(body, str):
+                body = body.encode()
+            self.send_response(code)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(body)
+
+        def file(self, path, ctype):
+            if not path.exists():
+                return self.send(404, {"error": f"{path.name} not found"})
+            self.send(200, path.read_bytes(), ctype)
+
+        def do_GET(self):
+            p = unquote(self.path.split("?")[0])
+            if p == "/":
+                return self.file(BS / "tap.html", "text/html; charset=utf-8")
+            if p == "/api/songs":
+                ov = load_overrides()
+                return self.send(200, [{"n": s["n"], "slug": s["slug"], "title": s["title"],
+                                        "tapped": len(ov.get(s["slug"], {}).get("taps", []))} for s in manifest])
+            if p.startswith("/api/song/") and p[10:] in slugs:
+                return self.send(200, song_info(p[10:]))
+            if p.startswith("/audio/") and p[7:-4] in slugs:
+                return self.file(WORK / "shifted" / f"{p[7:-4]}.wav", "audio/wav")
+            if p.startswith("/sample/"):
+                name = p[8:-4]
+                for d in ("whiteTiles", "blackTiles"):
+                    if (SAMPLES / d / f"{name}.m4a").exists():
+                        return self.file(SAMPLES / d / f"{name}.m4a", "audio/mp4")
+            if p.startswith("/preview/") and p[9:-4] in slugs:
+                n = slugs[p[9:-4]]["n"]
+                return self.file(WORK / "preview" / f"{n:02d}_{p[9:-4]}_preview.m4a", "audio/mp4")
+            self.send(404, {"error": "not found"})
+
+        def do_POST(self):
+            p = unquote(self.path)
+            body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
+            if p.startswith("/api/taps/") and p[10:] in slugs:
+                taps = [(b, t) for b, t in body.get("taps", []) if t is not None]
+                if len(taps) < 2:
+                    return self.send(400, {"error": "tap at least 2 notes"})
+                save_taps(p[10:], taps, "tap tool (by ear)")
+                return self.send(200, {"ok": True, "saved": len(taps)})
+            if p.startswith("/api/build/") and p[11:] in slugs:
+                r = subprocess.run([sys.executable, "-I", str(Path(__file__).resolve()), "build", "--only", p[11:], "--install"],
+                                   capture_output=True, text=True)
+                return self.send(200, {"ok": r.returncode == 0, "log": (r.stdout + r.stderr)[-4000:]})
+            self.send(404, {"error": "not found"})
+
+    srv = ThreadingHTTPServer(("127.0.0.1", args.port), H)
+    print(f"tap tool on http://localhost:{args.port}  (Ctrl+C to stop)", flush=True)
+    try:
+        srv.serve_forever()
+    except KeyboardInterrupt:
+        pass
+
+
 def cmd_emit_swift(args):
     manifest = load_manifest()
     for s in manifest:
@@ -1179,7 +1424,15 @@ def main(argv=None):
     bp.add_argument("--only")
     bp.add_argument("--shift", type=int, default=None)
     bp.add_argument("--first-note", type=float, default=None, help="force the time (s, in the shifted file) of the first reference note")
+    bp.add_argument("--install", action="store_true", help="copy the chart and m4a into Melodissimo/Data")
     bp.set_defaults(func=cmd_build)
+    tp = sub.add_parser("autotap", help="taps from the recording's melody line (Melodia pitch DTW); only for clear melodies")
+    tp.add_argument("--only", required=True)
+    tp.add_argument("--bpm", type=float, default=None)
+    tp.set_defaults(func=cmd_autotap)
+    sp = sub.add_parser("tap", help="local web tool: tap along to set the sync by ear")
+    sp.add_argument("--port", type=int, default=8765)
+    sp.set_defaults(func=cmd_tap)
     sub.add_parser("emit-swift").set_defaults(func=cmd_emit_swift)
     args = p.parse_args(argv)
     args.func(args)

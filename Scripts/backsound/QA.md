@@ -12,6 +12,17 @@ Open `Scripts/backsound/work/preview` (the app's own pianika samples playing the
 `LIKELY` = the melody-range chroma of the recording agrees with the chart at the chosen position (≥ 60 % of the notes) **and** the DTW structure check agrees. `UNSURE` = it picked the best-looking position but the evidence is weak or the two checks disagree, so **listen to these first**. Numbers come from `reports/<slug>.md` → *Build (B5)*.
 The onset-error test of the plan is not informative here (a busy guitar mix has an onset almost everywhere), so it is reported but not used.
 
+## Fix sync by ear: the tap tool (recommended)
+
+For recordings where the melody is buried under strings/chords (Indonesia Raya, Bagimu Negeri, Tanah Airku, Dari Sabang Sampai Merauke) the computer cannot find the tune, so tap it:
+
+1. `Scripts/backsound/.venv/bin/python -I Scripts/backsound/backsound.py tap` and open http://localhost:8765
+2. Pick the song, press **Play**, and tap **Space** on every melody note as you hear it (sing along in your head). 0.75× is easier. Backspace undoes; click a note to redo from there.
+3. Tick **Check**: the pianika plays your taps over the music. Fix any note that is early/late.
+4. **Save + build + install in app**: writes the taps to `overrides.json`, rebuilds the chart + backing track and copies them into the app. The player under the button is exactly what Listen mode plays.
+
+Taps override everything else for that song. For songs with a clear melody on top, `backsound.py autotap --only <slug>` does this automatically (used for Mengheningkan Cipta); check it in the tool anyway.
+
 ## If a song is early/late or has the wrong notes
 
 1. Wrong position or tempo (the pianika starts too early/late or drifts): find the real time (s, in the pitch-shifted file `work/shifted/<slug>.wav`, same clock as the original) when the first note of the written melody sounds, add it to `Scripts/backsound/overrides.json`, e.g. `{"tanah-airku": {"first_note": 21.0}}`, then run

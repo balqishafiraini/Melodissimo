@@ -106,10 +106,10 @@
   {
     "n": 14,
     "slug": "dari-sabang-sampai-merauke",
-    "start": 2344.51,
+    "start": 2349.85,
     "end": 2513.05,
-    "duration": 168.54,
-    "boundary": "silence -45dB"
+    "duration": 163.2,
+    "boundary": "silence -45dB (start moved past a 4 s stray fragment at 2344.5 s)"
   },
   {
     "n": 15,
