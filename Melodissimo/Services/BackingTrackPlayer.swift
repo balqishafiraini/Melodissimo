@@ -51,7 +51,7 @@ final class BackingTrackPlayer: ObservableObject {
         switch event {
         case let .running(songTime, hostTime):
             configureAudioSessionIfNeeded()
-            let latency = AVAudioSession.sharedInstance().outputLatency
+            let latency = AudioSessionController.shared.outputLatency
             let plan = BackingSchedule.start(songTime: songTime, speed: speed, offset: offset, outputLatency: latency)
             player.pause()
             guard plan.position < player.duration else { return }

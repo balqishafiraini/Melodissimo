@@ -18,29 +18,12 @@ private var player: AVAudioPlayer?
 // instant instead of re-decoding the m4a each time.
 private var playerCache: [String: AVAudioPlayer] = [:]
 
-private var isAudioSessionConfigured = false
-
-// Keeps the app-wide "go quiet when the app stops being active" observer alive.
-private var resignActiveObserver: NSObjectProtocol?
-
-// Configure the shared audio session for playback so notes are audible even when
-// the device's mute switch is on. Runs once, lazily, before the first sound plays.
-// A small IO buffer keeps tap-to-sound latency low, which matters for the rhythm game.
+/// Makes sure the shared audio session exists and is active before a sound plays. The session itself, its
+/// interruptions and its route changes belong to `AudioSessionController`; this only asks for the playback
+/// mode when nothing has activated a mode yet.
 func configureAudioSessionIfNeeded() {
-    guard !isAudioSessionConfigured else { return }
-    let session = AVAudioSession.sharedInstance()
-    do {
-        try session.setCategory(.playback, mode: .default)
-        try? session.setPreferredIOBufferDuration(0.005)
-        try session.setActive(true)
-        isAudioSessionConfigured = true
-        // A note must never keep ringing once the app is no longer in front (a call, Control Center, the app switcher).
-        resignActiveObserver = NotificationCenter.default.addObserver(
-            forName: UIApplication.willResignActiveNotification, object: nil, queue: .main
-        ) { _ in stopAllSounds() }
-    } catch {
-        print("Failed to configure audio session: \(error)")
-    }
+    let controller = AudioSessionController.shared
+    if controller.mode == nil { controller.activate(.playback) }
 }
 
 /// Decodes one note's sample and gets it ready to play. Safe to call off the main thread.
@@ -53,7 +36,7 @@ private func makePlayer(for key: String) -> AVAudioPlayer? {
         newPlayer.prepareToPlay()
         return newPlayer
     } catch {
-        print("\(error)")
+        AudioDiag.log("note sample failed to load (\(key)): \(error)")
         return nil
     }
 }

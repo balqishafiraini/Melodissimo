@@ -5,6 +5,7 @@
 
 #if DEBUG
 import SwiftUI
+import AVFoundation
 
 /// DEBUG-only launch hooks for the screenshot scripts in `Scripts/iphone` (see `IPHONE_PLAN.md` §3.5).
 ///
@@ -22,6 +23,7 @@ import SwiftUI
 /// | `-qaCover calibration\|micCalibration` | with `-qaRoute settings`, Settings opens that full-screen calibration |
 /// | `-qaCoachStep N` | the first-stage tour opens on its Nth bubble (use with `-qaRoute battle`, no seed) |
 /// | `-qaCycle N` | after the route is pushed, pops to Home and pushes it again N times, 4 s apart (leak hunting; `Scripts/perf/leaks.sh`) |
+/// | `-qaFakeInterruption N` | N seconds after launch, posts a fake audio-session interruption (began), and the matching ended 2 s later |
 /// | `-qaSeed YES` | fills the profile with a mid-game player (see `seedProfile()`) |
 ///
 /// The scripts also pass `-AppleLanguages (en)` so every device renders English, whatever the simulator's language.
@@ -31,6 +33,26 @@ enum QARoutes {
 
     private static func argument(_ key: String) -> String? {
         UserDefaults.standard.string(forKey: key)
+    }
+
+    /// `-qaFakeInterruption N`: a simulator can't be interrupted by a call, so post the system's notification by hand.
+    @MainActor
+    static func scheduleFakeInterruption() {
+        let delay = UserDefaults.standard.double(forKey: "qaFakeInterruption")
+        guard delay > 0 else { return }
+        func post(_ type: AVAudioSession.InterruptionType) {
+            NotificationCenter.default.post(name: AVAudioSession.interruptionNotification,
+                                            object: AVAudioSession.sharedInstance(),
+                                            userInfo: [AVAudioSessionInterruptionTypeKey: type.rawValue])
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            AudioDiag.log("QA: fake interruption began")
+            post(.began)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                AudioDiag.log("QA: fake interruption ended")
+                post(.ended)
+            }
+        }
     }
 
     static var skipsSplash: Bool { UserDefaults.standard.bool(forKey: "qaSkipSplash") }
@@ -76,6 +98,7 @@ enum QARoutes {
     static func applyLaunchRoute(to router: AppRouter) {
         guard !didApplyRoute, let name = argument("qaRoute") else { return }
         didApplyRoute = true
+        scheduleFakeInterruption()
         guard let routes = routes(for: name) else {
             print("QARoutes: unknown route '\(name)'")
             return

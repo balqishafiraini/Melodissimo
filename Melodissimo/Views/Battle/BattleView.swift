@@ -72,6 +72,10 @@ struct BattleView: View {
             guard isOnScreen else { return }
             viewModel.step(now: CACurrentMediaTime())
         }
+        .onReceive(NotificationCenter.default.publisher(for: AudioSessionController.didInterrupt)) { _ in
+            // Battle has no pause; a call or Siri just silences the revealed key.
+            stopAllSounds()
+        }
         .onChange(of: viewModel.lastOutcome) { outcome in
             if let outcome { react(to: outcome) }
         }

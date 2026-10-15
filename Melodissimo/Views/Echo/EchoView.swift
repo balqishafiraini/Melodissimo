@@ -57,6 +57,10 @@ struct EchoView: View {
             guard isOnScreen else { return }
             viewModel.step(now: CACurrentMediaTime())
         }
+        .onReceive(NotificationCenter.default.publisher(for: AudioSessionController.didInterrupt)) { _ in
+            // Echo has no pause; a call or Siri just cuts the phrase.
+            viewModel.silence()
+        }
         .onChange(of: viewModel.lastOutcome) { outcome in
             if let outcome { react(to: outcome) }
         }

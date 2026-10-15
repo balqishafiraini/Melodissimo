@@ -49,9 +49,7 @@ final class MicrophoneInput: ObservableObject {
         status = .stopped
         currentKeyId = nil
         // Back to the playback-only session the samples use.
-        let session = AVAudioSession.sharedInstance()
-        try? session.setCategory(.playback, mode: .default)
-        try? session.setActive(true)
+        AudioSessionController.shared.activate(.playback)
     }
 
     deinit {
@@ -63,11 +61,7 @@ final class MicrophoneInput: ObservableObject {
 
     private func begin() {
         guard !isTapInstalled else { return }
-        let session = AVAudioSession.sharedInstance()
-        do {
-            try session.setCategory(.playAndRecord, mode: .measurement, options: [.defaultToSpeaker])
-            try session.setActive(true)
-        } catch {
+        guard AudioSessionController.shared.activate(.record) else {
             status = .failed
             return
         }

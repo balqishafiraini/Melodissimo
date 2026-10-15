@@ -37,7 +37,7 @@ This document is written for an AI executor (**Claude Sonnet 5.5**). It adds **P
 | S8 | iPhone top bar: "?" / Menu / Back buttons at one consistent inset | UI |
 | S9 | Memory & leak sweep, soak test, docs, device checklist | QA |
 
-- [x] S0  - [x] S1  - [ ] S2  - [ ] S3  - [ ] S4  - [ ] S5  - [ ] S6  - [ ] S7  - [ ] S8  - [ ] S9
+- [x] S0  - [x] S1  - [x] S2  - [ ] S3  - [ ] S4  - [ ] S5  - [ ] S6  - [ ] S7  - [ ] S8  - [ ] S9
 
 ---
 
@@ -321,6 +321,9 @@ The single 16-byte "ROOT LEAK" is in every route including the plain campaign ma
 - **S1 verification.** Launching Debug on the iPhone 15 Pro simulator (iOS 17.5) and streaming `log stream --predicate 'process == "Melodissimo"'` for 22 s after launch gave 950 lines and **zero** matching `kvs|gamed|gamekit|game center|entitlement`. (The old build's lines can't be reproduced on a simulator, which has no gamed entitlement check, so this proves only that nothing we call touches them; the device check is §9 item 1.)
 - **S1 API shape.** `CloudSync` has a designated `init(local:cloudFactory:isEnabled:songTitles:)` and a convenience `init(local:cloud:songTitles:)` (always enabled) for tests. `sync()`, `forgetProgress()` and `syncSoon()` are no-ops while disabled. `GameCenter.authenticate()` is called from Home's `onAppear` and guards itself (once per launch).
 
+- **S2 verification.** `-qaFakeInterruption 5` with `-qaRoute stagePerform` on the iPhone 15 Pro simulator: `AudioDiag` logged `session active: playback` at launch, `interruption began` at 5 s, then (2 s later) `interruption ended, session restored: true` with a fresh `session active: playback` line. The screenshot after it shows the "Paused" overlay. A real call/Siri/Bluetooth change is **not verified** (§9 items 5 and 6).
+- **S2 scope.** Battle (which also runs Melody Rush) and Echo have no pause concept, so an interruption just silences their sounds (`stopAllSounds()` / `viewModel.silence()`). The `willResignActive → stopAllSounds()` observer moved into `AudioSessionController`.
+- **Concurrent Xcode edits (found during S1).** While S0/S1 ran, the working tree gained edits that aren't part of this plan: `Melodissimo/Melodissimo.entitlements` (Game Center + iCloud), `CODE_SIGN_ENTITLEMENTS` and `INFOPLIST_KEY_NSMicrophoneUsageDescription`/`INFOPLIST_KEY_UIUserInterfaceStyle` in `project.pbxproj`, and the matching removal of those keys from `Data/Info.plist` (Xcode's Signing & Capabilities UI does this). My first S0/S1 commits swept the entitlements file and the Info.plist removal in by mistake, so I rewrote the two local commits (nothing was pushed) to hold only my changes. Those edits stay **uncommitted** in the working tree and no task stages them (`git add` is by explicit path). Note: if the entitlements file is committed later, `MelodissimoOnlineServices` must be flipped to YES together with it (§7); and committing the Info.plist removal without the pbxproj hunks would drop the microphone usage text and Light style.
 
 ## 9. Device checklist for Balqis (after S9)
 

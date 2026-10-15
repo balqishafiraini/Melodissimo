@@ -135,6 +135,16 @@ struct SongStageView: View {
                 engine.pause(now: CACurrentMediaTime())
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: AudioSessionController.didInterrupt)) { _ in
+            // A call, Siri or an alarm took the audio: pause; the overlay lets the player resume.
+            engine.pause(now: CACurrentMediaTime())
+        }
+        .onReceive(NotificationCenter.default.publisher(for: AudioSessionController.routeChanged)) { note in
+            // Headphones unplugged or a Bluetooth speaker switched off: don't carry on through the phone speaker.
+            if AudioSessionController.routeChangeReason(of: note) == .oldDeviceUnavailable {
+                engine.pause(now: CACurrentMediaTime())
+            }
+        }
         .onChange(of: engine.wrongPresses) { _ in
             flashWrongKeyIfPracticing()
             playEffect(.wrong)
