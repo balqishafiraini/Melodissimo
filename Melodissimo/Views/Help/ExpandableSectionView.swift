@@ -59,7 +59,7 @@ struct ExpandableSectionView: View {
                             Image(imageName)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(height: 100)
+                                .frame(height: Sizing.s(100))
                         }
                     }
                     .padding(.horizontal, Sizing.s(40))
