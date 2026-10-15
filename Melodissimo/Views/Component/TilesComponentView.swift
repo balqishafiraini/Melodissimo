@@ -89,7 +89,7 @@ private struct PianoTilePreferenceKey: PreferenceKey {
 /// A single, passive key. It owns no gesture — all touch handling lives on the keyboard's
 /// touch surface so several fingers can play at once and glide across keys like a real
 /// piano. Each key only reports its frames and draws itself.
-private struct KeyTile: View {
+private struct KeyTile: View, Equatable {
     let id: Int
     let label: String
     let isBlack: Bool
@@ -318,6 +318,8 @@ struct PianoKeyboard: View {
         .frame(maxWidth: .infinity, minHeight: metrics.containerHeight, alignment: .topLeading)
         .coordinateSpace(name: "keyboard")
         .onPreferenceChange(PianoTilePreferenceKey.self) { newTiles in
+            // Often reported again with the same frames; assigning would re-render the keyboard for nothing.
+            guard newTiles != tiles else { return }
             tiles = newTiles
             onKeyFrames?(Dictionary(newTiles.map { ($0.id, $0.globalFrame) }, uniquingKeysWith: { _, latest in latest }))
         }
@@ -361,8 +363,9 @@ struct PianoKeyboard: View {
         .frame(width: metrics.width * 0.88, height: metrics.blackRowHeight, alignment: .topLeading)
     }
 
-    private func key(_ id: Int, _ metrics: PianoMetrics) -> KeyTile {
+    private func key(_ id: Int, _ metrics: PianoMetrics) -> some View {
         let note = NoteCatalog.note(id)
+        // `.equatable()`: a press changes one key's inputs, so only that key re-renders.
         return KeyTile(id: id,
                        label: note.label,
                        isBlack: note.isBlack,
@@ -371,6 +374,7 @@ struct PianoKeyboard: View {
                        isPressed: activeTileIDs.contains(id) || pressedFromOutside.contains(id),
                        highlight: highlights[id],
                        pressedColor: skin.pressed)
+            .equatable()
     }
 
     // MARK: Touch handling

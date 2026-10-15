@@ -39,8 +39,40 @@ final class BackingScheduleTests: XCTestCase {
     }
 
     func testNeedsResync() {
-        XCTAssertFalse(BackingSchedule.needsResync(expected: 10, actual: 10.04))
-        XCTAssertTrue(BackingSchedule.needsResync(expected: 10, actual: 10.06))
-        XCTAssertTrue(BackingSchedule.needsResync(expected: 10, actual: 9.9))
+        XCTAssertFalse(BackingSchedule.needsResync(expected: 10, actual: 10.1))
+        XCTAssertTrue(BackingSchedule.needsResync(expected: 10, actual: 10.13))
+        XCTAssertTrue(BackingSchedule.needsResync(expected: 10, actual: 9.85))
+    }
+
+    func testDriftGateNeedsTwoReadingsInARowOverTheTolerance() {
+        var gate = DriftGate()
+        XCTAssertFalse(gate.shouldResync(drift: 0.2, now: 10), "one reading is just a busy moment")
+        XCTAssertTrue(gate.shouldResync(drift: 0.2, now: 11))
+    }
+
+    func testDriftGateForgetsAReadingThatWasBackInTolerance() {
+        var gate = DriftGate()
+        XCTAssertFalse(gate.shouldResync(drift: 0.3, now: 10))
+        XCTAssertFalse(gate.shouldResync(drift: 0.02, now: 11), "recovered by itself")
+        XCTAssertFalse(gate.shouldResync(drift: -0.3, now: 12), "the count starts over, in either direction")
+        XCTAssertTrue(gate.shouldResync(drift: -0.3, now: 13))
+    }
+
+    func testDriftGateWaitsThreeSecondsBetweenSeeks() {
+        var gate = DriftGate()
+        _ = gate.shouldResync(drift: 0.5, now: 10)
+        XCTAssertTrue(gate.shouldResync(drift: 0.5, now: 11))                  // seek at t = 11
+        XCTAssertFalse(gate.shouldResync(drift: 0.5, now: 12))
+        XCTAssertFalse(gate.shouldResync(drift: 0.5, now: 13), "two seconds after the seek: too soon")
+        XCTAssertTrue(gate.shouldResync(drift: 0.5, now: 14.1), "three seconds have passed and it is still off")
+    }
+
+    func testDriftGateResetForgetsThePreviousSeek() {
+        var gate = DriftGate()
+        _ = gate.shouldResync(drift: 0.5, now: 10)
+        XCTAssertTrue(gate.shouldResync(drift: 0.5, now: 11))
+        gate.reset()
+        _ = gate.shouldResync(drift: 0.5, now: 11.5)
+        XCTAssertTrue(gate.shouldResync(drift: 0.5, now: 12), "a fresh start has no seek on record")
     }
 }

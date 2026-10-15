@@ -37,7 +37,7 @@ This document is written for an AI executor (**Claude Sonnet 5.5**). It adds **P
 | S8 | iPhone top bar: "?" / Menu / Back buttons at one consistent inset | UI |
 | S9 | Memory & leak sweep, soak test, docs, device checklist | QA |
 
-- [x] S0  - [x] S1  - [x] S2  - [x] S3  - [x] S4  - [ ] S5  - [ ] S6  - [ ] S7  - [ ] S8  - [ ] S9
+- [x] S0  - [x] S1  - [x] S2  - [x] S3  - [x] S4  - [x] S5  - [ ] S6  - [ ] S7  - [ ] S8  - [ ] S9
 
 ---
 
@@ -306,7 +306,7 @@ To switch them on later:
 
 | Route | S0 baseline leaks | S0 footprint | S3 | S5 | S6 | S9 (10 cycles) |
 |---|---|---|---|---|---|---|
-| stagePerform | 1 (16 B) | 69 MB | 735 (29 KB)¹, 77 MB | | | |
+| stagePerform | 1 (16 B) | 69 MB | 735 (29 KB)¹, 77 MB | 751 (30 KB)¹, 77 MB | | |
 | battle | 1 (16 B) | 67 MB | | | | |
 | result3 | 1 (16 B) | 76 MB | | | | |
 | campaignMap | 1 (16 B) | 80 MB | | | | |
@@ -331,6 +331,8 @@ The single 16-byte "ROOT LEAK" is in every route including the plain campaign ma
 - **S4 deviation: edge deferral and the home indicator live at the stack root.** `.defersSystemGestures` / `.persistentSystemOverlays(.hidden)` applied inside the pushed play screens did **nothing** (the screenshot still showed the home indicator); applied on Home's `NavigationStack` they work. So `.playScreen()` (per screen) only counts `PlaySession` and hides the status bar on iPhone, and `playSessionSystemUI()` (applied once in `DashboardView`) reads `PlaySessionState.shared.isActive` to switch both requests on. `AudioDiag` (DEBUG) logs what UIKit's root view controller then asks: `deferred edges = 15, home indicator hidden = true` during a stage. `.statusBarHidden` is limited to iPhone (iPhone landscape has no status bar anyway) so iPad layouts can't shift.
 - **S4 verification.** `isIdleTimerDisabled` is true at `play session begin` and false at `play session end` in the log stream (`-qaCycle` pops and re-pushes). The iPhone 15 Pro screenshot of `stagePerform` has no home indicator. iPad Air captures of stageListen/stagePractice/battle/echo/both calibrations match `shots/final/ipad-air` in layout (differences are the animation phase; stageListen 4.7 %, others < 1 %) apart from the home indicator now being hidden. **Not verified:** the actual behaviour of a swipe from the bottom edge. The simulator tool's edge swipe went straight home, which a simulator can't tell apart from a deferred gesture (§9 item 3).
 - **Online services in the working tree.** At S4 the user's working copy of `Info.plist` has `MelodissimoOnlineServices` set to `<true/>` (their edit, uncommitted; the committed value is `false`). With it on, the simulator shows Game Center's sign-in sheet over the app. QA runs therefore pass `-qaOnlineServices NO` (a DEBUG-only override in `OnlineServices`; `leaks.sh` and `capture.sh` pass it).
+- **S5 notes.** (a) `StageScoreboard` holds score/combo/maxCombo/counts/wrongPresses/judgedCount/lastWrongPress; the engine keeps read-only pass-throughs (`RhythmEngineTests` compiled unchanged). (b) `StageHUDScore` and `StageProgressBar` (private, in `SongStageView.swift`) observe it; the combo pulse moved into `StageHUDScore`. The progress bar's `TimelineView` and per-frame `reduce` are gone. (c) SFX are fired from `engine.onJudgment`, set in `onAppear` from two captured plain values (`mode`, `isSolemn`) and cleared in `onDisappear`; the practice wrong-key flash subscribes to `scoreboard.$lastWrongPress` with `.onReceive` (a subscription, not an observation, so the stage still doesn't re-render for score changes). Behaviour change: several misses in one frame now play one miss sound each (the old `onChange` collapsed them). (d) Highway: precomputed `RenderNote` lists (white/black, sorted by time) with a binary search for the first visible note (looking back by the longest note's length), skin colours resolved once, the lane `Path` cached until the highway's origin or height changes. (e) Keyboard: `onPreferenceChange` ignores identical frames; `KeyTile` is `Equatable` + `.equatable()`. (f) Backing track: tolerance 0.12 s, `DriftGate` (2 readings in a row, 3 s apart), `load` is `async` (file opened and primed on a detached task) and the stage starts the engine in `.task` after it returns (skipped if the view is gone or the engine is past `.ready`).
+- **S5 verification.** Build + tests green on iPad Pro 13 and iPhone 15 Pro. Screenshots of `stagePerform/Practice/Listen/Boss/Solemn` on the iPhone 15 Pro match `shots/final/15pro` in every position and size (the 3–7 % pixel differences are note positions, the Dynamic Island on the other side, and the hidden home indicator from S4). A Practice stage driven by simulator taps advances on the correct key. `leaks.sh stagePerform`: same framework-only leaks as S3 (¹). **Not done:** the optional `xctrace` Time Profiler before/after, so there is no main-thread % to report; the backing track's resync behaviour and SFX timing aren't audible here (§9 items 2 and 7).
 
 ## 9. Device checklist for Balqis (after S9)
 

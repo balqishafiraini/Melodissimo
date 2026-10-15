@@ -26,15 +26,14 @@ struct SongStageView: View {
     @StateObject private var backing = BackingTrackPlayer()
     /// Key frames in window coordinates, from the keyboard, so the highway lanes line up with the keys.
     @State private var keyFrames: [Int: CGRect] = [:]
-    /// Practice: the key that was just pressed wrongly, flashed red for a moment.
+    /// Practice: the key that was just pressed wrongly, flashed red for a moment (set from the scoreboard's
+    /// `lastWrongPress`, which this view subscribes to without observing the rest of the scoreboard).
     @State private var wrongFlashKeyId: Int?
     /// False once the player has left, so a pending hop to the results screen can't hit the wrong screen.
     @State private var isOnScreen = true
     @State private var hasRecordedResult = false
     /// When each key was last pressed, for the highway's lane flash.
     @State private var laneFlashes = LaneFlashes()
-    /// The combo text's scale: it pops on every tenth hit.
-    @State private var comboScale: CGFloat = 1
 
     let song: Song
     let mode: StageMode
@@ -146,34 +145,33 @@ struct SongStageView: View {
                 engine.pause(now: CACurrentMediaTime())
             }
         }
-        .onChange(of: engine.wrongPresses) { _ in
-            flashWrongKeyIfPracticing()
-            playEffect(.wrong)
-        }
-        .onChange(of: engine.counts.perfect) { _ in
-            if mode == .perform { playEffect(.perfect) }
-        }
-        .onChange(of: engine.counts.miss) { _ in
-            if mode == .perform { playEffect(.miss) }
+        .onReceive(engine.scoreboard.$lastWrongPress.dropFirst().compactMap { $0 }) { wrong in
+            flashWrongKey(wrong)
         }
         .task(id: engine.phase) {
             await tickThroughCountIn()
         }
-        .onChange(of: engine.combo) { combo in
-            pulseComboIfMilestone(combo)
-        }
         .onChange(of: engine.phase) { newPhase in
             if newPhase == .finished { finish() }
+        }
+        .task {
+            await startPlaying()
         }
         .onAppear {
             isOnScreen = true
             engine.attachTicker()
-            // The track must be listening before the clock starts, so it hears the first `.running`.
-            if usesBacking, let offset = engine.chart.offset {
-                backing.load(songId: song.id, offset: offset, speed: speed)
-                engine.onClockEvent = { [weak backing] event in backing?.handle(event) }
+            // Sound effects fire the moment a hit, miss or wrong press is judged, not a render later. The closure
+            // lives on the engine, so it captures two plain values and nothing else.
+            let mode = mode, isSolemn = isSolemn
+            engine.onJudgment = { judgment in
+                guard !isSolemn else { return }
+                switch judgment {
+                case nil: SFX.play(.wrong)
+                case .perfect? where mode == .perform: SFX.play(.perfect)
+                case .miss? where mode == .perform: SFX.play(.miss)
+                default: break
+                }
             }
-            engine.start(now: CACurrentMediaTime())
             if usesMicrophone {
                 mic.onNote = { keyId, hostTime in
                     laneFlashes.press(keyId: keyId, at: hostTime)
@@ -185,6 +183,7 @@ struct SongStageView: View {
         .onDisappear {
             isOnScreen = false
             engine.onClockEvent = nil
+            engine.onJudgment = nil
             backing.stop()
             engine.detachTicker()
             mic.onNote = nil
@@ -213,10 +212,17 @@ struct SongStageView: View {
         return [key]
     }
 
-    /// Plays a sound effect, except on the solemn songs, which stay quiet.
-    private func playEffect(_ effect: SFX.Effect) {
-        guard !isSolemn else { return }
-        SFX.play(effect)
+    /// Loads the backing track (off the main thread), then starts the count-in, so the stage never stutters at its
+    /// start. The track must be listening before the clock starts, so it hears the first `.running`. A view that
+    /// is gone by then, or already past `.ready` (the task runs again on re-appearing), starts nothing.
+    private func startPlaying() async {
+        guard engine.phase == .ready else { return }
+        if usesBacking, let offset = engine.chart.offset {
+            await backing.load(songId: song.id, offset: offset, speed: speed)
+            engine.onClockEvent = { [weak backing] event in backing?.handle(event) }
+        }
+        guard !Task.isCancelled, isOnScreen else { return }
+        engine.start(now: CACurrentMediaTime())
     }
 
     /// A tick on each 3-2-1 of the count-in. Cancelled when the phase changes (pause, start), so
@@ -235,22 +241,12 @@ struct SongStageView: View {
         }
     }
 
-    /// Every tenth hit the combo number swells and settles, which is also when the multiplier steps up.
-    /// Solemn songs and Reduce Motion skip it.
-    private func pulseComboIfMilestone(_ combo: Int) {
-        guard ComboPulse.isMilestone(combo), !isSolemn, !reduceMotion else { return }
-        withAnimation(.easeOut(duration: 0.1)) { comboScale = 1.6 }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.45)) { comboScale = 1 }
-        }
-    }
-
-    private func flashWrongKeyIfPracticing() {
-        guard mode == .practice, let event = engine.recentEvents.last, event.judgment == nil else { return }
-        let key = event.keyId
-        wrongFlashKeyId = key
+    /// Practice: the key pressed wrongly flashes red for 0.3 s.
+    private func flashWrongKey(_ wrong: WrongPress) {
+        guard mode == .practice else { return }
+        wrongFlashKeyId = wrong.keyId
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            if wrongFlashKeyId == key { wrongFlashKeyId = nil }
+            if engine.scoreboard.lastWrongPress == wrong { wrongFlashKeyId = nil }
         }
     }
 
@@ -320,18 +316,13 @@ struct SongStageView: View {
 
             Spacer()
 
-            scoreArea
-                .foregroundColor(hudTextColor)
-
-            if isBoss {
-                BossBadgeView(kind: bossKind,
-                              health: mode == .perform ? bossHealth : nil,
-                              hitTrigger: engine.counts.perfect + engine.counts.great + engine.counts.good)
-            }
+            StageHUDScore(scoreboard: engine.scoreboard, mode: mode, isSolemn: isSolemn, isBoss: isBoss,
+                          bossKind: bossKind, totalNotes: engine.totalNotes, textColor: hudTextColor)
         }
         .padding(.horizontal, Sizing.s(24))
         .overlay(alignment: .bottom) {
-            progressBar
+            StageProgressBar(scoreboard: engine.scoreboard, totalNotes: engine.totalNotes, color: hudTextColor)
+                .padding(.horizontal, Sizing.s(24))
         }
     }
 
@@ -346,61 +337,6 @@ struct SongStageView: View {
     /// Which island's Fals this boss is: the chapter of the campaign stage (the first one in Free Play).
     private var bossKind: Int {
         campaignStageId.flatMap { CampaignCatalog.stage(id: $0)?.chapter } ?? 1
-    }
-
-    private var bossHealth: Double {
-        BossHealth.fraction(counts: engine.counts, totalNotes: engine.totalNotes)
-    }
-
-    @ViewBuilder
-    private var scoreArea: some View {
-        switch mode {
-        case .perform:
-            VStack(alignment: .trailing, spacing: 0) {
-                HStack(spacing: 8) {
-                    Text("Score")
-                        .font(.subheadline)
-                    Text("\(engine.score)")
-                        .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
-                        .contentTransition(.numericText())
-                        .animation(.default, value: engine.score)
-                }
-                // No combo flames on solemn songs.
-                if engine.combo >= 2, !isSolemn {
-                    HStack(spacing: 8) {
-                        Text("Combo")
-                            .font(.subheadline)
-                        Text("\(engine.combo)")
-                            .font(.custom("BalooDa-Regular", size: Sizing.f(22)))
-                            .scaleEffect(comboScale, anchor: .leading)
-                    }
-                }
-            }
-        case .practice:
-            Text("Practice")
-                .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
-        case .listen:
-            Text("Listen")
-                .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
-        }
-    }
-
-    /// Notes judged so far over all notes. Redrawn every frame so Listen and Practice, which don't
-    /// publish per note, still move it.
-    private var progressBar: some View {
-        TimelineView(.animation) { timeline in
-            let _ = timeline.date
-            let fraction = engine.totalNotes == 0 ? 0 : Double(engine.judgedCount) / Double(engine.totalNotes)
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Capsule().fill(hudTextColor.opacity(0.2))
-                    Capsule().fill(Color.yellow)
-                        .frame(width: geo.size.width * fraction)
-                }
-            }
-            .frame(height: 4)
-        }
-        .padding(.horizontal, Sizing.s(24))
     }
 
     /// A big 3-2-1 while the song clock is still negative. Each number starts large and shrinks over its beat.
@@ -556,5 +492,102 @@ struct SongStageView: View {
             .foregroundColor(filled ? .white : Color.darkGreen)
             .cornerRadius(Sizing.s(20))
             .font(Font.headline)
+    }
+}
+
+// MARK: - HUD pieces
+
+/// The score (with the combo) or the mode's name, and the boss badge. These are the parts of the HUD that change
+/// with every hit, so they observe the scoreboard themselves and `SongStageView` doesn't re-render for a hit.
+private struct StageHUDScore: View {
+    @ObservedObject var scoreboard: StageScoreboard
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let mode: StageMode
+    let isSolemn: Bool
+    let isBoss: Bool
+    let bossKind: Int
+    let totalNotes: Int
+    let textColor: Color
+    /// The combo text's scale: it pops on every tenth hit.
+    @State private var comboScale: CGFloat = 1
+
+    var body: some View {
+        HStack(spacing: Sizing.s(16)) {
+            scoreArea
+                .foregroundColor(textColor)
+
+            if isBoss {
+                BossBadgeView(kind: bossKind,
+                              health: mode == .perform
+                                  ? BossHealth.fraction(counts: scoreboard.counts, totalNotes: totalNotes) : nil,
+                              hitTrigger: scoreboard.counts.perfect + scoreboard.counts.great + scoreboard.counts.good)
+            }
+        }
+        .onChange(of: scoreboard.combo) { combo in
+            pulseComboIfMilestone(combo)
+        }
+    }
+
+    @ViewBuilder
+    private var scoreArea: some View {
+        switch mode {
+        case .perform:
+            VStack(alignment: .trailing, spacing: 0) {
+                HStack(spacing: 8) {
+                    Text("Score")
+                        .font(.subheadline)
+                    Text("\(scoreboard.score)")
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
+                        .contentTransition(.numericText())
+                        .animation(.default, value: scoreboard.score)
+                }
+                // No combo flames on solemn songs.
+                if scoreboard.combo >= 2, !isSolemn {
+                    HStack(spacing: 8) {
+                        Text("Combo")
+                            .font(.subheadline)
+                        Text("\(scoreboard.combo)")
+                            .font(.custom("BalooDa-Regular", size: Sizing.f(22)))
+                            .scaleEffect(comboScale, anchor: .leading)
+                    }
+                }
+            }
+        case .practice:
+            Text("Practice")
+                .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
+        case .listen:
+            Text("Listen")
+                .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
+        }
+    }
+
+    /// Every tenth hit the combo number swells and settles, which is also when the multiplier steps up.
+    /// Solemn songs and Reduce Motion skip it.
+    private func pulseComboIfMilestone(_ combo: Int) {
+        guard ComboPulse.isMilestone(combo), !isSolemn, !reduceMotion else { return }
+        withAnimation(.easeOut(duration: 0.1)) { comboScale = 1.6 }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.45)) { comboScale = 1 }
+        }
+    }
+}
+
+/// Notes judged so far over all notes. It moves only when a note is judged (the scoreboard says so), so it needs no
+/// timeline redrawing it every frame.
+private struct StageProgressBar: View {
+    @ObservedObject var scoreboard: StageScoreboard
+    let totalNotes: Int
+    let color: Color
+
+    var body: some View {
+        let fraction = totalNotes == 0 ? 0 : Double(scoreboard.judgedCount) / Double(totalNotes)
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule().fill(color.opacity(0.2))
+                Capsule().fill(Color.yellow)
+                    .frame(width: geo.size.width * fraction)
+            }
+        }
+        .frame(height: 4)
     }
 }

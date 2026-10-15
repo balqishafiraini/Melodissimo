@@ -9,8 +9,9 @@ import Foundation
 enum BackingSchedule {
     /// The pre-roll may outlast the count-in by at most this much, so a long intro isn't a long wait.
     static let maxExtraLeadIn = 4.0
-    /// Drift beyond this is corrected by seeking.
-    static let resyncTolerance = 0.05
+    /// Drift beyond this is a candidate for correction by seeking (see `DriftGate`). A seek is audible, and an AAC
+    /// seek is only accurate to a few tens of milliseconds, so a tight tolerance made it skip and re-seek.
+    static let resyncTolerance = 0.12
 
     /// How long the song clock runs before beat 0 when a backing track plays (wall seconds).
     static func leadIn(offset: Double, speed: Double, countIn: Double) -> Double {
@@ -26,5 +27,38 @@ enum BackingSchedule {
 
     static func needsResync(expected: Double, actual: Double) -> Bool {
         abs(expected - actual) > resyncTolerance
+    }
+}
+
+/// Decides when a backing track that has drifted from the song clock is really worth seeking.
+///
+/// One reading over the tolerance is often a busy moment (a slow frame, a rate change settling), not drift, and
+/// every seek is audible. So a seek needs two readings in a row over the tolerance, and at least three seconds
+/// since the previous seek. Pure, so it's unit-tested.
+struct DriftGate {
+    /// Fewest seconds between two seeks.
+    static let minimumGap = 3.0
+
+    private var consecutive = 0
+    private var lastResync: Double?
+
+    /// `drift` is expected minus actual track position (seconds); `now` any steadily increasing clock.
+    mutating func shouldResync(drift: Double, now: Double) -> Bool {
+        guard abs(drift) > BackingSchedule.resyncTolerance else {
+            consecutive = 0
+            return false
+        }
+        consecutive += 1
+        guard consecutive >= 2 else { return false }
+        if let lastResync, now - lastResync < Self.minimumGap { return false }
+        consecutive = 0
+        lastResync = now
+        return true
+    }
+
+    /// Forget everything: the track was started afresh.
+    mutating func reset() {
+        consecutive = 0
+        lastResync = nil
     }
 }

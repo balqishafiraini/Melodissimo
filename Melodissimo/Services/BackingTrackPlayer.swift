@@ -27,21 +27,31 @@ final class BackingTrackPlayer: ObservableObject {
     private var player: AVAudioPlayer?
     private var speed = 1.0
     private var driftTimer: Timer?
+    private var gate = DriftGate()
     /// Where the track was started: its position and the host time at which that position is heard.
     private var anchor: (position: Double, host: CFTimeInterval)?
 
-    /// Loads the track for a song. `offset` is only used to validate the chart (the engine's events carry the clock).
-    func load(songId: String, offset: Double, speed: Double, bundle: Bundle = .main) {
+    /// Loads the track for a song. The file is opened and primed off the main thread (doing it in `onAppear` froze
+    /// the first frames of the stage); the player is published on the main actor when it is ready, and the caller
+    /// starts the song clock only after this returns. `offset` is the chart's, for the start position maths.
+    @MainActor
+    func load(songId: String, offset: Double, speed: Double, bundle: Bundle = .main) async {
         stop()
         self.speed = speed
-        guard let url = bundle.url(forResource: Self.resourceName(for: songId), withExtension: "m4a"),
-              let player = try? AVAudioPlayer(contentsOf: url) else { return }
-        player.enableRate = true            // before prepareToPlay
-        player.rate = Float(speed)
-        player.volume = Self.volume
-        player.prepareToPlay()
-        self.player = player
         self.offset = offset
+        gate.reset()
+        guard let url = bundle.url(forResource: Self.resourceName(for: songId), withExtension: "m4a") else { return }
+        let loaded = await Task.detached(priority: .userInitiated) { () -> AVAudioPlayer? in
+            guard let player = try? AVAudioPlayer(contentsOf: url) else { return nil }
+            player.enableRate = true            // before prepareToPlay
+            player.rate = Float(speed)
+            player.volume = Self.volume
+            player.prepareToPlay()
+            return player
+        }.value
+        // The stage may have gone away (or been left and re-entered) while the file was loading.
+        guard !Task.isCancelled else { return }
+        self.player = loaded
     }
 
     private var offset = 0.0
@@ -60,6 +70,7 @@ final class BackingTrackPlayer: ObservableObject {
             let wait = max(0, hostTime - CACurrentMediaTime()) + plan.delay
             player.play(atTime: player.deviceCurrentTime + wait)
             anchor = (plan.position, CACurrentMediaTime() + wait)
+            gate.reset()
             startDriftTimer()
         case .halted:
             stopDriftTimer()
@@ -100,13 +111,14 @@ final class BackingTrackPlayer: ObservableObject {
         driftTimer = nil
     }
 
-    /// Re-seeks when the track and the song clock have drifted apart (a slow rate, a busy device).
+    /// Re-seeks when the track and the song clock have drifted apart for good (a slow rate, a busy device); see `DriftGate`.
     private func checkDrift() {
         guard let player, player.isPlaying, let anchor else { return }
         let now = CACurrentMediaTime()
         guard now - anchor.host >= Self.driftGrace else { return }
         let expected = anchor.position + (now - anchor.host) * speed
-        if BackingSchedule.needsResync(expected: expected, actual: player.currentTime) {
+        if gate.shouldResync(drift: expected - player.currentTime, now: now) {
+            AudioDiag.log("backing track resync: drift \(expected - player.currentTime)")
             player.currentTime = expected
         }
     }

@@ -29,9 +29,9 @@ struct JudgmentEvent: Hashable {
 /// behaviours. It has no UI and never reads the host clock itself — every time-based
 /// method takes `now` (a `CACurrentMediaTime()` value) so tests can drive it with fake times.
 ///
-/// Only things that matter to the HUD are `@Published`, and only when they actually
-/// change. The song time and the note list are read directly, every frame, by the
-/// highway's `Canvas`.
+/// Only the phase and the hint key are `@Published` here. The numbers that change with every
+/// judgment live on `scoreboard`, which only the HUD observes. The song time and the note list
+/// are read directly, every frame, by the highway's `Canvas`.
 final class RhythmEngine: ObservableObject {
 
     enum Phase: Hashable {
@@ -68,11 +68,8 @@ final class RhythmEngine: ObservableObject {
     let leadInDuration: Double
 
     @Published private(set) var phase: Phase = .ready
-    @Published private(set) var score = 0
-    @Published private(set) var combo = 0
-    @Published private(set) var maxCombo = 0
-    @Published private(set) var counts = JudgmentCounts()
-    @Published private(set) var wrongPresses = 0
+    /// Score, combo, counts and the wrong-press flash, observed by the HUD views only.
+    let scoreboard = StageScoreboard()
     /// Key to highlight: the right key in Practice after a struggle, the sounding key in Listen.
     @Published private(set) var hintKeyId: Int?
 
@@ -82,6 +79,10 @@ final class RhythmEngine: ObservableObject {
     private(set) var isWaiting = false
     /// Called whenever the song clock starts, halts, resumes or ends.
     var onClockEvent: ((ClockEvent) -> Void)?
+    /// Called synchronously for every judged press or auto-miss, at the moment it happens: the judgment, or `nil` for a
+    /// wrong press. The stage plays its sound effects from it. The closure lives as long as the engine, so it must
+    /// capture plain values only, never the engine, the scoreboard or a view.
+    var onJudgment: ((Judgment?) -> Void)?
 
     private var clock = PausableClock()
     private var firstUnjudged = 0
@@ -126,8 +127,14 @@ final class RhythmEngine: ObservableObject {
 
     var totalNotes: Int { notes.count }
 
+    // Read-only views of the scoreboard, so tests and `finish()` read the numbers where they always were.
+    var score: Int { scoreboard.score }
+    var combo: Int { scoreboard.combo }
+    var maxCombo: Int { scoreboard.maxCombo }
+    var counts: JudgmentCounts { scoreboard.counts }
+    var wrongPresses: Int { scoreboard.wrongPresses }
     /// Notes that have been hit or missed so far (for the HUD progress bar).
-    var judgedCount: Int { notes.reduce(0) { $0 + ($1.judgment == nil ? 0 : 1) } }
+    var judgedCount: Int { scoreboard.judgedCount }
 
     var comboMultiplier: Int { Judge.multiplier(forCombo: combo) }
 
@@ -193,11 +200,7 @@ final class RhythmEngine: ObservableObject {
         isWaiting = false
         wrongPressesOnCurrentNote = 0
         listenActiveIndex = nil
-        score = 0
-        combo = 0
-        maxCombo = 0
-        counts = JudgmentCounts()
-        wrongPresses = 0
+        scoreboard.reset()
         hintKeyId = nil
         clock = PausableClock()
         clock.freeze(at: -leadInDuration)
@@ -236,18 +239,17 @@ final class RhythmEngine: ObservableObject {
         }
         // A stray press during the count-in isn't held against the player.
         guard phase == .playing else { return }
-        wrongPresses += 1
-        combo = 0
+        scoreboard.registerWrongPress(keyId: keyId, breaksCombo: true)
         record(JudgmentEvent(keyId: keyId, judgment: nil, hostTime: now))
+        onJudgment?(nil)
     }
 
     private func registerHit(at index: Int, judgment: Judgment, now: CFTimeInterval) {
         notes[index].judgment = judgment
-        counts.add(judgment)
-        combo += 1
-        if combo > maxCombo { maxCombo = combo }
-        score += Judge.points(for: judgment) * Judge.multiplier(forCombo: combo)
+        // The multiplier is the one for the combo *including* this hit, as before.
+        scoreboard.registerHit(judgment, points: Judge.points(for: judgment) * Judge.multiplier(forCombo: scoreboard.combo + 1))
         record(JudgmentEvent(keyId: notes[index].keyId, judgment: judgment, hostTime: now))
+        onJudgment?(judgment)
         advanceFirstUnjudged()
         finishIfDone(now: now)
     }
@@ -260,6 +262,7 @@ final class RhythmEngine: ObservableObject {
 
         if keyId == note.keyId {
             notes[firstUnjudged].judgment = .perfect
+            scoreboard.noteJudged()
             record(JudgmentEvent(keyId: keyId, judgment: .perfect, hostTime: now))
             wrongPressesOnCurrentNote = 0
             if hintKeyId != nil { hintKeyId = nil }
@@ -271,9 +274,10 @@ final class RhythmEngine: ObservableObject {
             advanceFirstUnjudged()
             finishIfDone(now: now)
         } else {
-            wrongPresses += 1
+            scoreboard.registerWrongPress(keyId: keyId, breaksCombo: false)
             wrongPressesOnCurrentNote += 1
             record(JudgmentEvent(keyId: keyId, judgment: nil, hostTime: now))
+            onJudgment?(nil)
             if wrongPressesOnCurrentNote >= Self.practiceHintWrongPresses, hintKeyId != note.keyId {
                 hintKeyId = note.keyId
             }
@@ -299,19 +303,19 @@ final class RhythmEngine: ObservableObject {
 
     private func stepPerform(now: CFTimeInterval) {
         let t = inputTime(now: now)
-        var missed = false
+        var missed = 0
         var i = firstUnjudged
         while i < notes.count {
             if notes[i].judgment != nil { i += 1; continue }
             guard t - notes[i].time > Judge.good + windowBonus else { break }   // sorted: nothing later has expired either
             notes[i].judgment = .miss
-            counts.add(.miss)
             record(JudgmentEvent(keyId: notes[i].keyId, judgment: .miss, hostTime: now))
-            missed = true
+            missed += 1
             i += 1
         }
-        if missed {
-            combo = 0
+        if missed > 0 {
+            scoreboard.registerMisses(missed)
+            for _ in 0..<missed { onJudgment?(.miss) }
             advanceFirstUnjudged()
         }
         finishIfDone(now: now)
@@ -344,6 +348,7 @@ final class RhythmEngine: ObservableObject {
         var due: Int?
         while firstUnjudged < notes.count, notes[firstUnjudged].time <= t {
             notes[firstUnjudged].judgment = .perfect
+            scoreboard.noteJudged()
             due = firstUnjudged
             firstUnjudged += 1
         }

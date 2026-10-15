@@ -32,6 +32,25 @@ struct NoteHighwayView: View {
     /// rebuilt every frame, and a song uses 8 to 15 of the 32 keys.
     private let usedKeyIds: [Int]
 
+    /// One note with everything about it that never changes during a play, worked out once. `index` is the note's
+    /// place in `engine.notes`, where its judgment is read each frame.
+    fileprivate struct RenderNote {
+        let index: Int
+        let keyId: Int
+        let time: Double
+        let duration: Double
+        let fill: Color
+    }
+
+    /// White-key and black-key notes, each sorted by time, so a frame can binary-search the few that are on screen
+    /// instead of looping over the whole song twice.
+    private let whiteNotes: [RenderNote]
+    private let blackNotes: [RenderNote]
+    /// The longest note's duration: a note that started this long before now may still be on screen.
+    private let longestNote: Double
+    /// The lane lines, built once per set of key frames rather than every frame.
+    private let laneCache = LanePathCache()
+
     init(engine: RhythmEngine, keyFrames: [Int: CGRect], labelsOnNotes: Bool = true, showsPopups: Bool = true,
          isSolemn: Bool = false, laneFlashes: LaneFlashes? = nil, reduceMotion: Bool = false) {
         self.engine = engine
@@ -42,6 +61,19 @@ struct NoteHighwayView: View {
         self.laneFlashes = laneFlashes
         self.reduceMotion = reduceMotion
         self.usedKeyIds = Array(Set(engine.notes.map(\.keyId))).sorted()
+
+        let skin = noteSkin
+        var white: [RenderNote] = []
+        var black: [RenderNote] = []
+        for note in engine.notes {
+            let key = NoteCatalog.note(note.keyId)
+            let fill = skin.color(semitone: key.semitone, isBlack: key.isBlack) ?? (key.isBlack ? .navy : .yellow)
+            let render = RenderNote(index: note.index, keyId: note.keyId, time: note.time, duration: note.duration, fill: fill)
+            if key.isBlack { black.append(render) } else { white.append(render) }
+        }
+        self.whiteNotes = white.sorted { $0.time < $1.time }
+        self.blackNotes = black.sorted { $0.time < $1.time }
+        self.longestNote = engine.notes.map(\.duration).max() ?? 0
     }
 
     /// How long a judgment popup rises and fades.
@@ -115,10 +147,15 @@ struct NoteHighwayView: View {
         drawLaneFlashes(&context, hitY: hitY, originX: originX)
         drawHitLine(&context, size: size, hitY: hitY)
 
-        // White-key notes first so the narrower black-key notes sit on top of them.
-        for blackKeys in [false, true] {
-            for note in engine.notes where NoteCatalog.note(note.keyId).isBlack == blackKeys {
-                drawNote(note, &context, songTime: songTime, hitY: hitY, originX: originX)
+        // White-key notes first so the narrower black-key notes sit on top of them. Each list is sorted by time:
+        // start at the first note that could still be on screen and stop at the first one not yet in.
+        let earliest = songTime - longestNote - HighwayGeometry.exitWindow
+        let latest = songTime + engine.approachTime
+        for notes in [whiteNotes, blackNotes] {
+            var i = Self.firstIndex(in: notes, timeAtLeast: earliest)
+            while i < notes.count, notes[i].time <= latest {
+                drawNote(notes[i], &context, songTime: songTime, hitY: hitY, originX: originX)
+                i += 1
             }
         }
 
@@ -181,17 +218,20 @@ struct NoteHighwayView: View {
     }
 
     private func drawLanes(_ context: inout GraphicsContext, size: CGSize, originX: CGFloat) {
-        var path = Path()
-        for id in NoteCatalog.whiteKeyIDs {
-            guard let frame = keyFrames[id] else { continue }
-            let x = frame.minX - originX
-            path.move(to: CGPoint(x: x, y: 0))
-            path.addLine(to: CGPoint(x: x, y: size.height))
-        }
-        if let last = keyFrames[NoteCatalog.whiteKeyIDs.last ?? 0] {
-            let x = last.maxX - originX
-            path.move(to: CGPoint(x: x, y: 0))
-            path.addLine(to: CGPoint(x: x, y: size.height))
+        let path = laneCache.path(originX: originX, height: size.height) {
+            var path = Path()
+            for id in NoteCatalog.whiteKeyIDs {
+                guard let frame = keyFrames[id] else { continue }
+                let x = frame.minX - originX
+                path.move(to: CGPoint(x: x, y: 0))
+                path.addLine(to: CGPoint(x: x, y: size.height))
+            }
+            if let last = keyFrames[NoteCatalog.whiteKeyIDs.last ?? 0] {
+                let x = last.maxX - originX
+                path.move(to: CGPoint(x: x, y: 0))
+                path.addLine(to: CGPoint(x: x, y: size.height))
+            }
+            return path
         }
         context.stroke(path, with: .color(Color.white.opacity(0.12)), lineWidth: 1)
     }
@@ -202,9 +242,10 @@ struct NoteHighwayView: View {
         context.fill(Path(CGRect(x: 0, y: hitY - 2, width: size.width, height: 4)), with: .color(Color.white.opacity(0.9)))
     }
 
-    private func drawNote(_ note: EngineNote, _ context: inout GraphicsContext, songTime: Double, hitY: CGFloat, originX: CGFloat) {
+    private func drawNote(_ note: RenderNote, _ context: inout GraphicsContext, songTime: Double, hitY: CGFloat, originX: CGFloat) {
         // Hit notes vanish; missed ones stay and turn grey.
-        if let judgment = note.judgment, judgment != .miss { return }
+        let judgment = engine.notes[note.index].judgment
+        if let judgment, judgment != .miss { return }
         guard HighwayGeometry.isVisible(noteTime: note.time, duration: note.duration,
                                         songTime: songTime, approachTime: engine.approachTime),
               let keyFrame = keyFrames[note.keyId] else { return }
@@ -213,11 +254,7 @@ struct NoteHighwayView: View {
                                             songTime: songTime, approachTime: engine.approachTime,
                                             hitY: hitY, keyFrame: keyFrame, highwayOriginX: originX,
                                             minimumLength: Sizing.s(HighwayGeometry.minimumNoteLength))
-        let key = NoteCatalog.note(note.keyId)
-        let isBlack = key.isBlack
-        let fill: Color = note.judgment == .miss
-            ? Color.gray.opacity(0.55)
-            : (noteSkin.color(semitone: key.semitone, isBlack: isBlack) ?? (isBlack ? .navy : .yellow))
+        let fill: Color = judgment == .miss ? Color.gray.opacity(0.55) : note.fill
         let shape = Path(roundedRect: rect, cornerRadius: Sizing.s(10))
         context.fill(shape, with: .color(fill))
         context.stroke(shape, with: .color(Color.white.opacity(0.85)), lineWidth: 2)
@@ -225,5 +262,37 @@ struct NoteHighwayView: View {
         if labelsOnNotes, let label = context.resolveSymbol(id: note.keyId) {
             context.draw(label, at: CGPoint(x: rect.midX, y: max(rect.minY + Sizing.s(14), rect.maxY - Sizing.s(20))))
         }
+    }
+}
+
+// MARK: - Per-frame helpers
+
+extension NoteHighwayView {
+    /// The first index whose note starts at `time` or later (the list is sorted by time).
+    fileprivate static func firstIndex(in notes: [RenderNote], timeAtLeast time: Double) -> Int {
+        var low = 0
+        var high = notes.count
+        while low < high {
+            let mid = (low + high) / 2
+            if notes[mid].time < time { low = mid + 1 } else { high = mid }
+        }
+        return low
+    }
+}
+
+/// Holds the lane lines between frames. A reference type because the highway is a value and its `Canvas` closure
+/// can't mutate it; the path only changes when the highway moves or resizes, which is rare.
+private final class LanePathCache {
+    private var originX: CGFloat?
+    private var height: CGFloat?
+    private var cached = Path()
+
+    func path(originX: CGFloat, height: CGFloat, build: () -> Path) -> Path {
+        if self.originX != originX || self.height != height {
+            cached = build()
+            self.originX = originX
+            self.height = height
+        }
+        return cached
     }
 }
