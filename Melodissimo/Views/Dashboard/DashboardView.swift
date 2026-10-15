@@ -49,6 +49,7 @@ struct DashboardView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear(perform: startFirstStageIfNeeded)
+            .onAppear { GameCenter.shared.authenticate() }
             #if DEBUG
             .onAppear { QARoutes.applyLaunchRoute(to: router) }
             #endif

@@ -37,7 +37,7 @@ This document is written for an AI executor (**Claude Sonnet 5.5**). It adds **P
 | S8 | iPhone top bar: "?" / Menu / Back buttons at one consistent inset | UI |
 | S9 | Memory & leak sweep, soak test, docs, device checklist | QA |
 
-- [x] S0  - [ ] S1  - [ ] S2  - [ ] S3  - [ ] S4  - [ ] S5  - [ ] S6  - [ ] S7  - [ ] S8  - [ ] S9
+- [x] S0  - [x] S1  - [ ] S2  - [ ] S3  - [ ] S4  - [ ] S5  - [ ] S6  - [ ] S7  - [ ] S8  - [ ] S9
 
 ---
 
@@ -282,7 +282,21 @@ Design (`final class NoteAudioEngine`, singleton, main-thread API):
 
 ## 7. Turning on Game Center and iCloud (for Balqis, later)
 
-*(S1 writes this section.)*
+**Sekarang mati.** Game Center dan iCloud sengaja dimatikan karena profil signing tim `AZQ73MXTBD` belum punya kapabilitasnya. Menyalakan kapabilitas yang tidak ada di profil bikin app gagal ter-install di HP. Jadi **jangan** tambah file `.entitlements` dengan tangan.
+
+Cara menyalakannya nanti:
+1. Pakai akun **Apple Developer berbayar**; pilih team-nya di Xcode.
+2. Target Melodissimo → **Signing & Capabilities** → **+ Capability** → **Game Center**, lalu **+ Capability** → **iCloud** → centang **Key-value storage**. Xcode membuat file `.entitlements` dan memperbarui profil.
+3. Di `Melodissimo/Data/Info.plist` ubah `MelodissimoOnlineServices` dari `<false/>` jadi `<true/>`.
+4. Di App Store Connect buat 3 leaderboard **Classic** (skor angka bulat, makin tinggi makin bagus) dengan id persis seperti di `Services/GameCenter.swift`: `melodissimo.rush`, `melodissimo.echo`, `melodissimo.stars`.
+
+**Currently off.** Game Center and iCloud are switched off on purpose: the `AZQ73MXTBD` signing profile doesn't have those capabilities, and adding an entitlement the profile lacks breaks device signing. Don't add a `.entitlements` file by hand.
+
+To switch them on later:
+1. Use a **paid Apple Developer** team and pick it in Xcode.
+2. Melodissimo target → **Signing & Capabilities** → **+ Capability** → **Game Center**, then **+ Capability** → **iCloud** → tick **Key-value storage**. Xcode creates the `.entitlements` file and updates the profile.
+3. In `Melodissimo/Data/Info.plist` change `MelodissimoOnlineServices` from `<false/>` to `<true/>`.
+4. In App Store Connect create the 3 **Classic** leaderboards (integer score, higher is better) with the ids in `Services/GameCenter.swift`: `melodissimo.rush`, `melodissimo.echo`, `melodissimo.stars`.
 
 ## 8. Executor notes
 
@@ -304,6 +318,8 @@ The single 16-byte "ROOT LEAK" is in every route including the plain campaign ma
 - **S0 simulators by UDID.** `-destination 'platform=iOS Simulator,name=iPhone 15 Pro'` is ambiguous here (iOS 17.5 and 18.x runtimes both have it), so the checks use `id=` of the devices in `Scripts/iphone/devices.txt`. `Scripts/perf/verify.sh [phone-tests]` runs the §3.2 build + tests that way.
 - **S0 schemes.** No shared scheme existed (Xcode generated `Melodissimo` on the fly), so S0 adds shared `Melodissimo` (Debug launch, includes `MelodissimoTests`) and `Melodissimo (Release run)` (Release launch).
 - **S0 leaks.sh** finds the app's pid by the simulator UDID in its path (other booted simulators also run the app). `STACKS=1` turns on malloc stack logging; it is off by default because it inflates the footprint. The app writes `Documents/qa-cycle-done.txt` as well as printing `QA cycle done`, because `simctl launch` without `--console` doesn't show stdout.
+- **S1 verification.** Launching Debug on the iPhone 15 Pro simulator (iOS 17.5) and streaming `log stream --predicate 'process == "Melodissimo"'` for 22 s after launch gave 950 lines and **zero** matching `kvs|gamed|gamekit|game center|entitlement`. (The old build's lines can't be reproduced on a simulator, which has no gamed entitlement check, so this proves only that nothing we call touches them; the device check is §9 item 1.)
+- **S1 API shape.** `CloudSync` has a designated `init(local:cloudFactory:isEnabled:songTitles:)` and a convenience `init(local:cloud:songTitles:)` (always enabled) for tests. `sync()`, `forgetProgress()` and `syncSoon()` are no-ops while disabled. `GameCenter.authenticate()` is called from Home's `onAppear` and guards itself (once per launch).
 
 
 ## 9. Device checklist for Balqis (after S9)

@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>MelodissimoOnlineServices</key>
+	<false/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Melodissimo listens to your pianika so you can play the songs on your real instrument.</string>
 	<key>UIUserInterfaceStyle</key>

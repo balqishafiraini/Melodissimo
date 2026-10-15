@@ -22,10 +22,9 @@ struct MelodissimoApp: App {
         ProgressStore.shared.runMigrationIfNeeded()
         // A renamed song keeps its stars and trophy (runs once).
         ProgressStore.shared.migrateRenamedSongs()
-        // Mirror progress to iCloud (needs the iCloud key-value capability; a no-op without it).
+        // Mirror progress to iCloud (a no-op unless `OnlineServices.isEnabled`). Game Center signs in later,
+        // from Home's first appearance.
         CloudSync.shared.start()
-        // Sign in to Game Center without any sign-in sheet, so leaderboards can take scores.
-        GameCenter.shared.authenticate()
     }
 
     var body: some Scene {

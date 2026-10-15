@@ -46,8 +46,14 @@ enum LeaderboardSubmissions {
 final class GameCenter {
     static let shared = GameCenter()
 
-    /// Call once at launch.
+    private static var didAuthenticate = false
+
+    /// Signs in once per launch, and only when online services are switched on (`OnlineServices`): without
+    /// the Game Center entitlement the attempt fails after ~20 s of system churn. Called from Home's first
+    /// appearance, so launch itself isn't competing with GameKit.
     func authenticate() {
+        guard OnlineServices.isEnabled, !Self.didAuthenticate else { return }
+        Self.didAuthenticate = true
         GKLocalPlayer.local.authenticateHandler = { _, _ in
             // Silent on purpose: any sign-in screen the system offers is ignored.
         }

@@ -113,4 +113,24 @@ final class CloudSyncTests: XCTestCase {
         XCTAssertNil(cloud.values["song_stars_a"])
         XCTAssertNotNil(cloud.values["something_else"])
     }
+
+    func testCloudStoreIsNotCreatedUntilNeeded() {
+        var made = 0
+        let sync = CloudSync(local: FakeStore(), cloudFactory: { made += 1; return FakeStore() },
+                             isEnabled: { false }, songTitles: titles)
+        sync.start()
+        XCTAssertTrue(sync.sync().isEmpty)
+        sync.forgetProgress()
+        sync.syncSoon()
+        XCTAssertEqual(made, 0, "disabled sync must never touch the cloud store")
+    }
+
+    func testCloudStoreIsCreatedOnceWhenEnabled() {
+        var made = 0
+        let sync = CloudSync(local: FakeStore(["song_stars_a": 1]), cloudFactory: { made += 1; return FakeStore() },
+                             isEnabled: { true }, songTitles: titles)
+        _ = sync.sync()
+        _ = sync.sync()
+        XCTAssertEqual(made, 1)
+    }
 }
