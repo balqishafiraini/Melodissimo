@@ -21,6 +21,7 @@ import SwiftUI
 /// | `-qaOverlay story\|storyBoss\|certificate\|stageSheet\|stageSheetBoss` | the campaign map opens that overlay on appear |
 /// | `-qaCover calibration\|micCalibration` | with `-qaRoute settings`, Settings opens that full-screen calibration |
 /// | `-qaCoachStep N` | the first-stage tour opens on its Nth bubble (use with `-qaRoute battle`, no seed) |
+/// | `-qaCycle N` | after the route is pushed, pops to Home and pushes it again N times, 4 s apart (leak hunting; `Scripts/perf/leaks.sh`) |
 /// | `-qaSeed YES` | fills the profile with a mid-game player (see `seedProfile()`) |
 ///
 /// The scripts also pass `-AppleLanguages (en)` so every device renders English, whatever the simulator's language.
@@ -83,6 +84,27 @@ enum QARoutes {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             routes.forEach { router.push($0) }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { markReady() }
+            if cycles > 0 { runCycles(cycles, routes: routes, router: router) }
+        }
+    }
+
+    /// `-qaCycle N`: how many times to leave the route and enter it again.
+    private static var cycles: Int { UserDefaults.standard.integer(forKey: "qaCycle") }
+
+    /// Leaves and re-enters the route `count` times, 4 s apart (a song route really plays for 4 s each), then
+    /// reports `QA cycle done` on stdout and in `Documents/qa-cycle-done.txt` for `Scripts/perf/leaks.sh`.
+    @MainActor
+    private static func runCycles(_ count: Int, routes: [Route], router: AppRouter) {
+        Task { @MainActor in
+            for _ in 0..<count {
+                try? await Task.sleep(nanoseconds: 4_000_000_000)
+                router.popToRoot()
+                try? await Task.sleep(nanoseconds: 600_000_000)
+                routes.forEach { router.push($0) }
+            }
+            try? await Task.sleep(nanoseconds: 4_000_000_000)
+            print("QA cycle done")
+            writeDocument("done", to: "qa-cycle-done.txt")
         }
     }
 

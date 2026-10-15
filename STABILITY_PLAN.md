@@ -37,7 +37,7 @@ This document is written for an AI executor (**Claude Sonnet 5.5**). It adds **P
 | S8 | iPhone top bar: "?" / Menu / Back buttons at one consistent inset | UI |
 | S9 | Memory & leak sweep, soak test, docs, device checklist | QA |
 
-- [ ] S0  - [ ] S1  - [ ] S2  - [ ] S3  - [ ] S4  - [ ] S5  - [ ] S6  - [ ] S7  - [ ] S8  - [ ] S9
+- [x] S0  - [ ] S1  - [ ] S2  - [ ] S3  - [ ] S4  - [ ] S5  - [ ] S6  - [ ] S7  - [ ] S8  - [ ] S9
 
 ---
 
@@ -286,7 +286,25 @@ Design (`final class NoteAudioEngine`, singleton, main-thread API):
 
 ## 8. Executor notes
 
-*(Filled in during S0–S9: baseline/after numbers, deviations, anything not verified.)*
+### Leak / footprint table (iPhone 15 Pro simulator, iOS 17.5, Debug, 10 cycles of 4 s)
+
+`Scripts/perf/leaks.sh 82912AB1-0987-41D0-B945-AC8F57DC62EC <route> 10`. Footprint is the `footprint` total after the last cycle.
+
+| Route | S0 baseline leaks | S0 footprint | S3 | S5 | S6 | S9 (10 cycles) |
+|---|---|---|---|---|---|---|
+| stagePerform | 1 (16 B) | 69 MB | | | | |
+| battle | 1 (16 B) | 67 MB | | | | |
+| result3 | 1 (16 B) | 76 MB | | | | |
+| campaignMap | 1 (16 B) | 80 MB | | | | |
+
+The single 16-byte "ROOT LEAK" is in every route including the plain campaign map, so it is a system allocation, not ours.
+
+### Deviations and notes
+
+- **S0 simulators by UDID.** `-destination 'platform=iOS Simulator,name=iPhone 15 Pro'` is ambiguous here (iOS 17.5 and 18.x runtimes both have it), so the checks use `id=` of the devices in `Scripts/iphone/devices.txt`. `Scripts/perf/verify.sh [phone-tests]` runs the §3.2 build + tests that way.
+- **S0 schemes.** No shared scheme existed (Xcode generated `Melodissimo` on the fly), so S0 adds shared `Melodissimo` (Debug launch, includes `MelodissimoTests`) and `Melodissimo (Release run)` (Release launch).
+- **S0 leaks.sh** finds the app's pid by the simulator UDID in its path (other booted simulators also run the app). `STACKS=1` turns on malloc stack logging; it is off by default because it inflates the footprint. The app writes `Documents/qa-cycle-done.txt` as well as printing `QA cycle done`, because `simctl launch` without `--console` doesn't show stdout.
+
 
 ## 9. Device checklist for Balqis (after S9)
 

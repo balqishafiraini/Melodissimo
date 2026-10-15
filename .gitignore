@@ -95,3 +95,6 @@ Scripts/backsound/.venv/
 
 # iPhone/iPad QA screenshots (IPHONE_PLAN.md)
 Scripts/iphone/shots/
+
+# Perf/leak run output (STABILITY_PLAN.md)
+Scripts/perf/out/
