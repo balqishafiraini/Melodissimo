@@ -35,25 +35,25 @@
 
 ## Build (B5)
 
-- key check: shift +5 (r=0.86, next +0 r=0.58); B2 guess 5
+- key check: shift +5 (r=0.87, next +0 r=0.60); B2 guess 5
 - pitch shift: +5 semitones (rubberband -3)
-- alignment: 106 tapped notes (tap tool (by ear)); first note at 0.21 s
-- time map: note taps (106 used, 51 snapped to an onset within 40 ms)
-- timing: median onset error 42 ms, p90 84 ms (106/106 notes within 150 ms of an onset)
-- melody-chroma agreement (duration weighted, notes with chroma >= 0.6): 41%
-- tempo: tempo map (beatTimes), bpm 193.1; max line residual 6918 ms
-- game cut: 0.00–67.79 s of the shifted file (fade-out 2.0 s), 68 s long, pad 0.68 s
-- offset 0.000 s (m4a lag +0.0 ms), m4a 1.13 MB, chart valid: True
+- alignment: 106 tapped notes (tap tool (by ear)); first note at 0.30 s
+- time map: note taps (106 used, 46 snapped to an onset within 40 ms)
+- timing: median onset error 45 ms, p90 95 ms (105/106 notes within 150 ms of an onset)
+- melody-chroma agreement (duration weighted, notes with chroma >= 0.6): 62%
+- tempo: tempo map (beatTimes), bpm 113.3; max line residual 915 ms
+- game cut: 0.00–62.30 s of the shifted file (fade-out 2.0 s), 62 s long, pad 1.29 s
+- offset 0.000 s (m4a lag +0.0 ms), m4a 1.05 MB, chart valid: True
 
 Weakest 10 notes by chroma (bar.beat, expected):
 
-- bar 19.1.00 `2˙` chroma 0.03, onset error 0 ms
-- bar 9.4.00 `2˙` chroma 0.06, onset error 84 ms
-- bar 4.4.75 `3` chroma 0.06, onset error 76 ms
-- bar 14.1.00 `5` chroma 0.07, onset error 51 ms
-- bar 17.1.00 `6` chroma 0.07, onset error 80 ms
-- bar 7.2.00 `6` chroma 0.08, onset error 0 ms
-- bar 1.4.00 `2˙` chroma 0.10, onset error 0 ms
-- bar 21.1.00 `6` chroma 0.11, onset error 0 ms
-- bar 11.4.00 `2˙` chroma 0.12, onset error 56 ms
-- bar 11.2.00 `5` chroma 0.12, onset error 81 ms
+- bar 21.1.00 `6` chroma 0.11, onset error 46 ms
+- bar 17.1.00 `6` chroma 0.13, onset error 0 ms
+- bar 19.4.75 `4˙` chroma 0.18, onset error 146 ms
+- bar 23.4.00 `3˙` chroma 0.20, onset error 130 ms
+- bar 14.4.75 `6` chroma 0.20, onset error 72 ms
+- bar 7.2.00 `6` chroma 0.21, onset error 0 ms
+- bar 13.4.00 `2˙` chroma 0.22, onset error 59 ms
+- bar 5.3.75 `2˙` chroma 0.22, onset error 94 ms
+- bar 5.2.00 `2˙` chroma 0.22, onset error 53 ms
+- bar 9.4.75 `2˙` chroma 0.24, onset error 0 ms

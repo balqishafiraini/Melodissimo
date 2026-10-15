@@ -38,26 +38,23 @@
 
 - key check: shift +2 (r=0.29, next -3 r=0.18); B2 guess -3
 - pitch shift: +2 semitones (rubberband -3)
-- alignment: pulse ratio 1 (tracker 126.0 bpm vs hint 126); DTW at 126.0 bpm: path slope 0.54, cost 0.364, melody starts at 32.7 s
-- grid pick (chroma score alone (DTW did not settle it); earliest of 14 within 5% of the best): j0 25, first note at 13.21 s, median |grid - DTW| over the first 12 notes 19151 ms (0% within 250 ms; over all notes 13021 ms)
-- top grid candidates (dtw err ms / chroma score): j0=0 31192/0.453; j0=0.25 31072/0.414; j0=0.5 30952/0.460; j0=0.75 30831/0.432
-- best by chroma score (first note s / dtw err ms / score): 44.0 s / 11664 / 0.506; 83.6 s / 51169 / 0.505; 80.2 s / 47799 / 0.499; 80.7 s / 48280 / 0.497; 82.6 s / 50207 / 0.495; 60.9 s / 28528 / 0.494
-- time map: smoothed tracked grid (tracker 126.0 bpm), refine -20 ms
-- timing: median onset error 27 ms, p90 95 ms (66/67 notes within 150 ms of an onset)
-- melody-chroma agreement (duration weighted, notes with chroma >= 0.6): 23%
-- tempo: steady, bpm 124.6; max line residual 7 ms
-- game cut: 7.92–45.53 s of the shifted file (fade-out 2.0 s), 38 s long, pad 0.00 s
-- offset 3.845 s (m4a lag +0.0 ms), m4a 0.62 MB, chart valid: True
+- alignment: 67 tapped notes (tap tool (by ear)); first note at 18.93 s
+- time map: note taps (67 used, 28 snapped to an onset within 40 ms)
+- timing: median onset error 44 ms, p90 71 ms (67/67 notes within 150 ms of an onset)
+- melody-chroma agreement (duration weighted, notes with chroma >= 0.6): 5%
+- tempo: tempo map (beatTimes), bpm 120.6; max line residual 264 ms
+- game cut: 13.46–51.22 s of the shifted file (fade-out 2.0 s), 38 s long, pad 0.00 s
+- offset 3.980 s (m4a lag +0.0 ms), m4a 0.63 MB, chart valid: True
 
 Weakest 10 notes by chroma (bar.beat, expected):
 
-- bar 11.4.00 `2` chroma 0.04, onset error 24 ms
-- bar 15.1.00 `5` chroma 0.05, onset error 23 ms
-- bar 16.1.00 `1` chroma 0.07, onset error 25 ms
-- bar 12.4.00 `3` chroma 0.07, onset error 36 ms
-- bar 1.4.00 `3` chroma 0.08, onset error 35 ms
-- bar 3.1.00 `5.` chroma 0.09, onset error 32 ms
-- bar 13.1.00 `5` chroma 0.09, onset error 32 ms
-- bar 8.4.00 `5.` chroma 0.10, onset error 26 ms
-- bar 7.3.00 `7.` chroma 0.10, onset error 17 ms
-- bar 6.4.00 `6.` chroma 0.10, onset error 23 ms
+- bar 9.2.00 `2` chroma 0.02, onset error 52 ms
+- bar 3.4.00 `2` chroma 0.05, onset error 0 ms
+- bar 2.1.00 `5` chroma 0.05, onset error 41 ms
+- bar 0.1.75 `5.` chroma 0.05, onset error 0 ms
+- bar 9.1.00 `2` chroma 0.05, onset error 50 ms
+- bar 5.2.00 `3` chroma 0.06, onset error 0 ms
+- bar 15.4.00 `2` chroma 0.06, onset error 93 ms
+- bar 5.1.00 `3` chroma 0.07, onset error 45 ms
+- bar 10.1.00 `2` chroma 0.07, onset error 43 ms
+- bar 9.4.00 `3` chroma 0.08, onset error 0 ms
