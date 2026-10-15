@@ -71,7 +71,7 @@ struct PostplayScoreView: View {
                                 .padding()
                                 .foregroundStyle(.black)
                                 .font(.headline)
-                                .frame(width: UIScreen.main.bounds.width * 0.5, height: 300)
+                                .frame(width: screenWidth * 0.5, height: 300)
                                 .background(RoundedRectangle(cornerRadius: 40).fill(.white))
                             
                             Spacer()
@@ -82,7 +82,7 @@ struct PostplayScoreView: View {
                                 
                             } label: {
                                 Text("Menu")
-                                    .frame(width: UIScreen.main.bounds.width * 0.5, height: 100)
+                                    .frame(width: screenWidth * 0.5, height: 100)
                                     .background(Color.yellow)
                                     .foregroundColor(Color.red)
                                     .cornerRadius(20)
@@ -104,7 +104,7 @@ struct PostplayScoreView: View {
                     }
                 }
                 .padding()
-                .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
+                .frame(maxWidth: .infinity, maxHeight: screenHeight, alignment: .topLeading)
                 
             }
         }

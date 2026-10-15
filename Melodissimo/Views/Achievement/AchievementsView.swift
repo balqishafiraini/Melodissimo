@@ -24,14 +24,16 @@ struct AchievementsView: View {
                         .foregroundColor(.white)
 
                     HStack {
-                        Button {
+                        SoundButton {
                             dismiss()
                         } label: {
                             Text("< Back")
-                                .frame(width: 120, height: 60)
+                                .lineLimit(1)
+                                .padding(.horizontal, 14)
+                                .frame(minWidth: Sizing.tap(120), minHeight: Sizing.tap(60), maxHeight: Sizing.tap(60))
                                 .background(Color.yellow)
                                 .foregroundColor(Color.darkGreen)
-                                .cornerRadius(20)
+                                .cornerRadius(Sizing.s(20))
                                 .font(Font.headline)
                         }
 
@@ -40,27 +42,27 @@ struct AchievementsView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "flame.fill")
                                 .foregroundColor(.orange)
-                            Text("\(progress.currentStreak) hari")
+                            Text("\(progress.currentStreak) days")
                                 .foregroundColor(.white)
                                 .font(.headline)
                         }
-                        .padding(.horizontal, 20)
-                        .frame(height: 60)
+                        .padding(.horizontal, Sizing.s(20))
+                        .frame(height: Sizing.tap(60))
                         .background(Capsule().fill(Color.white.opacity(0.15)))
                     }
                 }
-                .padding()
+                .padding(.all, Sizing.isPhone ? 8 : nil)
 
                 ScrollView {
                     LazyVGrid(
-                        columns: [GridItem(.adaptive(minimum: 320), spacing: 16)],
+                        columns: [GridItem(.adaptive(minimum: Sizing.isPhone ? 280 : 320), spacing: 16)],
                         spacing: 16
                     ) {
                         ForEach(store.achievements) { achievement in
                             AchievementCard(achievement: achievement)
                         }
                     }
-                    .padding()
+                    .padding(.all, Sizing.isPhone ? 8 : nil)
                 }
             }
         }
@@ -79,7 +81,7 @@ private struct AchievementCard: View {
             Image(systemName: achievement.systemImage)
                 .font(.largeTitle)
                 .foregroundColor(achievement.isEarned ? .yellow : .white.opacity(0.3))
-                .frame(width: 60)
+                .frame(width: Sizing.s(60))
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(achievement.title)

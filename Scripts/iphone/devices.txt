@@ -1,0 +1,7 @@
+# short-name | simulator name | runtime | UDID | shot mode (rotate = turn the portrait framebuffer; letterbox = crop the black bars)
+se        | iPhone SE (3rd generation)  | iOS 17.5 | 9942E748-6610-404F-B665-88474C130D9F | rotate
+15pro     | iPhone 15 Pro               | iOS 17.5 | 82912AB1-0987-41D0-B945-AC8F57DC62EC | rotate
+17promax  | iPhone 17 Pro Max           | iOS 26.1 | 788432E6-7A51-492D-BB19-3356B7B87106 | rotate
+ipad-mini | iPad mini (A17 Pro)         | iOS 18.6 | 702D0A86-6141-4C2B-A806-EC6B1C2D1121 | rotate
+ipad-air  | iPad Air 11-inch (M3)       | iOS 18.6 | 1AE57E59-2A2F-4314-BFD6-6B837CF74203 | rotate
+ipad-pro  | iPad Pro 13-inch (M5)       | iOS 26.1 | CD79142D-F647-47A8-A0CC-9C31FAC72E73 | letterbox

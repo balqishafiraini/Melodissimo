@@ -16,23 +16,20 @@ struct SongRepositoryLearnView: View {
 
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.yellow)
-                .scaledToFill()
-            
-            Image("bgMusic")
-                .scaledToFit()
+            LegacyBackdrop(color: Color.yellow)
             
             VStack{
-                HStack{
+                HStack(alignment: Sizing.isPhone ? .top : .center) {
                     Button {
                         dismiss()
                     } label: {
                         Text("< Back")
-                            .frame(width: 120, height: 80)
+                            .lineLimit(1)
+                            .padding(.horizontal, 14)
+                            .frame(minWidth: Sizing.tap(120), minHeight: Sizing.tap(80), maxHeight: Sizing.tap(80))
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
-                            .cornerRadius(20)
+                            .cornerRadius(Sizing.s(20))
                             .font(Font.headline)
                     }
                     
@@ -42,6 +39,8 @@ struct SongRepositoryLearnView: View {
                         .foregroundColor(Color.darkGreen)
                         .cornerRadius(20)
                         .font(Font.largeTitle)
+                        .lineLimit(Sizing.isPhone ? 1 : nil)
+                        .minimumScaleFactor(Sizing.isPhone ? 0.5 : 1)
                     
                     Spacer()
                     
@@ -49,22 +48,22 @@ struct SongRepositoryLearnView: View {
                         router.push(.help)
                     } label: {
                         Text("?")
-                            .frame(width: 80, height: 80)
+                            .frame(width: Sizing.tap(80), height: Sizing.tap(80))
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
-                            .cornerRadius(20)
+                            .cornerRadius(Sizing.s(20))
                             .font(Font.title)
                     }
 
                 }
-                .padding()
+                .padding(.all, Sizing.isPhone ? 0 : nil)
                 
                 ScrollView {
                     LazyVGrid(
                         columns: [
-                            GridItem(.adaptive(minimum: UIScreen.main.bounds.width * 0.4), spacing: 10)
+                            GridItem(.adaptive(minimum: Sizing.isPhone ? 190 : screenWidth * 0.4), spacing: Sizing.isPhone ? 8 : 10)
                         ],
-                        spacing: 20
+                        spacing: Sizing.isPhone ? 8 : 20
                     ) {
                         ForEach(levelFeeder.levels.filter { $0.levelCategory == "song" }, id: \.self) { level in
                             Button {
@@ -73,9 +72,14 @@ struct SongRepositoryLearnView: View {
                                 Text(level.songTitle ?? "")
                                     .foregroundStyle(.white)
                                     .font(.largeTitle)
-                                    .frame(width: UIScreen.main.bounds.width * 0.45, height: 250)
+                                    .lineLimit(Sizing.isPhone ? 2 : nil)
+                                    .minimumScaleFactor(Sizing.isPhone ? 0.6 : 1)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, Sizing.isPhone ? 8 : 0)
+                                    .frame(width: Sizing.isPhone ? nil : screenWidth * 0.45, height: Sizing.s(250))
+                                    .frame(maxWidth: Sizing.isPhone ? .infinity : nil)
                                     .background(
-                                        RoundedRectangle(cornerRadius: 40)
+                                        RoundedRectangle(cornerRadius: Sizing.s(40))
                                             .fill(Color.green)
                                     )
                             }
@@ -86,8 +90,8 @@ struct SongRepositoryLearnView: View {
                 }
                 
             }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
+            .topBarScreenPadding(ipad: nil)
+            .fillsScreenHeight()
             
         }
         

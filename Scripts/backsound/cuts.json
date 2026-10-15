@@ -1,0 +1,130 @@
+[
+  {
+    "n": 1,
+    "slug": "indonesia-raya",
+    "start": 0.65,
+    "end": 102.15,
+    "duration": 101.5,
+    "boundary": "start/end of file"
+  },
+  {
+    "n": 2,
+    "slug": "bagimu-negeri",
+    "start": 103.27,
+    "end": 173.85,
+    "duration": 70.58,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 3,
+    "slug": "hari-merdeka",
+    "start": 179.87,
+    "end": 359.17,
+    "duration": 179.3,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 4,
+    "slug": "garuda-pancasila",
+    "start": 361.15,
+    "end": 520.07,
+    "duration": 158.92,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 5,
+    "slug": "maju-tak-gentar",
+    "start": 520.75,
+    "end": 738.91,
+    "duration": 218.16,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 6,
+    "slug": "bangun-pemudi-pemuda",
+    "start": 743.39,
+    "end": 946.43,
+    "duration": 203.04,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 7,
+    "slug": "bendera-merah-putih",
+    "start": 949.07,
+    "end": 1095.55,
+    "duration": 146.48,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 8,
+    "slug": "mars-harapan-bangsa",
+    "start": 1096.39,
+    "end": 1302.13,
+    "duration": 205.74,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 9,
+    "slug": "indonesia-tetap-merdeka",
+    "start": 1302.23,
+    "end": 1494.97,
+    "duration": 192.74,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 10,
+    "slug": "bhinneka-tunggal-ika",
+    "start": 1496.83,
+    "end": 1718.83,
+    "duration": 222.0,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 11,
+    "slug": "api-kemerdekaan",
+    "start": 1720.53,
+    "end": 1915.83,
+    "duration": 195.3,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 12,
+    "slug": "halo-halo-bandung",
+    "start": 1917.07,
+    "end": 2097.41,
+    "duration": 180.34,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 13,
+    "slug": "tanah-airku",
+    "start": 2102.23,
+    "end": 2339.35,
+    "duration": 237.12,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 14,
+    "slug": "dari-sabang-sampai-merauke",
+    "start": 2349.85,
+    "end": 2513.05,
+    "duration": 163.2,
+    "boundary": "silence -45dB (start moved past a 4 s stray fragment at 2344.5 s)"
+  },
+  {
+    "n": 15,
+    "slug": "mengheningkan-cipta",
+    "start": 2514.35,
+    "end": 2604.93,
+    "duration": 90.58,
+    "boundary": "silence -45dB"
+  },
+  {
+    "n": 16,
+    "slug": "gugur-bunga",
+    "start": 2608.01,
+    "end": 2818.84,
+    "duration": 210.83,
+    "boundary": "start/end of file"
+  }
+]

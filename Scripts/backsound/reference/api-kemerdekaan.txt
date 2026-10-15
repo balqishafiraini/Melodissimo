@@ -1,0 +1,14 @@
+title: Api Kemerdekaan
+slug: api-kemerdekaan
+beats_per_bar: 4
+bpm_hint: 129
+pickup: 1
+ending: auto
+do_hint: G
+sources: Staff + angka score (do=G) from ikisuga/satusgiga blogspot; verse 1 only
+---
+5. |
+1 - - 5. | 3 - - 1 | 6 5 4# [5 6] | 5 3 - 0 |
+0 [5 5] [6 5] [3 1] | 2 [- 6.] 6. 0 | 3 [2 1 7.] 2 [- 6.] | 5. - - 5. |
+1 - - 5. | 3 - - 1 | 6 5 4# [5 6] | 5 3 - 0 |
+0 [5 5] [6 5] [3 1] | 2 [- 6.] 6. 0 | 3 [2 1 7.] 2 [- 5.] | 1 - - - ||

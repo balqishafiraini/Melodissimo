@@ -88,3 +88,13 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+# Backsound pipeline (BACKSOUND_PLAN.md)
+Scripts/backsound/work/
+Scripts/backsound/.venv/
+
+# iPhone/iPad QA screenshots (IPHONE_PLAN.md)
+Scripts/iphone/shots/
+
+# Perf/leak run output (STABILITY_PLAN.md)
+Scripts/perf/out/

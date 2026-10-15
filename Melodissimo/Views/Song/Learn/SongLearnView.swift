@@ -19,12 +19,7 @@ struct SongLearnView: View {
 
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.yellow)
-                .scaledToFill()
-            
-            Image("bgMusic")
-                .scaledToFit()
+            LegacyBackdrop(color: Color.yellow)
             
             VStack(spacing: 1) {
                 HStack {
@@ -32,12 +27,14 @@ struct SongLearnView: View {
                         dismiss()
                     } label: {
                         Text("< Back")
-                            .frame(width: 120, height: 80)
+                            .lineLimit(1)
+                            .padding(.horizontal, 14)
+                            .frame(minWidth: Sizing.tap(120), minHeight: Sizing.tap(80), maxHeight: Sizing.tap(80))
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
-                            .cornerRadius(20)
+                            .cornerRadius(Sizing.s(20))
                             .font(Font.headline)
-                    }.padding()
+                    }.padding(.all, Sizing.isPhone ? 0 : nil)
                     
                     Spacer()
                     
@@ -45,6 +42,8 @@ struct SongLearnView: View {
                         .foregroundColor(.white)
                         .cornerRadius(20)
                         .font(Font.headline)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                     
                     Spacer()
                     
@@ -52,40 +51,68 @@ struct SongLearnView: View {
                         router.push(.help)
                     } label: {
                         Text("?")
-                            .frame(width: 80, height: 80)
+                            .frame(width: Sizing.tap(80), height: Sizing.tap(80))
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
-                            .cornerRadius(20)
+                            .cornerRadius(Sizing.s(20))
                             .font(Font.title)
                     }
-                    .padding()
+                    .padding(.all, Sizing.isPhone ? 0 : nil)
 
                 }
-                .padding([.leading, .trailing])
+                .padding(.horizontal, Sizing.isPhone ? 0 : nil)
                 
-                ScrollView {
-                    ZStack {
-                        if let songNotImg = tilesViewModel.currentLevel?.songNotImg {
-                            Image(songNotImg)
-                                .resizable()
-                                .padding()
-                                .scaledToFit()
-                                .frame(width: UIScreen.main.bounds.width)
-                        }
-                    }
-                }
-                
+                sheet
                 
                 PianikaStackLearningMini()
             }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
+            .topBarScreenPadding(ipad: nil)
+            .fillsScreenHeight()
         }
         .onAppear {
-            print("Received Song Title: \(songTitle)")
             // Customize the function behavior based on songTitle
             tilesViewModel.getSongTitle(songTitle: songTitle)
         }
 
+    }
+
+    /// The score sheet. iPad: a screen-wide card half a screen tall inside a scroll view, as it always was. iPhone: the card
+    /// takes whatever height the mini keyboard leaves (the sheet scrolls by itself).
+    @ViewBuilder
+    private var sheet: some View {
+        if Sizing.isPhone {
+            Group {
+                if let song = SongLibrary.song(title: songTitle) {
+                    NotAngkaSheetView(chart: SongChart.load(for: song))
+                        .padding(8)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(RoundedRectangle(cornerRadius: 20).fill(Color.white))
+                } else if let songNotImg = tilesViewModel.currentLevel?.songNotImg {
+                    Image(songNotImg)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .padding(.vertical, 4)
+        } else {
+            ScrollView {
+                    ZStack {
+                        if let song = SongLibrary.song(title: songTitle) {
+                            // Drawn from the chart, so it matches the song stage and the backing track.
+                            NotAngkaSheetView(chart: SongChart.load(for: song))
+                                .padding()
+                                .frame(width: screenWidth, height: screenHeight * 0.5)
+                                .background(RoundedRectangle(cornerRadius: 30).fill(Color.white))
+                        } else if let songNotImg = tilesViewModel.currentLevel?.songNotImg {
+                            Image(songNotImg)
+                                .resizable()
+                                .padding()
+                                .scaledToFit()
+                                .frame(width: screenWidth)
+                        }
+                    }
+                }
+        }
     }
 }

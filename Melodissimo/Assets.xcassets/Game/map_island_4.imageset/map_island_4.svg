@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" width="1000" height="600">
+<defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd0f0"/><stop offset="1" stop-color="#3fa2d8"/></linearGradient></defs>
+<rect width="1000" height="600" rx="48" fill="url(#sea)"/><path d="M60 520 q15 -10 30 0 t30 0" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/><path d="M760 90 q15 -10 30 0 t30 0" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/><path d="M140 80 q15 -10 30 0 t30 0" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/><path d="M820 560 q15 -10 30 0 t30 0" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/><path d="M420 560 q15 -10 30 0 t30 0" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/>
+<path d="M380 110 Q470 140 440 260 L620 180 Q520 300 470 320 L620 450 Q500 440 440 380 L420 520 Q360 400 390 300 L260 360 Q340 280 380 110Z" fill="#f6e7b0" transform="translate(0 10)" opacity=".9"/>
+<path d="M380 110 Q470 140 440 260 L620 180 Q520 300 470 320 L620 450 Q500 440 440 380 L420 520 Q360 400 390 300 L260 360 Q340 280 380 110Z" fill="#86c98a" stroke="#f6e7b0" stroke-width="10" stroke-linejoin="round"/>
+<g transform="translate(520 470)"><path d="M-80 0 Q0 40 80 0 L60 24 Q0 44 -60 24Z" fill="#8a5a2a"/><path d="M-10 -4 V-110 L-70 -6Z" fill="#fff6d6"/><path d="M0 -4 V-120 L60 -6Z" fill="#fff6d6"/></g>
+</svg>

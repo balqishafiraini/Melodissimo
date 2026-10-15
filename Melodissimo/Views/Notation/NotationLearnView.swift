@@ -17,12 +17,7 @@ struct NotationLearnView: View {
 
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.red)
-                .scaledToFill()
-            
-            Image("bgMusic")
-                .scaledToFit()
+            LegacyBackdrop(color: Color.red)
             
             VStack{
                 HStack{
@@ -30,12 +25,14 @@ struct NotationLearnView: View {
                         dismiss()
                     } label: {
                         Text("< Back")
-                            .frame(width: 120, height: 80)
+                            .lineLimit(1)
+                            .padding(.horizontal, 14)
+                            .frame(minWidth: Sizing.tap(120), minHeight: Sizing.tap(80), maxHeight: Sizing.tap(80))
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
-                            .cornerRadius(20)
+                            .cornerRadius(Sizing.s(20))
                             .font(Font.headline)
-                    }.padding()
+                    }.padding(.all, Sizing.isPhone ? 0 : nil)
                     
                     Spacer()
                     
@@ -43,15 +40,15 @@ struct NotationLearnView: View {
                         router.push(.help)
                     } label: {
                         Text("?")
-                            .frame(width: 80, height: 80)
+                            .frame(width: Sizing.tap(80), height: Sizing.tap(80))
                             .background(Color.darkGreen)
                             .foregroundColor(.white)
-                            .cornerRadius(20)
+                            .cornerRadius(Sizing.s(20))
                             .font(Font.title)
-                    }.padding()
+                    }.padding(.all, Sizing.isPhone ? 0 : nil)
 
                 }
-                .padding()
+                .padding(.all, Sizing.isPhone ? 0 : nil)
                 
                 Spacer()
                 
@@ -61,8 +58,8 @@ struct NotationLearnView: View {
                 
                 
             }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height, alignment: .topLeading)
+            .topBarScreenPadding(ipad: nil)
+            .fillsScreenHeight()
         }
     }
 }

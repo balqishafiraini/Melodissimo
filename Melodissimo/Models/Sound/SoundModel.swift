@@ -7,61 +7,44 @@
 
 import Foundation
 import AVFoundation
-import AVKit
 
-// Reference to the player that is currently sounding, so `stopSound()` can halt it.
-private var player: AVAudioPlayer?
+// The note samples play on `NoteAudioEngine` (one `AVAudioEngine`, PCM buffers decoded once, a pool of voices);
+// these free functions are the app's whole interface to it. The audio session belongs to `AudioSessionController`.
 
-// Cache of preloaded players keyed by note name. Each note's audio file is decoded
-// from disk only once and reused on every subsequent tap, so tile presses stay
-// instant instead of re-decoding the m4a each time.
-private var playerCache: [String: AVAudioPlayer] = [:]
-
-private var isAudioSessionConfigured = false
-
-// Configure the shared audio session for playback so notes are audible even when
-// the device's mute switch is on. Runs once, lazily, before the first sound plays.
-private func configureAudioSessionIfNeeded() {
-    guard !isAudioSessionConfigured else { return }
-    do {
-        try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-        try AVAudioSession.sharedInstance().setActive(true)
-        isAudioSessionConfigured = true
-    } catch {
-        print("Failed to configure audio session: \(error)")
-    }
+/// Makes sure the shared audio session exists and is active before a sound plays. The session itself, its
+/// interruptions and its route changes belong to `AudioSessionController`; this only asks for the playback
+/// mode when nothing has activated a mode yet.
+func configureAudioSessionIfNeeded() {
+    let controller = AudioSessionController.shared
+    if controller.mode == nil { controller.activate(.playback) }
 }
 
-// Return a cached player for the note, creating and preparing it on first use.
-private func cachedPlayer(for key: String) -> AVAudioPlayer? {
-    if let existing = playerCache[key] {
-        return existing
-    }
-    guard let url = Bundle.main.url(forResource: key, withExtension: "m4a") else {
-        return nil
-    }
-    do {
-        let newPlayer = try AVAudioPlayer(contentsOf: url)
-        newPlayer.prepareToPlay()
-        playerCache[key] = newPlayer
-        return newPlayer
-    } catch {
-        print("\(error)")
-        return nil
-    }
+/// Decodes all 32 note samples on a background queue and starts the engine, so the first tap on any key sounds
+/// instantly. Call once at launch. `completion` runs on the main thread when the samples are ready.
+func preloadAllSounds(completion: (() -> Void)? = nil) {
+    NoteAudioEngine.shared.preloadNotes(completion: completion)
 }
+
+/// How many note samples are decoded and ready to play.
+var preloadedSoundCount: Int { NoteAudioEngine.shared.noteBufferCount }
 
 func playSound(key: String) {
-    configureAudioSessionIfNeeded()
-    guard let notePlayer = cachedPlayer(for: key) else {
-        return
-    }
-    notePlayer.currentTime = 0
-    notePlayer.play()
-    player = notePlayer
+    NoteAudioEngine.shared.play(note: key)
 }
 
+/// Releases the note that was played last.
 func stopSound() {
-    // Stop the player that is currently sounding.
-    player?.stop()
+    NoteAudioEngine.shared.stopLast()
+}
+
+/// Releases one note's sample and leaves any other sounding notes alone, so several
+/// fingers can hold different keys at once.
+func stopSound(key: String) {
+    NoteAudioEngine.shared.stop(note: key)
+}
+
+/// Silences every note that is sounding, whoever started it (a finger, autoplay, a hint).
+/// Called when a screen goes away so no sample outlives the screen that played it.
+func stopAllSounds() {
+    NoteAudioEngine.shared.stopAllNotes()
 }

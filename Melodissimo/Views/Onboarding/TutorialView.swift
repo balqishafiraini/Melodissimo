@@ -17,7 +17,7 @@ struct TutorialView: View {
             return [
                 NSLocalizedString("", comment: ""),
                 NSLocalizedString("You'll go to Pre-Play Quiz like shown image above, but the melodica tiles will come WITHOUT any label. So remember the numeral notation. You must press the tiles that belong to the numeral notation that's shown in the question box.", comment: ""),
-                NSLocalizedString("The questions will appear only ONCE and change automatically once you pressed the answer tiles. Please make sure your pressed tiles are at least 2 seconds and the color will change to grey.", comment: ""),
+                NSLocalizedString("The questions will appear only ONCE and change automatically once you lift your finger from the answer tile. Slide to the right tile before you let go.", comment: ""),
                 NSLocalizedString("Remember, you CAN'T undo the answer. Make sure you are sure of your answer before clicking, okay? Now are you ready? Let the adventure begin!", comment: "")
             ]
         }
@@ -30,7 +30,7 @@ struct TutorialView: View {
                         // Custom Scroll Effect
                         GeometryReader { proxy -> AnyView in
                             let minX = proxy.frame(in: .global).minX
-                            let width = UIScreen.main.bounds.width
+                            let width = Sizing.isPhone ? proxy.size.width : screenWidth
                             let progress = -minX / (width * 2)
                             var scale = progress > 0 ? 1 - progress : 1 + progress
                             scale = scale < 0.7 ? 0.7 : scale
@@ -41,26 +41,29 @@ struct TutorialView: View {
                                     Image("tutorialSlider\(index)")
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
-                                        .padding()
+                                        .padding(.all, Sizing.isPhone ? 6 : nil)
                                     
                                     Text(self.quizWelcomeArr[index])
-                                        .padding()
+                                        .padding(.all, Sizing.isPhone ? 8 : nil)
                                         .font(.headline)
                                         .foregroundColor(.black)
                                         .frame(maxWidth: .infinity, alignment: .center)
-                                        .padding()
+                                        .padding(.all, Sizing.isPhone ? 8 : nil)
                                         .background(Color.white)
-                                        .cornerRadius(50)
+                                        .cornerRadius(Sizing.s(50))
+                                        // On iPhone the text takes the room it needs and the picture gets what is left.
+                                        .fixedSize(horizontal: false, vertical: Sizing.isPhone)
+                                        .layoutPriority(Sizing.isPhone ? 1 : 0)
                                     
                                     if index == 3 {
                                         Button {
                                             isPresenting = true
                                         } label: {
                                             Text("Start Quiz")
-                                                .frame(width: 250, height: 80)
+                                                .buttonFrame(width: 250, height: 80)
                                                 .background(Color.navy)
                                                 .foregroundColor(.white)
-                                                .cornerRadius(20)
+                                                .cornerRadius(Sizing.s(20))
                                                 .font(Font.headline)
                                         }
                                         NavigationLink(destination: PreplayView(levelNo: 1)
@@ -81,27 +84,37 @@ struct TutorialView: View {
                 
                 // Custom tab indicator
                 CustomeTabIndicator(count: 3, current: $currentIndex)
-                    .padding(.vertical)
-                    .padding(.top)
+                    .padding(.vertical, Sizing.isPhone ? 2 : nil)
+                    .padding(.top, Sizing.isPhone ? 0 : nil)
             }
-            .padding()
+            .padding(.all, Sizing.isPhone ? 8 : nil)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(
-                ZStack {
-                    Rectangle()
-                        .fill(Color.softBlue)
-                        .scaledToFill()
-                    
-                    Image("bgMusic")
-                        .scaledToFill()
-                }
-            )
-            .ignoresSafeArea()
+            .background(tutorialBackground)
+            // iPad draws edge to edge; on iPhone the content stays inside the safe area (the backdrop still fills the screen).
+            .ignoresSafeArea(.all, edges: Sizing.isPhone ? [] : .all)
         }
         .navigationViewStyle(StackNavigationViewStyle())
 
         
         
+    }
+}
+
+extension TutorialView {
+    @ViewBuilder
+    fileprivate var tutorialBackground: some View {
+        if Sizing.isPhone {
+            ScreenBackdrop(color: Color.softBlue)
+        } else {
+            ZStack {
+                Rectangle()
+                    .fill(Color.softBlue)
+                    .scaledToFill()
+                
+                Image("bgMusic")
+                    .scaledToFill()
+            }
+        }
     }
 }
 

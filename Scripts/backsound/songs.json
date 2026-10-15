@@ -1,0 +1,18 @@
+[
+  {"n": 1,  "title": "Indonesia Raya",             "slug": "indonesia-raya",             "image": "indonesiaRaya",           "status": "kept",    "png": true,  "draft": false, "solemn": true},
+  {"n": 2,  "title": "Bagimu Negeri",              "slug": "bagimu-negeri",              "image": "bagimuNegeri",            "status": "new",     "png": true,  "draft": false, "solemn": false},
+  {"n": 3,  "title": "Hari Merdeka",               "slug": "hari-merdeka",               "image": "hariMerdeka",             "status": "kept",    "png": true,  "draft": true,  "solemn": false},
+  {"n": 4,  "title": "Garuda Pancasila",           "slug": "garuda-pancasila",           "image": "garudaPancasila",         "status": "kept",    "png": true,  "draft": true,  "solemn": false},
+  {"n": 5,  "title": "Maju Tak Gentar",            "slug": "maju-tak-gentar",            "image": "majuTakGentar",           "status": "kept",    "png": true,  "draft": true,  "solemn": false},
+  {"n": 6,  "title": "Bangun Pemudi Pemuda",       "slug": "bangun-pemudi-pemuda",       "image": "bangunPemudiPemuda",      "status": "new",     "png": false, "draft": false, "solemn": false},
+  {"n": 7,  "title": "Bendera Merah Putih",        "slug": "bendera-merah-putih",        "image": "merahPutih",              "status": "renamed", "oldTitle": "Merah Putih", "oldSlug": "merah-putih", "png": true, "draft": true, "solemn": false},
+  {"n": 8,  "title": "Mars Harapan Bangsa",        "slug": "mars-harapan-bangsa",        "image": "marsHarapanBangsa",       "status": "new",     "png": false, "draft": false, "solemn": false},
+  {"n": 9,  "title": "Indonesia Tetap Merdeka",    "slug": "indonesia-tetap-merdeka",    "image": "indonesiaTetapMerdeka",   "status": "kept",    "png": true,  "draft": true,  "solemn": false},
+  {"n": 10, "title": "Bhinneka Tunggal Ika",       "slug": "bhinneka-tunggal-ika",       "image": "bhinnekaTunggalIka",      "status": "new",     "png": false, "draft": false, "solemn": false},
+  {"n": 11, "title": "Api Kemerdekaan",            "slug": "api-kemerdekaan",            "image": "apiKemerdekaan",          "status": "new",     "png": false, "draft": false, "solemn": false},
+  {"n": 12, "title": "Halo Halo Bandung",          "slug": "halo-halo-bandung",          "image": "haloHaloBandung",         "status": "kept",    "png": true,  "draft": true,  "solemn": false},
+  {"n": 13, "title": "Tanah Airku",                "slug": "tanah-airku",                "image": "tanahAirku",              "status": "kept",    "png": true,  "draft": false, "solemn": false},
+  {"n": 14, "title": "Dari Sabang Sampai Merauke", "slug": "dari-sabang-sampai-merauke", "image": "dariSabangSampaiMerauke", "status": "kept",    "png": true,  "draft": true,  "solemn": false},
+  {"n": 15, "title": "Mengheningkan Cipta",        "slug": "mengheningkan-cipta",        "image": "mengheningkanCipta",      "status": "kept",    "png": true,  "draft": true,  "solemn": true},
+  {"n": 16, "title": "Gugur Bunga",                "slug": "gugur-bunga",                "image": "gugurBunga",              "status": "new",     "png": false, "draft": false, "solemn": true}
+]

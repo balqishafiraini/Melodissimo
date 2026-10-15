@@ -1,0 +1,11 @@
+title: Gugur Bunga
+slug: gugur-bunga
+beats_per_bar: 4
+bpm_hint: 60
+pickup: 1
+ending: auto
+sources: Staff-less angka score (mastugino blogspot); the sheet starts on E3, so the song is raised one octave; lines 1-2 up to the first ending
+---
+3 |
+[6 6] [6 7] 1˙ [2˙ 3˙] | 4˙ 3˙ [- 1˙] [6 1˙] | 7 [- 7] 5 [6 4] | 3 - - 3 |
+[2˙ 2˙] [2˙ 3˙] [4˙ 3˙] [2˙ 7] | 2˙ 1˙ [7 6] [7 6] | 5 [- 4] 6 - | 5 - - - ||

@@ -1,0 +1,15 @@
+title: Mengheningkan Cipta
+slug: mengheningkan-cipta
+beats_per_bar: 4
+bpm_hint: 68
+pickup: 1
+ending: auto
+sources: Notasi/mengheningkanCipta.png
+---
+5 |
+3 - 4 5 | 5 - 3 1˙ | 1˙ 7 1˙ 6 |
+5 - 3 5 | 4 3 2 1 | 2 - - 5 | 3 - 4 5 |
+5 - 3 1˙ | 1˙ 7 1˙ 6 | 5 - 3 4 | 3 2 1 2 |
+1 - 0 1 | 2 - 3 1 | 5 - 3 1˙ | 6 6 5 4# |
+5 - - 5 | 1˙ - - 5 | 2˙ - - 5 | 3˙ 2˙ 1˙ 7 |
+1˙ - 7 6 | 5 3 4 2 | 3 - - - | 2 - - - | 1 - - - ||
