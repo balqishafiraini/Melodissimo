@@ -69,12 +69,9 @@ class TilesViewModel: ObservableObject {
         NoteCatalog.all.first(where: { $0.id == answer })?.label ?? ""
     }
     
-    func checkAnswer() {
-        if answers == currentLevel?.answer {
-            print("Answer correct!")
-        } else {
-            print("Answer incorrect!")
-        }
+    /// Whether the answers given so far are the level's answer.
+    func checkAnswer() -> Bool {
+        answers == currentLevel?.answer
     }
     
     func calculateScore() {
@@ -115,7 +112,6 @@ class TilesViewModel: ObservableObject {
     func getSongTitle(songTitle: String) {
         let unwrappedSongTitle = songTitle 
         currentLevel = LevelFeederModel.shared.levels.first(where: { $0.songTitle == unwrappedSongTitle })
-        print("Song Title: \(unwrappedSongTitle)")
         resetAll()
     }
 }

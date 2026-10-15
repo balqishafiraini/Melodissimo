@@ -18,7 +18,6 @@ struct ChartRecorderView: View {
     @State private var message: String?
     @State private var lastTickBeat = -1
 
-    private let ticker = Timer.publish(every: 0.02, on: .main, in: .common).autoconnect()
 
     var body: some View {
         ZStack {
@@ -42,7 +41,12 @@ struct ChartRecorderView: View {
             .ignoresSafeArea(edges: Sizing.isPhone ? [] : .bottom)
         }
         .playScreen()
-        .onReceive(ticker) { _ in tickMetronome() }
+        .task {
+            while !Task.isCancelled {
+                await MainActor.run { tickMetronome() }
+                try? await Task.sleep(nanoseconds: 20_000_000)
+            }
+        }
         .onChange(of: model.phase) { phase in
             if phase == .finished { saveOutputs() }
         }

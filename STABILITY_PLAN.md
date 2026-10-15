@@ -37,7 +37,7 @@ This document is written for an AI executor (**Claude Sonnet 5.5**). It adds **P
 | S8 | iPhone top bar: "?" / Menu / Back buttons at one consistent inset | UI |
 | S9 | Memory & leak sweep, soak test, docs, device checklist | QA |
 
-- [x] S0  - [x] S1  - [x] S2  - [x] S3  - [x] S4  - [x] S5  - [x] S6  - [x] S7  - [x] S8  - [ ] S9
+- [x] S0  - [x] S1  - [x] S2  - [x] S3  - [x] S4  - [x] S5  - [x] S6  - [x] S7  - [x] S8  - [x] S9
 
 ---
 
@@ -306,10 +306,10 @@ To switch them on later:
 
 | Route | S0 baseline leaks | S0 footprint | S3 | S5 | S6 | S9 (10 cycles) |
 |---|---|---|---|---|---|---|
-| stagePerform | 1 (16 B) | 69 MB | 735 (29 KB)¹, 77 MB | 751 (30 KB)¹, 77 MB | 725 (29 KB)¹, 77 MB² | |
-| battle | 1 (16 B) | 67 MB | | | | |
-| result3 | 1 (16 B) | 76 MB | | | | |
-| campaignMap | 1 (16 B) | 80 MB | | | | |
+| stagePerform | 1 (16 B) | 69 MB | 735 (29 KB)¹, 77 MB | 751 (30 KB)¹, 77 MB | 725 (29 KB)¹, 77 MB² | 763 (30 KB)¹, 78 MB (30 cycles) |
+| battle | 1 (16 B) | 67 MB | | | | 377 (15 KB)¹, 74 MB (30 cycles) |
+| result3 | 1 (16 B) | 76 MB | | | | 753 (30 KB)¹, 81 MB (30 cycles) |
+| campaignMap | 1 (16 B) | 80 MB | | | | 384 (15 KB)¹, 90 MB (30 cycles) |
 
 ¹ **Framework records, not growth.** From S3 on every run shows a few hundred small leaks (735 at 10 cycles, 369 at 20, 755 at 10 on another run; STACKS=1 shows every root is AudioToolbox's `ListenerMap::InsertEvent`, called from `AVAudioMixerNode` attach inside `NoteAudioEngine.buildGraph()` at launch). The count does not grow with the number of cycles. S9's pass criterion is therefore "no leak count growth between 5 and 30 cycles, none rooted in our own allocations".
 
@@ -339,6 +339,31 @@ The single 16-byte "ROOT LEAK" is in every route including the plain campaign ma
 - **S6 verification.** Simulator microphone (granted with `simctl privacy`): `leaks.sh stagePerform 10` with the mic mode shows the same framework-only leaks and footprint as without it; `AudioDiag` shows `session active: record` / `playback` switching on every cycle, no backlog drops, and a single note-engine start (the note engine stayed running across the category switches on the simulator). Detection quality with a real pianika, and whether `.default` mode detects as well as `.measurement` did, are **not verified** (§9 item 8).
 - **S7 notes.** `ConfettiBurst` = pure `ConfettiPhysics` (`Models/Game`, 3 launches × 30 pieces 0.25 s apart, ±60° fan, gravity, spin, each piece lives 2.5 s and fades over its last 0.6 s, so the whole burst is 3.0 s and the overlay is then removed) + a `Canvas` view modifier; Reduce Motion skips it. `pbxproj` edits were made on top of the user's uncommitted Xcode changes (see the concurrent-edits note): only the confetti removal is committed, staged from the committed blob, and the user's hunks stay in the working tree. `Package.resolved` was deleted (its only pin was ConfettiSwiftUI). Verified: fresh `-derivedDataPath /tmp/melodissimo-s7` build succeeds, `xcodebuild -resolvePackageDependencies` resolves nothing, `-list` no longer shows a ConfettiSwiftUI scheme, `grep -rni confetti Melodissimo.xcodeproj` is empty; the remaining mentions of the package name are in the plan files and in `ConfettiBurst.swift`'s doc comment. Simulator frames of `result3` on the iPhone 15 Pro: confetti in the air about 1 s after the third star, a few stragglers about 1.5 s later, nothing after that. The iPad Air frames I took missed the window (the third star lands ~1.8 s after appear and my capture was too early); the same code path draws both, but iPad confetti was **not seen** on screen.
 - **S8 notes.** `Sizing.topBarInset` (12), `topBarSide` (16), `topBarButton` (`tap(56)`, 44 pt on every phone, as the old 80/72 buttons already were). Two modifiers: `topBarScreenPadding(ipad:)` (screen padding; iPad gets `.padding(.all, ipad)` = what it had) and `phoneTopBarRow()` (a row that carries its own padding). Applied to LearnHub, FreePlay, SongLearn, SongRepositoryLearn/Quiz, NotationLearn, Dashboard, PreplayView, PhoneSkillTestView (quiz step), CampaignMap, NotationQuizLevelMenu (phone body, whose "?" and Menu also got the shared size and corner radius) and `PhoneStoryPage` (first-launch, pre-play score, post-play pages). Rows whose title is taller than the buttons (Learn, Free Play, Song Stage, the map, Classic Levels, the repository) are top-aligned on iPhone only. The iPad-only pages (`PostplayView`, `PostplayScoreView`, `OnboardPostplayView`, the iPad bodies of FirstLaunch/Preplay*, the iPad Level menu) are not touched: they are never shown on iPhone. `PhoneStoryPage` also ignores the top safe area: the score page nests a `NavigationView` inside another and was drawn 44 pt too low. Measured with a pixel scan (`/tmp/qmark`, not committed) on SE, 15 Pro, 17 Pro Max: the "?" top edge is at 12.2 / 12.8 / 12.7 pt on every one of the 16 screens (the scan reported 9–10 pt on the Learn screen, a false hit on a card edge; in the picture it lines up with Menu). iPad Air: all 16 screens within 0.4 % of `shots/final/ipad-air`. Before/after pairs: `Scripts/iphone/shots/s8/{songLearn,campaignMap}-{before,after}.png` (git-ignored). The Dashboard's help icon shares the same row inset as the others.
+
+### S9 soak (iPhone 15 Pro simulator, Debug, 5 cycles vs 30 cycles of 4 s)
+
+| Route | leaks @5 | footprint @5 | leaks @30 | footprint @30 | growth |
+|---|---|---|---|---|---|
+| stagePerform | 367 | 77 MB | 763 | 78 MB | +1 MB |
+| battle | 767 | 74 MB | 377 | 74 MB | 0 |
+| echo | 362 | 75 MB | 742 | 75 MB | 0 |
+| rush | 375 | 74 MB | 759 | 75 MB | +1 MB |
+| result3 | 769 | 79 MB | 753 | 81 MB | +2 MB |
+| campaignMap | 761 | 87 MB | 384 | 90 MB | +3 MB |
+| songLearn | 759 | 81 MB | 762 | 85 MB | +4 MB |
+
+**Pass:** every footprint grew by at most 4 MB between cycle 5 and 30 (limit 15 MB), and the leak count does not grow: it swings between ~370 and ~760 from run to run with no relation to the cycle count. A `STACKS=1` run on `result3` and `songLearn` shows every root is AudioToolbox's `ListenerMap::InsertEvent` (from `AVAudioMixerNode` attach when `NoteAudioEngine` is built at launch) or `UISoundNewDevice` (system): **none is rooted in a Melodissimo allocation.** The campaign map footprint (80 → 90 MB) is the island art; it stops growing once the map has been shown.
+
+### Other S9 notes
+
+- **Idle animations.** `IdleBreathe`, `Wobble` and `GentleFloat` now stop on `onDisappear` (an unanimated reset inside a `Transaction` with `disablesAnimations`); `onAppear` restarts them. They were the only `repeatForever` calls in the project. Not measured: CPU on a song with Home underneath.
+- **Timers.** `BattleView` (also Melody Rush), `EchoView` and `ChartRecorderView` use a `.task` loop (50 ms, 50 ms, 20 ms) instead of a `Timer.publish` stored in the struct; SwiftUI cancels it when the screen goes away, and each tick runs on the main actor.
+- **Chart cache.** `SongChart.load(for:)` memoizes the bundled charts by song id (main thread only, `dispatchPrecondition` in DEBUG); other bundles (tests, the recorder's preview chart) bypass it.
+- **`NavigationLink(isActive:)`.** `PianikaStackQuiz` is embedded only by `PreplayView` and `PostplayView`, which live inside the legacy `NavigationView` flows (first launch; the iPad-only skill test), not in Home's `NavigationStack`. `navigationDestination(isPresented:)` doesn't work inside a `NavigationView`, so I **left it**, as the plan allows. On iPhone the skill test is `PhoneSkillTestView` (no links). Checked on the simulator: launching `classic`, `songLearn`, `songRepositoryLearn` and `learnHub` produced no "NavigationLink" line in the process log. The device's warning itself was **not reproduced**, so whether it is gone is §9 item 1.
+- **Images** (`sips`, aspect kept; sharp on iPad Pro 13, `result3` / `shop` / `onboard-tutorial` / `onboard-preplayScore` differ from before by < 0.5 %): `alpanicaCrown` 2000×2924 → 615×900 (283 KB → 73 KB), `alpanicaCrownGlasses/alpanicaGIF3` 2000×2923 → 900 high (360 → 79 KB), `alpanicaGlasses` 2000×2762 → 651×900 (388 → 94 KB), `tutorialSlider1` 2732×2048 → 1600×1200 (102 → 123 KB on disk, as a flat PNG; decoded size falls from 21 MB to 7.7 MB), `tutorialSlider2` 2566×1932 → 1600×1204 (410 → 149 KB). No image needed the 1200 px fallback.
+- **Debug prints** removed from `SongLearnView` and `TilesViewModel` (`checkAnswer()` now returns a `Bool`; it had no callers). `SoundModel`'s error print became an `AudioDiag` line in S2. Remaining prints: the QA hooks and the Chart Recorder's JSON dump, both DEBUG tools.
+- **Release scheme.** `Melodissimo (Release run)` builds for `generic/platform=iOS` with `CODE_SIGNING_ALLOWED=NO` (checked in S0).
+- **Not verified anywhere** (needs the phone): audible latency of the new note engine, real interruptions, Bluetooth route changes, deferred edge swipes, the real microphone, a real device's Game Center/iCloud log, ProMotion frame pacing and any Time Profiler numbers.
 
 ## 9. Device checklist for Balqis (after S9)
 

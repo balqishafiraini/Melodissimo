@@ -26,8 +26,6 @@ struct BattleView: View {
     /// The first stage's three coach-mark bubbles, shown over the battle before the first question.
     @State private var isCoaching = false
 
-    private let ticker = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
-
     init(request: PlayRequest, config: BattleConfig) {
         self.request = request
         // A stage always shows the same monster: minions 1–3 and bosses 1–6 are picked from the seed.
@@ -68,10 +66,15 @@ struct BattleView: View {
             .ignoresSafeArea(.all, edges: Sizing.isPhone ? .all : [])
         }
         .playScreen()
-        .onReceive(ticker) { _ in
-            // The timer keeps firing through the exit transition; a timeout then would sound the revealed key on the next screen.
-            guard isOnScreen else { return }
-            viewModel.step(now: CACurrentMediaTime())
+        .task {
+            // Every 50 ms while the screen is up; SwiftUI cancels the task when it goes away. It can still tick once during
+            // the exit transition, and a timeout then would sound the revealed key on the next screen.
+            while !Task.isCancelled {
+                await MainActor.run {
+                    if isOnScreen { viewModel.step(now: CACurrentMediaTime()) }
+                }
+                try? await Task.sleep(nanoseconds: 50_000_000)
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: AudioSessionController.didInterrupt)) { _ in
             // Battle has no pause; a call or Siri just silences the revealed key.

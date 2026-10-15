@@ -24,7 +24,6 @@ struct EchoView: View {
     @State private var isOnScreen = true
     @State private var hasFinished = false
 
-    private let ticker = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
 
     init(request: PlayRequest, config: EchoConfig) {
         self.request = request
@@ -53,10 +52,14 @@ struct EchoView: View {
             nameOverlay
         }
         .playScreen()
-        .onReceive(ticker) { _ in
-            // The timer keeps firing through the exit transition; a phrase note started then would outlive the screen.
-            guard isOnScreen else { return }
-            viewModel.step(now: CACurrentMediaTime())
+        .task {
+            // Every 50 ms while the screen is up; a tick during the exit transition must not start a phrase note.
+            while !Task.isCancelled {
+                await MainActor.run {
+                    if isOnScreen { viewModel.step(now: CACurrentMediaTime()) }
+                }
+                try? await Task.sleep(nanoseconds: 50_000_000)
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: AudioSessionController.didInterrupt)) { _ in
             // Echo has no pause; a call or Siri just cuts the phrase.

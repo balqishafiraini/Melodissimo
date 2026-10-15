@@ -70,7 +70,6 @@ struct SongLearnView: View {
             .fillsScreenHeight()
         }
         .onAppear {
-            print("Received Song Title: \(songTitle)")
             // Customize the function behavior based on songTitle
             tilesViewModel.getSongTitle(songTitle: songTitle)
         }

@@ -26,6 +26,13 @@ private struct IdleBreathe: ViewModifier {
                     inhale = true
                 }
             }
+            .onDisappear {
+                // A repeat-forever animation keeps running on a screen that is merely covered (Home under a song);
+                // replacing it with an unanimated change stops it. `onAppear` starts it again.
+                var transaction = Transaction()
+                transaction.disablesAnimations = true
+                withTransaction(transaction) { inhale = false }
+            }
     }
 }
 
@@ -45,6 +52,13 @@ private struct Wobble: ViewModifier {
                     tilted = true
                 }
             }
+            .onDisappear {
+                // A repeat-forever animation keeps running on a screen that is merely covered (Home under a song);
+                // replacing it with an unanimated change stops it. `onAppear` starts it again.
+                var transaction = Transaction()
+                transaction.disablesAnimations = true
+                withTransaction(transaction) { tilted = false }
+            }
     }
 }
 
@@ -62,6 +76,13 @@ private struct GentleFloat: ViewModifier {
                 withAnimation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true)) {
                     up = true
                 }
+            }
+            .onDisappear {
+                // A repeat-forever animation keeps running on a screen that is merely covered (Home under a song);
+                // replacing it with an unanimated change stops it. `onAppear` starts it again.
+                var transaction = Transaction()
+                transaction.disablesAnimations = true
+                withTransaction(transaction) { up = false }
             }
     }
 }

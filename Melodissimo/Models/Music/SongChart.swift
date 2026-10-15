@@ -50,8 +50,24 @@ struct SongChart: Codable, Hashable {
                   notes: song.keyIds.enumerated().map { ChartNote(k: $1, b: Double($0), d: 1) })
     }
 
+    /// Charts already read from the app bundle, by song id. A chart is decoded from disk once per launch: view bodies
+    /// ask for it again and again (the score sheet), and a stage start shouldn't wait on a JSON parse. Main thread
+    /// only; other bundles (tests) bypass it.
+    private static var cache: [String: SongChart] = [:]
+
     /// The bundled `chart_<slug>.json` if it exists and is sound, otherwise the default chart.
     static func load(for song: Song, bundle: Bundle = .main) -> SongChart {
+        guard bundle === Bundle.main else { return read(song, bundle: bundle) }
+        #if DEBUG
+        dispatchPrecondition(condition: .onQueue(.main))
+        #endif
+        if let cached = cache[song.id] { return cached }
+        let chart = read(song, bundle: bundle)
+        cache[song.id] = chart
+        return chart
+    }
+
+    private static func read(_ song: Song, bundle: Bundle) -> SongChart {
         guard let url = bundle.url(forResource: "chart_\(song.id)", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let chart = try? JSONDecoder().decode(SongChart.self, from: data),
