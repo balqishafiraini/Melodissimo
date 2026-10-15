@@ -70,7 +70,7 @@ struct HelpPageView: View {
             .text(NSLocalizedString("Unfortunately, you'll lose your progress because we didn't do any cloud system. But we will make sure to update that feature in the future app update. Please stay tune with us.", comment: "")),
         ]),
         ExpandableSectionData(title: NSLocalizedString("Contact us for further assist!", comment: ""), items: [
-            .text(NSLocalizedString("Email us on: appmelodissimo@gmail.com", comment: "")),
+            .text(NSLocalizedString("Email us on: melodissimo@anoran.id", comment: "")),
         ])
     ]
 

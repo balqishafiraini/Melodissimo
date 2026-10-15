@@ -328,14 +328,20 @@ struct SettingsView: View {
 
     private var aboutCard: some View {
         card("About") {
-            Text("Melodissimo · Konser Nusantara")
+            Text("Melodissimo")
                 .font(Font.headline)
                 .foregroundColor(Color.darkGreen)
+            Text("Product of Anoran Technology")
+                .font(Font.subheadline)
+                .foregroundColor(Color.darkGreen)
             Text("Version \(Self.versionText)")
-                .font(.subheadline)
+                .font(.footnote)
+                .foregroundColor(Color.darkGreen.opacity(0.75))
+            Text("Song Backsounds: Mas Hans")
+                .font(.footnote)
                 .foregroundColor(Color.darkGreen.opacity(0.75))
             Text("Sound effects: Kenney.nl (CC0)")
-                .font(.subheadline)
+                .font(.footnote)
                 .foregroundColor(Color.darkGreen.opacity(0.75))
         }
     }
