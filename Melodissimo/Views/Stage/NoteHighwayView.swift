@@ -10,7 +10,8 @@ import SwiftUI
 ///
 /// Notes fall in lanes lined up with the keyboard keys (`keyFrames` are the keys' frames in the
 /// window's coordinate space) and reach the hit line just above the keyboard. Notes are never
-/// erased on a hit: they keep falling past the hit line until they leave on their own. Missed notes turn grey.
+/// erased on a hit: they keep falling past the hit line until they leave on their own, sparkling as they slide
+/// through it. Missed notes turn grey.
 struct NoteHighwayView: View {
     let engine: RhythmEngine
     /// Key id → frame in window coordinates, reported by `PianoKeyboard`.
@@ -151,13 +152,17 @@ struct NoteHighwayView: View {
         // start at the first note that could still be on screen and stop at the first one not yet in.
         let earliest = songTime - longestNote - HighwayGeometry.exitWindow
         let latest = songTime + engine.approachTime
+        var sparkling: [(rect: CGRect, index: Int)] = []
         for notes in [whiteNotes, blackNotes] {
             var i = Self.firstIndex(in: notes, timeAtLeast: earliest)
             while i < notes.count, notes[i].time <= latest {
-                drawNote(notes[i], &context, songTime: songTime, hitY: hitY, originX: originX)
+                if let rect = drawNote(notes[i], &context, songTime: songTime, hitY: hitY, originX: originX) {
+                    sparkling.append((rect, notes[i].index))
+                }
                 i += 1
             }
         }
+        drawSparkles(&context, notes: sparkling, hitY: hitY, songTime: songTime)
 
         if showsPopups {
             drawBursts(&context, hitY: hitY, originX: originX)
@@ -242,12 +247,14 @@ struct NoteHighwayView: View {
         context.fill(Path(CGRect(x: 0, y: hitY - 2, width: size.width, height: 4)), with: .color(Color.white.opacity(0.9)))
     }
 
-    private func drawNote(_ note: RenderNote, _ context: inout GraphicsContext, songTime: Double, hitY: CGFloat, originX: CGFloat) {
+    /// Draws one note. Returns its rectangle when it is a hit note sliding through the hit line, so it can sparkle there.
+    private func drawNote(_ note: RenderNote, _ context: inout GraphicsContext, songTime: Double, hitY: CGFloat,
+                          originX: CGFloat) -> CGRect? {
         // Every note keeps falling until it leaves the highway; missed ones turn grey.
         let judgment = engine.notes[note.index].judgment
         guard HighwayGeometry.isVisible(noteTime: note.time, duration: note.duration,
                                         songTime: songTime, approachTime: engine.approachTime),
-              let keyFrame = keyFrames[note.keyId] else { return }
+              let keyFrame = keyFrames[note.keyId] else { return nil }
 
         let rect = HighwayGeometry.noteRect(noteTime: note.time, duration: note.duration,
                                             songTime: songTime, approachTime: engine.approachTime,
@@ -261,6 +268,47 @@ struct NoteHighwayView: View {
         if labelsOnNotes, let label = context.resolveSymbol(id: note.keyId) {
             context.draw(label, at: CGPoint(x: rect.midX, y: max(rect.minY + Sizing.s(14), rect.maxY - Sizing.s(20))))
         }
+        guard let judgment, judgment != .miss, rect.minY < hitY, rect.maxY >= hitY else { return nil }
+        return rect
+    }
+
+    /// A hit note glows white where it slides through the hit line and throws off twinkles, so it reads as being
+    /// played. Solemn songs and Reduce Motion keep only a softer, still glow.
+    private func drawSparkles(_ context: inout GraphicsContext, notes: [(rect: CGRect, index: Int)], hitY: CGFloat,
+                              songTime: Double) {
+        let calm = isSolemn || reduceMotion
+        for (rect, index) in notes {
+            let centre = CGPoint(x: rect.midX, y: hitY)
+            // At least a little wider than the lane, so it still reads on a phone's narrow keys.
+            let radius = max(rect.width * 1.1, Sizing.s(40))
+            let glow = CGRect(x: centre.x - radius, y: centre.y - radius, width: radius * 2, height: radius * 2)
+            context.fill(Path(ellipseIn: glow),
+                         with: .radialGradient(Gradient(colors: [.white.opacity(calm ? 0.45 : 0.9), .white.opacity(0)]),
+                                               center: centre, startRadius: 0, endRadius: radius))
+            let core = CGRect(x: rect.minX + 2, y: hitY - Sizing.s(4), width: rect.width - 4, height: Sizing.s(8))
+            context.fill(Path(roundedRect: core, cornerRadius: Sizing.s(4)), with: .color(.white.opacity(calm ? 0.6 : 0.95)))
+            guard !calm else { continue }
+            for (n, twinkle) in HitSparkle.twinkles(time: songTime, seed: index).enumerated() {
+                let star = CGPoint(x: centre.x + CGFloat(twinkle.dx) * radius * 1.3, y: hitY + Sizing.s(CGFloat(twinkle.dy)))
+                var layer = context
+                layer.opacity = twinkle.opacity
+                layer.fill(Self.starPath(centre: star, radius: Sizing.s(CGFloat(twinkle.size))),
+                           with: .color(n.isMultiple(of: 2) ? .white : .yellow))
+            }
+        }
+    }
+
+    /// A four-pointed star, the shape of a twinkle.
+    private static func starPath(centre: CGPoint, radius: CGFloat) -> Path {
+        var path = Path()
+        for point in 0..<8 {
+            let angle = Double(point) * .pi / 4 - .pi / 2
+            let reach = point.isMultiple(of: 2) ? radius : radius * 0.32
+            let corner = CGPoint(x: centre.x + CGFloat(cos(angle)) * reach, y: centre.y + CGFloat(sin(angle)) * reach)
+            if point == 0 { path.move(to: corner) } else { path.addLine(to: corner) }
+        }
+        path.closeSubpath()
+        return path
     }
 }
 

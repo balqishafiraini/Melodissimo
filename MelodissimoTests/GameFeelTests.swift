@@ -89,6 +89,32 @@ final class LaneFlashesTests: XCTestCase {
     }
 }
 
+final class HitSparkleTests: XCTestCase {
+
+    func testTwinklesStayNearTheNoteAndFadeInAndOut() {
+        for time in stride(from: -1.0, through: 3.0, by: 0.07) {
+            let twinkles = HitSparkle.twinkles(time: time, seed: 12)
+            XCTAssertEqual(twinkles.count, HitSparkle.count)
+            for twinkle in twinkles {
+                XCTAssertLessThanOrEqual(abs(twinkle.dx), 0.6)
+                XCTAssertLessThan(twinkle.dy, 0, "twinkles rise off the line")
+                XCTAssertTrue((0...1).contains(twinkle.opacity))
+                XCTAssertGreaterThanOrEqual(twinkle.size, 3)
+            }
+        }
+    }
+
+    func testTheSameMomentDrawsTheSameTwinkles() {
+        XCTAssertEqual(HitSparkle.twinkles(time: 1.234, seed: 4), HitSparkle.twinkles(time: 1.234, seed: 4))
+    }
+
+    func testATwinkleMovesWhenItIsReborn() {
+        let first = HitSparkle.twinkles(time: 0.1, seed: 4)[0]
+        let next = HitSparkle.twinkles(time: 0.1 + HitSparkle.lifetime, seed: 4)[0]
+        XCTAssertNotEqual(first.dx, next.dx)
+    }
+}
+
 final class ComboPulseTests: XCTestCase {
 
     func testItPulsesOnEveryTenthHit() {
