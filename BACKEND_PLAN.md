@@ -616,7 +616,7 @@ Goal: everything the shop sells is described by data with the **same shape as th
 ### Phase B1 — Contracts
 
 #### Task B1.1 — Create backend repo + contracts package
-- [ ] done
+- [x] done
 - **Touches (new repo):** root files, `contracts/**`.
 - Create the repo at `/Users/macbook/Documents/Coding/melodissimo-backend` with the §3.2 skeleton (empty `api/`, `tools/mdm/`, `content/` folders with `.gitkeep`), `README.md`, `.gitignore` (node_modules, dist, .wrangler, .dev.vars, .mdmrc), `.gitattributes` for LFS.
 - Write the `bootstrap`, `manifest`, `song`, `chart`, `shop` and `product` schemas (JSON Schema draft 2020-12) from §4.2–4.3. `additionalProperties: true` in responses (additive API), `false` in admin request bodies.
@@ -921,6 +921,7 @@ Goal: everything the shop sells is described by data with the **same shape as th
 _(Executors record decisions, deviations and the user's answers to §1 here.)_
 
 - **2026-10-15, E3:** "Reset progress" still resets `coins_spentTotal` (as today) and keeps `coins_purchasedTotal`, so after a reset the purchased coins are spendable again while the shop items bought with them are gone. `CloudSync.forgetProgress()` now skips keys a reset keeps, so paid things also stay in iCloud. `buyConsumable` takes `maxStack` as a parameter (default 99) until E1 adds `ShopItem.maxStack`. The settings reset texts changed ("What you bought with real money stays.").
+- **2026-10-15, B1.1:** the backend repo is `/Users/macbook/Documents/Coding/melodissimo-backend` (own git repo, branch `main`). Schemas use relative `$id`s (`common.schema.json`, …) because the domain (D6) isn't chosen. `song.title` allows the extra `canonical` key. Generated TS types are one file per schema under `contracts/src/types/` (namespaced exports, e.g. `Manifest.Song`). `git lfs` isn't installed on this Mac yet: only `.gitattributes` is in place, so install it before B1.2 adds audio. pnpm 12 needs `allowBuilds: {esbuild: true}` in `pnpm-workspace.yaml`. Chart vectors in `contracts/examples/charts/index.json` carry `valid` (all rules) and `schemaValid` (schema only); B4.2 tests the `valid` column.
 - **2026-10-15, test baseline:** `SongChartTests.testAllSixteenSongsLoadAChartMatchingTheirMelody` ("Indonesia Raya: chart keys differ from the melody") already fails on a clean checkout of `27ef748`. It is not caused by Phase E work.
 
 - **2026-10-15, D2:** no Kids Category; keep age rating 4+ in Music/Education.
