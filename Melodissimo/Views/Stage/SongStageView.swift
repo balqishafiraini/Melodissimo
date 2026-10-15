@@ -487,7 +487,7 @@ struct SongStageView: View {
 
     private func finishedButtonLabel(_ title: LocalizedStringKey, filled: Bool) -> some View {
         Text(title)
-            .buttonFrame(width: 180, height: 64)
+            .buttonFrame(width: 250, height: 64)
             .background(filled ? Color.darkGreen : Color.yellow)
             .foregroundColor(filled ? .white : Color.darkGreen)
             .cornerRadius(Sizing.s(20))
