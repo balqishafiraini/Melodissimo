@@ -91,6 +91,8 @@ final class ContentSync {
     private let verifier: ManifestVerifier
     private let supportedSchema: Int
     private let build: () -> Int
+    /// Ids of shop items the player owns or wears: their downloaded art is fetched with the release, the rest later.
+    private let ownedItemIds: () -> Set<String>
     private var isSyncing = false
     private let lock = NSLock()
 
@@ -98,12 +100,20 @@ final class ContentSync {
     private(set) var lastFailure: ContentError?
 
     init(store: ContentStore = .shared, downloader: AssetDownloader = AssetDownloader(), verifier: ManifestVerifier = ManifestVerifier(),
-         supportedSchema: Int = ClientHeaders.supportedSchemaVersion, build: @escaping () -> Int = { ShopCatalog.currentBuild }) {
+         supportedSchema: Int = ClientHeaders.supportedSchemaVersion, build: @escaping () -> Int = { ShopCatalog.currentBuild },
+         ownedItemIds: @escaping () -> Set<String> = ContentSync.ownedAndEquippedItemIds) {
         self.store = store
         self.downloader = downloader
         self.verifier = verifier
         self.supportedSchema = supportedSchema
         self.build = build
+        self.ownedItemIds = ownedItemIds
+    }
+
+    /// Everything the player has bought plus what they are wearing now.
+    static func ownedAndEquippedItemIds() -> Set<String> {
+        let progress = ProgressStore.shared
+        return progress.purchasedShopItemIds.union(ShopCategory.equippable.map { progress.equippedItem($0).id })
     }
 
     /// Stages the release in `info` if the app isn't on it already. Never throws: a failure keeps the old content.
@@ -137,7 +147,15 @@ final class ContentSync {
                 asset.prefetch == true
                     && !FileManager.default.fileExists(atPath: store.assetsDirectory.appendingPathComponent("\(asset.sha256).\(asset.fileExtension)").path)
             }
-            try await downloader.downloadAll(Array(missing), base: base, into: store.assetsDirectory)
+            // Art of owned and worn items comes along (it isn't `prefetch`, since the manifest doesn't know the player).
+            let owned = ownedItemIds()
+            let ownedArt = ShopCatalog.artKeys(of: manifest.shopItems.filter { owned.contains($0.id) }).compactMap { manifest.assets[$0] }
+            var wanted: [String: ManifestAsset] = [:]
+            for asset in Array(missing) + ownedArt
+            where !FileManager.default.fileExists(atPath: store.assetsDirectory.appendingPathComponent("\(asset.sha256).\(asset.fileExtension)").path) {
+                wanted[asset.sha256] = asset
+            }
+            try await downloader.downloadAll(Array(wanted.values), base: base, into: store.assetsDirectory)
 
             // The manifest is written last, so a half-downloaded release can never be activated.
             try FileManager.default.createDirectory(at: store.manifestsDirectory, withIntermediateDirectories: true)
@@ -163,6 +181,7 @@ final class ContentSync {
         guard let (asset, base) = store.assetAndBase(forKey: key) else { throw ContentError.download("unknown asset \(key)") }
         try await downloader.downloadAsset(asset, base: base, into: store.assetsDirectory)
         guard let url = store.url(forAsset: key) else { throw ContentError.download("asset \(key) is missing after download") }
+        store.assetsDidChange()
         return url
     }
 

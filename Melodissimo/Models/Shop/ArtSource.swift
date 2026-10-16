@@ -21,12 +21,12 @@ enum ArtSource: Hashable {
 
 extension ShopItem {
     /// The picture of the item as shown in the shop and on the certificate.
-    func previewArt(fileURL: (String) -> URL? = { _ in nil }) -> ArtSource? {
+    func previewArt(fileURL: (String) -> URL? = { ContentStore.shared.url(forAsset: $0) }) -> ArtSource? {
         ArtSource.resolve(bundled: bundledArt?.preview, downloadedKey: art?.preview, fileURL: fileURL)
     }
 
     /// The item alone on a clear canvas, laid over every pose (outfits).
-    func overlayArt(fileURL: (String) -> URL? = { _ in nil }) -> ArtSource? {
+    func overlayArt(fileURL: (String) -> URL? = { ContentStore.shared.url(forAsset: $0) }) -> ArtSource? {
         ArtSource.resolve(bundled: bundledArt?.overlay, downloadedKey: art?.overlay, fileURL: fileURL)
     }
 }

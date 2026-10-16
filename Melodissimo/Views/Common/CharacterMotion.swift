@@ -203,7 +203,7 @@ struct AlpanicaOutfit: Hashable {
 
     /// An outfit item's art: downloaded files first (`fileURL`), then the bundled names. An item without a
     /// picture of its own looks like no outfit.
-    init(item: ShopItem, fileURL: (String) -> URL? = { _ in nil }) {
+    init(item: ShopItem, fileURL: (String) -> URL? = { ContentStore.shared.url(forAsset: $0) }) {
         id = item.id
         preview = item.previewArt(fileURL: fileURL) ?? .asset("alpanica")
         overlay = item.overlayArt(fileURL: fileURL)

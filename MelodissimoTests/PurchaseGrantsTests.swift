@@ -45,7 +45,7 @@ final class PurchaseGrantsTests: XCTestCase {
 
     func testAOncePerPlayerProductDisappearsAfterItsFirstPurchase() {
         ProductCatalog.products = [starter, medium]
-        defer { ProductCatalog.products = ProductCatalog.bundled() }
+        defer { ProductCatalog.override = nil }
         XCTAssertEqual(ProductCatalog.consumablesOnSale(granted: PurchaseGrants.ledger(in: progress)).map(\.id),
                        ["melodissimo.bundle.starter", "melodissimo.coins.medium"])
         PurchaseGrants.apply(transactionId: "7", product: starter, to: progress)

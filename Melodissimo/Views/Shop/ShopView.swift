@@ -20,6 +20,8 @@ struct ShopView: View {
     @ObservedObject private var store = StoreService.shared
     /// Observed so a flag change from the server redraws the shop.
     @ObservedObject private var bootstrap = BootstrapService.shared
+    /// Observed so art that finishes downloading makes its items appear.
+    @ObservedObject private var content = ContentStore.shared
 
     @State private var tab: ShopTab
     @State private var itemToBuy: ShopItem?
@@ -95,6 +97,16 @@ struct ShopView: View {
             Text("It costs \(item.price) coins.")
         }
         .task { await store.loadProducts() }
+        .task { await fetchMissingArt() }
+    }
+
+    /// Items from a content release whose art isn't on the device yet are hidden; their art is fetched when the shop opens
+    /// and each item appears as soon as it has arrived.
+    private func fetchMissingArt() async {
+        let pending = ShopCatalog.items.filter { ShopCatalog.isOnSale($0) && !ShopCatalog.hasArt($0) }
+        for key in ShopCatalog.artKeys(of: pending) where ContentStore.shared.url(forAsset: key) == nil {
+            _ = try? await ContentSync.shared.ensureAsset(key)
+        }
     }
 
     // MARK: Pieces

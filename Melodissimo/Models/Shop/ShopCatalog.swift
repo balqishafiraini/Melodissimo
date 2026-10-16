@@ -21,12 +21,28 @@ struct BundledShopSource: ShopCatalogSource {
     var items: [ShopItem] { Self.decoded }
 }
 
+/// The shop's stock from the content store (a downloaded release, else the bundled baseline), falling back to the
+/// bundled `shop.json` when the store has none.
+struct ContentStoreShopSource: ShopCatalogSource {
+    var store: ContentStore = .shared
+
+    var items: [ShopItem] {
+        let bundled = BundledShopSource().items
+        let remote = store.shopItems
+        guard !remote.isEmpty else { return bundled }
+        // An item that shipped with the app never disappears, even if a release stops listing it: a player who bought
+        // it keeps it, owned and equipped.
+        let listed = Set(remote.map(\.id))
+        return remote + bundled.filter { !listed.contains($0.id) }
+    }
+}
+
 /// The shop's stock. `items` is everything known, so an owned or equipped item can always be found even after
 /// it stops being sold; `visibleItems` is what the shop shows.
 enum ShopCatalog {
 
     /// The active source. Tests swap it.
-    static var source: ShopCatalogSource = BundledShopSource()
+    static var source: ShopCatalogSource = ContentStoreShopSource()
 
     /// Every item the source holds, ordered by `order` (ties keep file order).
     static var items: [ShopItem] {
@@ -78,14 +94,30 @@ enum ShopCatalog {
     /// What a category's shop page shows: items on sale, plus every item the player already owns, which never
     /// disappears (free defaults count as owned).
     static func visibleItems(in category: ShopCategory, owned: Set<String>,
-                             now: Date = Date(), build: Int = currentBuild) -> [ShopItem] {
+                             now: Date = Date(), build: Int = currentBuild,
+                             artIsAvailable: (ShopItem) -> Bool = { hasArt($0) }) -> [ShopItem] {
         items(in: category).filter { item in
-            item.isDefault || owned.contains(item.id) || isOnSale(item, now: now, build: build)
+            guard artIsAvailable(item) else { return false }
+            return item.isDefault || owned.contains(item.id) || isOnSale(item, now: now, build: build)
         }
     }
 
+    /// Whether an item can be drawn: it has art in the app (`bundledArt`), no downloaded art to wait for, or all of its
+    /// downloaded art is on disk. An item whose art hasn't arrived yet is hidden rather than shown broken.
+    static func hasArt(_ item: ShopItem, store: ContentStore = .shared) -> Bool {
+        if item.bundledArt?.preview != nil { return true }
+        guard let art = item.art else { return true }
+        return [art.preview, art.overlay].compactMap { $0 }.allSatisfy { store.url(forAsset: $0) != nil }
+    }
+
+    /// The downloadable art keys of items that are on sale or owned, to fetch when the shop opens or a release is staged.
+    static func artKeys(of items: [ShopItem]) -> [String] {
+        items.flatMap { [$0.art?.preview, $0.art?.overlay] }.compactMap { $0 }
+    }
+
     /// Categories that have something to show.
-    static func visibleCategories(owned: Set<String>, now: Date = Date(), build: Int = currentBuild) -> [ShopCategory] {
-        ShopCategory.allCases.filter { !visibleItems(in: $0, owned: owned, now: now, build: build).isEmpty }
+    static func visibleCategories(owned: Set<String>, now: Date = Date(), build: Int = currentBuild,
+                                  artIsAvailable: (ShopItem) -> Bool = { hasArt($0) }) -> [ShopCategory] {
+        ShopCategory.allCases.filter { !visibleItems(in: $0, owned: owned, now: now, build: build, artIsAvailable: artIsAvailable).isEmpty }
     }
 }

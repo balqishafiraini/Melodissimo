@@ -261,6 +261,11 @@ final class ContentStore: ObservableObject {
     func backingURL(songId: String) -> URL? { manifestSong(id: songId)?.backing.flatMap(url(forAsset:)) }
     func sheetURL(songId: String) -> URL? { manifestSong(id: songId)?.sheet.flatMap(url(forAsset:)) }
 
+    /// Tells observers (the shop) that files arrived on disk.
+    func assetsDidChange() {
+        if Thread.isMainThread { objectWillChange.send() } else { DispatchQueue.main.async { self.objectWillChange.send() } }
+    }
+
     /// The asset's manifest entry and the CDN to download it from, for an asset of the active pack that isn't on disk.
     func assetAndBase(forKey key: String) -> (ManifestAsset, URL)? {
         let (pack, cdn) = lock.withLock { (active, activeCDN) }

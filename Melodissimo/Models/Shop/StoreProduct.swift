@@ -66,8 +66,18 @@ struct StoreProduct: Codable, Hashable, Identifiable {
 /// The products the app sells. Bundled as `Data/Shop/products.json`; downloaded content can replace the source.
 enum ProductCatalog {
 
-    /// The active list. Tests swap it.
-    static var products: [StoreProduct] = bundled()
+    /// Replaces the list when set (tests). `nil` reads the content store.
+    static var override: [StoreProduct]?
+
+    /// The products for sale: the content store's (a release or the baseline), else the bundled `products.json`.
+    static var products: [StoreProduct] {
+        get {
+            if let override { return override }
+            let remote = ContentStore.shared.products
+            return remote.isEmpty ? bundled() : remote.sorted { ($0.order, $0.id) < ($1.order, $1.id) }
+        }
+        set { override = newValue }
+    }
 
     /// Decodes `{ "products": [...] }`, skipping any entry that doesn't decode.
     static func decode(_ data: Data) -> [StoreProduct] {
