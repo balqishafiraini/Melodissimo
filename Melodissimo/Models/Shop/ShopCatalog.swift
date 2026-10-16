@@ -5,60 +5,65 @@
 
 import Foundation
 
-/// What a shop item changes. The raw value is also the suffix of the `equip_<category>` key.
-enum ShopCategory: String, CaseIterable, Hashable {
-    case keyboard
-    case notes
-    case outfit
+/// Where the shop's stock comes from. The app ships `Data/Shop/shop.json`; downloaded content can replace it.
+protocol ShopCatalogSource {
+    var items: [ShopItem] { get }
 }
 
-/// One thing the player can buy with coins. Every category has one free default that is always owned.
-struct ShopItem: Identifiable, Hashable {
-    /// `<category>_<variant>`, e.g. `keyboard_batik`. Stored in `shop_owned` and `equip_*`, so never rename.
-    let id: String
-    let category: ShopCategory
-    /// Shown as is: most are Indonesian names that read the same in both languages. "Default" is translated.
-    let name: String
-    let price: Int
-    /// Keyboard skins: `[body, pressed key]` as 0xRRGGBB. Empty keeps the app's normal look.
-    var colors: [UInt32] = []
+/// The catalog bundled with the app (`shop.json`, the manifest's `shop` shape). Decoded once per launch.
+struct BundledShopSource: ShopCatalogSource {
+    private static let decoded: [ShopItem] = {
+        guard let url = Bundle.main.url(forResource: "shop", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else { return [] }
+        return ShopCatalog.decode(data)
+    }()
 
-    var isDefault: Bool { price == 0 }
+    var items: [ShopItem] { Self.decoded }
+}
 
-    /// The part of the id after the category: `batik`, `rainbow`, `royal`, ...
-    var variant: String {
-        guard let underscore = id.firstIndex(of: "_") else { return id }
-        return String(id[id.index(after: underscore)...])
+/// The shop's stock from the content store (a downloaded release, else the bundled baseline), falling back to the
+/// bundled `shop.json` when the store has none.
+struct ContentStoreShopSource: ShopCatalogSource {
+    var store: ContentStore = .shared
+
+    var items: [ShopItem] {
+        let bundled = BundledShopSource().items
+        let remote = store.shopItems
+        guard !remote.isEmpty else { return bundled }
+        // An item that shipped with the app never disappears, even if a release stops listing it: a player who bought
+        // it keeps it, owned and equipped.
+        let listed = Set(remote.map(\.id))
+        return remote + bundled.filter { !listed.contains($0.id) }
     }
 }
 
-/// The shop's stock, following the game plan (§2.4), plus Alpanica's later outfits.
+/// The shop's stock. `items` is everything known, so an owned or equipped item can always be found even after
+/// it stops being sold; `visibleItems` is what the shop shows.
 enum ShopCatalog {
 
-    static let items: [ShopItem] = [
-        // Keyboard skins.
-        ShopItem(id: "keyboard_navy", category: .keyboard, name: "Navy", price: 0),
-        ShopItem(id: "keyboard_batik", category: .keyboard, name: "Merah Batik", price: 100, colors: [0x7B241C, 0xD35400]),
-        ShopItem(id: "keyboard_forest", category: .keyboard, name: "Hijau Hutan", price: 150, colors: [0x145A32, 0x229954]),
-        ShopItem(id: "keyboard_sea", category: .keyboard, name: "Biru Laut", price: 150, colors: [0x1A5276, 0x2E86C1]),
-        ShopItem(id: "keyboard_gold", category: .keyboard, name: "Emas", price: 300, colors: [0xB7950B, 0xD4AC0D]),
-        // Falling-note skins.
-        ShopItem(id: "notes_default", category: .notes, name: "Default", price: 0),
-        ShopItem(id: "notes_rainbow", category: .notes, name: "Pelangi", price: 200),
-        ShopItem(id: "notes_neon", category: .notes, name: "Neon", price: 250),
-        // Alpanica's outfits.
-        ShopItem(id: "outfit_none", category: .outfit, name: "Default", price: 0),
-        ShopItem(id: "outfit_bow", category: .outfit, name: "Bow", price: 100),
-        ShopItem(id: "outfit_glasses", category: .outfit, name: "Glasses", price: 150),
-        ShopItem(id: "outfit_headphones", category: .outfit, name: "Headphone", price: 200),
-        ShopItem(id: "outfit_sunglasses", category: .outfit, name: "Sunglasses", price: 200),
-        ShopItem(id: "outfit_scarf", category: .outfit, name: "Syal Batik", price: 250),
-        ShopItem(id: "outfit_flowers", category: .outfit, name: "Flower Crown", price: 250),
-        ShopItem(id: "outfit_crown", category: .outfit, name: "Crown", price: 300),
-        ShopItem(id: "outfit_blangkon", category: .outfit, name: "Blangkon", price: 350),
-        ShopItem(id: "outfit_conductor", category: .outfit, name: "Conductor", price: 400),
-        ShopItem(id: "outfit_royal", category: .outfit, name: "Crown Glasses", price: 500)
-    ]
+    /// The active source. Tests swap it.
+    static var source: ShopCatalogSource = ContentStoreShopSource()
+
+    /// Every item the source holds, ordered by `order` (ties keep file order).
+    static var items: [ShopItem] {
+        source.items.enumerated()
+            .sorted { ($0.element.order, $0.offset) < ($1.element.order, $1.offset) }
+            .map(\.element)
+    }
+
+    /// Decodes `{ "items": [...] }`. An item with an unknown category, kind or status, or a broken field, is skipped
+    /// and never takes the rest down with it.
+    static func decode(_ data: Data) -> [ShopItem] {
+        struct Lossy: Decodable {
+            let item: ShopItem?
+            init(from decoder: Decoder) throws { item = try? ShopItem(from: decoder) }
+        }
+        struct File: Decodable { let items: [Lossy] }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        guard let file = try? decoder.decode(File.self, from: data) else { return [] }
+        return file.items.compactMap(\.item)
+    }
 
     static func items(in category: ShopCategory) -> [ShopItem] {
         items.filter { $0.category == category }
@@ -68,8 +73,68 @@ enum ShopCatalog {
         items.first { $0.id == id }
     }
 
-    /// The free item a category starts with.
+    /// The free item an equippable category starts with.
     static func defaultItem(for category: ShopCategory) -> ShopItem {
-        items(in: category).first { $0.isDefault } ?? items(in: category)[0]
+        items(in: category).first { $0.isDefault } ?? ShopItem.fallbackDefault(for: category)
+    }
+
+    /// The app's build number (`CFBundleVersion`), or a value that passes every `minAppBuild` when unreadable.
+    static var currentBuild: Int {
+        Int(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "") ?? Int.max
+    }
+
+    /// Whether the shop may offer the item: live, built for this app, and inside its availability window.
+    static func isOnSale(_ item: ShopItem, now: Date = Date(), build: Int = currentBuild) -> Bool {
+        guard item.status == .live, item.minAppBuild <= build else { return false }
+        if let from = item.availableFrom, now < from { return false }
+        if let until = item.availableUntil, now >= until { return false }
+        return true
+    }
+
+    /// What a category's shop page shows: items on sale, plus every item the player already owns, which never
+    /// disappears (free defaults count as owned).
+    static func visibleItems(in category: ShopCategory, owned: Set<String>,
+                             now: Date = Date(), build: Int = currentBuild,
+                             artIsAvailable: (ShopItem) -> Bool = { hasArt($0) },
+                             storefront: String? = Market.storefront, deviceCountry: String? = Market.deviceCountry,
+                             plusAvailable: Bool = FeatureFlags.isOn(.packStore)) -> [ShopItem] {
+        let shown = items(in: category).filter { item in
+            guard artIsAvailable(item) else { return false }
+            if item.isDefault || owned.contains(item.id) { return true }
+            // Plus-only items appear once Plus can be offered (the pack store is on); they are never shown "broken".
+            if item.plusOnly && !plusAvailable { return false }
+            return isOnSale(item, now: now, build: build)
+                && Markets.allows(item.markets, storefront: storefront, deviceCountry: deviceCountry)
+        }
+        return Markets.featuredFirst(shown, markets: \.markets, storefront: storefront, deviceCountry: deviceCountry)
+    }
+
+    /// Whether the player can buy an item now: a Plus-only item needs an active Plus subscription. Owning it is forever.
+    static func canBuy(_ item: ShopItem, isPlus: Bool) -> Bool {
+        !item.plusOnly || isPlus
+    }
+
+    /// Whether an item can be drawn: it has art in the app (`bundledArt`), no downloaded art to wait for, or all of its
+    /// downloaded art is on disk. An item whose art hasn't arrived yet is hidden rather than shown broken.
+    static func hasArt(_ item: ShopItem, store: ContentStore = .shared) -> Bool {
+        if item.bundledArt?.preview != nil { return true }
+        guard let art = item.art else { return true }
+        return [art.preview, art.overlay].compactMap { $0 }.allSatisfy { store.url(forAsset: $0) != nil }
+    }
+
+    /// The downloadable art keys of items that are on sale or owned, to fetch when the shop opens or a release is staged.
+    static func artKeys(of items: [ShopItem]) -> [String] {
+        items.flatMap { [$0.art?.preview, $0.art?.overlay] }.compactMap { $0 }
+    }
+
+    /// Categories that have something to show.
+    static func visibleCategories(owned: Set<String>, now: Date = Date(), build: Int = currentBuild,
+                                  artIsAvailable: (ShopItem) -> Bool = { hasArt($0) },
+                                  storefront: String? = Market.storefront, deviceCountry: String? = Market.deviceCountry,
+                                  plusAvailable: Bool = FeatureFlags.isOn(.packStore)) -> [ShopCategory] {
+        ShopCategory.allCases.filter {
+            !visibleItems(in: $0, owned: owned, now: now, build: build, artIsAvailable: artIsAvailable,
+                          storefront: storefront, deviceCountry: deviceCountry, plusAvailable: plusAvailable).isEmpty
+        }
     }
 }

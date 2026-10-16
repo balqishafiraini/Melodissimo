@@ -27,7 +27,7 @@ struct EchoView: View {
 
     init(request: PlayRequest, config: EchoConfig) {
         self.request = request
-        _viewModel = StateObject(wrappedValue: EchoViewModel(config: config))
+        _viewModel = StateObject(wrappedValue: EchoViewModel(config: config, reviveRun: ReviveRun.forPlay(request)))
     }
 
     var body: some View {
@@ -50,6 +50,14 @@ struct EchoView: View {
             .ignoresSafeArea(edges: Sizing.isPhone ? [] : .bottom)
 
             nameOverlay
+        }
+        .overlay {
+            if viewModel.phase == .awaitingContinue, let run = viewModel.reviveRun {
+                ContinueSheet(options: run.options,
+                              onRevive: { viewModel.revive($0, now: CACurrentMediaTime()) },
+                              onGiveUp: { viewModel.giveUp() },
+                              onNeedCoins: { router.push(.shopCoins) })
+            }
         }
         .playScreen()
         .task {
@@ -174,7 +182,7 @@ struct EchoView: View {
         case .roundCleared: return "⭐ Round cleared!"
         case .mistake: return "Oops! Listen again…"
         case .won: return "You did it!"
-        case .lost: return "Out of hearts"
+        case .awaitingContinue, .lost: return "Out of hearts"
         }
     }
 
@@ -200,7 +208,7 @@ struct EchoView: View {
             return index < progress ? Color.green : Color.white.opacity(0.7)
         case .roundCleared, .won:
             return Color.green
-        case .mistake, .lost, .ready:
+        case .mistake, .awaitingContinue, .lost, .ready:
             return Color.white.opacity(0.7)
         }
     }
@@ -210,7 +218,7 @@ struct EchoView: View {
         GeometryReader { geo in
             let origin = geo.frame(in: .global).origin
             if let key = correctFlashKey, let frame = keyFrames[key] {
-                Text(NoteCatalog.note(key).label)
+                Text(NoteCatalog.displayLabel(key))
                     .font(.custom("BalooDa-Regular", size: Sizing.f(56)))
                     .foregroundColor(Color.darkGreen)
                     .padding(.horizontal, Sizing.s(18))
@@ -267,7 +275,8 @@ struct EchoView: View {
         let won = viewModel.phase == .won
         let result = PlayResult(request: request, didWin: won, stars: viewModel.stars,
                                 score: viewModel.roundsCleared, accuracy: nil, maxCombo: 0,
-                                perfect: 0, great: 0, good: 0, miss: 0, wrong: 0)
+                                perfect: 0, great: 0, good: 0, miss: 0, wrong: 0,
+                                revivesUsed: viewModel.reviveRun?.revivesUsed ?? 0)
         let rewards = ResultRecorder.record(result)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
             if isOnScreen {

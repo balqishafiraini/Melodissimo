@@ -3,6 +3,7 @@
 //  Melodissimo
 //
 
+import AuthenticationServices
 import SwiftUI
 
 /// How the game plays and feels: how fast notes fall, key labels, audio timing, and a reset. The
@@ -13,6 +14,11 @@ struct SettingsView: View {
 
     @State private var isCalibrating = false
     @State private var isTestingMicrophone = false
+    /// Observed so a flag change from the server redraws this screen.
+    @ObservedObject private var bootstrap = BootstrapService.shared
+    @ObservedObject private var entitlements = Entitlements.shared
+    @ObservedObject private var account = PlayerAccount.shared
+    @State private var accountMessage: LocalizedStringKey?
     @State private var isConfirmingReset = false
     @State private var isReallyConfirmingReset = false
     @State private var didReset = false
@@ -29,21 +35,27 @@ struct SettingsView: View {
                         HStack(alignment: .top, spacing: 12) {
                             VStack(spacing: 12) {
                                 noteSpeedCard
-                                inputCard
+                                if FeatureFlags.isOn(.micInput) { inputCard }
                                 labelsCard
+                            noteNamesCard
+                                noteNamesCard
                             }
                             VStack(spacing: 12) {
                                 soundCard
                                 audioCard
                                 resetCard
-                                aboutCard
+                                plusCard
+                            accountCard
+                                accountCard
+                                plusCard
+                            aboutCard
                             }
                         }
                         .padding(.vertical, 4)
                     } else {
                         VStack(spacing: 20) {
                             noteSpeedCard
-                            inputCard
+                            if FeatureFlags.isOn(.micInput) { inputCard }
                             labelsCard
                             soundCard
                             audioCard
@@ -76,7 +88,7 @@ struct SettingsView: View {
             Button("Continue", role: .destructive) { isReallyConfirmingReset = true }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Your stars, coins, purchases and trophies will be erased.")
+            Text("Your stars, coins, shop items and trophies will be erased. What you bought with real money stays.")
         }
         .alert("Are you really sure?", isPresented: $isReallyConfirmingReset) {
             Button("Erase everything", role: .destructive) { resetProgress() }
@@ -211,6 +223,40 @@ struct SettingsView: View {
         }
     }
 
+    // MARK: Note names
+
+    private var noteNamesCard: some View {
+        card("Note names") {
+            HStack(spacing: Sizing.isPhone ? 6 : 12) {
+                ForEach(NoteLabelStyle.allCases, id: \.self) { style in
+                    SoundButton {
+                        progress.noteLabelStyle = style
+                    } label: {
+                        Text(Self.title(of: style))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: Sizing.tap(60))
+                            .background(progress.noteLabelStyle == style ? Color.darkGreen : Color.softBlue.opacity(0.5))
+                            .foregroundColor(progress.noteLabelStyle == style ? .white : Color.darkGreen)
+                            .cornerRadius(Sizing.s(18))
+                            .font(.custom("BalooDa-Regular", size: Sizing.f(26)))
+                    }
+                    .accessibilityAddTraits(progress.noteLabelStyle == style ? .isSelected : [])
+                }
+            }
+            caption("How notes are written on the keys and in songs.")
+        }
+    }
+
+    private static func title(of style: NoteLabelStyle) -> LocalizedStringKey {
+        switch style {
+        case .notAngka: return "Not angka"
+        case .solfege: return "Do Re Mi"
+        case .letters: return "C D E"
+        }
+    }
+
     // MARK: Sound effects
 
     private var soundCard: some View {
@@ -314,7 +360,7 @@ struct SettingsView: View {
                     .font(Font.headline)
                     .foregroundColor(Color.darkGreen)
             }
-            caption("Starts the game over: stars, coins, shop items, trophies and achievements. Your settings stay.")
+            caption("Starts the game over: stars, coins, shop items, trophies and achievements. Your settings and what you bought with real money stay.")
         }
     }
 
@@ -322,6 +368,105 @@ struct SettingsView: View {
         progress.resetProgress()
         AchievementStore.shared.reload()
         didReset = true
+    }
+
+    // MARK: Account
+
+    /// Optional Sign in with Apple, so progress and purchases follow the player to another device. Asks for no name and no
+    /// e-mail. Hidden until the `accounts` flag is on.
+    @ViewBuilder
+    private var accountCard: some View {
+        if FeatureFlags.isOn(.accounts) {
+            card("Account") {
+                if account.state == .linked {
+                    Label("Signed in with Apple", systemImage: "checkmark.seal.fill")
+                        .font(Font.headline)
+                        .foregroundColor(Color.darkGreen)
+                } else {
+                    SignInWithAppleButton(.signIn) { request in
+                        request.requestedScopes = []
+                    } onCompletion: { result in
+                        handleSignIn(result)
+                    }
+                    .signInWithAppleButtonStyle(.black)
+                    .frame(height: Sizing.tap(56))
+                }
+                if let accountMessage {
+                    Text(accountMessage).font(.subheadline).foregroundColor(Color.darkGreen)
+                }
+                caption("Optional. Keep your stars, coins and songs when you change devices. We don't ask for your name or e-mail.")
+            }
+        }
+    }
+
+    private func handleSignIn(_ result: Result<ASAuthorization, Error>) {
+        guard case .success(let authorization) = result,
+              let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let data = credential.identityToken, let token = String(data: data, encoding: .utf8) else {
+            accountMessage = "Sign in did not work"
+            return
+        }
+        Task {
+            if await account.linkApple(identityToken: token) {
+                accountMessage = nil
+                await ProgressSyncService.shared.sync()
+            } else {
+                accountMessage = "Sign in did not work"
+            }
+        }
+    }
+
+    // MARK: Melodissimo Plus
+
+    /// Subscription status with Manage and Restore. Hidden until the pack store is switched on (`packStore` flag).
+    @ViewBuilder
+    private var plusCard: some View {
+        if FeatureFlags.isOn(.packStore) {
+            card("Melodissimo Plus") {
+                Text(Self.plusStatusText(entitlements.plusStatus))
+                    .font(Font.headline)
+                    .foregroundColor(Color.darkGreen)
+                HStack(spacing: Sizing.isPhone ? 6 : 12) {
+                    SoundButton {
+                        Task { await StoreService.shared.manageSubscriptions() }
+                    } label: {
+                        Text("Manage subscription")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: Sizing.tap(60))
+                            .background(Color.yellow)
+                            .foregroundColor(Color.darkGreen)
+                            .cornerRadius(Sizing.s(18))
+                            .font(Font.headline)
+                    }
+                    SoundButton {
+                        Task { await StoreService.shared.restore() }
+                    } label: {
+                        Text("Restore purchases")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: Sizing.tap(60))
+                            .background(Color.softBlue.opacity(0.5))
+                            .foregroundColor(Color.darkGreen)
+                            .cornerRadius(Sizing.s(18))
+                            .font(Font.headline)
+                    }
+                }
+            }
+        }
+    }
+
+    static func plusStatusText(_ status: PlusStatus) -> LocalizedStringKey {
+        switch status {
+        case .none: return "Not subscribed"
+        case .active(let renews):
+            guard let renews else { return "Plus is active" }
+            return "Plus renews on \(renews.formatted(date: .abbreviated, time: .omitted))"
+        case .gracePeriod: return "Plus is active, but a payment needs attention"
+        case .expired: return "Plus has ended"
+        }
     }
 
     // MARK: About
@@ -350,6 +495,6 @@ struct SettingsView: View {
         let info = Bundle.main.infoDictionary
         let version = info?["CFBundleShortVersionString"] as? String ?? "?"
         let build = info?["CFBundleVersion"] as? String ?? "?"
-        return "\(version) (\(build))"
+        return BackendEnvironment.isDev ? "\(version) (\(build)) · DEV" : "\(version) (\(build))"
     }
 }

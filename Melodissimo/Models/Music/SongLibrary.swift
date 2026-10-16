@@ -10,12 +10,27 @@ struct Song: Identifiable, Hashable {
     /// Slug of the title, e.g. `"halo-halo-bandung"`. Used in persistence keys and chart file names.
     let id: String
     let title: String
-    /// Asset name of the score-sheet image in `Notasi`.
+    /// Asset name of the score-sheet image in `Notasi` (empty for songs that have none bundled).
     let notationImage: String
+    /// The pack the song belongs to (`core` is free forever).
+    var packId: String = "core"
+    /// The title in every language the release has (without the `canonical` key). `nil` for the songs that shipped with the app.
+    var localizedTitles: LocalizedText? = nil
     /// The melody as key ids, in order.
     let keyIds: [Int]
     /// National-symbol songs are played with no monster, combo effects or other comic touches.
     let isSolemn: Bool
+
+    /// The title to show, in the player's language. `title` stays the Indonesian canonical title: it is the trophy key.
+    var displayTitle: String {
+        localizedTitles?.resolved().nonEmptyOrNil ?? title
+    }
+
+    /// Where the score-sheet picture comes from: a downloaded file, else the bundled `Notasi` image, else none.
+    func sheet(store: ContentStore = .shared) -> ArtSource? {
+        if let url = store.sheetURL(songId: id) { return .file(url) }
+        return notationImage.isEmpty ? nil : .asset(notationImage)
+    }
 }
 
 enum SongLibrary {
@@ -45,14 +60,79 @@ enum SongLibrary {
         return result
     }
 
-    /// All songs, in the same order as `LevelFeederModel.songLevel`.
-    static let all: [Song] = LevelFeederModel.shared.songLevel.compactMap { level in
+    /// The songs the app shipped with, from the old level list. Kept as the fallback, and as the source of truth for
+    /// the melody of those songs (`keyIds`), so they behave exactly as before whatever a content release says.
+    static let legacyAll: [Song] = LevelFeederModel.shared.songLevel.compactMap { level in
         guard let title = level.songTitle, let image = level.songNotImg else { return nil }
         return Song(id: slug(for: title),
                     title: title,
                     notationImage: image,
                     keyIds: level.answer,
                     isSolemn: solemnTitles.contains(title))
+    }
+
+    /// Where the songs come from. Tests swap it for a store with a fixture pack.
+    static var contentStore: ContentStore = .shared {
+        didSet { clearCache() }
+    }
+
+    private static let cacheLock = NSLock()
+    private static var cachedAll: [Song]?
+    private static var observesContent = false
+
+    /// Forgets the built list; the next read builds it again. Called when a new pack goes live.
+    static func clearCache() {
+        cacheLock.withLock { cachedAll = nil }
+    }
+
+    /// All songs, ordered by the pack's `order`: the content store's songs, or the legacy list when the store has none.
+    /// The list is cached and rebuilt after a new pack is activated.
+    static var all: [Song] {
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        if !observesContent {
+            observesContent = true
+            NotificationCenter.default.addObserver(forName: .contentStoreDidActivate, object: nil, queue: nil) { _ in
+                clearCache()
+                SongChart.clearCache()
+            }
+        }
+        if let cachedAll { return cachedAll }
+        let built = buildAll()
+        cachedAll = built
+        return built
+    }
+
+    private static func buildAll() -> [Song] {
+        // Songs and their packs are filtered by country; the free `core` pack is worldwide. (Owned packs, Task B7, are
+        // exempt: what a player has is never taken away.)
+        let packs = Dictionary(uniqueKeysWithValues: contentStore.packs.map { ($0.id, $0) })
+        let storefront = Market.storefront, device = Market.deviceCountry
+        let remote = Markets.featuredFirst(
+            contentStore.songs.filter { song in
+                Markets.allows(song.markets, storefront: storefront, deviceCountry: device)
+                    && Markets.allows(packs[song.packId]?.markets, storefront: storefront, deviceCountry: device)
+            },
+            markets: { $0.markets ?? packs[$0.packId]?.markets }, storefront: storefront, deviceCountry: device)
+        guard !remote.isEmpty else { return legacyAll }
+        let legacy = Dictionary(uniqueKeysWithValues: legacyAll.map { ($0.id, $0) })
+        let songs: [Song] = remote.compactMap { entry in
+            // A legacy song keeps its original melody; a new one's melody is its chart's keys.
+            let keys = legacy[entry.id]?.keyIds ?? chartKeys(songId: entry.id)
+            guard let keys, !keys.isEmpty else { return nil }
+            var shown = entry.title.values
+            shown.removeValue(forKey: "canonical")
+            return Song(id: entry.id, title: entry.canonicalTitle, notationImage: entry.bundledSheetImage ?? "",
+                        packId: entry.packId, localizedTitles: shown.isEmpty ? nil : LocalizedText(shown), keyIds: keys,
+                        isSolemn: entry.isSolemn || solemnTitles.contains(entry.canonicalTitle))
+        }
+        return songs.isEmpty ? legacyAll : songs
+    }
+
+    private static func chartKeys(songId: String) -> [Int]? {
+        guard let url = contentStore.chartURL(songId: songId), let data = try? Data(contentsOf: url),
+              let chart = try? JSONDecoder().decode(SongChart.self, from: data), chart.isValid else { return nil }
+        return chart.notes.map(\.k)
     }
 
     static func song(id: String) -> Song? {
@@ -62,4 +142,8 @@ enum SongLibrary {
     static func song(title: String) -> Song? {
         all.first { $0.title == title }
     }
+}
+
+private extension String {
+    var nonEmptyOrNil: String? { isEmpty ? nil : self }
 }

@@ -53,6 +53,6 @@ extension NoteSkin {
 extension AlpanicaOutfit {
     /// What Alpanica is wearing now.
     static var equipped: AlpanicaOutfit {
-        AlpanicaOutfit(rawValue: ProgressStore.shared.equippedItem(.outfit).variant) ?? .none
+        AlpanicaOutfit(item: ProgressStore.shared.equippedItem(.outfit))
     }
 }

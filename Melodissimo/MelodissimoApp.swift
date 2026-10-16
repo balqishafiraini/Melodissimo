@@ -25,6 +25,28 @@ struct MelodissimoApp: App {
         // Mirror progress to iCloud (a no-op unless `OnlineServices.isEnabled`). Game Center signs in later,
         // from Home's first appearance.
         CloudSync.shared.start()
+        // Cached flags, tuning and update policy at once; a refresh in the background (never blocks launch).
+        // Melodissimo Plus members get the free revive; the entitlement is cached, so it works offline too.
+        Revive.isPlusMember = { Entitlements.shared.isPlusActive }
+        ContentStore.shared.loadActive()
+        DispatchQueue.global(qos: .utility).async { ContentStore.shared.collectGarbage() }
+        Task { @MainActor in
+            BootstrapService.shared.onContent = { info in
+                guard let info else { return }
+                Task { await ContentSync.shared.sync(to: info) }
+            }
+            BootstrapService.shared.start()
+            Analytics.shared.start()
+            // With accounts on: a player for this install, then one sync round (and again on each return to the app).
+            Task {
+                await PlayerAccount.shared.ensurePlayer()
+                ProgressSyncService.shared.start()
+                await ProgressSyncService.shared.sync()
+            }
+            Analytics.log(.appOpen, props: ["build": .number(Double(ClientHeaders.current().build))])
+        }
+        // Listen for store transactions from launch, so a purchase is never missed.
+        Task { @MainActor in StoreService.shared.start() }
     }
 
     var body: some Scene {

@@ -114,6 +114,15 @@ final class CloudSyncTests: XCTestCase {
         XCTAssertNotNil(cloud.values["something_else"])
     }
 
+    func testForgetProgressKeepsWhatWasBoughtWithRealMoney() {
+        let cloud = FakeStore(["coins_purchasedTotal": 300, "inv_gained_boost_heart": 2, "iap_granted": ["t1"], "coins_earnedTotal": 9])
+        CloudSync(local: FakeStore(), cloud: cloud, songTitles: titles).forgetProgress()
+        XCTAssertNil(cloud.values["coins_earnedTotal"])
+        XCTAssertNotNil(cloud.values["coins_purchasedTotal"])
+        XCTAssertNotNil(cloud.values["inv_gained_boost_heart"])
+        XCTAssertNotNil(cloud.values["iap_granted"])
+    }
+
     func testCloudStoreIsNotCreatedUntilNeeded() {
         var made = 0
         let sync = CloudSync(local: FakeStore(), cloudFactory: { made += 1; return FakeStore() },

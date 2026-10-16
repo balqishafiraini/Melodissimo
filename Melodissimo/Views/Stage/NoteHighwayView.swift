@@ -95,7 +95,7 @@ struct NoteHighwayView: View {
                 } symbols: {
                     ForEach(usedKeyIds, id: \.self) { keyId in
                         let note = NoteCatalog.note(keyId)
-                        Text(note.label)
+                        Text(NoteCatalog.displayLabel(note.id))
                             .font(.custom("BalooDa-Regular", size: Sizing.f(22)))
                             .foregroundColor(note.isBlack ? .white : .darkGreen)
                             .tag(note.id)

@@ -25,8 +25,37 @@ struct StageSetupView: View {
 
     private var isPracticed: Bool { progress.isSongPracticed(song.id) }
 
+    /// True while the song's backing track is being downloaded from a content release.
+    @State private var isDownloadingBacking = false
+
     var body: some View {
-        if Sizing.isPhone { phoneBody } else { ipadBody }
+        Group {
+            if Sizing.isPhone { phoneBody } else { ipadBody }
+        }
+        .overlay(alignment: .topTrailing) {
+            if isDownloadingBacking {
+                HStack(spacing: 8) {
+                    ProgressView()
+                    Text("Downloading music…")
+                        .font(.subheadline)
+                        .foregroundColor(Color.darkGreen)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(Capsule().fill(Color.white.opacity(0.9)))
+                .padding(Sizing.isPhone ? 8 : 16)
+            }
+        }
+        .task { await downloadBackingIfNeeded() }
+    }
+
+    /// The instrumental of a song added by a content release is fetched when its setup screen opens. Offline, or if the
+    /// download fails, the song simply plays without it (as when the file is missing).
+    private func downloadBackingIfNeeded() async {
+        guard let key = BackingTrackPlayer.downloadableKey(for: song.id) else { return }
+        isDownloadingBacking = true
+        defer { isDownloadingBacking = false }
+        _ = try? await ContentSync.shared.ensureAsset(key)
     }
 
     /// iPad: the v2 layout, unchanged.
@@ -100,7 +129,7 @@ struct StageSetupView: View {
                     .font(Font.headline)
             }
             Spacer()
-            Text(song.title)
+            Text(song.displayTitle)
                 .font(.custom("BalooDa-Regular", size: 24))
                 .foregroundColor(Color.darkGreen)
                 .lineLimit(1)
@@ -205,7 +234,7 @@ struct StageSetupView: View {
 
             Spacer()
 
-            Text(song.title)
+            Text(song.displayTitle)
                 .font(.custom("BalooDa-Regular", size: 44))
                 .foregroundColor(Color.darkGreen)
                 .lineLimit(1)

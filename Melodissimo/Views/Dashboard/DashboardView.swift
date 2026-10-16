@@ -15,15 +15,20 @@ struct DashboardView: View {
     /// Set when the pre-play test has just finished: Home takes the new player straight to the first stage.
     var startsFirstStage = false
     @State private var hasStartedFirstStage = false
+    @ObservedObject private var bootstrap = BootstrapService.shared
+    @State private var isShowingSoftUpdate = false
 
     var body: some View {
         NavigationStack(path: $router.path) {
             VStack(spacing: Sizing.s(20)) {
+                if let maintenance = bootstrap.maintenance, maintenance.blocksPlay != true {
+                    MaintenanceBanner(info: maintenance)
+                }
                 topBar
                 tourCard
                 Spacer(minLength: 0)
                 HStack(spacing: Sizing.s(20)) {
-                    dailyCard
+                    if FeatureFlags.isOn(.dailyChallenge) { dailyCard }
                     HomeCard(title: "Free Play", subtitle: "Songs, levels, Echo and Rush", icon: "icon_stage_echo",
                              fill: Color.red, text: .white) {
                         router.push(.freePlay)
@@ -49,6 +54,13 @@ struct DashboardView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear(perform: startFirstStageIfNeeded)
+            .onAppear(perform: showSoftUpdateIfDue)
+            // Home is showing and no song is playing: a downloaded content release may go live now.
+            .onAppear { ContentStore.shared.activateStagedIfIdle() }
+            .onChange(of: bootstrap.directive) { _ in showSoftUpdateIfDue() }
+            .sheet(isPresented: $isShowingSoftUpdate) {
+                SoftUpdateSheet(info: bootstrap.current?.update) { isShowingSoftUpdate = false }
+            }
             .onAppear { GameCenter.shared.authenticate() }
             #if DEBUG
             .onAppear { QARoutes.applyLaunchRoute(to: router) }
@@ -61,6 +73,18 @@ struct DashboardView: View {
         }
         .environmentObject(router)
         .playSessionSystemUI()
+    }
+
+    // MARK: Soft update
+
+    /// Asks for a recommended update on Home, at most once per recommended build per three days.
+    private func showSoftUpdateIfDue() {
+        guard bootstrap.directive == .soft, let recommended = bootstrap.current?.update?.policy?.recommendedBuild else { return }
+        let key = UpdateGate.softKey(recommendedBuild: recommended)
+        let last = UserDefaults.standard.object(forKey: key) as? Date
+        guard UpdateGate.shouldShowSoft(lastShown: last, now: Date()) else { return }
+        UserDefaults.standard.set(Date(), forKey: key)
+        isShowingSoftUpdate = true
     }
 
     // MARK: First stage
@@ -104,9 +128,22 @@ struct DashboardView: View {
             }
             #endif
 
-            CoinBadge()
-            iconButton("bag.fill", label: "Shop", fill: Color.yellow, tint: Color.darkGreen) {
-                router.push(.shop)
+            if FeatureFlags.isOn(.shop) {
+                SoundButton {
+                    router.push(.shopCoins)
+                } label: {
+                    CoinBadge()
+                }
+                iconButton("bag.fill", label: "Shop", fill: Color.yellow, tint: Color.darkGreen) {
+                    router.push(.shop)
+                }
+            } else {
+                CoinBadge()
+            }
+            if FeatureFlags.isOn(.packStore) {
+                iconButton("music.note.list", label: "Song packs", fill: Color.yellow, tint: Color.darkGreen) {
+                    router.push(.packStore)
+                }
             }
 
             Spacer()
@@ -292,6 +329,14 @@ struct DashboardView: View {
             LearnHubView()
         case .shop:
             ShopView()
+        case .shopCoins:
+            ShopView(startAtCoins: true)
+        case .packStore:
+            PackStoreView()
+        case .paywall(let packId):
+            PaywallView(packId: packId)
+        case .plus:
+            PlusPaywallView()
         case .settings:
             SettingsView()
         case .chartRecorder:

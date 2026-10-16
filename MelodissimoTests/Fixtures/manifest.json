@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": 12,
+  "createdAt": "2026-10-15T07:55:00Z",
+  "minAppBuild": { "ios": 57, "android": 1 },
+  "assets": {
+    "chart.halo-halo-bandung": { "path": "assets/3b1f000000000000000000000000000000000000000000000000000000000001.json", "sha256": "3b1f000000000000000000000000000000000000000000000000000000000001", "bytes": 4210, "kind": "chart", "prefetch": true },
+    "bgm.halo-halo-bandung": { "path": "assets/a77c000000000000000000000000000000000000000000000000000000000002.m4a", "sha256": "a77c000000000000000000000000000000000000000000000000000000000002", "bytes": 701234, "kind": "audio", "prefetch": false },
+    "sheet.halo-halo-bandung": { "path": "assets/0d9e000000000000000000000000000000000000000000000000000000000003.png", "sha256": "0d9e000000000000000000000000000000000000000000000000000000000003", "bytes": 88120, "kind": "image", "prefetch": true }
+  },
+  "songs": [
+    {
+      "id": "halo-halo-bandung",
+      "title": { "canonical": "Halo Halo Bandung", "id": "Halo Halo Bandung", "en": "Halo Halo Bandung" },
+      "order": 90, "packId": "core", "isSolemn": false, "status": "live", "minAppBuild": 57,
+      "chart": "chart.halo-halo-bandung", "backing": "bgm.halo-halo-bandung", "sheet": "sheet.halo-halo-bandung",
+      "bundledSheetImage": "haloHaloBandung", "region": null, "tags": ["nasional"]
+    }
+  ],
+  "packs": [
+    { "id": "core", "title": { "id": "Lagu Wajib", "en": "National Songs" }, "access": { "type": "free" } },
+    { "id": "daerah-sumatra", "title": { "id": "Lagu Daerah Sumatra", "en": "Songs of Sumatra", "ms": "Lagu Sumatera" },
+      "description": { "id": "Lagu dari Sumatra.", "en": "Songs from Sumatra." },
+      "access": { "type": "product", "productIds": ["melodissimo.pack.daerah_sumatra", "melodissimo.plus.monthly", "melodissimo.plus.yearly"] },
+      "markets": { "include": ["IDN", "MYS", "SGP"], "featuredIn": ["IDN"] } }
+  ],
+  "shop": {
+    "items": [
+      { "id": "keyboard_batik", "category": "keyboard", "kind": "cosmetic",
+        "name": { "id": "Merah Batik", "en": "Merah Batik" }, "price": { "coins": 100 },
+        "colors": ["#7B241C", "#D35400"], "order": 20, "minAppBuild": 1, "status": "live" }
+    ]
+  },
+  "products": [
+    { "id": "melodissimo.pack.daerah_sumatra", "type": "nonConsumable", "unlocks": ["pack:daerah-sumatra"] },
+    { "id": "melodissimo.plus.monthly", "type": "autoRenewable", "group": "plus", "unlocks": ["pack:*"] },
+    { "id": "melodissimo.plus.yearly", "type": "autoRenewable", "group": "plus", "unlocks": ["pack:*"] },
+    { "id": "melodissimo.coins.small", "type": "consumable", "grants": { "coins": 300 }, "order": 1 },
+    { "id": "melodissimo.coins.medium", "type": "consumable", "grants": { "coins": 1100 }, "order": 2, "badge": "popular" },
+    { "id": "melodissimo.bundle.starter", "type": "consumable", "grants": { "coins": 500, "items": { "boost_heart": 5 } }, "oncePerPlayer": true, "order": 0 }
+  ]
+}

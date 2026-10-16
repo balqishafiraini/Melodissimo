@@ -27,6 +27,18 @@ struct PlayDestinationView: View {
     }
 
     var body: some View {
+        screen
+            // One event per play, when its screen opens (a mode that wraps another, like the daily challenge, logs once for the inner one).
+            .onAppear { if request.dailyDateKey != nil || !isDailyWrapper { Analytics.log(.stageStart, props: request.analyticsProps) } }
+    }
+
+    private var isDailyWrapper: Bool {
+        if case .daily = request.kind { return true }
+        return false
+    }
+
+    @ViewBuilder
+    private var screen: some View {
         switch request.kind {
         case .song(let songId, let mode, let speed, let isBoss, let isSolemn, let noteLimit):
             if let song = SongLibrary.song(id: songId) {

@@ -38,12 +38,40 @@ struct PlayRequest: Hashable {
     var dailyDateKey: String? = nil
 }
 
+extension PlayRequest {
+    /// A coarse name for the kind of play, for analytics: `listen`, `practice`, `perform`, `battle`, `classic`, `echo`, `quiz`, `rush`, `daily`.
+    var analyticsMode: String {
+        switch kind {
+        case .song(_, let mode, _, _, _, _): return mode.rawValue
+        case .battle: return "battle"
+        case .classic: return "classic"
+        case .echo: return "echo"
+        case .quiz: return "quiz"
+        case .rush: return "rush"
+        case .daily: return "daily"
+        }
+    }
+
+    var analyticsSongId: String? {
+        if case .song(let songId, _, _, _, _, _) = kind { return songId }
+        return nil
+    }
+
+    /// The props every play event carries: mode, and the song and stage when there are some.
+    var analyticsProps: [String: JSONValue] {
+        var props: [String: JSONValue] = ["mode": .string(analyticsMode)]
+        if let songId = analyticsSongId { props["songId"] = .string(songId) }
+        if let stage = campaignStageId { props["stageId"] = .string(stage) }
+        return props
+    }
+}
+
 /// The outcome of one play, handed to `ResultRecorder` and the results screen.
 struct PlayResult: Hashable {
     let request: PlayRequest
     let didWin: Bool
     /// 0...3, already speed-capped.
-    let stars: Int
+    var stars: Int
     let score: Int
     /// Songs only.
     let accuracy: Double?
@@ -56,6 +84,8 @@ struct PlayResult: Hashable {
     let wrong: Int
     /// Battles and Melody Rush: how many answers were right (Rush pays one coin per five).
     var correctCount = 0
+    /// How many times the player paid to continue after the hearts ran out.
+    var revivesUsed = 0
 }
 
 /// What a play earned, shown on the results screen.

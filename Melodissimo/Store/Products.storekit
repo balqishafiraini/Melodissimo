@@ -1,0 +1,190 @@
+{
+  "identifier": "7A1C0D10",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "15000",
+      "familyShareable": false,
+      "internalID": "6F000001",
+      "localizations": [
+        {
+          "description": "Starter Bundle",
+          "displayName": "Starter Bundle",
+          "locale": "en"
+        },
+        {
+          "description": "Paket Pemula",
+          "displayName": "Paket Pemula",
+          "locale": "id"
+        }
+      ],
+      "productID": "melodissimo.bundle.starter",
+      "referenceName": "Starter Bundle",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "15000",
+      "familyShareable": false,
+      "internalID": "6F000002",
+      "localizations": [
+        {
+          "description": "Small Coin Pack",
+          "displayName": "Small Coin Pack",
+          "locale": "en"
+        },
+        {
+          "description": "Paket Koin Kecil",
+          "displayName": "Paket Koin Kecil",
+          "locale": "id"
+        }
+      ],
+      "productID": "melodissimo.coins.small",
+      "referenceName": "Small Coin Pack",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "49000",
+      "familyShareable": false,
+      "internalID": "6F000003",
+      "localizations": [
+        {
+          "description": "Medium Coin Pack",
+          "displayName": "Medium Coin Pack",
+          "locale": "en"
+        },
+        {
+          "description": "Paket Koin Sedang",
+          "displayName": "Paket Koin Sedang",
+          "locale": "id"
+        }
+      ],
+      "productID": "melodissimo.coins.medium",
+      "referenceName": "Medium Coin Pack",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "119000",
+      "familyShareable": false,
+      "internalID": "6F000004",
+      "localizations": [
+        {
+          "description": "Large Coin Pack",
+          "displayName": "Large Coin Pack",
+          "locale": "en"
+        },
+        {
+          "description": "Paket Koin Besar",
+          "displayName": "Paket Koin Besar",
+          "locale": "id"
+        }
+      ],
+      "productID": "melodissimo.coins.large",
+      "referenceName": "Large Coin Pack",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "79000",
+      "familyShareable": false,
+      "internalID": "6F000005",
+      "localizations": [
+        {
+          "description": "One-time pack of songs from Sumatra",
+          "displayName": "Songs of Sumatra",
+          "locale": "en"
+        },
+        {
+          "description": "Paket lagu dari Sumatra",
+          "displayName": "Lagu Daerah Sumatra",
+          "locale": "id"
+        }
+      ],
+      "productID": "melodissimo.pack.daerah_sumatra",
+      "referenceName": "Songs of Sumatra",
+      "type": "NonConsumable"
+    }
+  ],
+  "settings": {
+    "_applicationInternalID": "0",
+    "_developerTeamID": "",
+    "_failTransactionsEnabled": false,
+    "_lastSynchronizedDate": 0,
+    "_locale": "id_ID",
+    "_storefront": "IDN",
+    "_storeKitErrors": []
+  },
+  "subscriptionGroups": [
+    {
+      "id": "21000001",
+      "localizations": [],
+      "name": "Melodissimo Plus",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "29000",
+          "familyShareable": true,
+          "groupNumber": 1,
+          "internalID": "6F000006",
+          "introductoryOffer": {
+            "internalID": "6F0000061",
+            "paymentMode": "free",
+            "subscriptionPeriod": "P1W"
+          },
+          "localizations": [
+            {
+              "description": "Melodissimo Plus (monthly)",
+              "displayName": "Melodissimo Plus (monthly)",
+              "locale": "en"
+            },
+            {
+              "description": "Melodissimo Plus (bulanan)",
+              "displayName": "Melodissimo Plus (bulanan)",
+              "locale": "id"
+            }
+          ],
+          "productID": "melodissimo.plus.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Plus monthly",
+          "subscriptionGroupID": "21000001",
+          "type": "RecurringSubscription",
+          "winbackOffers": []
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "249000",
+          "familyShareable": true,
+          "groupNumber": 1,
+          "internalID": "6F000007",
+          "introductoryOffer": {
+            "internalID": "6F0000071",
+            "paymentMode": "free",
+            "subscriptionPeriod": "P1W"
+          },
+          "localizations": [
+            {
+              "description": "Melodissimo Plus (yearly)",
+              "displayName": "Melodissimo Plus (yearly)",
+              "locale": "en"
+            },
+            {
+              "description": "Melodissimo Plus (tahunan)",
+              "displayName": "Melodissimo Plus (tahunan)",
+              "locale": "id"
+            }
+          ],
+          "productID": "melodissimo.plus.yearly",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Plus yearly",
+          "subscriptionGroupID": "21000001",
+          "type": "RecurringSubscription",
+          "winbackOffers": []
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}

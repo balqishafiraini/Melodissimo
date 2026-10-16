@@ -63,7 +63,7 @@ struct SongStageView: View {
         self.dailyDateKey = dailyDateKey
         // Practice and Listen teach the fingering, so they show labels; Perform follows the setting.
         self.showLabels = showKeyLabels ?? (mode != .perform || ProgressStore.shared.labelsInPerform)
-        let microphone = mode != .listen && ProgressStore.shared.inputMode == .pianika
+        let microphone = mode != .listen && ProgressStore.shared.effectiveInputMode == .pianika
         self.usesMicrophone = microphone
         let backingOn = ProgressStore.shared.backingTrackEnabled && !microphone && chart == nil
             && BackingTrackPlayer.isAvailable(for: song.id)
@@ -308,7 +308,7 @@ struct SongStageView: View {
 
             Spacer()
 
-            Text(song.title)
+            Text(song.displayTitle)
                 .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
                 .foregroundColor(hudTextColor)
                 .lineLimit(1)

@@ -20,8 +20,23 @@ final class BackingTrackPlayer: ObservableObject {
 
     static func resourceName(for songId: String) -> String { "bgm_\(songId)" }
 
+    /// The file for a song's instrumental: the content store's (downloaded pack, else the bundled baseline), then the
+    /// app bundle's legacy `bgm_<slug>.m4a`. `nil` when it isn't on the device (yet).
+    static func url(for songId: String, bundle: Bundle = .main) -> URL? {
+        if bundle === Bundle.main, let url = SongLibrary.contentStore.backingURL(songId: songId) { return url }
+        return bundle.url(forResource: resourceName(for: songId), withExtension: "m4a")
+    }
+
     static func isAvailable(for songId: String, bundle: Bundle = .main) -> Bool {
-        bundle.url(forResource: resourceName(for: songId), withExtension: "m4a") != nil
+        url(for: songId, bundle: bundle) != nil
+    }
+
+    /// The asset key of a song's backing track when the active pack lists one that isn't on the device yet, so the stage
+    /// setup screen can download it.
+    static func downloadableKey(for songId: String) -> String? {
+        let store = SongLibrary.contentStore
+        guard let key = store.manifestSong(id: songId)?.backing, store.url(forAsset: key) == nil else { return nil }
+        return key
     }
 
     private var player: AVAudioPlayer?
@@ -40,7 +55,7 @@ final class BackingTrackPlayer: ObservableObject {
         self.speed = speed
         self.offset = offset
         gate.reset()
-        guard let url = bundle.url(forResource: Self.resourceName(for: songId), withExtension: "m4a") else { return }
+        guard let url = Self.url(for: songId, bundle: bundle) else { return }
         let loaded = await Task.detached(priority: .userInitiated) { () -> AVAudioPlayer? in
             guard let player = try? AVAudioPlayer(contentsOf: url) else { return nil }
             player.enableRate = true            // before prepareToPlay
