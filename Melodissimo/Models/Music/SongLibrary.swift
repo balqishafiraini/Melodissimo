@@ -14,10 +14,17 @@ struct Song: Identifiable, Hashable {
     let notationImage: String
     /// The pack the song belongs to (`core` is free forever).
     var packId: String = "core"
+    /// The title in every language the release has (without the `canonical` key). `nil` for the songs that shipped with the app.
+    var localizedTitles: LocalizedText? = nil
     /// The melody as key ids, in order.
     let keyIds: [Int]
     /// National-symbol songs are played with no monster, combo effects or other comic touches.
     let isSolemn: Bool
+
+    /// The title to show, in the player's language. `title` stays the Indonesian canonical title: it is the trophy key.
+    var displayTitle: String {
+        localizedTitles?.resolved().nonEmptyOrNil ?? title
+    }
 
     /// Where the score-sheet picture comes from: a downloaded file, else the bundled `Notasi` image, else none.
     func sheet(store: ContentStore = .shared) -> ArtSource? {
@@ -104,8 +111,10 @@ enum SongLibrary {
             // A legacy song keeps its original melody; a new one's melody is its chart's keys.
             let keys = legacy[entry.id]?.keyIds ?? chartKeys(songId: entry.id)
             guard let keys, !keys.isEmpty else { return nil }
+            var shown = entry.title.values
+            shown.removeValue(forKey: "canonical")
             return Song(id: entry.id, title: entry.canonicalTitle, notationImage: entry.bundledSheetImage ?? "",
-                        packId: entry.packId, keyIds: keys,
+                        packId: entry.packId, localizedTitles: shown.isEmpty ? nil : LocalizedText(shown), keyIds: keys,
                         isSolemn: entry.isSolemn || solemnTitles.contains(entry.canonicalTitle))
         }
         return songs.isEmpty ? legacyAll : songs
@@ -124,4 +133,8 @@ enum SongLibrary {
     static func song(title: String) -> Song? {
         all.first { $0.title == title }
     }
+}
+
+private extension String {
+    var nonEmptyOrNil: String? { isEmpty ? nil : self }
 }

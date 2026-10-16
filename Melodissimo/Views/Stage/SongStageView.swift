@@ -308,7 +308,7 @@ struct SongStageView: View {
 
             Spacer()
 
-            Text(song.title)
+            Text(song.displayTitle)
                 .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
                 .foregroundColor(hudTextColor)
                 .lineLimit(1)

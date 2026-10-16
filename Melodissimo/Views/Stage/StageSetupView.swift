@@ -129,7 +129,7 @@ struct StageSetupView: View {
                     .font(Font.headline)
             }
             Spacer()
-            Text(song.title)
+            Text(song.displayTitle)
                 .font(.custom("BalooDa-Regular", size: 24))
                 .foregroundColor(Color.darkGreen)
                 .lineLimit(1)
@@ -234,7 +234,7 @@ struct StageSetupView: View {
 
             Spacer()
 
-            Text(song.title)
+            Text(song.displayTitle)
                 .font(.custom("BalooDa-Regular", size: 44))
                 .foregroundColor(Color.darkGreen)
                 .lineLimit(1)

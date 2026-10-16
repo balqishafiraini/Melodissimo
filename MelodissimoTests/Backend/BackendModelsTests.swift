@@ -170,3 +170,24 @@ final class FlagGatingTests: XCTestCase {
         for key in [FlagKey.shop, .dailyChallenge, .micInput, .coinStore] { XCTAssertTrue(FeatureFlags.isOn(key), key.rawValue) }
     }
 }
+
+final class LocalizedTitlesTests: XCTestCase {
+
+    func testASongShowsItsTitleInTheFirstAvailableLanguageAndKeepsTheCanonicalTitleAsTheKey() {
+        let song = Song(id: "x", title: "Lagu Baru", notationImage: "", packId: "extra",
+                        localizedTitles: LocalizedText(["en": "New Song", "id": "Lagu Baru", "ms": "Lagu Baharu"]),
+                        keyIds: [5], isSolemn: false)
+        XCTAssertEqual(song.title, "Lagu Baru")
+        XCTAssertEqual(LocalizedText(["en": "New Song", "ms": "Lagu Baharu"]).resolved(preferred: ["ms-MY"]), "Lagu Baharu", "a third language needs no code")
+        XCTAssertFalse(song.displayTitle.isEmpty)
+    }
+
+    func testASongWithoutLocalizedTitlesShowsItsCanonicalTitle() {
+        let song = Song(id: "x", title: "Halo Halo Bandung", notationImage: "", keyIds: [5], isSolemn: false)
+        XCTAssertEqual(song.displayTitle, "Halo Halo Bandung")
+    }
+
+    func testAFixtureWithoutEnglishStillShowsSomething() {
+        XCTAssertEqual(LocalizedText(["ja": "さくら"]).resolved(preferred: ["fr"]), "さくら")
+    }
+}
