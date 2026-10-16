@@ -28,7 +28,7 @@ struct DashboardView: View {
                 tourCard
                 Spacer(minLength: 0)
                 HStack(spacing: Sizing.s(20)) {
-                    dailyCard
+                    if FeatureFlags.isOn(.dailyChallenge) { dailyCard }
                     HomeCard(title: "Free Play", subtitle: "Songs, levels, Echo and Rush", icon: "icon_stage_echo",
                              fill: Color.red, text: .white) {
                         router.push(.freePlay)
@@ -126,13 +126,17 @@ struct DashboardView: View {
             }
             #endif
 
-            SoundButton {
-                router.push(.shopCoins)
-            } label: {
+            if FeatureFlags.isOn(.shop) {
+                SoundButton {
+                    router.push(.shopCoins)
+                } label: {
+                    CoinBadge()
+                }
+                iconButton("bag.fill", label: "Shop", fill: Color.yellow, tint: Color.darkGreen) {
+                    router.push(.shop)
+                }
+            } else {
                 CoinBadge()
-            }
-            iconButton("bag.fill", label: "Shop", fill: Color.yellow, tint: Color.darkGreen) {
-                router.push(.shop)
             }
 
             Spacer()

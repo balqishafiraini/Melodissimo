@@ -18,6 +18,8 @@ struct ShopView: View {
     @EnvironmentObject private var router: AppRouter
     @ObservedObject private var progress = ProgressStore.shared
     @ObservedObject private var store = StoreService.shared
+    /// Observed so a flag change from the server redraws the shop.
+    @ObservedObject private var bootstrap = BootstrapService.shared
 
     @State private var tab: ShopTab
     @State private var itemToBuy: ShopItem?
@@ -36,8 +38,15 @@ struct ShopView: View {
     /// Tabs come from the data: categories that have something to show, then the coin packs.
     private var tabs: [ShopTab] {
         var list = ShopCatalog.visibleCategories(owned: progress.purchasedShopItemIds).map(ShopTab.category)
-        if !ProductCatalog.consumablesOnSale(granted: PurchaseGrants.ledger(in: progress)).isEmpty { list.append(.coins) }
+        if FeatureFlags.isOn(.coinStore), !ProductCatalog.consumablesOnSale(granted: PurchaseGrants.ledger(in: progress)).isEmpty {
+            list.append(.coins)
+        }
         return list
+    }
+
+    /// The selected tab, or the first one when it has disappeared (the coin packs switched off by the `coinStore` flag).
+    private var displayedTab: ShopTab {
+        tabs.contains(tab) ? tab : (tabs.first ?? .category(.keyboard))
     }
 
     var body: some View {
@@ -54,7 +63,7 @@ struct ShopView: View {
                 }
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: Sizing.isPhone ? 10 : 20) {
-                        switch tab {
+                        switch displayedTab {
                         case .category(let category):
                             ForEach(ShopCatalog.visibleItems(in: category, owned: progress.purchasedShopItemIds)) { item in
                                 card(for: item)
@@ -108,9 +117,13 @@ struct ShopView: View {
                         .font(Font.headline)
                 }
                 Spacer()
-                SoundButton {
-                    tab = .coins
-                } label: {
+                if FeatureFlags.isOn(.coinStore) {
+                    SoundButton {
+                        tab = .coins
+                    } label: {
+                        CoinBadge(height: Sizing.tap(80))
+                    }
+                } else {
                     CoinBadge(height: Sizing.tap(80))
                 }
             }
@@ -127,8 +140,8 @@ struct ShopView: View {
                     Text(Self.title(of: entry))
                         .frame(maxWidth: .infinity)
                         .frame(height: Sizing.tap(60))
-                        .background(tab == entry ? Color.darkGreen : Color.white)
-                        .foregroundColor(tab == entry ? .white : Color.darkGreen)
+                        .background(displayedTab == entry ? Color.darkGreen : Color.white)
+                        .foregroundColor(displayedTab == entry ? .white : Color.darkGreen)
                         .cornerRadius(Sizing.s(20))
                         .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
                         .minimumScaleFactor(0.7)

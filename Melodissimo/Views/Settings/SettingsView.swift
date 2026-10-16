@@ -13,6 +13,8 @@ struct SettingsView: View {
 
     @State private var isCalibrating = false
     @State private var isTestingMicrophone = false
+    /// Observed so a flag change from the server redraws this screen.
+    @ObservedObject private var bootstrap = BootstrapService.shared
     @State private var isConfirmingReset = false
     @State private var isReallyConfirmingReset = false
     @State private var didReset = false
@@ -29,7 +31,7 @@ struct SettingsView: View {
                         HStack(alignment: .top, spacing: 12) {
                             VStack(spacing: 12) {
                                 noteSpeedCard
-                                inputCard
+                                if FeatureFlags.isOn(.micInput) { inputCard }
                                 labelsCard
                             }
                             VStack(spacing: 12) {
@@ -43,7 +45,7 @@ struct SettingsView: View {
                     } else {
                         VStack(spacing: 20) {
                             noteSpeedCard
-                            inputCard
+                            if FeatureFlags.isOn(.micInput) { inputCard }
                             labelsCard
                             soundCard
                             audioCard

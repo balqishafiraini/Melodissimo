@@ -141,3 +141,32 @@ final class BackendModelsTests: XCTestCase {
                                                          plusFreeRevivesPerRun: 2, reviveInDaily: true))
     }
 }
+
+final class FlagGatingTests: XCTestCase {
+
+    override func tearDown() {
+        FeatureFlags.source = { LiveConfig.flags }
+        super.tearDown()
+    }
+
+    func testTheMicrophoneFlagForcesTouchPlayButKeepsTheStoredChoice() {
+        let suite = "FlagGating-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let progress = ProgressStore(defaults: defaults)
+        progress.inputMode = .pianika
+
+        FeatureFlags.source = { [:] }
+        XCTAssertEqual(progress.effectiveInputMode, .pianika, "default on")
+        FeatureFlags.source = { ["micInput": false] }
+        XCTAssertEqual(progress.effectiveInputMode, .touch)
+        XCTAssertEqual(progress.inputMode, .pianika, "the choice is not erased")
+        FeatureFlags.source = { ["micInput": true] }
+        XCTAssertEqual(progress.effectiveInputMode, .pianika)
+    }
+
+    func testTheFlagsDefaultToTheBehaviourTheAppHadBefore() {
+        FeatureFlags.source = { [:] }
+        for key in [FlagKey.shop, .dailyChallenge, .micInput, .coinStore] { XCTAssertTrue(FeatureFlags.isOn(key), key.rawValue) }
+    }
+}

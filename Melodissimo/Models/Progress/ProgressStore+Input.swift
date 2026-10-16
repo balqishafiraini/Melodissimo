@@ -26,4 +26,10 @@ extension ProgressStore {
             objectWillChange.send()
         }
     }
+
+    /// The mode actually used for play: the player's choice, unless the `micInput` flag has switched the microphone off.
+    /// The stored choice is kept, so it comes back when the flag does.
+    var effectiveInputMode: InputMode {
+        FeatureFlags.isOn(.micInput) ? inputMode : .touch
+    }
 }
