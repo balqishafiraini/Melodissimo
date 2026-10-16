@@ -77,6 +77,8 @@ private struct BarView: View {
 /// One beat: its slots side by side, with the beam lines of the rhythm under them.
 private struct BeatView: View {
     let beat: NotAngkaBeat
+    /// The note names the sheet is written in; follows the setting.
+    @ObservedObject private var progress = ProgressStore.shared
 
     private var fontSize: CGFloat {
         switch beat.slots.count {
@@ -91,7 +93,7 @@ private struct BeatView: View {
         VStack(spacing: 1) {
             HStack(spacing: 0) {
                 ForEach(Array(beat.slots.enumerated()), id: \.offset) { _, slot in
-                    SlotView(symbol: slot, fontSize: fontSize)
+                    SlotView(style: progress.noteLabelStyle, symbol: slot, fontSize: fontSize)
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -128,13 +130,15 @@ private struct BeatView: View {
 }
 
 private struct SlotView: View {
+    let style: NoteLabelStyle
     let symbol: NotAngkaSymbol
     let fontSize: CGFloat
 
     var body: some View {
         switch symbol {
         case .note(let keyId):
-            NoteGlyphView(glyph: NotAngkaLayout.glyph(forKeyId: keyId), fontSize: fontSize)
+            NoteGlyphView(glyph: NotAngkaLayout.glyph(forKeyId: keyId, style: style),
+                          fontSize: style == .notAngka ? fontSize : fontSize * 0.7)
         case .hold:
             glyphSpace { Text("·") }
         case .rest:

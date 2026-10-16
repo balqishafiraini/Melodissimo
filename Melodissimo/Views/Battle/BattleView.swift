@@ -187,7 +187,7 @@ struct BattleView: View {
 
     private func questionBubble(height: CGFloat) -> some View {
         VStack(spacing: Sizing.s(10)) {
-            Text(NoteCatalog.note(viewModel.currentQuestion).label)
+            Text(NoteCatalog.displayLabel(viewModel.currentQuestion))
                 .font(.custom("BalooDa-Regular", size: Sizing.f(70)))
                 .foregroundColor(Color.darkGreen)
                 .frame(minWidth: Sizing.s(150))

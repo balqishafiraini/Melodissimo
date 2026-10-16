@@ -218,7 +218,7 @@ struct EchoView: View {
         GeometryReader { geo in
             let origin = geo.frame(in: .global).origin
             if let key = correctFlashKey, let frame = keyFrames[key] {
-                Text(NoteCatalog.note(key).label)
+                Text(NoteCatalog.displayLabel(key))
                     .font(.custom("BalooDa-Regular", size: Sizing.f(56)))
                     .foregroundColor(Color.darkGreen)
                     .padding(.horizontal, Sizing.s(18))

@@ -12,7 +12,7 @@ struct MicCalibrationView: View {
     @StateObject private var mic = MicrophoneInput()
 
     private var heardLabel: String? {
-        mic.currentKeyId.map { NoteCatalog.note($0).label }
+        mic.currentKeyId.map { NoteCatalog.displayLabel($0) }
     }
 
     private var heardTarget: Bool { mic.currentKeyId == Self.targetKeyId }

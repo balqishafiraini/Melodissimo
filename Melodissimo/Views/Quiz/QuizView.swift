@@ -242,7 +242,7 @@ struct QuizView: View {
                     Image(systemName: icon)
                         .frame(height: Sizing.f(44))
                 }
-                Text(LocalizedStringKey(question.choices[index]))
+                Text(LocalizedStringKey(displayChoice(question.choices[index])))
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.5)
             }
@@ -258,6 +258,13 @@ struct QuizView: View {
 
     /// Green on the right answer and red on a wrong pick once answered; during playback in Spot Fals
     /// the written note that is sounding is lit, so the player can follow along.
+    /// "Spot Fals's note" choices are written notes: they follow the chosen note names (the quiz generator keeps the not angka
+    /// text as the identity of each choice).
+    private func displayChoice(_ choice: String) -> String {
+        guard variant == .spotFals, let id = NoteCatalog.id(forLabel: choice) else { return choice }
+        return NoteCatalog.displayLabel(id)
+    }
+
     private func choiceStyle(_ index: Int, in question: QuizQuestion) -> (background: Color, foreground: Color) {
         switch viewModel.phase {
         case .feedback(let chosen, _):

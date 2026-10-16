@@ -33,6 +33,8 @@ struct SettingsView: View {
                                 noteSpeedCard
                                 if FeatureFlags.isOn(.micInput) { inputCard }
                                 labelsCard
+                            noteNamesCard
+                                noteNamesCard
                             }
                             VStack(spacing: 12) {
                                 soundCard
@@ -210,6 +212,40 @@ struct SettingsView: View {
             }
             .tint(Color.darkGreen)
             caption("Practice and Listen always show them.")
+        }
+    }
+
+    // MARK: Note names
+
+    private var noteNamesCard: some View {
+        card("Note names") {
+            HStack(spacing: Sizing.isPhone ? 6 : 12) {
+                ForEach(NoteLabelStyle.allCases, id: \.self) { style in
+                    SoundButton {
+                        progress.noteLabelStyle = style
+                    } label: {
+                        Text(Self.title(of: style))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: Sizing.tap(60))
+                            .background(progress.noteLabelStyle == style ? Color.darkGreen : Color.softBlue.opacity(0.5))
+                            .foregroundColor(progress.noteLabelStyle == style ? .white : Color.darkGreen)
+                            .cornerRadius(Sizing.s(18))
+                            .font(.custom("BalooDa-Regular", size: Sizing.f(26)))
+                    }
+                    .accessibilityAddTraits(progress.noteLabelStyle == style ? .isSelected : [])
+                }
+            }
+            caption("How notes are written on the keys and in songs.")
+        }
+    }
+
+    private static func title(of style: NoteLabelStyle) -> LocalizedStringKey {
+        switch style {
+        case .notAngka: return "Not angka"
+        case .solfege: return "Do Re Mi"
+        case .letters: return "C D E"
         }
     }
 

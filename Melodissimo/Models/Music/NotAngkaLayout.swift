@@ -91,11 +91,22 @@ enum NotAngkaLayout {
         let isSharp: Bool
     }
 
-    static func glyph(forKeyId keyId: Int) -> Glyph {
-        let label = NoteCatalog.note(keyId).label
-        return Glyph(digit: String(label.prefix(1)),
-                     dotsAbove: label.filter { $0 == "˙" }.count,
-                     dotsBelow: label.filter { $0 == "." }.count,
-                     isSharp: label.contains("#"))
+    static func glyph(forKeyId keyId: Int, style: NoteLabelStyle = .notAngka) -> Glyph {
+        switch style {
+        case .notAngka:
+            let label = NoteCatalog.note(keyId).label
+            return Glyph(digit: String(label.prefix(1)),
+                         dotsAbove: label.filter { $0 == "˙" }.count,
+                         dotsBelow: label.filter { $0 == "." }.count,
+                         isSharp: label.contains("#"))
+        case .solfege:
+            let label = NoteCatalog.label(for: keyId, style: .solfege)
+            let name = label.filter { $0 != "˙" && $0 != "." && $0 != "♯" }
+            return Glyph(digit: name, dotsAbove: label.filter { $0 == "˙" }.count,
+                         dotsBelow: label.filter { $0 == "." }.count, isSharp: label.contains("♯"))
+        case .letters:
+            let label = NoteCatalog.label(for: keyId, style: .letters)
+            return Glyph(digit: label.replacingOccurrences(of: "♯", with: ""), dotsAbove: 0, dotsBelow: 0, isSharp: label.contains("♯"))
+        }
     }
 }
