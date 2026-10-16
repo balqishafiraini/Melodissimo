@@ -252,6 +252,15 @@ final class ContentStore: ObservableObject {
         return nil
     }
 
+    /// The manifest entry of a song of the current pack (including hidden ones, so an owned song still resolves its files).
+    func manifestSong(id: String) -> ManifestSong? {
+        current?.manifest.songs.first { $0.id == id }
+    }
+
+    func chartURL(songId: String) -> URL? { manifestSong(id: songId)?.chart.flatMap(url(forAsset:)) }
+    func backingURL(songId: String) -> URL? { manifestSong(id: songId)?.backing.flatMap(url(forAsset:)) }
+    func sheetURL(songId: String) -> URL? { manifestSong(id: songId)?.sheet.flatMap(url(forAsset:)) }
+
     /// The asset's manifest entry and the CDN to download it from, for an asset of the active pack that isn't on disk.
     func assetAndBase(forKey key: String) -> (ManifestAsset, URL)? {
         let (pack, cdn) = lock.withLock { (active, activeCDN) }

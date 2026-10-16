@@ -55,7 +55,13 @@ struct SongChart: Codable, Hashable {
     /// only; other bundles (tests) bypass it.
     private static var cache: [String: SongChart] = [:]
 
-    /// The bundled `chart_<slug>.json` if it exists and is sound, otherwise the default chart.
+    /// Forgets the charts read so far (a new content pack went live). Main thread only.
+    static func clearCache() {
+        DispatchQueue.main.async { cache = [:] }
+    }
+
+    /// The chart from the content store (a downloaded pack, else the bundled baseline), then the app bundle's
+    /// `chart_<slug>.json`, otherwise the default chart. Each is used only if it is sound.
     static func load(for song: Song, bundle: Bundle = .main) -> SongChart {
         guard bundle === Bundle.main else { return read(song, bundle: bundle) }
         #if DEBUG
@@ -68,6 +74,10 @@ struct SongChart: Codable, Hashable {
     }
 
     private static func read(_ song: Song, bundle: Bundle) -> SongChart {
+        if bundle === Bundle.main, let url = SongLibrary.contentStore.chartURL(songId: song.id),
+           let data = try? Data(contentsOf: url), let chart = try? JSONDecoder().decode(SongChart.self, from: data), chart.isValid {
+            return chart
+        }
         guard let url = bundle.url(forResource: "chart_\(song.id)", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let chart = try? JSONDecoder().decode(SongChart.self, from: data),
