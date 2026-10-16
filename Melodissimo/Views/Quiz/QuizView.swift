@@ -22,7 +22,7 @@ struct QuizView: View {
 
     init(request: PlayRequest, config: QuizConfig) {
         self.request = request
-        _viewModel = StateObject(wrappedValue: QuizViewModel(config: config))
+        _viewModel = StateObject(wrappedValue: QuizViewModel(config: config, reviveRun: ReviveRun.forPlay(request)))
     }
 
     private var variant: QuizVariant { viewModel.config.variant }
@@ -37,6 +37,14 @@ struct QuizView: View {
                 choices
                     .padding(.horizontal, Sizing.s(24))
                     .padding(.bottom, Sizing.s(24))
+            }
+        }
+        .overlay {
+            if viewModel.phase == .awaitingContinue, let run = viewModel.reviveRun {
+                ContinueSheet(options: run.options,
+                              onRevive: { viewModel.revive($0, now: CACurrentMediaTime()) },
+                              onGiveUp: { viewModel.giveUp() },
+                              onNeedCoins: { router.push(.shop) })
             }
         }
         .playScreen()
@@ -169,7 +177,7 @@ struct QuizView: View {
             return isCorrect ? "⭐ Correct!" : "Oops! Here's the right one"
         case .won:
             return "You did it!"
-        case .lost:
+        case .awaitingContinue, .lost:
             return "Out of hearts"
         }
     }
@@ -282,6 +290,7 @@ struct QuizView: View {
                                 score: viewModel.correctCount, accuracy: nil, maxCombo: viewModel.bestStreak,
                                 perfect: 0, great: 0, good: 0, miss: 0, wrong: 0)
         result.correctCount = viewModel.correctCount
+        result.revivesUsed = viewModel.reviveRun?.revivesUsed ?? 0
         let rewards = ResultRecorder.record(result)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
             if isOnScreen {

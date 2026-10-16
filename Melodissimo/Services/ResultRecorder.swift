@@ -13,6 +13,8 @@ struct ResultRecorder {
     let evaluateAchievements: () -> [String]
     /// Posts leaderboard scores (Game Center); tests pass a recorder instead.
     let submitScores: ([LeaderboardScore]) -> Void
+    /// The revive numbers in force (the star cap).
+    var reviveRules: ReviveRules = .defaults
 
     static let shared = ResultRecorder()
 
@@ -31,7 +33,10 @@ struct ResultRecorder {
 
     /// Applies a finished play to the stored progress and says what it earned.
     @discardableResult
-    func record(_ result: PlayResult) -> RewardSummary {
+    func record(_ original: PlayResult) -> RewardSummary {
+        // A won run that used a revive earns at most the revive star cap, whatever the screen computed.
+        var result = original
+        result.stars = Revive.cappedStars(original.stars, revivesUsed: original.revivesUsed, rules: reviveRules)
         // The day's challenge has its own reward and doesn't touch any song, stage or Rush record.
         if let dateKey = result.request.dailyDateKey {
             return recordDaily(result, dateKey: dateKey)
@@ -117,7 +122,12 @@ struct ResultRecorder {
         progress.recordCombo(result.maxCombo)
         progress.registerPlayToday()
         summary.newAchievements = evaluateAchievements()
-        submitScores(LeaderboardSubmissions.scores(for: result, tourStars: progress.tourStars))
+        // A Melody Rush run that was revived counts for the local high score only.
+        var isRush = false
+        if case .rush = result.request.kind { isRush = true }
+        if !isRush || Revive.countsForLeaderboard(revivesUsed: result.revivesUsed) {
+            submitScores(LeaderboardSubmissions.scores(for: result, tourStars: progress.tourStars))
+        }
         return summary
     }
 

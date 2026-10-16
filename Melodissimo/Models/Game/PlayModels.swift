@@ -43,7 +43,7 @@ struct PlayResult: Hashable {
     let request: PlayRequest
     let didWin: Bool
     /// 0...3, already speed-capped.
-    let stars: Int
+    var stars: Int
     let score: Int
     /// Songs only.
     let accuracy: Double?
@@ -56,6 +56,8 @@ struct PlayResult: Hashable {
     let wrong: Int
     /// Battles and Melody Rush: how many answers were right (Rush pays one coin per five).
     var correctCount = 0
+    /// How many times the player paid to continue after the hearts ran out.
+    var revivesUsed = 0
 }
 
 /// What a play earned, shown on the results screen.

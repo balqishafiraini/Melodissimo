@@ -22,6 +22,8 @@ final class QuizViewModel: ObservableObject {
         case answering
         /// The player chose `chosen`; it was right or wrong.
         case feedback(chosen: Int, isCorrect: Bool)
+        /// Out of hearts with a revive on offer: waiting for the player to continue or give up.
+        case awaitingContinue
         case won
         case lost
     }
@@ -34,6 +36,8 @@ final class QuizViewModel: ObservableObject {
     static let pauseAfterWrong = 1.8
 
     let config: QuizConfig
+    /// The run's revive state, or `nil` when the run can't be revived.
+    let reviveRun: ReviveRun?
     let questions: [QuizQuestion]
 
     @Published private(set) var phase: Phase = .ready
@@ -52,10 +56,12 @@ final class QuizViewModel: ObservableObject {
     private let soundStopper: (String) -> Void
 
     init(config: QuizConfig,
+         reviveRun: ReviveRun? = nil,
          songs: [QuizSong] = SongLibrary.all.map(QuizSong.from),
          soundPlayer: @escaping (String) -> Void = { playSound(key: $0) },
          soundStopper: @escaping (String) -> Void = { stopSound(key: $0) }) {
         self.config = config
+        self.reviveRun = reviveRun
         let pool = config.songTitles.map { titles in songs.filter { titles.contains($0.title) } } ?? songs
         self.questions = QuizQuestionGenerator.questions(for: config, songs: pool)
         self.hearts = config.hearts
@@ -71,7 +77,9 @@ final class QuizViewModel: ObservableObject {
 
     /// Hearts left when the run is won, 0 otherwise.
     var stars: Int {
-        phase == .won ? min(max(hearts, 0), 3) : 0
+        guard phase == .won else { return 0 }
+        let earned = min(max(hearts, 0), 3)
+        return reviveRun?.cappedStars(earned) ?? earned
     }
 
     var canAnswer: Bool {
@@ -124,16 +132,40 @@ final class QuizViewModel: ObservableObject {
         case .feedback:
             guard now >= resumeAt else { return }
             if hearts == 0 {
-                phase = .lost
-            } else if questionIndex + 1 >= questions.count {
-                phase = .won
+                phase = reviveRun.map { $0.options.isEmpty } == false ? .awaitingContinue : .lost
             } else {
-                questionIndex += 1
-                beginPlayback(now: now)
+                moveOn(now: now)
             }
-        case .ready, .answering, .won, .lost:
+        case .ready, .answering, .awaitingContinue, .won, .lost:
             break
         }
+    }
+
+    private func moveOn(now: CFTimeInterval) {
+        if questionIndex + 1 >= questions.count {
+            phase = .won
+        } else {
+            questionIndex += 1
+            beginPlayback(now: now)
+        }
+    }
+
+    // MARK: Revive
+
+    /// Continues after the hearts ran out: pays, restores hearts and goes on to the next question. `false`, changing
+    /// nothing, when it isn't offered or can't be paid.
+    @discardableResult
+    func revive(_ source: ReviveSource, now: CFTimeInterval) -> Bool {
+        guard phase == .awaitingContinue, let run = reviveRun, run.perform(source) else { return false }
+        hearts = run.rules.heartsRestored
+        moveOn(now: now)
+        return true
+    }
+
+    /// The player chose not to continue.
+    func giveUp() {
+        guard phase == .awaitingContinue else { return }
+        phase = .lost
     }
 
     /// Ends the note that is sounding. Call when the screen goes away mid-playback.

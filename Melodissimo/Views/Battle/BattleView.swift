@@ -30,7 +30,7 @@ struct BattleView: View {
         self.request = request
         // A stage always shows the same monster: minions 1–3 and bosses 1–8 are picked from the seed.
         self.monsterKind = Int(config.seed % UInt64(config.isBoss ? CampaignCatalog.chapters.count : 3)) + 1
-        _viewModel = StateObject(wrappedValue: BattleViewModel(config: config))
+        _viewModel = StateObject(wrappedValue: BattleViewModel(config: config, reviveRun: ReviveRun.forPlay(request)))
     }
 
     var body: some View {
@@ -65,6 +65,14 @@ struct BattleView: View {
             // (On iPad they have always been measured from the safe area; that is left as it was.)
             .ignoresSafeArea(.all, edges: Sizing.isPhone ? .all : [])
         }
+        .overlay {
+            if viewModel.phase == .awaitingContinue, let run = viewModel.reviveRun {
+                ContinueSheet(options: run.options,
+                              onRevive: { viewModel.revive($0, now: CACurrentMediaTime()) },
+                              onGiveUp: { viewModel.giveUp() },
+                              onNeedCoins: { router.push(.shop) })
+            }
+        }
         .playScreen()
         .task {
             // Every 50 ms while the screen is up; SwiftUI cancels the task when it goes away. It can still tick once during
@@ -84,7 +92,7 @@ struct BattleView: View {
             if let outcome { react(to: outcome) }
         }
         .onChange(of: viewModel.phase) { phase in
-            if phase != .playing { finish() }
+            if phase == .won || phase == .lost { finish() }
         }
         .onAppear {
             isOnScreen = true
@@ -268,7 +276,8 @@ struct BattleView: View {
                                 accuracy: viewModel.isEndless ? nil : Double(viewModel.firstTryPercent),
                                 maxCombo: viewModel.maxCombo,
                                 perfect: 0, great: 0, good: 0, miss: 0, wrong: 0,
-                                correctCount: viewModel.correctCount)
+                                correctCount: viewModel.correctCount,
+                                revivesUsed: viewModel.reviveRun?.revivesUsed ?? 0)
         let rewards = ResultRecorder.record(result)
         DispatchQueue.main.asyncAfter(deadline: .now() + (won ? 0.9 : 1.4)) {
             if isOnScreen {

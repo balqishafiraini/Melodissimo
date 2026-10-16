@@ -16,7 +16,10 @@ import QuartzCore
 final class BattleViewModel: ObservableObject {
 
     enum Phase: Hashable {
-        case playing, won, lost
+        case playing
+        /// Out of hearts with a revive on offer: the run waits for the player to continue or give up.
+        case awaitingContinue
+        case won, lost
     }
 
     /// What just happened, so the view can play the matching animation.
@@ -33,6 +36,8 @@ final class BattleViewModel: ObservableObject {
     static let pointsPerNote = 10
 
     let config: BattleConfig
+    /// The run's revive state, or `nil` when the run can't be revived.
+    let reviveRun: ReviveRun?
 
     @Published private(set) var phase: Phase = .playing
     @Published private(set) var monsterHP: Int
@@ -62,8 +67,9 @@ final class BattleViewModel: ObservableObject {
     private var revealUntil: CFTimeInterval?
     private var outcomeCounter = 0
 
-    init(config: BattleConfig) {
+    init(config: BattleConfig, reviveRun: ReviveRun? = nil) {
         self.config = config
+        self.reviveRun = reviveRun
         self.monsterHP = config.totalQuestions
         self.hearts = config.hearts
         self.random = SeededRandom(seed: config.seed)
@@ -78,7 +84,9 @@ final class BattleViewModel: ObservableObject {
 
     /// Hearts left when the monster is beaten, 0 otherwise.
     var stars: Int {
-        phase == .won ? min(max(hearts, 0), 3) : 0
+        guard phase == .won else { return 0 }
+        let earned = min(max(hearts, 0), 3)
+        return reviveRun?.cappedStars(earned) ?? earned
     }
 
     /// First-try accuracy for the legacy classic-level score: right-first-time answers over all questions.
@@ -171,8 +179,29 @@ final class BattleViewModel: ObservableObject {
         revealUntil = now + BattleViewModel.revealDuration
         emit(kind)
         if hearts == 0 {
-            phase = .lost
+            phase = reviveRun.map { $0.options.isEmpty } == false ? .awaitingContinue : .lost
         }
+    }
+
+    // MARK: Revive
+
+    /// Continues after the hearts ran out: pays for the revive, restores hearts and asks the same note again with a
+    /// fresh timer. `false`, changing nothing, when it isn't offered or can't be paid.
+    @discardableResult
+    func revive(_ source: ReviveSource, now: CFTimeInterval) -> Bool {
+        guard phase == .awaitingContinue, let run = reviveRun, run.perform(source) else { return false }
+        hearts = run.rules.heartsRestored
+        revealUntil = nil
+        revealKeyId = nil
+        questionStartedAt = now
+        phase = .playing
+        return true
+    }
+
+    /// The player chose not to continue.
+    func giveUp() {
+        guard phase == .awaitingContinue else { return }
+        phase = .lost
     }
 
     private func emit(_ kind: Outcome.Kind) {
