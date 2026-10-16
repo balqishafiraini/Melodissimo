@@ -1,0 +1,100 @@
+{
+  "identifier": "7A1C0D10",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "15000",
+      "familyShareable": false,
+      "internalID": "6F000001",
+      "localizations": [
+        {
+          "description": "Starter Bundle",
+          "displayName": "Starter Bundle",
+          "locale": "en"
+        },
+        {
+          "description": "Paket Pemula",
+          "displayName": "Paket Pemula",
+          "locale": "id"
+        }
+      ],
+      "productID": "melodissimo.bundle.starter",
+      "referenceName": "Starter Bundle",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "15000",
+      "familyShareable": false,
+      "internalID": "6F000002",
+      "localizations": [
+        {
+          "description": "Small Coin Pack",
+          "displayName": "Small Coin Pack",
+          "locale": "en"
+        },
+        {
+          "description": "Paket Koin Kecil",
+          "displayName": "Paket Koin Kecil",
+          "locale": "id"
+        }
+      ],
+      "productID": "melodissimo.coins.small",
+      "referenceName": "Small Coin Pack",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "49000",
+      "familyShareable": false,
+      "internalID": "6F000003",
+      "localizations": [
+        {
+          "description": "Medium Coin Pack",
+          "displayName": "Medium Coin Pack",
+          "locale": "en"
+        },
+        {
+          "description": "Paket Koin Sedang",
+          "displayName": "Paket Koin Sedang",
+          "locale": "id"
+        }
+      ],
+      "productID": "melodissimo.coins.medium",
+      "referenceName": "Medium Coin Pack",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "119000",
+      "familyShareable": false,
+      "internalID": "6F000004",
+      "localizations": [
+        {
+          "description": "Large Coin Pack",
+          "displayName": "Large Coin Pack",
+          "locale": "en"
+        },
+        {
+          "description": "Paket Koin Besar",
+          "displayName": "Paket Koin Besar",
+          "locale": "id"
+        }
+      ],
+      "productID": "melodissimo.coins.large",
+      "referenceName": "Large Coin Pack",
+      "type": "Consumable"
+    }
+  ],
+  "settings": {
+    "_applicationInternalID": "0",
+    "_developerTeamID": "",
+    "_failTransactionsEnabled": false,
+    "_lastSynchronizedDate": 0,
+    "_locale": "id_ID",
+    "_storefront": "IDN",
+    "_storeKitErrors": []
+  },
+  "subscriptionGroups": [],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}

@@ -25,6 +25,8 @@ struct MelodissimoApp: App {
         // Mirror progress to iCloud (a no-op unless `OnlineServices.isEnabled`). Game Center signs in later,
         // from Home's first appearance.
         CloudSync.shared.start()
+        // Listen for store transactions from launch, so a purchase is never missed.
+        Task { @MainActor in StoreService.shared.start() }
     }
 
     var body: some Scene {

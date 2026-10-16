@@ -1,0 +1,42 @@
+{
+  "products": [
+    {
+      "id": "melodissimo.bundle.starter",
+      "type": "consumable",
+      "grants": {
+        "coins": 500,
+        "items": {
+          "boost_heart": 5
+        }
+      },
+      "oncePerPlayer": true,
+      "order": 0
+    },
+    {
+      "id": "melodissimo.coins.small",
+      "type": "consumable",
+      "grants": {
+        "coins": 300
+      },
+      "order": 1
+    },
+    {
+      "id": "melodissimo.coins.medium",
+      "type": "consumable",
+      "grants": {
+        "coins": 1100
+      },
+      "order": 2,
+      "badge": "popular"
+    },
+    {
+      "id": "melodissimo.coins.large",
+      "type": "consumable",
+      "grants": {
+        "coins": 3000
+      },
+      "order": 3,
+      "badge": "bestValue"
+    }
+  ]
+}
