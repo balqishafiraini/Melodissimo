@@ -362,6 +362,8 @@
 		FAD89D112AC86E2C0019A99D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MELODISSIMO_TERMS_URL = "https://terms.example.invalid";
+				MELODISSIMO_PRIVACY_URL = "https://privacy.example.invalid";
 				MELODISSIMO_API_BASE = "https://api-staging.example.invalid";
 				MELODISSIMO_CDN_BASE = "https://cdn-staging.example.invalid";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -403,6 +405,8 @@
 		FAD89D122AC86E2C0019A99D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MELODISSIMO_TERMS_URL = "https://terms.example.invalid";
+				MELODISSIMO_PRIVACY_URL = "https://privacy.example.invalid";
 				MELODISSIMO_API_BASE = "https://api.example.invalid";
 				MELODISSIMO_CDN_BASE = "https://cdn.example.invalid";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;

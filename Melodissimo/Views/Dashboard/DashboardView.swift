@@ -140,6 +140,11 @@ struct DashboardView: View {
             } else {
                 CoinBadge()
             }
+            if FeatureFlags.isOn(.packStore) {
+                iconButton("music.note.list", label: "Song packs", fill: Color.yellow, tint: Color.darkGreen) {
+                    router.push(.packStore)
+                }
+            }
 
             Spacer()
 
@@ -326,6 +331,12 @@ struct DashboardView: View {
             ShopView()
         case .shopCoins:
             ShopView(startAtCoins: true)
+        case .packStore:
+            PackStoreView()
+        case .paywall(let packId):
+            PaywallView(packId: packId)
+        case .plus:
+            PlusPaywallView()
         case .settings:
             SettingsView()
         case .chartRecorder:

@@ -12,11 +12,17 @@ struct SongRepositoryQuizView: View {
     @EnvironmentObject private var router: AppRouter
     @ObservedObject private var progress = ProgressStore.shared
 
-    var levelFeeder = LevelFeederModel.shared
     var trophyRepository = TrophyRepositoryModel()
 
-    var filteredSongLevels: [LevelModel] {
-        return levelFeeder.levels.filter { $0.levelCategory == "song" }
+    /// Observed so an unlock (a purchase, a restored Plus) or a new content release redraws the list.
+    @ObservedObject private var entitlements = Entitlements.shared
+    @ObservedObject private var content = ContentStore.shared
+
+    /// Every song the app offers: the shipped ones plus whatever a content release added.
+    private var songs: [Song] { SongLibrary.all }
+
+    private func isLocked(_ song: Song) -> Bool {
+        !entitlements.isUnlocked(packId: song.packId, packs: ContentStore.shared.packs)
     }
 
     var body: some View {
@@ -64,23 +70,31 @@ struct SongRepositoryQuizView: View {
                         ],
                         spacing: Sizing.isPhone ? 8 : 20
                     ) {
-                        ForEach(filteredSongLevels) { level in
+                        ForEach(songs) { song in
                             SoundButton {
-                                router.push(.stageSetup(songId: SongLibrary.slug(for: level.songTitle ?? "")))
+                                // A locked song opens its pack's purchase screen; the campaign never goes through here.
+                                if isLocked(song) {
+                                    router.push(.paywall(packId: song.packId))
+                                } else {
+                                    router.push(.stageSetup(songId: song.id))
+                                }
                             } label: {
                                 VStack(spacing: 1) {
-                                    if trophyRepository.isTrophyEarned(songTitle: level.songTitle ?? "") {
+                                    if isLocked(song) {
+                                        Image(systemName: "lock.fill")
+                                            .font(.title)
+                                    } else if trophyRepository.isTrophyEarned(songTitle: song.title) {
                                         if Sizing.isPhone {
                                             Image("trophy").resizable().scaledToFit().frame(height: 26)
                                         } else {
                                             Image("trophy")
                                         }
                                     }
-                                    Text(level.songTitle ?? "Unknown Song Title")
+                                    Text(song.displayTitle)
                                         .lineLimit(Sizing.isPhone ? 2 : nil)
                                         .minimumScaleFactor(Sizing.isPhone ? 0.6 : 1)
                                         .multilineTextAlignment(.center)
-                                    stars(for: level.songTitle ?? "")
+                                    stars(for: song)
                                 }
                                 .foregroundStyle(.white)
                                 .font(.largeTitle)
@@ -89,10 +103,10 @@ struct SongRepositoryQuizView: View {
                                 .frame(maxWidth: Sizing.isPhone ? .infinity : nil)
                                 .background(
                                     RoundedRectangle(cornerRadius: Sizing.s(40))
-                                        .fill(Color.green)
+                                        .fill(isLocked(song) ? Color.gray : Color.green)
                                 )
                             }
-                            .id(level.songTitle ?? "")
+                            .id(song.id)
                         }
                     }
                     .padding(10)
@@ -109,8 +123,8 @@ struct SongRepositoryQuizView: View {
     
 
     /// Best Perform stars for a song, under its card.
-    private func stars(for songTitle: String) -> some View {
-        let earned = progress.songStars(SongLibrary.slug(for: songTitle))
+    private func stars(for song: Song) -> some View {
+        let earned = progress.songStars(song.id)
         return HStack(spacing: 6) {
             ForEach(0..<3, id: \.self) { index in
                 Image(systemName: index < earned ? "star.fill" : "star")

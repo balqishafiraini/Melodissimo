@@ -10,6 +10,10 @@
 	<string>$(MELODISSIMO_API_BASE)</string>
 	<key>MelodissimoCDNBaseURL</key>
 	<string>$(MELODISSIMO_CDN_BASE)</string>
+	<key>MelodissimoTermsURL</key>
+	<string>$(MELODISSIMO_TERMS_URL)</string>
+	<key>MelodissimoPrivacyURL</key>
+	<string>$(MELODISSIMO_PRIVACY_URL)</string>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>

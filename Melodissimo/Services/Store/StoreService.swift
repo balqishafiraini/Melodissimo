@@ -76,6 +76,32 @@ final class StoreService: ObservableObject {
         storeProducts = Dictionary(uniqueKeysWithValues: loaded.map { ($0.id, $0) })
     }
 
+    /// What a paywall shows for one product: its store price, the raw price for comparisons and any free-trial offer.
+    struct Offer: Equatable {
+        var productId: String
+        var displayPrice: String
+        var price: Decimal
+        /// "7 days free", when the player is still eligible for the introductory offer.
+        var trialText: String?
+    }
+
+    func offer(for productId: String) async -> Offer? {
+        guard let product = storeProducts[productId] else { return nil }
+        var trial: String?
+        if let subscription = product.subscription, let intro = subscription.introductoryOffer, intro.paymentMode == .freeTrial,
+           await subscription.isEligibleForIntroOffer {
+            let unit: Calendar.Component
+            switch intro.period.unit {
+            case .day: unit = .day
+            case .week: unit = .weekOfYear
+            case .month: unit = .month
+            default: unit = .year
+            }
+            trial = PlusPricing.trialText(value: intro.period.value, unit: unit)
+        }
+        return Offer(productId: productId, displayPrice: product.displayPrice, price: product.price, trialText: trial)
+    }
+
     /// The localized price for a product, from the store only.
     func displayPrice(for productId: String) -> String? {
         storeProducts[productId]?.displayPrice

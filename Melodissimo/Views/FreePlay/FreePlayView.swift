@@ -10,6 +10,7 @@ import SwiftUI
 struct FreePlayView: View {
     @EnvironmentObject private var router: AppRouter
     @ObservedObject private var progress = ProgressStore.shared
+    @ObservedObject private var bootstrap = BootstrapService.shared
     @State private var isChoosingEchoLevel = false
     @State private var isChoosingEarQuiz = false
 
@@ -55,6 +56,14 @@ struct FreePlayView: View {
                         }
                         HubCard(title: "Classic Levels", subtitle: "The 100 note-reading levels", icon: "icon_stage_battle") {
                             router.push(.notationLevelMenu)
+                        }
+                    }
+                    if FeatureFlags.isOn(.packStore) {
+                        GridRow {
+                            HubCard(title: "Song Packs", subtitle: "More songs, and Melodissimo Plus", icon: "icon_stage_song", color: .orange) {
+                                router.push(.packStore)
+                            }
+                            .gridCellColumns(2)
                         }
                     }
                     GridRow {
