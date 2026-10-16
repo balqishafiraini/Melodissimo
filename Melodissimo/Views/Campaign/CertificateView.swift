@@ -32,9 +32,7 @@ struct CertificateCard: View {
                     .foregroundColor(Color.darkGreen)
 
                 HStack(spacing: 30) {
-                    Image(outfit.assetName)
-                        .resizable()
-                        .scaledToFit()
+                    ArtImage(source: outfit.preview)
                         .frame(width: 230, height: 230)
 
                     VStack(alignment: .leading, spacing: 14) {

@@ -44,11 +44,48 @@ final class ShopCatalogTests: XCTestCase {
         }
     }
 
-    func testOutfitVariantsMatchTheAlpanicaOutfitNames() {
-        // Every outfit on sale can be worn, and every outfit Alpanica has is on sale.
-        XCTAssertEqual(Set(ShopCatalog.items(in: .outfit).map(\.variant)), Set(AlpanicaOutfit.allCases.map(\.rawValue)))
+    func testEveryOutfitOnSaleResolvesToTheBundledArtItAlwaysUsed() {
+        for item in ShopCatalog.items(in: .outfit) where item.variant != "none" {
+            let outfit = AlpanicaOutfit(item: item)
+            XCTAssertEqual(outfit.preview, .asset("alpanica_outfit_\(item.variant)"), item.id)
+            XCTAssertEqual(outfit.overlay, .asset("alpanica_acc_\(item.variant)"), item.id)
+            XCTAssertNotNil(UIImage(named: "alpanica_outfit_\(item.variant)"), "missing preview for \(item.id)")
+            XCTAssertNotNil(UIImage(named: "alpanica_acc_\(item.variant)"), "missing overlay for \(item.id)")
+        }
         XCTAssertEqual(ShopCatalog.items(in: .outfit).first?.variant, "none")
         XCTAssertEqual(ShopCatalog.item(id: "keyboard_batik")?.variant, "batik")
+    }
+
+    func testNoOutfitIsAlpanicaAloneWithNothingOverlaid() {
+        let none = AlpanicaOutfit(item: ShopCatalog.item(id: "outfit_none")!)
+        XCTAssertEqual(none.preview, .asset("alpanica"))
+        XCTAssertNil(none.overlay)
+        XCTAssertEqual(none, AlpanicaOutfit.none)
+    }
+
+    func testDownloadedArtWinsOnceItIsOnDiskAndTheBundledNameIsTheFallback() {
+        var hat = ShopItem(id: "outfit_topi", category: .outfit, name: "Hat", price: 300)
+        hat.art = ShopArtNames(preview: "art.topi.preview", overlay: "art.topi.overlay")
+        let file = URL(fileURLWithPath: "/tmp/topi-overlay.png")
+        let onDisk: (String) -> URL? = { $0 == "art.topi.overlay" ? file : nil }
+
+        let outfit = AlpanicaOutfit(item: hat, fileURL: onDisk)
+        XCTAssertEqual(outfit.overlay, .file(file))
+        XCTAssertEqual(outfit.preview, .asset("alpanica"), "preview not downloaded yet and no bundled art: plain Alpanica")
+
+        hat.bundledArt = ShopArtNames(preview: "alpanica_outfit_bow", overlay: "alpanica_acc_bow")
+        XCTAssertEqual(AlpanicaOutfit(item: hat, fileURL: onDisk).overlay, .file(file))
+        XCTAssertEqual(AlpanicaOutfit(item: hat, fileURL: onDisk).preview, .asset("alpanica_outfit_bow"))
+        XCTAssertEqual(AlpanicaOutfit(item: hat).overlay, .asset("alpanica_acc_bow"))
+    }
+
+    func testAnUnknownEquippedIdFallsBackToNoOutfit() {
+        let suite = "ShopOutfit-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        defaults.set("outfit_vanished", forKey: "equip_outfit")
+        let progress = ProgressStore(defaults: defaults)
+        XCTAssertEqual(AlpanicaOutfit(item: progress.equippedItem(.outfit)), AlpanicaOutfit.none)
     }
 
     func testLookupByIdAndCategory() {

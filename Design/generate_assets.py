@@ -2,10 +2,11 @@
 """Generates Melodissimo game art as SVG in Alpanica's flat kawaii style.
 
 Run:  python3 Design/generate_assets.py
+      python3 Design/generate_assets.py --png [--out DIR] [--only a,b]   (transparent PNGs of outfits, see below)
 Writes Design/svg/*.svg and installs each one as a vector imageset in
 Melodissimo/Assets.xcassets/Game/. Re-run after tweaking; it overwrites only its own files.
 """
-import json, math, os, re
+import json, math, os, re, shutil, subprocess, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "svg")
@@ -482,7 +483,42 @@ def install(name, text):
         json.dump(contents, f, indent=2)
 
 
+PNG_HEIGHT = 1200  # px; about 3x the tallest Alpanica the app draws (BACKEND_PLAN.md 5.5)
+
+
+def export_png(out_dir, only=None):
+    """Writes transparent PNGs for outfits (`alpanica_acc_<v>` overlay and `alpanica_outfit_<v>` preview).
+
+    Needs `cairosvg` (pip install cairosvg) or `rsvg-convert` (brew install librsvg). Both files keep the
+    pose canvas, so an overlay fits every pose. Each PNG should stay under 300 KB.
+    """
+    names = [n for n in assets() if n.startswith(("alpanica_acc_", "alpanica_outfit_"))]
+    if only:
+        names = [n for n in names if n in only or n.split("_", 2)[-1] in only]
+    os.makedirs(out_dir, exist_ok=True)
+    try:
+        import cairosvg
+    except ImportError:
+        cairosvg = None
+    if not cairosvg and not shutil.which("rsvg-convert"):
+        sys.exit("PNG export needs cairosvg (pip install cairosvg) or rsvg-convert (brew install librsvg).")
+    for name in names:
+        src, dst = os.path.join(OUT, name + ".svg"), os.path.join(out_dir, name + ".png")
+        if cairosvg:
+            cairosvg.svg2png(url=src, write_to=dst, output_height=PNG_HEIGHT)
+        else:
+            subprocess.run(["rsvg-convert", "-h", str(PNG_HEIGHT), "-o", dst, src], check=True)
+        kb = os.path.getsize(dst) / 1024
+        print(f"{name}.png  {kb:.0f} KB" + ("  (over 300 KB!)" if kb > 300 else ""))
+
+
 if __name__ == "__main__":
+    if "--png" in sys.argv:
+        args = sys.argv[1:]
+        out_dir = args[args.index("--out") + 1] if "--out" in args else os.path.join(ROOT, "png")
+        only = set(args[args.index("--only") + 1].split(",")) if "--only" in args else None
+        export_png(out_dir, only)
+        sys.exit(0)
     os.makedirs(CATALOG, exist_ok=True)
     with open(os.path.join(CATALOG, "Contents.json"), "w") as f:
         json.dump({"info": {"author": "xcode", "version": 1}}, f, indent=2)

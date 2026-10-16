@@ -190,18 +190,29 @@ struct FloatingText<T: Equatable>: View {
 
 // MARK: - Characters
 
-/// Alpanica's outfits. Each has a full picture (`alpanica_outfit_*`, for the shop and certificate) and the
-/// outfit alone (`alpanica_acc_*`), which `AlpanicaView` lays over whatever pose she is in.
-enum AlpanicaOutfit: String, CaseIterable {
-    case none, glasses, crown, royal, bow, headphones, sunglasses, scarf, flowers, blangkon, conductor
+/// What Alpanica wears: a full picture (shop card, certificate) and the outfit alone on a clear canvas the size
+/// of the pose art, which `AlpanicaView` lays over whatever pose she is in. Built from the equipped shop item,
+/// so a new outfit is data (`shop.json`) plus two images, never a new case.
+struct AlpanicaOutfit: Hashable {
+    /// The shop item id (`outfit_bow`); `outfit_none` for no outfit.
+    let id: String
+    let preview: ArtSource
+    let overlay: ArtSource?
 
-    var assetName: String {
-        self == .none ? "alpanica" : "alpanica_outfit_\(rawValue)"
+    static let none = AlpanicaOutfit(id: "outfit_none", preview: .asset("alpanica"), overlay: nil)
+
+    /// An outfit item's art: downloaded files first (`fileURL`), then the bundled names. An item without a
+    /// picture of its own looks like no outfit.
+    init(item: ShopItem, fileURL: (String) -> URL? = { _ in nil }) {
+        id = item.id
+        preview = item.previewArt(fileURL: fileURL) ?? .asset("alpanica")
+        overlay = item.overlayArt(fileURL: fileURL)
     }
 
-    /// The outfit on a clear canvas the size of the pose art, or `nil` for no outfit.
-    var overlayName: String? {
-        self == .none ? nil : "alpanica_acc_\(rawValue)"
+    private init(id: String, preview: ArtSource, overlay: ArtSource?) {
+        self.id = id
+        self.preview = preview
+        self.overlay = overlay
     }
 }
 
@@ -295,10 +306,8 @@ struct AlpanicaView<T: Equatable>: View {
             Image(art)
                 .resizable()
                 .scaledToFit()
-            if let overlay = outfit.overlayName {
-                Image(overlay)
-                    .resizable()
-                    .scaledToFit()
+            if let overlay = outfit.overlay {
+                ArtImage(source: overlay, fallbackEmoji: "")
             }
         }
         .frame(height: height)
@@ -516,11 +525,12 @@ struct CharacterMotionPlayground: View {
     @State private var hops = 0
     @State private var hits = 0
     @State private var moodIndex = 0
-    @State private var outfitIndex = 3
+    @State private var outfitIndex = 1
     @State private var gaitIndex = 0
 
     private var mood: AlpanicaMood { AlpanicaMood.allCases[moodIndex] }
-    private var outfit: AlpanicaOutfit { AlpanicaOutfit.allCases[outfitIndex] }
+    private var outfitItems: [ShopItem] { ShopCatalog.items(in: .outfit) }
+    private var outfit: AlpanicaOutfit { AlpanicaOutfit(item: outfitItems[outfitIndex % outfitItems.count]) }
 
     var body: some View {
         VStack(spacing: 30) {
@@ -532,7 +542,7 @@ struct CharacterMotionPlayground: View {
             }
             HStack(spacing: 20) {
                 Button("Mood: \(String(describing: mood))") { moodIndex = (moodIndex + 1) % AlpanicaMood.allCases.count }
-                Button("Outfit: \(outfit.rawValue)") { outfitIndex = (outfitIndex + 1) % AlpanicaOutfit.allCases.count }
+                Button("Outfit: \(outfit.id)") { outfitIndex = (outfitIndex + 1) % outfitItems.count }
                 Button("Gait: \(String(describing: AlpanicaGait.allCases[gaitIndex]))") {
                     gaitIndex = (gaitIndex + 1) % AlpanicaGait.allCases.count
                 }

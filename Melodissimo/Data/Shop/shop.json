@@ -149,7 +149,10 @@
       },
       "order": 80,
       "minAppBuild": 1,
-      "status": "live"
+      "status": "live",
+      "bundledArt": {
+        "preview": "alpanica"
+      }
     },
     {
       "id": "outfit_bow",
@@ -164,7 +167,11 @@
       },
       "order": 90,
       "minAppBuild": 1,
-      "status": "live"
+      "status": "live",
+      "bundledArt": {
+        "preview": "alpanica_outfit_bow",
+        "overlay": "alpanica_acc_bow"
+      }
     },
     {
       "id": "outfit_glasses",
@@ -179,7 +186,11 @@
       },
       "order": 100,
       "minAppBuild": 1,
-      "status": "live"
+      "status": "live",
+      "bundledArt": {
+        "preview": "alpanica_outfit_glasses",
+        "overlay": "alpanica_acc_glasses"
+      }
     },
     {
       "id": "outfit_headphones",
@@ -194,7 +205,11 @@
       },
       "order": 110,
       "minAppBuild": 1,
-      "status": "live"
+      "status": "live",
+      "bundledArt": {
+        "preview": "alpanica_outfit_headphones",
+        "overlay": "alpanica_acc_headphones"
+      }
     },
     {
       "id": "outfit_sunglasses",
@@ -209,7 +224,11 @@
       },
       "order": 120,
       "minAppBuild": 1,
-      "status": "live"
+      "status": "live",
+      "bundledArt": {
+        "preview": "alpanica_outfit_sunglasses",
+        "overlay": "alpanica_acc_sunglasses"
+      }
     },
     {
       "id": "outfit_scarf",
@@ -224,7 +243,11 @@
       },
       "order": 130,
       "minAppBuild": 1,
-      "status": "live"
+      "status": "live",
+      "bundledArt": {
+        "preview": "alpanica_outfit_scarf",
+        "overlay": "alpanica_acc_scarf"
+      }
     },
     {
       "id": "outfit_flowers",
@@ -239,7 +262,11 @@
       },
       "order": 140,
       "minAppBuild": 1,
-      "status": "live"
+      "status": "live",
+      "bundledArt": {
+        "preview": "alpanica_outfit_flowers",
+        "overlay": "alpanica_acc_flowers"
+      }
     },
     {
       "id": "outfit_crown",
@@ -254,7 +281,11 @@
       },
       "order": 150,
       "minAppBuild": 1,
-      "status": "live"
+      "status": "live",
+      "bundledArt": {
+        "preview": "alpanica_outfit_crown",
+        "overlay": "alpanica_acc_crown"
+      }
     },
     {
       "id": "outfit_blangkon",
@@ -269,7 +300,11 @@
       },
       "order": 160,
       "minAppBuild": 1,
-      "status": "live"
+      "status": "live",
+      "bundledArt": {
+        "preview": "alpanica_outfit_blangkon",
+        "overlay": "alpanica_acc_blangkon"
+      }
     },
     {
       "id": "outfit_conductor",
@@ -284,7 +319,11 @@
       },
       "order": 170,
       "minAppBuild": 1,
-      "status": "live"
+      "status": "live",
+      "bundledArt": {
+        "preview": "alpanica_outfit_conductor",
+        "overlay": "alpanica_acc_conductor"
+      }
     },
     {
       "id": "outfit_royal",
@@ -299,7 +338,11 @@
       },
       "order": 180,
       "minAppBuild": 1,
-      "status": "live"
+      "status": "live",
+      "bundledArt": {
+        "preview": "alpanica_outfit_royal",
+        "overlay": "alpanica_acc_royal"
+      }
     }
   ]
 }

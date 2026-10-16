@@ -140,7 +140,7 @@ struct ShopView: View {
             NotesPreview(skin: NoteSkin(itemId: item.id))
         case .outfit:
             // A tinted backdrop, so the white alpaca doesn't vanish into the white card.
-            AssetImage(name: AlpanicaOutfit(rawValue: item.variant)?.assetName ?? "alpanica", fallbackEmoji: "🦙")
+            ArtImage(source: AlpanicaOutfit(item: item).preview)
                 .padding(6)
                 .frame(width: 190)
                 .background(RoundedRectangle(cornerRadius: 16).fill(Color.softBlue.opacity(0.6)))
