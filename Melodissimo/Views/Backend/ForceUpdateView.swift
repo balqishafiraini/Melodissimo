@@ -58,6 +58,7 @@ struct ForceUpdateView: View {
             .padding(Sizing.s(30))
         }
         .accessibilityElement(children: .contain)
+        .onAppear { Analytics.log(.updatePromptShown, props: ["kind": "hard"]) }
     }
 }
 
@@ -107,5 +108,6 @@ struct SoftUpdateSheet: View {
         .frame(maxWidth: 520)
         .background(Color.softBlue.ignoresSafeArea())
         .presentationDetents([.medium])
+        .onAppear { Analytics.log(.updatePromptShown, props: ["kind": "soft"]) }
     }
 }

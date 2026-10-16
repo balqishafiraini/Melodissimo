@@ -141,6 +141,7 @@ final class ContentStore: ObservableObject {
             active = loaded
             activeCDN = cdnBase
         }
+        Analytics.log(.contentActivated, props: ["contentVersion": .number(Double(version))])
         notifyChange()
         return true
     }

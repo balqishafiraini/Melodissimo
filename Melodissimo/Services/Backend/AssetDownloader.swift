@@ -169,6 +169,9 @@ final class ContentSync {
             return true
         } catch let error as ContentError {
             lastFailure = error
+            if case .verificationFailed(let reason) = error {
+                Analytics.log(.contentVerifyFailed, props: ["reason": .string(String(reason.prefix(80))), "contentVersion": .number(Double(version))])
+            }
             discard(version: version)
             return false
         } catch {

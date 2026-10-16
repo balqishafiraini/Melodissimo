@@ -67,6 +67,7 @@ struct PlusPaywallView: View {
             }
             .padding(Sizing.s(24))
         }
+        .onAppear { Analytics.log(.paywallView, props: ["kind": "plus"]) }
         .task {
             await store.loadProducts()
             monthly = await store.offer(for: Self.monthlyId)

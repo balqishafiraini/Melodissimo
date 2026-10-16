@@ -366,6 +366,7 @@ struct ShopView: View {
     private func buyProduct(_ product: StoreProduct) {
         isBuyingProduct = true
         storeMessage = nil
+        Analytics.log(.shopBuyCoins, props: ["productId": .string(product.id)])
         Task {
             let outcome = await store.buy(product.id)
             isBuyingProduct = false
@@ -381,6 +382,7 @@ struct ShopView: View {
     private func buy(_ item: ShopItem) {
         // Wear a new purchase right away, since that is what people want to see.
         if progress.buy(item) {
+            Analytics.log(.shopItemBought, props: ["productId": .string(item.id), "kind": .string(item.category.rawValue), "coins": .number(Double(item.price))])
             progress.equip(item)
             SFX.play(.coin)
             showUnlocked(AchievementStore.shared.evaluate().map(\.title))

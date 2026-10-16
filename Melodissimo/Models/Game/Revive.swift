@@ -141,6 +141,9 @@ extension ProgressStore: ReviveWallet {
 extension ReviveRun {
     /// The revive state for a play launched from `request`, with the real wallet and Plus status.
     static func forPlay(_ request: PlayRequest, rules: ReviveRules = Tuning.reviveRules()) -> ReviveRun {
-        ReviveRun(rules: rules, isDaily: request.dailyDateKey != nil, isPlus: Revive.isPlusMember(), wallet: ProgressStore.shared)
+        let run = ReviveRun(rules: rules, isDaily: request.dailyDateKey != nil, isPlus: Revive.isPlusMember(), wallet: ProgressStore.shared)
+        let mode = request.analyticsMode
+        run.onRevive = { source in Analytics.log(.reviveUsed, props: ["source": .string(source.rawValue), "mode": .string(mode)]) }
+        return run
     }
 }

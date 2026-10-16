@@ -122,6 +122,14 @@ struct ResultRecorder {
         progress.recordCombo(result.maxCombo)
         progress.registerPlayToday()
         summary.newAchievements = evaluateAchievements()
+        var props = result.request.analyticsProps
+        props["stars"] = .number(Double(result.stars))
+        props["score"] = .number(Double(result.score))
+        props["won"] = .bool(result.didWin)
+        props["revives"] = .number(Double(result.revivesUsed))
+        props["coins"] = .number(Double(coins))
+        Analytics.log(.stageEnd, props: props)
+        if isSongPerform { Analytics.log(.songPerformEnd, props: props) }
         // A Melody Rush run that was revived counts for the local high score only.
         var isRush = false
         if case .rush = result.request.kind { isRush = true }
@@ -142,6 +150,11 @@ struct ResultRecorder {
             progress.earn(summary.coins)
         }
         summary.newAchievements = evaluateAchievements()
+        var props = result.request.analyticsProps
+        props["won"] = .bool(result.didWin)
+        props["coins"] = .number(Double(summary.coins))
+        props["revives"] = .number(Double(result.revivesUsed))
+        Analytics.log(.stageEnd, props: props)
         return summary
     }
 

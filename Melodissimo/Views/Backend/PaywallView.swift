@@ -101,6 +101,7 @@ struct PaywallView: View {
             .padding(Sizing.s(24))
         }
         .task { await store.loadProducts() }
+        .onAppear { Analytics.log(.paywallView, props: ["packId": .string(packId), "kind": "pack"]) }
         .onDisappear { preview.stop() }
     }
 

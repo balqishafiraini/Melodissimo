@@ -113,8 +113,10 @@ final class StoreService: ObservableObject {
             switch try await product.purchase() {
             case .success(let result):
                 guard await handle(result) else { return .failed }
+                Analytics.log(.purchaseSuccess, props: ["productId": .string(productId)])
                 return .success
             case .pending:
+                Analytics.log(.purchasePending, props: ["productId": .string(productId)])
                 return .pending
             case .userCancelled:
                 return .cancelled
@@ -151,7 +153,9 @@ final class StoreService: ObservableObject {
                 await transaction.finish()
                 return true
             }
-            PurchaseGrants.apply(transactionId: String(transaction.id), product: product, to: progress)
+            if PurchaseGrants.apply(transactionId: String(transaction.id), product: product, to: progress) {
+                Analytics.log(.coinsPurchased, props: ["productId": .string(product.id), "coins": .number(Double(product.grants?.coins ?? 0))])
+            }
         } else {
             await refreshEntitlements()
         }

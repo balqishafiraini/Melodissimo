@@ -14,11 +14,13 @@ enum FlagKey: String, CaseIterable {
     case coinStore
     case reviveInDaily
     case packStore
+    /// First-party usage events (Task B9). Off until the server switches it on.
+    case analytics
 
     var defaultValue: Bool {
         switch self {
         case .shop, .dailyChallenge, .micInput, .coinStore: return true
-        case .reviveInDaily, .packStore: return false
+        case .reviveInDaily, .packStore, .analytics: return false
         }
     }
 }

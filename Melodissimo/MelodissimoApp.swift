@@ -36,6 +36,8 @@ struct MelodissimoApp: App {
                 Task { await ContentSync.shared.sync(to: info) }
             }
             BootstrapService.shared.start()
+            Analytics.shared.start()
+            Analytics.log(.appOpen, props: ["build": .number(Double(ClientHeaders.current().build))])
         }
         // Listen for store transactions from launch, so a purchase is never missed.
         Task { @MainActor in StoreService.shared.start() }

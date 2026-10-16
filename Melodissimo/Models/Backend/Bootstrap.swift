@@ -9,7 +9,7 @@
 import Foundation
 
 /// A JSON value of any shape, for `tuning` values and other open-ended fields.
-enum JSONValue: Codable, Hashable {
+enum JSONValue: Codable, Hashable, Sendable {
     case null
     case bool(Bool)
     case number(Double)
@@ -39,6 +39,13 @@ enum JSONValue: Codable, Hashable {
         case .object(let v): try c.encode(v)
         }
     }
+}
+
+extension JSONValue: ExpressibleByStringLiteral, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral, ExpressibleByBooleanLiteral {
+    init(stringLiteral value: String) { self = .string(value) }
+    init(integerLiteral value: Int) { self = .number(Double(value)) }
+    init(floatLiteral value: Double) { self = .number(value) }
+    init(booleanLiteral value: Bool) { self = .bool(value) }
 }
 
 struct Bootstrap: Codable, Equatable {

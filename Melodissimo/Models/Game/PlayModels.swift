@@ -38,6 +38,34 @@ struct PlayRequest: Hashable {
     var dailyDateKey: String? = nil
 }
 
+extension PlayRequest {
+    /// A coarse name for the kind of play, for analytics: `listen`, `practice`, `perform`, `battle`, `classic`, `echo`, `quiz`, `rush`, `daily`.
+    var analyticsMode: String {
+        switch kind {
+        case .song(_, let mode, _, _, _, _): return mode.rawValue
+        case .battle: return "battle"
+        case .classic: return "classic"
+        case .echo: return "echo"
+        case .quiz: return "quiz"
+        case .rush: return "rush"
+        case .daily: return "daily"
+        }
+    }
+
+    var analyticsSongId: String? {
+        if case .song(let songId, _, _, _, _, _) = kind { return songId }
+        return nil
+    }
+
+    /// The props every play event carries: mode, and the song and stage when there are some.
+    var analyticsProps: [String: JSONValue] {
+        var props: [String: JSONValue] = ["mode": .string(analyticsMode)]
+        if let songId = analyticsSongId { props["songId"] = .string(songId) }
+        if let stage = campaignStageId { props["stageId"] = .string(stage) }
+        return props
+    }
+}
+
 /// The outcome of one play, handed to `ResultRecorder` and the results screen.
 struct PlayResult: Hashable {
     let request: PlayRequest
