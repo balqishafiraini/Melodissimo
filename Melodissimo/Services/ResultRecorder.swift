@@ -13,8 +13,8 @@ struct ResultRecorder {
     let evaluateAchievements: () -> [String]
     /// Posts leaderboard scores (Game Center); tests pass a recorder instead.
     let submitScores: ([LeaderboardScore]) -> Void
-    /// The revive numbers in force (the star cap).
-    var reviveRules: ReviveRules = .defaults
+    /// Fixed revive numbers for tests; `nil` reads the current `Tuning` on every use.
+    var reviveRules: ReviveRules? = nil
 
     static let shared = ResultRecorder()
 
@@ -36,7 +36,7 @@ struct ResultRecorder {
     func record(_ original: PlayResult) -> RewardSummary {
         // A won run that used a revive earns at most the revive star cap, whatever the screen computed.
         var result = original
-        result.stars = Revive.cappedStars(original.stars, revivesUsed: original.revivesUsed, rules: reviveRules)
+        result.stars = Revive.cappedStars(original.stars, revivesUsed: original.revivesUsed, rules: reviveRules ?? Tuning.reviveRules())
         // The day's challenge has its own reward and doesn't touch any song, stage or Rush record.
         if let dateKey = result.request.dailyDateKey {
             return recordDaily(result, dateKey: dateKey)
@@ -57,7 +57,7 @@ struct ResultRecorder {
             isSong = true
             switch mode {
             case .practice:
-                if !progress.isSongPracticed(songId) { coins += CoinRewards.firstPractice }
+                if !progress.isSongPracticed(songId) { coins += CoinRewards.firstPracticeReward() }
                 progress.setSongPracticed(songId)
             case .perform:
                 summary = recordPerform(result, songId: songId)

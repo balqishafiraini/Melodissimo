@@ -140,7 +140,7 @@ extension ProgressStore: ReviveWallet {
 
 extension ReviveRun {
     /// The revive state for a play launched from `request`, with the real wallet and Plus status.
-    static func forPlay(_ request: PlayRequest, rules: ReviveRules = .defaults) -> ReviveRun {
+    static func forPlay(_ request: PlayRequest, rules: ReviveRules = Tuning.reviveRules()) -> ReviveRun {
         ReviveRun(rules: rules, isDaily: request.dailyDateKey != nil, isPlus: Revive.isPlusMember(), wallet: ProgressStore.shared)
     }
 }
