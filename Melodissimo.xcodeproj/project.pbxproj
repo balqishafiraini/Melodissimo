@@ -362,11 +362,6 @@
 		FAD89D112AC86E2C0019A99D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				MELODISSIMO_TERMS_URL = "https://terms.example.invalid";
-				MELODISSIMO_PRIVACY_URL = "https://privacy.example.invalid";
-				MELODISSIMO_API_BASE = "https://melodissimo-api-staging.anoran.cloud";
-				MELODISSIMO_CDN_BASE = "https://melodissimo-cdn-staging.anoran.cloud";
-				MELODISSIMO_ENV = DEV;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Melodissimo/Melodissimo.entitlements;
@@ -392,6 +387,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 2;
+				MELODISSIMO_API_BASE = "https://melodissimo-api-staging.anoran.cloud";
+				MELODISSIMO_CDN_BASE = "https://melodissimo-cdn-staging.anoran.cloud";
+				MELODISSIMO_ENV = DEV;
+				MELODISSIMO_PRIVACY_URL = "https://privacy.example.invalid";
+				MELODISSIMO_TERMS_URL = "https://terms.example.invalid";
 				PRODUCT_BUNDLE_IDENTIFIER = com.balqishafiraini.Melodissimo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -406,11 +406,6 @@
 		FAD89D122AC86E2C0019A99D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				MELODISSIMO_TERMS_URL = "https://terms.example.invalid";
-				MELODISSIMO_PRIVACY_URL = "https://privacy.example.invalid";
-				MELODISSIMO_API_BASE = "https://melodissimo-api.anoran.cloud";
-				MELODISSIMO_CDN_BASE = "https://melodissimo-cdn.anoran.cloud";
-				MELODISSIMO_ENV = PROD;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Melodissimo/Melodissimo.entitlements;
@@ -436,6 +431,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 2;
+				MELODISSIMO_API_BASE = "https://melodissimo-api.anoran.cloud";
+				MELODISSIMO_CDN_BASE = "https://melodissimo-cdn.anoran.cloud";
+				MELODISSIMO_ENV = PROD;
+				MELODISSIMO_PRIVACY_URL = "https://privacy.example.invalid";
+				MELODISSIMO_TERMS_URL = "https://terms.example.invalid";
 				PRODUCT_BUNDLE_IDENTIFIER = com.balqishafiraini.Melodissimo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
