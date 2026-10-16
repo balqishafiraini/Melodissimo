@@ -420,3 +420,7 @@
 "1 month free" = "Gratis 1 bulan";
 "%lld months free" = "Gratis %lld bulan";
 "Free trial" = "Coba gratis";
+"Account" = "Akun";
+"Signed in with Apple" = "Masuk dengan Apple";
+"Sign in did not work" = "Gagal masuk";
+"Optional. Keep your stars, coins and songs when you change devices. We don't ask for your name or e-mail." = "Opsional. Simpan bintang, koin, dan lagumu saat ganti perangkat. Kami tidak meminta nama atau e-mailmu.";

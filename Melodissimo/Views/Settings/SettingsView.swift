@@ -3,6 +3,7 @@
 //  Melodissimo
 //
 
+import AuthenticationServices
 import SwiftUI
 
 /// How the game plays and feels: how fast notes fall, key labels, audio timing, and a reset. The
@@ -16,6 +17,8 @@ struct SettingsView: View {
     /// Observed so a flag change from the server redraws this screen.
     @ObservedObject private var bootstrap = BootstrapService.shared
     @ObservedObject private var entitlements = Entitlements.shared
+    @ObservedObject private var account = PlayerAccount.shared
+    @State private var accountMessage: LocalizedStringKey?
     @State private var isConfirmingReset = false
     @State private var isReallyConfirmingReset = false
     @State private var didReset = false
@@ -42,6 +45,8 @@ struct SettingsView: View {
                                 audioCard
                                 resetCard
                                 plusCard
+                            accountCard
+                                accountCard
                                 plusCard
                             aboutCard
                             }
@@ -363,6 +368,52 @@ struct SettingsView: View {
         progress.resetProgress()
         AchievementStore.shared.reload()
         didReset = true
+    }
+
+    // MARK: Account
+
+    /// Optional Sign in with Apple, so progress and purchases follow the player to another device. Asks for no name and no
+    /// e-mail. Hidden until the `accounts` flag is on.
+    @ViewBuilder
+    private var accountCard: some View {
+        if FeatureFlags.isOn(.accounts) {
+            card("Account") {
+                if account.state == .linked {
+                    Label("Signed in with Apple", systemImage: "checkmark.seal.fill")
+                        .font(Font.headline)
+                        .foregroundColor(Color.darkGreen)
+                } else {
+                    SignInWithAppleButton(.signIn) { request in
+                        request.requestedScopes = []
+                    } onCompletion: { result in
+                        handleSignIn(result)
+                    }
+                    .signInWithAppleButtonStyle(.black)
+                    .frame(height: Sizing.tap(56))
+                }
+                if let accountMessage {
+                    Text(accountMessage).font(.subheadline).foregroundColor(Color.darkGreen)
+                }
+                caption("Optional. Keep your stars, coins and songs when you change devices. We don't ask for your name or e-mail.")
+            }
+        }
+    }
+
+    private func handleSignIn(_ result: Result<ASAuthorization, Error>) {
+        guard case .success(let authorization) = result,
+              let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let data = credential.identityToken, let token = String(data: data, encoding: .utf8) else {
+            accountMessage = "Sign in did not work"
+            return
+        }
+        Task {
+            if await account.linkApple(identityToken: token) {
+                accountMessage = nil
+                await ProgressSyncService.shared.sync()
+            } else {
+                accountMessage = "Sign in did not work"
+            }
+        }
     }
 
     // MARK: Melodissimo Plus

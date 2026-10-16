@@ -1,0 +1,58 @@
+{
+  "description": "Shared by the Swift CloudMerge tests and the server's progress merge (BACKEND_PLAN.md B8.2). null means 'no value'.",
+  "value": [
+    { "rule": "max", "local": 90, "remote": 40, "expected": 90 },
+    { "rule": "max", "local": 10, "remote": 40, "expected": 40 },
+    { "rule": "max", "local": 7, "remote": 7, "expected": 7 },
+    { "rule": "max", "local": 12.5, "remote": null, "expected": 12.5 },
+    { "rule": "max", "local": null, "remote": 3, "expected": 3 },
+    { "rule": "max", "local": null, "remote": null, "expected": null },
+    { "rule": "max", "local": 0, "remote": 0, "expected": 0 },
+    { "rule": "earliest", "local": 1700000000, "remote": 1690000000, "expected": 1690000000 },
+    { "rule": "earliest", "local": 0, "remote": 1690000000, "expected": 1690000000 },
+    { "rule": "earliest", "local": 1700000000, "remote": 0, "expected": 1700000000 },
+    { "rule": "earliest", "local": null, "remote": 1690000000, "expected": 1690000000 },
+    { "rule": "earliest", "local": 0, "remote": 0, "expected": null },
+    { "rule": "earliest", "local": null, "remote": null, "expected": null },
+    { "rule": "or", "local": true, "remote": false, "expected": true },
+    { "rule": "or", "local": false, "remote": true, "expected": true },
+    { "rule": "or", "local": false, "remote": false, "expected": false },
+    { "rule": "or", "local": true, "remote": null, "expected": true },
+    { "rule": "or", "local": null, "remote": false, "expected": false },
+    { "rule": "or", "local": null, "remote": null, "expected": null },
+    { "rule": "union", "local": ["b", "a"], "remote": ["c", "a"], "expected": ["a", "b", "c"] },
+    { "rule": "union", "local": ["x"], "remote": null, "expected": ["x"] },
+    { "rule": "union", "local": null, "remote": ["x", "y"], "expected": ["x", "y"] },
+    { "rule": "union", "local": [], "remote": [], "expected": [] },
+    { "rule": "union", "local": null, "remote": null, "expected": null },
+    { "rule": "keepLocal", "local": "keyboard_gold", "remote": "keyboard_batik", "expected": "keyboard_gold" },
+    { "rule": "keepLocal", "local": null, "remote": "keyboard_batik", "expected": "keyboard_batik" },
+    { "rule": "keepLocal", "local": "keyboard_gold", "remote": null, "expected": "keyboard_gold" },
+    { "rule": "keepLocal", "local": null, "remote": null, "expected": null }
+  ],
+  "streak": [
+    {
+      "local": { "currentStreak": 3, "lastPlayedDate": "2026-10-15T00:00:00Z" },
+      "remote": { "currentStreak": 9, "lastPlayedDate": "2026-10-10T00:00:00Z" },
+      "expected": { "currentStreak": 3, "lastPlayedDate": "2026-10-15T00:00:00Z" }
+    },
+    {
+      "local": { "currentStreak": 3, "lastPlayedDate": "2026-10-10T00:00:00Z" },
+      "remote": { "currentStreak": 9, "lastPlayedDate": "2026-10-15T00:00:00Z" },
+      "expected": { "currentStreak": 9, "lastPlayedDate": "2026-10-15T00:00:00Z" }
+    },
+    {
+      "local": { "currentStreak": 2, "lastPlayedDate": "2026-10-15T00:00:00Z" },
+      "remote": { "currentStreak": 5, "lastPlayedDate": "2026-10-15T00:00:00Z" },
+      "expected": { "currentStreak": 5, "lastPlayedDate": "2026-10-15T00:00:00Z" }
+    },
+    {
+      "local": { "currentStreak": 5, "lastPlayedDate": "2026-10-15T00:00:00Z" },
+      "remote": { "currentStreak": 5, "lastPlayedDate": "2026-10-15T00:00:00Z" },
+      "expected": { "currentStreak": 5, "lastPlayedDate": "2026-10-15T00:00:00Z" }
+    },
+    { "local": { "currentStreak": 1, "lastPlayedDate": "2026-10-15T00:00:00Z" }, "remote": null, "expected": { "currentStreak": 1, "lastPlayedDate": "2026-10-15T00:00:00Z" } },
+    { "local": null, "remote": { "currentStreak": 4, "lastPlayedDate": "2026-10-11T00:00:00Z" }, "expected": { "currentStreak": 4, "lastPlayedDate": "2026-10-11T00:00:00Z" } },
+    { "local": null, "remote": null, "expected": null }
+  ]
+}

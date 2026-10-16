@@ -37,6 +37,12 @@ struct MelodissimoApp: App {
             }
             BootstrapService.shared.start()
             Analytics.shared.start()
+            // With accounts on: a player for this install, then one sync round (and again on each return to the app).
+            Task {
+                await PlayerAccount.shared.ensurePlayer()
+                ProgressSyncService.shared.start()
+                await ProgressSyncService.shared.sync()
+            }
             Analytics.log(.appOpen, props: ["build": .number(Double(ClientHeaders.current().build))])
         }
         // Listen for store transactions from launch, so a purchase is never missed.

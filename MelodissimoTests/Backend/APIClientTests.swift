@@ -5,6 +5,8 @@ import XCTest
 final class StubURLProtocol: URLProtocol {
     static var handler: ((URLRequest) throws -> (Int, Data))?
     static var requests: [URLRequest] = []
+    /// Extra headers on every answer (a refreshed token, for example).
+    static var responseHeaders: [String: String] = [:]
 
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
@@ -14,7 +16,7 @@ final class StubURLProtocol: URLProtocol {
         do {
             guard let handler = Self.handler else { throw URLError(.notConnectedToInternet) }
             let (status, data) = try handler(request)
-            let response = HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil, headerFields: nil)!
+            let response = HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil, headerFields: Self.responseHeaders)!
             client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
             client?.urlProtocol(self, didLoad: data)
             client?.urlProtocolDidFinishLoading(self)
@@ -34,6 +36,7 @@ final class StubURLProtocol: URLProtocol {
     static func reset() {
         handler = nil
         requests = []
+        responseHeaders = [:]
     }
 }
 

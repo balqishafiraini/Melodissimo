@@ -11,6 +11,8 @@ enum APIError: Error, Equatable {
     case notConfigured
     /// A non-2xx answer, with the server's `{ error: { code, message } }` when it sent one.
     case http(status: Int, code: String?, message: String?)
+    /// 409: the server's current copy rides along (progress sync merges it and retries).
+    case conflict(body: Data)
     case transport(String)
     case decoding(String)
 }
@@ -70,13 +72,21 @@ struct APIClient {
     let baseURL: URL?
     let session: URLSession
     let headers: () -> ClientHeaders
+    /// The player's session token, when signed in: sent as `Authorization: Bearer …`.
+    let authorization: () -> String?
+    /// Called with every successful response, e.g. to pick up a refreshed player token.
+    let onResponse: ((HTTPURLResponse) -> Void)?
 
     init(baseURL: URL? = BackendEnvironment.isEnabled ? BackendEnvironment.apiBaseURL : nil,
          session: URLSession = APIClient.defaultSession,
-         headers: @escaping () -> ClientHeaders = { ClientHeaders.current() }) {
+         headers: @escaping () -> ClientHeaders = { ClientHeaders.current() },
+         authorization: @escaping () -> String? = { nil },
+         onResponse: ((HTTPURLResponse) -> Void)? = nil) {
         self.baseURL = baseURL
         self.session = session
         self.headers = headers
+        self.authorization = authorization
+        self.onResponse = onResponse
     }
 
     /// No waiting for connectivity: an offline player must get the cached data at once, not after a hang.
@@ -109,11 +119,18 @@ struct APIClient {
         try await send(path, method: "POST", body: try JSONEncoder().encode(body), timeout: timeout)
     }
 
-    private func send<T: Decodable>(_ path: String, method: String, body: Data?, timeout: TimeInterval) async throws -> T {
+    func put<T: Decodable, B: Encodable>(_ path: String, body: B, headers extra: [String: String] = [:], timeout: TimeInterval = 8) async throws -> T {
+        try await send(path, method: "PUT", body: try JSONEncoder().encode(body), timeout: timeout, extraHeaders: extra)
+    }
+
+    private func send<T: Decodable>(_ path: String, method: String, body: Data?, timeout: TimeInterval,
+                                    extraHeaders: [String: String] = [:]) async throws -> T {
         guard let baseURL else { throw APIError.notConfigured }
         var request = URLRequest(url: baseURL.appendingPathComponent(path), timeoutInterval: timeout)
         request.httpMethod = method
         for (field, value) in headers().fields { request.setValue(value, forHTTPHeaderField: field) }
+        if let token = authorization() { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+        for (field, value) in extraHeaders { request.setValue(value, forHTTPHeaderField: field) }
         if let body {
             request.httpBody = body
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -127,9 +144,11 @@ struct APIClient {
         }
         guard let http = response as? HTTPURLResponse else { throw APIError.transport("no HTTP response") }
         guard (200..<300).contains(http.statusCode) else {
+            if http.statusCode == 409 { throw APIError.conflict(body: data) }
             let envelope = try? JSONDecoder().decode(ErrorEnvelope.self, from: data)
             throw APIError.http(status: http.statusCode, code: envelope?.error?.code, message: envelope?.error?.message)
         }
+        onResponse?(http)
         do {
             return try Self.makeDecoder().decode(T.self, from: data)
         } catch {

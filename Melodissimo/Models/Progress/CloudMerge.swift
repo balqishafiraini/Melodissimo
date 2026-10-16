@@ -94,6 +94,16 @@ enum CloudMerge {
         }
     }
 
+    /// The merged value of two sides under a rule, or `nil` when neither has one (shared test vectors with the server).
+    static func mergeValue(_ rule: Rule, _ local: Any?, _ remote: Any?) -> Any? {
+        mergedValue(rule, local, remote)
+    }
+
+    /// The winner of the streak pair (`currentStreak`, `lastPlayedDate`), or `nil` when neither side has one.
+    static func mergeStreak(local: [String: Any], remote: [String: Any]) -> [String: Any]? {
+        streakWinner(local: local, remote: remote)
+    }
+
     private static func mergedValue(_ rule: Rule, _ local: Any?, _ remote: Any?) -> Any? {
         switch rule {
         case .max:

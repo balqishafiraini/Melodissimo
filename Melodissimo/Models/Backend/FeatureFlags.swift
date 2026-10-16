@@ -16,11 +16,13 @@ enum FlagKey: String, CaseIterable {
     case packStore
     /// First-party usage events (Task B9). Off until the server switches it on.
     case analytics
+    /// Optional player accounts: Sign in with Apple and cross-device sync (Task B8). Off until the capability and server are ready.
+    case accounts
 
     var defaultValue: Bool {
         switch self {
         case .shop, .dailyChallenge, .micInput, .coinStore: return true
-        case .reviveInDaily, .packStore, .analytics: return false
+        case .reviveInDaily, .packStore, .analytics, .accounts: return false
         }
     }
 }
