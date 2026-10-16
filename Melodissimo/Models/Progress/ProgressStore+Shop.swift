@@ -31,11 +31,11 @@ extension ProgressStore {
         item.isDefault || purchasedShopItemIds.contains(item.id)
     }
 
-    /// Pays for an item and adds it to what the player owns. Returns `false`, changing nothing, when the
-    /// item is already owned or the balance is short.
+    /// Pays for a cosmetic and adds it to what the player owns. Returns `false`, changing nothing, when the
+    /// item is already owned, is a consumable (`buyConsumable`) or the balance is short.
     @discardableResult
     func buy(_ item: ShopItem) -> Bool {
-        guard !owns(item), spend(item.price) else { return false }
+        guard item.kind == .cosmetic, !owns(item), spend(item.price) else { return false }
         var ids = defaults.stringArray(forKey: ownedKey) ?? []
         ids.append(item.id)
         defaults.set(ids, forKey: ownedKey)

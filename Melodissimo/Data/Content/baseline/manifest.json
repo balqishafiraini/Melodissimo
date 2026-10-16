@@ -1,0 +1,1010 @@
+{
+  "assets": {
+    "bgm.api-kemerdekaan": {
+      "bytes": 590640,
+      "kind": "audio",
+      "path": "assets/a1997203d092beb98c1d35ab29f38271828c8333feac697d65a4a54c7c3df5d3.m4a",
+      "prefetch": false,
+      "sha256": "a1997203d092beb98c1d35ab29f38271828c8333feac697d65a4a54c7c3df5d3"
+    },
+    "bgm.bagimu-negeri": {
+      "bytes": 1075146,
+      "kind": "audio",
+      "path": "assets/dbaad332fe1f907cd1eb9cc4e48bf7cc3d448ed1be2a8e8e4549d0b90049175d.m4a",
+      "prefetch": false,
+      "sha256": "dbaad332fe1f907cd1eb9cc4e48bf7cc3d448ed1be2a8e8e4549d0b90049175d"
+    },
+    "bgm.bangun-pemudi-pemuda": {
+      "bytes": 497003,
+      "kind": "audio",
+      "path": "assets/f2c156983f2f4973a78dcabb33a8d389e2e6af320b12c4492a5b138594c28ac9.m4a",
+      "prefetch": false,
+      "sha256": "f2c156983f2f4973a78dcabb33a8d389e2e6af320b12c4492a5b138594c28ac9"
+    },
+    "bgm.bendera-merah-putih": {
+      "bytes": 454844,
+      "kind": "audio",
+      "path": "assets/c53b8c49b9e91a6fc08ca5b0eb160d38a650e207d13a2a7b38ba1f11329912b9.m4a",
+      "prefetch": false,
+      "sha256": "c53b8c49b9e91a6fc08ca5b0eb160d38a650e207d13a2a7b38ba1f11329912b9"
+    },
+    "bgm.bhinneka-tunggal-ika": {
+      "bytes": 465536,
+      "kind": "audio",
+      "path": "assets/97190626c271a03abe39b28f8b1f3cc07821a05e6b01262b182b5f4fb33170e3.m4a",
+      "prefetch": false,
+      "sha256": "97190626c271a03abe39b28f8b1f3cc07821a05e6b01262b182b5f4fb33170e3"
+    },
+    "bgm.dari-sabang-sampai-merauke": {
+      "bytes": 625455,
+      "kind": "audio",
+      "path": "assets/6baa55feffa755ac6cb7c9aef72716154e10fc27b480381e44ca21b60078a29c.m4a",
+      "prefetch": false,
+      "sha256": "6baa55feffa755ac6cb7c9aef72716154e10fc27b480381e44ca21b60078a29c"
+    },
+    "bgm.garuda-pancasila": {
+      "bytes": 643149,
+      "kind": "audio",
+      "path": "assets/c626bbdb6269dec507c56a3f47e1eb8f65b4e8798d4cce9f422a83a0138dad9b.m4a",
+      "prefetch": false,
+      "sha256": "c626bbdb6269dec507c56a3f47e1eb8f65b4e8798d4cce9f422a83a0138dad9b"
+    },
+    "bgm.gugur-bunga": {
+      "bytes": 703795,
+      "kind": "audio",
+      "path": "assets/90fa418f1040cb9d55cf34fb40e39c6a3d533dd1502ff55201f7342eb2c90aee.m4a",
+      "prefetch": false,
+      "sha256": "90fa418f1040cb9d55cf34fb40e39c6a3d533dd1502ff55201f7342eb2c90aee"
+    },
+    "bgm.halo-halo-bandung": {
+      "bytes": 646034,
+      "kind": "audio",
+      "path": "assets/30a92e1b67d36ee1d80a18075720cba08098075f0d953a6e9b0d05cbc1c08606.m4a",
+      "prefetch": false,
+      "sha256": "30a92e1b67d36ee1d80a18075720cba08098075f0d953a6e9b0d05cbc1c08606"
+    },
+    "bgm.hari-merdeka": {
+      "bytes": 431070,
+      "kind": "audio",
+      "path": "assets/6b1cb84d7953eee0c97ec17617da75084fb79a469b51e379c04628c8eab4244a.m4a",
+      "prefetch": false,
+      "sha256": "6b1cb84d7953eee0c97ec17617da75084fb79a469b51e379c04628c8eab4244a"
+    },
+    "bgm.indonesia-raya": {
+      "bytes": 1050644,
+      "kind": "audio",
+      "path": "assets/62ab43e027e2c25138e3b054a0fc38b1de9b86ed2ea4880319f5765b21411bc2.m4a",
+      "prefetch": false,
+      "sha256": "62ab43e027e2c25138e3b054a0fc38b1de9b86ed2ea4880319f5765b21411bc2"
+    },
+    "bgm.indonesia-tetap-merdeka": {
+      "bytes": 612041,
+      "kind": "audio",
+      "path": "assets/6b3fbfe3b3e19ac3674f735f857a43f03916c43c7d0e25f91fdb6d203b873d5b.m4a",
+      "prefetch": false,
+      "sha256": "6b3fbfe3b3e19ac3674f735f857a43f03916c43c7d0e25f91fdb6d203b873d5b"
+    },
+    "bgm.maju-tak-gentar": {
+      "bytes": 829247,
+      "kind": "audio",
+      "path": "assets/c20d45b5502475fd899e315f54216e3b35093b9e43f2805c868031ed8424b08d.m4a",
+      "prefetch": false,
+      "sha256": "c20d45b5502475fd899e315f54216e3b35093b9e43f2805c868031ed8424b08d"
+    },
+    "bgm.mars-harapan-bangsa": {
+      "bytes": 518943,
+      "kind": "audio",
+      "path": "assets/c3ec909c831cd44dacd1c9c8dccccb9ee5e0b4178e558c836b20e2b34f1ebde3.m4a",
+      "prefetch": false,
+      "sha256": "c3ec909c831cd44dacd1c9c8dccccb9ee5e0b4178e558c836b20e2b34f1ebde3"
+    },
+    "bgm.mengheningkan-cipta": {
+      "bytes": 1484909,
+      "kind": "audio",
+      "path": "assets/df93baa36c2fed7b4a35eeee73397429c910fc45dbad19274df565bea4d8409d.m4a",
+      "prefetch": false,
+      "sha256": "df93baa36c2fed7b4a35eeee73397429c910fc45dbad19274df565bea4d8409d"
+    },
+    "bgm.tanah-airku": {
+      "bytes": 877971,
+      "kind": "audio",
+      "path": "assets/de507c82f30d7e11c76cbf9b9d41049e855ccbaae2b1ab67548b320eb757c04e.m4a",
+      "prefetch": false,
+      "sha256": "de507c82f30d7e11c76cbf9b9d41049e855ccbaae2b1ab67548b320eb757c04e"
+    },
+    "chart.api-kemerdekaan": {
+      "bytes": 3338,
+      "kind": "chart",
+      "path": "assets/392d9a854b79466405f46d6e3037ae0b523c6de07c0b400552f5ea7cf6ab0594.json",
+      "prefetch": true,
+      "sha256": "392d9a854b79466405f46d6e3037ae0b523c6de07c0b400552f5ea7cf6ab0594"
+    },
+    "chart.bagimu-negeri": {
+      "bytes": 3066,
+      "kind": "chart",
+      "path": "assets/2e3b64db10d8d86d2d70c66e8ef0dd66e651909de6cd88fefcf343c82d065644.json",
+      "prefetch": true,
+      "sha256": "2e3b64db10d8d86d2d70c66e8ef0dd66e651909de6cd88fefcf343c82d065644"
+    },
+    "chart.bangun-pemudi-pemuda": {
+      "bytes": 3213,
+      "kind": "chart",
+      "path": "assets/47f6a3d58681c3f5198e248d145677c895106ce821fea0e55fa43d97e5b3d027.json",
+      "prefetch": true,
+      "sha256": "47f6a3d58681c3f5198e248d145677c895106ce821fea0e55fa43d97e5b3d027"
+    },
+    "chart.bendera-merah-putih": {
+      "bytes": 2815,
+      "kind": "chart",
+      "path": "assets/1dde2984564b5a6adf2ab71669fa180e6a53c2b00b93f1de8f9189da02e243d1.json",
+      "prefetch": true,
+      "sha256": "1dde2984564b5a6adf2ab71669fa180e6a53c2b00b93f1de8f9189da02e243d1"
+    },
+    "chart.bhinneka-tunggal-ika": {
+      "bytes": 2976,
+      "kind": "chart",
+      "path": "assets/b93fb4058992803bb6f9ebe8b8a812ea2640803d6becc1db5956f593c69cc624.json",
+      "prefetch": true,
+      "sha256": "b93fb4058992803bb6f9ebe8b8a812ea2640803d6becc1db5956f593c69cc624"
+    },
+    "chart.dari-sabang-sampai-merauke": {
+      "bytes": 4860,
+      "kind": "chart",
+      "path": "assets/9e292b5ecee2e7ce38db13711d407ff3a67f8e254a00a32d94b57adffa4112e0.json",
+      "prefetch": true,
+      "sha256": "9e292b5ecee2e7ce38db13711d407ff3a67f8e254a00a32d94b57adffa4112e0"
+    },
+    "chart.garuda-pancasila": {
+      "bytes": 4245,
+      "kind": "chart",
+      "path": "assets/88ea74ee1782c5ce23fc1cfd67713bc23e4773431af900390b1cc20c18db92c4.json",
+      "prefetch": true,
+      "sha256": "88ea74ee1782c5ce23fc1cfd67713bc23e4773431af900390b1cc20c18db92c4"
+    },
+    "chart.gugur-bunga": {
+      "bytes": 2830,
+      "kind": "chart",
+      "path": "assets/35cbc0ad2a372836046f5086c4fc578ea9afe163f49c1b4ee85d6fdae144ec96.json",
+      "prefetch": true,
+      "sha256": "35cbc0ad2a372836046f5086c4fc578ea9afe163f49c1b4ee85d6fdae144ec96"
+    },
+    "chart.halo-halo-bandung": {
+      "bytes": 3636,
+      "kind": "chart",
+      "path": "assets/c8bdef04a483573966119d07f192550baa7089f8e1b62583e82776f25f8cc5db.json",
+      "prefetch": true,
+      "sha256": "c8bdef04a483573966119d07f192550baa7089f8e1b62583e82776f25f8cc5db"
+    },
+    "chart.hari-merdeka": {
+      "bytes": 5047,
+      "kind": "chart",
+      "path": "assets/8284ed247d24ee9a500e605ad1e4973d35c0ea043d543c902beb8d11eb1cd0ac.json",
+      "prefetch": true,
+      "sha256": "8284ed247d24ee9a500e605ad1e4973d35c0ea043d543c902beb8d11eb1cd0ac"
+    },
+    "chart.indonesia-raya": {
+      "bytes": 7601,
+      "kind": "chart",
+      "path": "assets/0673ec594aea22d2901b252549638c3089c080b72fd917d7ddba6bf5e8fd1bdc.json",
+      "prefetch": true,
+      "sha256": "0673ec594aea22d2901b252549638c3089c080b72fd917d7ddba6bf5e8fd1bdc"
+    },
+    "chart.indonesia-tetap-merdeka": {
+      "bytes": 3439,
+      "kind": "chart",
+      "path": "assets/18370a987ccde16f447746c1943519d9f3ed2e834c4e133dadd682bf40d52af0.json",
+      "prefetch": true,
+      "sha256": "18370a987ccde16f447746c1943519d9f3ed2e834c4e133dadd682bf40d52af0"
+    },
+    "chart.maju-tak-gentar": {
+      "bytes": 5021,
+      "kind": "chart",
+      "path": "assets/c422c7b47d926381b9837c5d10e6e80f22cf79a27c9e1e1c1458d8ce26ddaf1f.json",
+      "prefetch": true,
+      "sha256": "c422c7b47d926381b9837c5d10e6e80f22cf79a27c9e1e1c1458d8ce26ddaf1f"
+    },
+    "chart.mars-harapan-bangsa": {
+      "bytes": 3889,
+      "kind": "chart",
+      "path": "assets/48883b3dac6cc6ca136718681d6019d50d70ef05e3c943ffc4e73f338ff813f9.json",
+      "prefetch": true,
+      "sha256": "48883b3dac6cc6ca136718681d6019d50d70ef05e3c943ffc4e73f338ff813f9"
+    },
+    "chart.mengheningkan-cipta": {
+      "bytes": 5285,
+      "kind": "chart",
+      "path": "assets/e68a43a1ac198fcc7c66a31ee5df4a9660e7e599997071c310e12c949b47b397.json",
+      "prefetch": true,
+      "sha256": "e68a43a1ac198fcc7c66a31ee5df4a9660e7e599997071c310e12c949b47b397"
+    },
+    "chart.tanah-airku": {
+      "bytes": 4017,
+      "kind": "chart",
+      "path": "assets/8c3851a5f0fc28c9a29d2df3cb70b24dfca71b13091551de5e199bbb442361ad.json",
+      "prefetch": true,
+      "sha256": "8c3851a5f0fc28c9a29d2df3cb70b24dfca71b13091551de5e199bbb442361ad"
+    },
+    "sheet.bagimu-negeri": {
+      "bytes": 37279,
+      "kind": "image",
+      "path": "assets/427e2a69b44f0a720c0a58a7c5ccec3bfa29f0770725dd5d8786f91d3aff290f.png",
+      "prefetch": true,
+      "sha256": "427e2a69b44f0a720c0a58a7c5ccec3bfa29f0770725dd5d8786f91d3aff290f"
+    },
+    "sheet.bendera-merah-putih": {
+      "bytes": 55502,
+      "kind": "image",
+      "path": "assets/d59e0d5c80b3ab35d7429f6ed87090436aeda46a6274f9477274222773081b68.png",
+      "prefetch": true,
+      "sha256": "d59e0d5c80b3ab35d7429f6ed87090436aeda46a6274f9477274222773081b68"
+    },
+    "sheet.dari-sabang-sampai-merauke": {
+      "bytes": 50468,
+      "kind": "image",
+      "path": "assets/5213c084e31e7a0bcd8ccc4a9386cde0cb148db8a7acab6b304c37cbd85f5bdf.png",
+      "prefetch": true,
+      "sha256": "5213c084e31e7a0bcd8ccc4a9386cde0cb148db8a7acab6b304c37cbd85f5bdf"
+    },
+    "sheet.garuda-pancasila": {
+      "bytes": 62567,
+      "kind": "image",
+      "path": "assets/a0e65b88fc5c326bdaf2fc5d878857604210726b63d12b570f7dd9562cbd9f7c.png",
+      "prefetch": true,
+      "sha256": "a0e65b88fc5c326bdaf2fc5d878857604210726b63d12b570f7dd9562cbd9f7c"
+    },
+    "sheet.halo-halo-bandung": {
+      "bytes": 53562,
+      "kind": "image",
+      "path": "assets/095c5fbe24b17ea9e1cc904e63cb36f174b4f588c1ba1072ef09c75e93c3521a.png",
+      "prefetch": true,
+      "sha256": "095c5fbe24b17ea9e1cc904e63cb36f174b4f588c1ba1072ef09c75e93c3521a"
+    },
+    "sheet.hari-merdeka": {
+      "bytes": 69238,
+      "kind": "image",
+      "path": "assets/b0e743dedd0ccc7c4c6cd77e6eca7ba64f4c7bc4756a856123c75777d667494b.png",
+      "prefetch": true,
+      "sha256": "b0e743dedd0ccc7c4c6cd77e6eca7ba64f4c7bc4756a856123c75777d667494b"
+    },
+    "sheet.indonesia-raya": {
+      "bytes": 75058,
+      "kind": "image",
+      "path": "assets/bae7fe014cc7233b672175954b247506cc99796a02b6654af23376e45a0772c8.png",
+      "prefetch": true,
+      "sha256": "bae7fe014cc7233b672175954b247506cc99796a02b6654af23376e45a0772c8"
+    },
+    "sheet.indonesia-tetap-merdeka": {
+      "bytes": 64647,
+      "kind": "image",
+      "path": "assets/80be7f0cf3da56b2e3f3d9a7ecfd3723a18305e8fee4a5b5c0fe43df098f9d9e.png",
+      "prefetch": true,
+      "sha256": "80be7f0cf3da56b2e3f3d9a7ecfd3723a18305e8fee4a5b5c0fe43df098f9d9e"
+    },
+    "sheet.maju-tak-gentar": {
+      "bytes": 68655,
+      "kind": "image",
+      "path": "assets/b159cc4a4d732e6237c8714e0d01ab467893d8faf751de96229cde2a5c16319e.png",
+      "prefetch": true,
+      "sha256": "b159cc4a4d732e6237c8714e0d01ab467893d8faf751de96229cde2a5c16319e"
+    },
+    "sheet.mengheningkan-cipta": {
+      "bytes": 61209,
+      "kind": "image",
+      "path": "assets/16637953cdd61fce3c56e0375bf266a3d48d5f3472d09fe7b99079970bb4fe1c.png",
+      "prefetch": true,
+      "sha256": "16637953cdd61fce3c56e0375bf266a3d48d5f3472d09fe7b99079970bb4fe1c"
+    },
+    "sheet.tanah-airku": {
+      "bytes": 71593,
+      "kind": "image",
+      "path": "assets/d48990ef98377f286daaa2f182f61b527aa6430fef2c01a4474277264ae9f702.png",
+      "prefetch": true,
+      "sha256": "d48990ef98377f286daaa2f182f61b527aa6430fef2c01a4474277264ae9f702"
+    }
+  },
+  "contentVersion": 0,
+  "createdAt": "1970-01-01T00:00:00Z",
+  "minAppBuild": {
+    "android": 1,
+    "ios": 1
+  },
+  "packs": [
+    {
+      "access": {
+        "type": "free"
+      },
+      "id": "core",
+      "title": {
+        "en": "National Songs",
+        "id": "Lagu Wajib"
+      }
+    }
+  ],
+  "products": [
+    {
+      "grants": {
+        "coins": 500,
+        "items": {
+          "boost_heart": 5
+        }
+      },
+      "id": "melodissimo.bundle.starter",
+      "oncePerPlayer": true,
+      "order": 0,
+      "type": "consumable"
+    },
+    {
+      "grants": {
+        "coins": 300
+      },
+      "id": "melodissimo.coins.small",
+      "order": 1,
+      "type": "consumable"
+    },
+    {
+      "badge": "popular",
+      "grants": {
+        "coins": 1100
+      },
+      "id": "melodissimo.coins.medium",
+      "order": 2,
+      "type": "consumable"
+    },
+    {
+      "badge": "bestValue",
+      "grants": {
+        "coins": 3000
+      },
+      "id": "melodissimo.coins.large",
+      "order": 3,
+      "type": "consumable"
+    },
+    {
+      "group": "plus",
+      "id": "melodissimo.plus.monthly",
+      "order": 100,
+      "type": "autoRenewable",
+      "unlocks": [
+        "pack:*"
+      ]
+    },
+    {
+      "group": "plus",
+      "id": "melodissimo.plus.yearly",
+      "order": 101,
+      "type": "autoRenewable",
+      "unlocks": [
+        "pack:*"
+      ]
+    },
+    {
+      "id": "melodissimo.pack.daerah_sumatra",
+      "order": 110,
+      "type": "nonConsumable",
+      "unlocks": [
+        "pack:daerah-sumatra"
+      ]
+    }
+  ],
+  "schemaVersion": 1,
+  "shop": {
+    "items": [
+      {
+        "category": "keyboard",
+        "id": "keyboard_navy",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Navy",
+          "id": "Navy"
+        },
+        "order": 0,
+        "price": {
+          "coins": 0
+        },
+        "status": "live"
+      },
+      {
+        "category": "keyboard",
+        "colors": [
+          "#7B241C",
+          "#D35400"
+        ],
+        "id": "keyboard_batik",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Merah Batik",
+          "id": "Merah Batik"
+        },
+        "order": 10,
+        "price": {
+          "coins": 100
+        },
+        "status": "live"
+      },
+      {
+        "category": "keyboard",
+        "colors": [
+          "#145A32",
+          "#229954"
+        ],
+        "id": "keyboard_forest",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Hijau Hutan",
+          "id": "Hijau Hutan"
+        },
+        "order": 20,
+        "price": {
+          "coins": 150
+        },
+        "status": "live"
+      },
+      {
+        "category": "keyboard",
+        "colors": [
+          "#1A5276",
+          "#2E86C1"
+        ],
+        "id": "keyboard_sea",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Biru Laut",
+          "id": "Biru Laut"
+        },
+        "order": 30,
+        "price": {
+          "coins": 150
+        },
+        "status": "live"
+      },
+      {
+        "category": "keyboard",
+        "colors": [
+          "#B7950B",
+          "#D4AC0D"
+        ],
+        "id": "keyboard_gold",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Emas",
+          "id": "Emas"
+        },
+        "order": 40,
+        "price": {
+          "coins": 300
+        },
+        "status": "live"
+      },
+      {
+        "category": "notes",
+        "id": "notes_default",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Default",
+          "id": "Bawaan"
+        },
+        "order": 50,
+        "price": {
+          "coins": 0
+        },
+        "status": "live"
+      },
+      {
+        "category": "notes",
+        "id": "notes_rainbow",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Pelangi",
+          "id": "Pelangi"
+        },
+        "order": 60,
+        "price": {
+          "coins": 200
+        },
+        "status": "live"
+      },
+      {
+        "category": "notes",
+        "id": "notes_neon",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Neon",
+          "id": "Neon"
+        },
+        "order": 70,
+        "price": {
+          "coins": 250
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "preview": "alpanica"
+        },
+        "category": "outfit",
+        "id": "outfit_none",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Default",
+          "id": "Bawaan"
+        },
+        "order": 80,
+        "price": {
+          "coins": 0
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "overlay": "alpanica_acc_bow",
+          "preview": "alpanica_outfit_bow"
+        },
+        "category": "outfit",
+        "id": "outfit_bow",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Bow",
+          "id": "Bow"
+        },
+        "order": 90,
+        "price": {
+          "coins": 100
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "overlay": "alpanica_acc_glasses",
+          "preview": "alpanica_outfit_glasses"
+        },
+        "category": "outfit",
+        "id": "outfit_glasses",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Glasses",
+          "id": "Glasses"
+        },
+        "order": 100,
+        "price": {
+          "coins": 150
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "overlay": "alpanica_acc_headphones",
+          "preview": "alpanica_outfit_headphones"
+        },
+        "category": "outfit",
+        "id": "outfit_headphones",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Headphone",
+          "id": "Headphone"
+        },
+        "order": 110,
+        "price": {
+          "coins": 200
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "overlay": "alpanica_acc_sunglasses",
+          "preview": "alpanica_outfit_sunglasses"
+        },
+        "category": "outfit",
+        "id": "outfit_sunglasses",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Sunglasses",
+          "id": "Sunglasses"
+        },
+        "order": 120,
+        "price": {
+          "coins": 200
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "overlay": "alpanica_acc_scarf",
+          "preview": "alpanica_outfit_scarf"
+        },
+        "category": "outfit",
+        "id": "outfit_scarf",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Syal Batik",
+          "id": "Syal Batik"
+        },
+        "order": 130,
+        "price": {
+          "coins": 250
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "overlay": "alpanica_acc_flowers",
+          "preview": "alpanica_outfit_flowers"
+        },
+        "category": "outfit",
+        "id": "outfit_flowers",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Flower Crown",
+          "id": "Flower Crown"
+        },
+        "order": 140,
+        "price": {
+          "coins": 250
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "overlay": "alpanica_acc_crown",
+          "preview": "alpanica_outfit_crown"
+        },
+        "category": "outfit",
+        "id": "outfit_crown",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Crown",
+          "id": "Crown"
+        },
+        "order": 150,
+        "price": {
+          "coins": 300
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "overlay": "alpanica_acc_blangkon",
+          "preview": "alpanica_outfit_blangkon"
+        },
+        "category": "outfit",
+        "id": "outfit_blangkon",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Blangkon",
+          "id": "Blangkon"
+        },
+        "order": 160,
+        "price": {
+          "coins": 350
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "overlay": "alpanica_acc_conductor",
+          "preview": "alpanica_outfit_conductor"
+        },
+        "category": "outfit",
+        "id": "outfit_conductor",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Conductor",
+          "id": "Conductor"
+        },
+        "order": 170,
+        "price": {
+          "coins": 400
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "overlay": "alpanica_acc_royal",
+          "preview": "alpanica_outfit_royal"
+        },
+        "category": "outfit",
+        "id": "outfit_royal",
+        "kind": "cosmetic",
+        "minAppBuild": 1,
+        "name": {
+          "en": "Crown Glasses",
+          "id": "Crown Glasses"
+        },
+        "order": 180,
+        "price": {
+          "coins": 500
+        },
+        "status": "live"
+      },
+      {
+        "bundledArt": {
+          "preview": "icon_heart"
+        },
+        "category": "boost",
+        "id": "boost_heart",
+        "kind": "consumable",
+        "maxStack": 99,
+        "minAppBuild": 1,
+        "name": {
+          "en": "Heart",
+          "id": "Nyawa"
+        },
+        "order": 300,
+        "price": {
+          "coins": 50
+        },
+        "status": "live"
+      }
+    ]
+  },
+  "songs": [
+    {
+      "backing": "bgm.indonesia-raya",
+      "bundledSheetImage": "indonesiaRaya",
+      "chart": "chart.indonesia-raya",
+      "id": "indonesia-raya",
+      "isSolemn": true,
+      "order": 0,
+      "packId": "core",
+      "sheet": "sheet.indonesia-raya",
+      "status": "live",
+      "title": {
+        "canonical": "Indonesia Raya",
+        "en": "Indonesia Raya",
+        "id": "Indonesia Raya"
+      }
+    },
+    {
+      "backing": "bgm.bagimu-negeri",
+      "bundledSheetImage": "bagimuNegeri",
+      "chart": "chart.bagimu-negeri",
+      "id": "bagimu-negeri",
+      "isSolemn": false,
+      "order": 10,
+      "packId": "core",
+      "sheet": "sheet.bagimu-negeri",
+      "status": "live",
+      "title": {
+        "canonical": "Bagimu Negeri",
+        "en": "Bagimu Negeri",
+        "id": "Bagimu Negeri"
+      }
+    },
+    {
+      "backing": "bgm.hari-merdeka",
+      "bundledSheetImage": "hariMerdeka",
+      "chart": "chart.hari-merdeka",
+      "id": "hari-merdeka",
+      "isSolemn": false,
+      "order": 20,
+      "packId": "core",
+      "sheet": "sheet.hari-merdeka",
+      "status": "live",
+      "title": {
+        "canonical": "Hari Merdeka",
+        "en": "Hari Merdeka",
+        "id": "Hari Merdeka"
+      }
+    },
+    {
+      "backing": "bgm.garuda-pancasila",
+      "bundledSheetImage": "garudaPancasila",
+      "chart": "chart.garuda-pancasila",
+      "id": "garuda-pancasila",
+      "isSolemn": false,
+      "order": 30,
+      "packId": "core",
+      "sheet": "sheet.garuda-pancasila",
+      "status": "live",
+      "title": {
+        "canonical": "Garuda Pancasila",
+        "en": "Garuda Pancasila",
+        "id": "Garuda Pancasila"
+      }
+    },
+    {
+      "backing": "bgm.maju-tak-gentar",
+      "bundledSheetImage": "majuTakGentar",
+      "chart": "chart.maju-tak-gentar",
+      "id": "maju-tak-gentar",
+      "isSolemn": false,
+      "order": 40,
+      "packId": "core",
+      "sheet": "sheet.maju-tak-gentar",
+      "status": "live",
+      "title": {
+        "canonical": "Maju Tak Gentar",
+        "en": "Maju Tak Gentar",
+        "id": "Maju Tak Gentar"
+      }
+    },
+    {
+      "backing": "bgm.bangun-pemudi-pemuda",
+      "bundledSheetImage": "bangunPemudiPemuda",
+      "chart": "chart.bangun-pemudi-pemuda",
+      "id": "bangun-pemudi-pemuda",
+      "isSolemn": false,
+      "order": 50,
+      "packId": "core",
+      "status": "live",
+      "title": {
+        "canonical": "Bangun Pemudi Pemuda",
+        "en": "Bangun Pemudi Pemuda",
+        "id": "Bangun Pemudi Pemuda"
+      }
+    },
+    {
+      "backing": "bgm.bendera-merah-putih",
+      "bundledSheetImage": "merahPutih",
+      "chart": "chart.bendera-merah-putih",
+      "id": "bendera-merah-putih",
+      "isSolemn": false,
+      "order": 60,
+      "packId": "core",
+      "sheet": "sheet.bendera-merah-putih",
+      "status": "live",
+      "title": {
+        "canonical": "Bendera Merah Putih",
+        "en": "Bendera Merah Putih",
+        "id": "Bendera Merah Putih"
+      }
+    },
+    {
+      "backing": "bgm.mars-harapan-bangsa",
+      "bundledSheetImage": "marsHarapanBangsa",
+      "chart": "chart.mars-harapan-bangsa",
+      "id": "mars-harapan-bangsa",
+      "isSolemn": false,
+      "order": 70,
+      "packId": "core",
+      "status": "live",
+      "title": {
+        "canonical": "Mars Harapan Bangsa",
+        "en": "Mars Harapan Bangsa",
+        "id": "Mars Harapan Bangsa"
+      }
+    },
+    {
+      "backing": "bgm.indonesia-tetap-merdeka",
+      "bundledSheetImage": "indonesiaTetapMerdeka",
+      "chart": "chart.indonesia-tetap-merdeka",
+      "id": "indonesia-tetap-merdeka",
+      "isSolemn": false,
+      "order": 80,
+      "packId": "core",
+      "sheet": "sheet.indonesia-tetap-merdeka",
+      "status": "live",
+      "title": {
+        "canonical": "Indonesia Tetap Merdeka",
+        "en": "Indonesia Tetap Merdeka",
+        "id": "Indonesia Tetap Merdeka"
+      }
+    },
+    {
+      "backing": "bgm.bhinneka-tunggal-ika",
+      "bundledSheetImage": "bhinnekaTunggalIka",
+      "chart": "chart.bhinneka-tunggal-ika",
+      "id": "bhinneka-tunggal-ika",
+      "isSolemn": false,
+      "order": 90,
+      "packId": "core",
+      "status": "live",
+      "title": {
+        "canonical": "Bhinneka Tunggal Ika",
+        "en": "Bhinneka Tunggal Ika",
+        "id": "Bhinneka Tunggal Ika"
+      }
+    },
+    {
+      "backing": "bgm.api-kemerdekaan",
+      "bundledSheetImage": "apiKemerdekaan",
+      "chart": "chart.api-kemerdekaan",
+      "id": "api-kemerdekaan",
+      "isSolemn": false,
+      "order": 100,
+      "packId": "core",
+      "status": "live",
+      "title": {
+        "canonical": "Api Kemerdekaan",
+        "en": "Api Kemerdekaan",
+        "id": "Api Kemerdekaan"
+      }
+    },
+    {
+      "backing": "bgm.halo-halo-bandung",
+      "bundledSheetImage": "haloHaloBandung",
+      "chart": "chart.halo-halo-bandung",
+      "id": "halo-halo-bandung",
+      "isSolemn": false,
+      "order": 110,
+      "packId": "core",
+      "sheet": "sheet.halo-halo-bandung",
+      "status": "live",
+      "title": {
+        "canonical": "Halo Halo Bandung",
+        "en": "Halo Halo Bandung",
+        "id": "Halo Halo Bandung"
+      }
+    },
+    {
+      "backing": "bgm.tanah-airku",
+      "bundledSheetImage": "tanahAirku",
+      "chart": "chart.tanah-airku",
+      "id": "tanah-airku",
+      "isSolemn": false,
+      "order": 120,
+      "packId": "core",
+      "sheet": "sheet.tanah-airku",
+      "status": "live",
+      "title": {
+        "canonical": "Tanah Airku",
+        "en": "Tanah Airku",
+        "id": "Tanah Airku"
+      }
+    },
+    {
+      "backing": "bgm.dari-sabang-sampai-merauke",
+      "bundledSheetImage": "dariSabangSampaiMerauke",
+      "chart": "chart.dari-sabang-sampai-merauke",
+      "id": "dari-sabang-sampai-merauke",
+      "isSolemn": false,
+      "order": 130,
+      "packId": "core",
+      "sheet": "sheet.dari-sabang-sampai-merauke",
+      "status": "live",
+      "title": {
+        "canonical": "Dari Sabang Sampai Merauke",
+        "en": "Dari Sabang Sampai Merauke",
+        "id": "Dari Sabang Sampai Merauke"
+      }
+    },
+    {
+      "backing": "bgm.mengheningkan-cipta",
+      "bundledSheetImage": "mengheningkanCipta",
+      "chart": "chart.mengheningkan-cipta",
+      "id": "mengheningkan-cipta",
+      "isSolemn": true,
+      "order": 140,
+      "packId": "core",
+      "sheet": "sheet.mengheningkan-cipta",
+      "status": "live",
+      "title": {
+        "canonical": "Mengheningkan Cipta",
+        "en": "Mengheningkan Cipta",
+        "id": "Mengheningkan Cipta"
+      }
+    },
+    {
+      "backing": "bgm.gugur-bunga",
+      "bundledSheetImage": "gugurBunga",
+      "chart": "chart.gugur-bunga",
+      "id": "gugur-bunga",
+      "isSolemn": true,
+      "order": 150,
+      "packId": "core",
+      "status": "live",
+      "title": {
+        "canonical": "Gugur Bunga",
+        "en": "Gugur Bunga",
+        "id": "Gugur Bunga"
+      }
+    }
+  ]
+}

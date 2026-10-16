@@ -298,12 +298,23 @@ extension ProgressStore {
     /// Every coin ever spent. Only ever increases.
     var coinsSpentTotal: Int { defaults.integer(forKey: "coins_spentTotal") }
 
-    /// What the player can spend now.
-    var coinBalance: Int { max(0, coinsEarnedTotal - coinsSpentTotal) }
+    /// Every coin ever bought with real money (store packs). Only ever increases. Unlike earned coins it
+    /// survives "Reset progress", because it was paid for.
+    var coinsPurchasedTotal: Int { defaults.integer(forKey: "coins_purchasedTotal") }
+
+    /// What the player can spend now: earned + purchased − spent. The balance itself is never stored.
+    var coinBalance: Int { max(0, coinsEarnedTotal + coinsPurchasedTotal - coinsSpentTotal) }
 
     func earn(_ amount: Int) {
         guard amount > 0 else { return }
         defaults.set(coinsEarnedTotal + amount, forKey: "coins_earnedTotal")
+        objectWillChange.send()
+    }
+
+    /// Adds coins that were bought with real money (a store pack's `grants`).
+    func addPurchasedCoins(_ amount: Int) {
+        guard amount > 0 else { return }
+        defaults.set(coinsPurchasedTotal + amount, forKey: "coins_purchasedTotal")
         objectWillChange.send()
     }
 

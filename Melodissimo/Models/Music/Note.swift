@@ -19,6 +19,27 @@ struct Note: Identifiable, Hashable {
     var isBlack: Bool { id >= 20 }
 }
 
+/// How a key is named on screen (`BACKEND_PLAN.md` Task I3). Note ids never change; only the text shown does.
+enum NoteLabelStyle: String, CaseIterable, Hashable {
+    /// 1 2 3 … with octave dots (Indonesian school music). The app's original labels.
+    case notAngka
+    /// Do Re Mi Fa Sol La Si.
+    case solfege
+    /// C D E F G A B with an octave number, C4 = middle C.
+    case letters
+
+    /// The style a new player gets for their first language: not angka for Indonesian, solfege for languages that sing
+    /// Do-Re-Mi, letters for everyone else (English first).
+    static func defaultStyle(forLanguage code: String?) -> NoteLabelStyle {
+        let language = code?.lowercased().split(separator: "-").first.map(String.init) ?? "en"
+        switch language {
+        case "id": return .notAngka
+        case "es", "fr", "it", "pt": return .solfege
+        default: return .letters
+        }
+    }
+}
+
 /// The single source of truth for the 32 keys: ids, labels, samples and pitch order.
 enum NoteCatalog {
     static let all: [Note] = [
@@ -68,6 +89,34 @@ enum NoteCatalog {
             preconditionFailure("NoteCatalog: unknown key id \(id)")
         }
         return note
+    }
+
+    private static let letterNames = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"]
+    private static let solfegeNames = ["Do", "Do♯", "Re", "Re♯", "Mi", "Fa", "Fa♯", "Sol", "Sol♯", "La", "La♯", "Si"]
+
+    /// MIDI note number of a key (F3 = 53).
+    static func midi(_ id: Int) -> Int { 53 + note(id).semitone }
+
+    /// The name of a key in a style. Letters: `C4`, `F♯3`. Solfege: `Do`, with a dot above for each octave up from middle C and
+    /// a dot after for each octave down (`Sol.`, `Fa♯.`). Not angka: the original label (`1`, `5.`, `4˙#`).
+    static func label(for id: Int, style: NoteLabelStyle) -> String {
+        let midi = midi(id)
+        let pitchClass = midi % 12
+        let octave = midi / 12 - 1
+        switch style {
+        case .notAngka:
+            return note(id).label
+        case .letters:
+            return letterNames[pitchClass] + String(octave)
+        case .solfege:
+            let marks = octave >= 4 ? String(repeating: "˙", count: octave - 4) : String(repeating: ".", count: 4 - octave)
+            return solfegeNames[pitchClass] + marks
+        }
+    }
+
+    /// The name to show now, in the player's chosen style.
+    static func displayLabel(_ id: Int) -> String {
+        label(for: id, style: ProgressStore.shared.noteLabelStyle)
     }
 
     /// The key id for a *not angka* label, or `nil` if the label isn't a pianika key.

@@ -1,0 +1,33 @@
+{
+  "serverTime": "2026-10-15T08:00:00Z",
+  "ttlSeconds": 900,
+  "update": {
+    "action": "none",
+    "policy": { "minSupportedBuild": 40, "recommendedBuild": 57, "blockedBuilds": [52] },
+    "storeUrl": "https://apps.apple.com/app/id0000000000",
+    "title": { "id": "Versi baru tersedia", "en": "A new version is available" },
+    "message": { "id": "Perbarui Melodissimo untuk lagu dan fitur terbaru.", "en": "Update Melodissimo for the latest songs and features." }
+  },
+  "maintenance": null,
+  "flags": { "shop": true, "dailyChallenge": true, "micInput": false, "packStore": false },
+  "tuning": { "coins.perNewStar": 10, "coins.dailyBase": 50, "quiz.questions": 8 },
+  "content": {
+    "version": 12,
+    "schemaVersion": 1,
+    "manifestUrl": "https://cdn.example.app/manifests/12.json",
+    "signatureUrl": "https://cdn.example.app/manifests/12.json.sig",
+    "sha256": "9f2c0000000000000000000000000000000000000000000000000000000000aa"
+  },
+  "announcements": [
+    {
+      "id": "merdeka-2026",
+      "startsAt": "2026-08-10T00:00:00Z",
+      "endsAt": "2026-08-20T00:00:00Z",
+      "kind": "banner",
+      "title": { "id": "Dirgahayu RI!", "en": "Happy Independence Day!" },
+      "body": { "id": "Mainkan lagu kemerdekaan minggu ini.", "en": "Play the independence songs this week." },
+      "imageUrl": null,
+      "route": "freePlay"
+    }
+  ]
+}

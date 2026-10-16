@@ -1,0 +1,180 @@
+{
+  "vectors": [
+    {
+      "build": 1,
+      "policy": {
+        "minSupportedBuild": 0,
+        "recommendedBuild": 0,
+        "blockedBuilds": []
+      },
+      "action": "none"
+    },
+    {
+      "build": 57,
+      "policy": {
+        "minSupportedBuild": 0,
+        "recommendedBuild": 0,
+        "blockedBuilds": []
+      },
+      "action": "none"
+    },
+    {
+      "build": 52,
+      "policy": {
+        "minSupportedBuild": 40,
+        "recommendedBuild": 57,
+        "blockedBuilds": [
+          52
+        ]
+      },
+      "action": "hard"
+    },
+    {
+      "build": 39,
+      "policy": {
+        "minSupportedBuild": 40,
+        "recommendedBuild": 57,
+        "blockedBuilds": []
+      },
+      "action": "hard"
+    },
+    {
+      "build": 40,
+      "policy": {
+        "minSupportedBuild": 40,
+        "recommendedBuild": 57,
+        "blockedBuilds": []
+      },
+      "action": "soft"
+    },
+    {
+      "build": 41,
+      "policy": {
+        "minSupportedBuild": 40,
+        "recommendedBuild": 57,
+        "blockedBuilds": []
+      },
+      "action": "soft"
+    },
+    {
+      "build": 56,
+      "policy": {
+        "minSupportedBuild": 40,
+        "recommendedBuild": 57,
+        "blockedBuilds": []
+      },
+      "action": "soft"
+    },
+    {
+      "build": 57,
+      "policy": {
+        "minSupportedBuild": 40,
+        "recommendedBuild": 57,
+        "blockedBuilds": []
+      },
+      "action": "none"
+    },
+    {
+      "build": 58,
+      "policy": {
+        "minSupportedBuild": 40,
+        "recommendedBuild": 57,
+        "blockedBuilds": []
+      },
+      "action": "none"
+    },
+    {
+      "build": 0,
+      "policy": {
+        "minSupportedBuild": 1,
+        "recommendedBuild": 1,
+        "blockedBuilds": []
+      },
+      "action": "hard"
+    },
+    {
+      "build": 10,
+      "policy": {
+        "minSupportedBuild": 10,
+        "recommendedBuild": 10,
+        "blockedBuilds": []
+      },
+      "action": "none"
+    },
+    {
+      "build": 9,
+      "policy": {
+        "minSupportedBuild": 10,
+        "recommendedBuild": 10,
+        "blockedBuilds": []
+      },
+      "action": "hard"
+    },
+    {
+      "build": 11,
+      "policy": {
+        "minSupportedBuild": 10,
+        "recommendedBuild": 10,
+        "blockedBuilds": []
+      },
+      "action": "none"
+    },
+    {
+      "build": 60,
+      "policy": {
+        "minSupportedBuild": 40,
+        "recommendedBuild": 57,
+        "blockedBuilds": [
+          60
+        ]
+      },
+      "action": "hard"
+    },
+    {
+      "build": 58,
+      "policy": {
+        "minSupportedBuild": 40,
+        "recommendedBuild": 57,
+        "blockedBuilds": [
+          52
+        ]
+      },
+      "action": "none"
+    },
+    {
+      "build": 30,
+      "policy": {
+        "minSupportedBuild": 40,
+        "recommendedBuild": 20,
+        "blockedBuilds": []
+      },
+      "action": "hard"
+    },
+    {
+      "build": 100,
+      "policy": {
+        "minSupportedBuild": 0,
+        "recommendedBuild": 50,
+        "blockedBuilds": [
+          1,
+          2,
+          3
+        ]
+      },
+      "action": "none"
+    },
+    {
+      "build": 2,
+      "policy": {
+        "minSupportedBuild": 0,
+        "recommendedBuild": 50,
+        "blockedBuilds": [
+          1,
+          2,
+          3
+        ]
+      },
+      "action": "hard"
+    }
+  ]
+}

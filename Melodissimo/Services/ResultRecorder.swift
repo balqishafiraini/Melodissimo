@@ -13,6 +13,8 @@ struct ResultRecorder {
     let evaluateAchievements: () -> [String]
     /// Posts leaderboard scores (Game Center); tests pass a recorder instead.
     let submitScores: ([LeaderboardScore]) -> Void
+    /// Fixed revive numbers for tests; `nil` reads the current `Tuning` on every use.
+    var reviveRules: ReviveRules? = nil
 
     static let shared = ResultRecorder()
 
@@ -31,7 +33,10 @@ struct ResultRecorder {
 
     /// Applies a finished play to the stored progress and says what it earned.
     @discardableResult
-    func record(_ result: PlayResult) -> RewardSummary {
+    func record(_ original: PlayResult) -> RewardSummary {
+        // A won run that used a revive earns at most the revive star cap, whatever the screen computed.
+        var result = original
+        result.stars = Revive.cappedStars(original.stars, revivesUsed: original.revivesUsed, rules: reviveRules ?? Tuning.reviveRules())
         // The day's challenge has its own reward and doesn't touch any song, stage or Rush record.
         if let dateKey = result.request.dailyDateKey {
             return recordDaily(result, dateKey: dateKey)
@@ -52,7 +57,7 @@ struct ResultRecorder {
             isSong = true
             switch mode {
             case .practice:
-                if !progress.isSongPracticed(songId) { coins += CoinRewards.firstPractice }
+                if !progress.isSongPracticed(songId) { coins += CoinRewards.firstPracticeReward() }
                 progress.setSongPracticed(songId)
             case .perform:
                 summary = recordPerform(result, songId: songId)
@@ -117,7 +122,20 @@ struct ResultRecorder {
         progress.recordCombo(result.maxCombo)
         progress.registerPlayToday()
         summary.newAchievements = evaluateAchievements()
-        submitScores(LeaderboardSubmissions.scores(for: result, tourStars: progress.tourStars))
+        var props = result.request.analyticsProps
+        props["stars"] = .number(Double(result.stars))
+        props["score"] = .number(Double(result.score))
+        props["won"] = .bool(result.didWin)
+        props["revives"] = .number(Double(result.revivesUsed))
+        props["coins"] = .number(Double(coins))
+        Analytics.log(.stageEnd, props: props)
+        if isSongPerform { Analytics.log(.songPerformEnd, props: props) }
+        // A Melody Rush run that was revived counts for the local high score only.
+        var isRush = false
+        if case .rush = result.request.kind { isRush = true }
+        if !isRush || Revive.countsForLeaderboard(revivesUsed: result.revivesUsed) {
+            submitScores(LeaderboardSubmissions.scores(for: result, tourStars: progress.tourStars))
+        }
         return summary
     }
 
@@ -132,6 +150,11 @@ struct ResultRecorder {
             progress.earn(summary.coins)
         }
         summary.newAchievements = evaluateAchievements()
+        var props = result.request.analyticsProps
+        props["won"] = .bool(result.didWin)
+        props["coins"] = .number(Double(summary.coins))
+        props["revives"] = .number(Double(result.revivesUsed))
+        Analytics.log(.stageEnd, props: props)
         return summary
     }
 

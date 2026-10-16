@@ -117,10 +117,12 @@ final class CloudSync {
     }
 
     /// After "Reset progress": remove the synced keys from iCloud as well, so the old progress isn't
-    /// merged straight back. (Another device that still holds it can bring it back.)
+    /// merged straight back. (Another device that still holds it can bring it back.) Things paid for with
+    /// real money survive a reset, so they stay in iCloud too.
     func forgetProgress() {
         guard isEnabled() else { return }
-        for key in cloud.snapshot().keys where CloudMerge.isSynced(key, songTitles: songTitles) {
+        for key in cloud.snapshot().keys
+        where CloudMerge.isSynced(key, songTitles: songTitles) && ProgressStore.isResettableKey(key, songTitles: songTitles) {
             cloud.remove(forKey: key)
         }
         (cloud as? CloudSyncStore)?.synchronize()

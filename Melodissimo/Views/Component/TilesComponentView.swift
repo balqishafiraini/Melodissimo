@@ -367,7 +367,7 @@ struct PianoKeyboard: View {
         let note = NoteCatalog.note(id)
         // `.equatable()`: a press changes one key's inputs, so only that key re-renders.
         return KeyTile(id: id,
-                       label: note.label,
+                       label: NoteCatalog.displayLabel(note.id),
                        isBlack: note.isBlack,
                        showLabel: showLabels,
                        metrics: metrics,

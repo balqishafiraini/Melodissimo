@@ -168,7 +168,7 @@ struct ChartRecorderView: View {
     }
 
     private var expectedLabel: String {
-        model.expectedKeyId.map { NoteCatalog.note($0).label } ?? "✓"
+        model.expectedKeyId.map { NoteCatalog.displayLabel($0) } ?? "✓"
     }
 
     private var finishedPanel: some View {

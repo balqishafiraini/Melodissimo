@@ -30,28 +30,34 @@ enum CoinRewards {
     static let dailyStreakCap = 5
 
     /// A **won** stage or song: stars above the previous best, the first-clear bonuses and the replay
-    /// consolation when nothing improved.
+    /// consolation when nothing improved. The amounts come from `Tuning`, with the constants above as defaults.
     static func clear(newStars: Int, isFirstStageClear: Bool, isFirstBossClear: Bool) -> Int {
-        var coins = max(0, newStars) * perNewStar
-        if isFirstStageClear { coins += firstClear }
-        if isFirstBossClear { coins += firstBossClear }
-        if newStars <= 0, !isFirstStageClear { coins += replayClear }
+        var coins = max(0, newStars) * Tuning.int("coins.perNewStar", default: perNewStar)
+        if isFirstStageClear { coins += Tuning.int("coins.firstClear", default: firstClear) }
+        if isFirstBossClear { coins += Tuning.int("coins.firstBossClear", default: firstBossClear) }
+        if newStars <= 0, !isFirstStageClear { coins += Tuning.int("coins.replayClear", default: replayClear) }
         return coins
     }
 
+    static func firstPracticeReward() -> Int {
+        Tuning.int("coins.firstPractice", default: firstPractice)
+    }
+
     static func rush(correctAnswers: Int) -> Int {
-        max(0, correctAnswers) / rushAnswersPerCoin
+        max(0, correctAnswers) / max(1, Tuning.int("coins.rushAnswersPerCoin", default: rushAnswersPerCoin, range: 1...1000))
     }
 
     static func echoEndless(rounds: Int) -> Int {
-        max(0, rounds) * perEchoRound
+        max(0, rounds) * Tuning.int("coins.perEchoRound", default: perEchoRound)
     }
 
     static func quiz(correctAnswers: Int) -> Int {
-        max(0, correctAnswers) * perQuizAnswer
+        max(0, correctAnswers) * Tuning.int("coins.perQuizAnswer", default: perQuizAnswer)
     }
 
     static func daily(streak: Int) -> Int {
-        dailyBase + dailyPerStreakDay * min(max(streak, 0), dailyStreakCap)
+        let cap = Tuning.int("coins.dailyStreakCap", default: dailyStreakCap, range: 0...365)
+        return Tuning.int("coins.dailyBase", default: dailyBase)
+            + Tuning.int("coins.dailyPerStreakDay", default: dailyPerStreakDay) * min(max(streak, 0), cap)
     }
 }

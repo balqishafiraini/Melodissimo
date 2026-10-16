@@ -1,0 +1,105 @@
+{
+  "algorithm": "fnv1a32(utf8(installId + ':' + key)) % 100",
+  "vectors": [
+    {
+      "installId": "6F1C0E2A-1111-4A5B-8C3D-000000000001",
+      "key": "shop",
+      "bucket": 40
+    },
+    {
+      "installId": "6F1C0E2A-1111-4A5B-8C3D-000000000002",
+      "key": "coinStore",
+      "bucket": 91
+    },
+    {
+      "installId": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",
+      "key": "shop",
+      "bucket": 29
+    },
+    {
+      "installId": "install-1",
+      "key": "coinStore",
+      "bucket": 30
+    },
+    {
+      "installId": "install-2",
+      "key": "shop",
+      "bucket": 71
+    },
+    {
+      "installId": "",
+      "key": "coinStore",
+      "bucket": 45
+    },
+    {
+      "installId": "00000000-0000-0000-0000-000000000000",
+      "key": "shop",
+      "bucket": 77
+    },
+    {
+      "installId": "ünïcode-id",
+      "key": "coinStore",
+      "bucket": 95
+    },
+    {
+      "installId": "6F1C0E2A-1111-4A5B-8C3D-000000000001",
+      "key": "dailyChallenge",
+      "bucket": 18
+    },
+    {
+      "installId": "6F1C0E2A-1111-4A5B-8C3D-000000000002",
+      "key": "packStore",
+      "bucket": 59
+    },
+    {
+      "installId": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",
+      "key": "dailyChallenge",
+      "bucket": 47
+    },
+    {
+      "installId": "install-1",
+      "key": "packStore",
+      "bucket": 58
+    },
+    {
+      "installId": "install-2",
+      "key": "dailyChallenge",
+      "bucket": 21
+    },
+    {
+      "installId": "",
+      "key": "packStore",
+      "bucket": 69
+    },
+    {
+      "installId": "00000000-0000-0000-0000-000000000000",
+      "key": "dailyChallenge",
+      "bucket": 15
+    },
+    {
+      "installId": "ünïcode-id",
+      "key": "packStore",
+      "bucket": 39
+    },
+    {
+      "installId": "6F1C0E2A-1111-4A5B-8C3D-000000000001",
+      "key": "micInput",
+      "bucket": 73
+    },
+    {
+      "installId": "6F1C0E2A-1111-4A5B-8C3D-000000000002",
+      "key": "release:12",
+      "bucket": 57
+    },
+    {
+      "installId": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",
+      "key": "micInput",
+      "bucket": 76
+    },
+    {
+      "installId": "install-1",
+      "key": "release:12",
+      "bucket": 62
+    }
+  ]
+}

@@ -22,7 +22,7 @@ struct QuizView: View {
 
     init(request: PlayRequest, config: QuizConfig) {
         self.request = request
-        _viewModel = StateObject(wrappedValue: QuizViewModel(config: config))
+        _viewModel = StateObject(wrappedValue: QuizViewModel(config: config, reviveRun: ReviveRun.forPlay(request)))
     }
 
     private var variant: QuizVariant { viewModel.config.variant }
@@ -37,6 +37,14 @@ struct QuizView: View {
                 choices
                     .padding(.horizontal, Sizing.s(24))
                     .padding(.bottom, Sizing.s(24))
+            }
+        }
+        .overlay {
+            if viewModel.phase == .awaitingContinue, let run = viewModel.reviveRun {
+                ContinueSheet(options: run.options,
+                              onRevive: { viewModel.revive($0, now: CACurrentMediaTime()) },
+                              onGiveUp: { viewModel.giveUp() },
+                              onNeedCoins: { router.push(.shopCoins) })
             }
         }
         .playScreen()
@@ -169,7 +177,7 @@ struct QuizView: View {
             return isCorrect ? "⭐ Correct!" : "Oops! Here's the right one"
         case .won:
             return "You did it!"
-        case .lost:
+        case .awaitingContinue, .lost:
             return "Out of hearts"
         }
     }
@@ -234,7 +242,7 @@ struct QuizView: View {
                     Image(systemName: icon)
                         .frame(height: Sizing.f(44))
                 }
-                Text(LocalizedStringKey(question.choices[index]))
+                Text(LocalizedStringKey(displayChoice(question.choices[index])))
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.5)
             }
@@ -250,6 +258,13 @@ struct QuizView: View {
 
     /// Green on the right answer and red on a wrong pick once answered; during playback in Spot Fals
     /// the written note that is sounding is lit, so the player can follow along.
+    /// "Spot Fals's note" choices are written notes: they follow the chosen note names (the quiz generator keeps the not angka
+    /// text as the identity of each choice).
+    private func displayChoice(_ choice: String) -> String {
+        guard variant == .spotFals, let id = NoteCatalog.id(forLabel: choice) else { return choice }
+        return NoteCatalog.displayLabel(id)
+    }
+
     private func choiceStyle(_ index: Int, in question: QuizQuestion) -> (background: Color, foreground: Color) {
         switch viewModel.phase {
         case .feedback(let chosen, _):
@@ -282,6 +297,7 @@ struct QuizView: View {
                                 score: viewModel.correctCount, accuracy: nil, maxCombo: viewModel.bestStreak,
                                 perfect: 0, great: 0, good: 0, miss: 0, wrong: 0)
         result.correctCount = viewModel.correctCount
+        result.revivesUsed = viewModel.reviveRun?.revivesUsed ?? 0
         let rewards = ResultRecorder.record(result)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
             if isOnScreen {

@@ -5,18 +5,52 @@
 
 import SwiftUI
 
-/// Spend coins on cosmetics: keyboard skins, falling-note skins and Alpanica's outfits. Nothing here
-/// is bought with real money. Buying asks first; owned items can be worn or swapped at any time.
+/// What a tab of the shop shows.
+enum ShopTab: Hashable {
+    case category(ShopCategory)
+    /// Coin packs bought with real money.
+    case coins
+}
+
+/// Spend coins on cosmetics (keyboard skins, falling-note skins, Alpanica's outfits) and hearts, or buy coin
+/// packs with real money. Buying a cosmetic asks first; owned items can be worn or swapped at any time.
 struct ShopView: View {
     @EnvironmentObject private var router: AppRouter
     @ObservedObject private var progress = ProgressStore.shared
+    @ObservedObject private var store = StoreService.shared
+    /// Observed so a flag change from the server redraws the shop.
+    @ObservedObject private var bootstrap = BootstrapService.shared
+    /// Observed so art that finishes downloading makes its items appear.
+    @ObservedObject private var content = ContentStore.shared
+    @ObservedObject private var entitlements = Entitlements.shared
 
-    @State private var category: ShopCategory = .keyboard
+    @State private var tab: ShopTab
     @State private var itemToBuy: ShopItem?
     /// Achievements a purchase just unlocked (the Kolektor), shown for a few seconds.
     @State private var unlockedTitles: [String] = []
+    /// The last coin-pack purchase that did not simply succeed, shown under the tabs.
+    @State private var storeMessage: LocalizedStringKey?
+    @State private var isBuyingProduct = false
 
     private let columns = [GridItem(.adaptive(minimum: Sizing.isPhone ? 150 : 230), spacing: Sizing.isPhone ? 10 : 20)]
+
+    init(startAtCoins: Bool = false) {
+        _tab = State(initialValue: startAtCoins ? .coins : .category(.keyboard))
+    }
+
+    /// Tabs come from the data: categories that have something to show, then the coin packs.
+    private var tabs: [ShopTab] {
+        var list = ShopCatalog.visibleCategories(owned: progress.purchasedShopItemIds).map(ShopTab.category)
+        if FeatureFlags.isOn(.coinStore), !ProductCatalog.consumablesOnSale(granted: PurchaseGrants.ledger(in: progress)).isEmpty {
+            list.append(.coins)
+        }
+        return list
+    }
+
+    /// The selected tab, or the first one when it has disappeared (the coin packs switched off by the `coinStore` flag).
+    private var displayedTab: ShopTab {
+        tabs.contains(tab) ? tab : (tabs.first ?? .category(.keyboard))
+    }
 
     var body: some View {
         ZStack {
@@ -24,11 +58,23 @@ struct ShopView: View {
 
             VStack(spacing: Sizing.s(18)) {
                 topBar
-                tabs
+                tabBar
+                if let storeMessage {
+                    Text(storeMessage)
+                        .font(.headline)
+                        .foregroundColor(Color.darkGreen)
+                }
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: Sizing.isPhone ? 10 : 20) {
-                        ForEach(ShopCatalog.items(in: category)) { item in
-                            card(for: item)
+                        switch displayedTab {
+                        case .category(let category):
+                            ForEach(ShopCatalog.visibleItems(in: category, owned: progress.purchasedShopItemIds)) { item in
+                                card(for: item)
+                            }
+                        case .coins:
+                            ForEach(ProductCatalog.consumablesOnSale(granted: PurchaseGrants.ledger(in: progress))) { product in
+                                coinCard(for: product)
+                            }
                         }
                     }
                     .padding(.vertical, 4)
@@ -50,6 +96,17 @@ struct ShopView: View {
             Button("Cancel", role: .cancel) {}
         } message: { item in
             Text("It costs \(item.price) coins.")
+        }
+        .task { await store.loadProducts() }
+        .task { await fetchMissingArt() }
+    }
+
+    /// Items from a content release whose art isn't on the device yet are hidden; their art is fetched when the shop opens
+    /// and each item appears as soon as it has arrived.
+    private func fetchMissingArt() async {
+        let pending = ShopCatalog.items.filter { ShopCatalog.isOnSale($0) && !ShopCatalog.hasArt($0) }
+        for key in ShopCatalog.artKeys(of: pending) where ContentStore.shared.url(forAsset: key) == nil {
+            _ = try? await ContentSync.shared.ensureAsset(key)
         }
     }
 
@@ -73,34 +130,47 @@ struct ShopView: View {
                         .font(Font.headline)
                 }
                 Spacer()
-                CoinBadge(height: Sizing.tap(80))
-            }
-        }
-    }
-
-    private var tabs: some View {
-        HStack(spacing: Sizing.s(14)) {
-            ForEach(ShopCategory.allCases, id: \.self) { tab in
-                SoundButton {
-                    category = tab
-                } label: {
-                    Text(Self.title(of: tab))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: Sizing.tap(60))
-                        .background(category == tab ? Color.darkGreen : Color.white)
-                        .foregroundColor(category == tab ? .white : Color.darkGreen)
-                        .cornerRadius(Sizing.s(20))
-                        .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
+                if FeatureFlags.isOn(.coinStore) {
+                    SoundButton {
+                        tab = .coins
+                    } label: {
+                        CoinBadge(height: Sizing.tap(80))
+                    }
+                } else {
+                    CoinBadge(height: Sizing.tap(80))
                 }
             }
         }
     }
 
-    private static func title(of category: ShopCategory) -> LocalizedStringKey {
-        switch category {
-        case .keyboard: return "Keyboard"
-        case .notes: return "Notes"
-        case .outfit: return "Outfit"
+    private var tabBar: some View {
+        HStack(spacing: Sizing.s(14)) {
+            ForEach(tabs, id: \.self) { entry in
+                SoundButton {
+                    tab = entry
+                    storeMessage = nil
+                } label: {
+                    Text(Self.title(of: entry))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: Sizing.tap(60))
+                        .background(displayedTab == entry ? Color.darkGreen : Color.white)
+                        .foregroundColor(displayedTab == entry ? .white : Color.darkGreen)
+                        .cornerRadius(Sizing.s(20))
+                        .font(.custom("BalooDa-Regular", size: Sizing.f(28)))
+                        .minimumScaleFactor(0.7)
+                        .lineLimit(1)
+                }
+            }
+        }
+    }
+
+    private static func title(of tab: ShopTab) -> LocalizedStringKey {
+        switch tab {
+        case .category(.keyboard): return "Keyboard"
+        case .category(.notes): return "Notes"
+        case .category(.outfit): return "Outfit"
+        case .category(.boost): return "Hearts"
+        case .coins: return "Coins"
         }
     }
 
@@ -123,11 +193,51 @@ struct ShopView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
                 .foregroundColor(Color.darkGreen)
-            actionButton(for: item)
+            if let note = availabilityNote(for: item) {
+                Text(note)
+                    .font(.caption)
+                    .foregroundColor(Color.darkGreen.opacity(0.7))
+            }
+            if item.kind == .consumable {
+                consumableButtons(for: item)
+            } else {
+                actionButton(for: item)
+            }
         }
         .padding(Sizing.isPhone ? 8 : 16)
         .frame(maxWidth: .infinity)
         .background(RoundedRectangle(cornerRadius: Sizing.s(28)).fill(Color.white))
+        .overlay(alignment: .topTrailing) { tagBadge(for: item) }
+    }
+
+    /// "Sale" and "New" for items that carry those tags, and "Plus" on Plus-only items.
+    @ViewBuilder
+    private func tagBadge(for item: ShopItem) -> some View {
+        if item.plusOnly {
+            Text("Plus")
+                .font(.caption.bold())
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Capsule().fill(Color.darkGreen))
+                .foregroundColor(.white)
+                .padding(8)
+        } else if item.tags.contains("sale") || item.tags.contains("new") {
+            Text(item.tags.contains("sale") ? "Sale" : "New")
+                .font(.caption.bold())
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Capsule().fill(item.tags.contains("sale") ? Color.red : Color.green))
+                .foregroundColor(.white)
+                .padding(8)
+        }
+    }
+
+    /// "Ends in N days" while an item has an end date within the next two weeks.
+    private func availabilityNote(for item: ShopItem) -> LocalizedStringKey? {
+        guard let until = item.availableUntil else { return nil }
+        let days = Int(until.timeIntervalSinceNow / 86_400)
+        guard until > Date(), days <= 14 else { return nil }
+        return days <= 0 ? "Ends today" : "Ends in \(days) days"
     }
 
     @ViewBuilder
@@ -139,10 +249,13 @@ struct ShopView: View {
             NotesPreview(skin: NoteSkin(itemId: item.id))
         case .outfit:
             // A tinted backdrop, so the white alpaca doesn't vanish into the white card.
-            AssetImage(name: AlpanicaOutfit(rawValue: item.variant)?.assetName ?? "alpanica", fallbackEmoji: "🦙")
+            ArtImage(source: AlpanicaOutfit(item: item).preview)
                 .padding(6)
                 .frame(width: 190)
                 .background(RoundedRectangle(cornerRadius: 16).fill(Color.softBlue.opacity(0.6)))
+        case .boost:
+            AssetImage(name: item.bundledArt?.preview ?? "", fallbackEmoji: "❤️")
+                .padding(6)
         }
     }
 
@@ -167,31 +280,131 @@ struct ShopView: View {
                     .cornerRadius(Sizing.s(16))
                     .font(.headline)
             }
-        } else {
-            let canAfford = progress.coinBalance >= item.price
+        } else if !ShopCatalog.canBuy(item, isPlus: entitlements.isPlusActive) {
+            // Plus-only: members buy it with coins as usual; everyone else is shown the Plus screen.
             SoundButton {
-                itemToBuy = item
+                router.push(.plus)
             } label: {
-                HStack(spacing: 8) {
-                    AssetImage(name: "icon_coin", fallbackEmoji: "🪙")
-                        .frame(width: Sizing.s(30), height: Sizing.s(30))
-                    Text("\(item.price)")
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: Sizing.tap(52))
-                .background(canAfford ? Color.yellow : Color.gray.opacity(0.35))
-                .foregroundColor(canAfford ? Color.darkGreen : Color.darkGreen.opacity(0.5))
-                .cornerRadius(Sizing.s(16))
-                .font(.custom("BalooDa-Regular", size: Sizing.f(26)))
+                Text("Get Plus")
+                    .frame(maxWidth: .infinity)
+                    .frame(height: Sizing.tap(52))
+                    .background(Color.darkGreen)
+                    .foregroundColor(.white)
+                    .cornerRadius(Sizing.s(16))
+                    .font(.headline)
             }
-            .disabled(!canAfford)
-            .accessibilityHint(canAfford ? Text("") : Text("Not enough coins"))
+        } else {
+            priceButton(price: item.price) { itemToBuy = item }
+        }
+    }
+
+    /// A consumable shows how many the player holds and buys one or five at a time.
+    private func consumableButtons(for item: ShopItem) -> some View {
+        let stack = item.maxStack ?? ProgressStore.defaultMaxStack
+        return VStack(spacing: Sizing.isPhone ? 4 : 8) {
+            Text("You have \(progress.inventoryCount(item.id, maxStack: stack))")
+                .font(.headline)
+                .foregroundColor(Color.darkGreen)
+            HStack(spacing: Sizing.s(8)) {
+                ForEach([1, 5], id: \.self) { count in
+                    priceButton(price: item.price * count, label: "×\(count)") {
+                        if progress.buyConsumable(item, count: count, maxStack: stack) {
+                            SFX.play(.coin)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func priceButton(price: Int, label: String? = nil, action: @escaping () -> Void) -> some View {
+        let canAfford = progress.coinBalance >= price
+        return SoundButton {
+            action()
+        } label: {
+            HStack(spacing: 6) {
+                if let label { Text(label) }
+                AssetImage(name: "icon_coin", fallbackEmoji: "🪙")
+                    .frame(width: Sizing.s(30), height: Sizing.s(30))
+                Text("\(price)")
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: Sizing.tap(52))
+            .background(canAfford ? Color.yellow : Color.gray.opacity(0.35))
+            .foregroundColor(canAfford ? Color.darkGreen : Color.darkGreen.opacity(0.5))
+            .cornerRadius(Sizing.s(16))
+            .font(.custom("BalooDa-Regular", size: Sizing.f(26)))
+            .minimumScaleFactor(0.6)
+            .lineLimit(1)
+        }
+        .disabled(!canAfford)
+        .accessibilityHint(canAfford ? Text("") : Text("Not enough coins"))
+    }
+
+    // MARK: Coin packs
+
+    private func coinCard(for product: StoreProduct) -> some View {
+        let grants = product.grants ?? PurchaseGrant()
+        return VStack(spacing: Sizing.isPhone ? 6 : 12) {
+            AssetImage(name: "icon_coin", fallbackEmoji: "🪙")
+                .frame(height: Sizing.isPhone ? 56 : 90)
+            Text("\(grants.coins) coins")
+                .font(.custom("BalooDa-Regular", size: Sizing.f(30)))
+                .foregroundColor(Color.darkGreen)
+            if let hearts = grants.items[ReviveRules.heartItemId] {
+                Text("+ \(hearts) hearts")
+                    .font(.headline)
+                    .foregroundColor(Color.darkGreen)
+            }
+            SoundButton {
+                buyProduct(product)
+            } label: {
+                Text(store.displayPrice(for: product.id) ?? "…")
+                    .frame(maxWidth: .infinity)
+                    .frame(height: Sizing.tap(52))
+                    .background(Color.darkGreen)
+                    .foregroundColor(.white)
+                    .cornerRadius(Sizing.s(16))
+                    .font(.headline)
+            }
+            .disabled(store.displayPrice(for: product.id) == nil || isBuyingProduct)
+        }
+        .padding(Sizing.isPhone ? 8 : 16)
+        .frame(maxWidth: .infinity)
+        .background(RoundedRectangle(cornerRadius: Sizing.s(28)).fill(Color.white))
+        .overlay(alignment: .topTrailing) {
+            if let badge = product.badge {
+                Text(badge == "popular" ? "Popular" : (badge == "bestValue" ? "Best value" : "Special"))
+                    .font(.caption.bold())
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(Capsule().fill(Color.red))
+                    .foregroundColor(.white)
+                    .padding(8)
+            }
+        }
+    }
+
+    private func buyProduct(_ product: StoreProduct) {
+        isBuyingProduct = true
+        storeMessage = nil
+        Analytics.log(.shopBuyCoins, props: ["productId": .string(product.id)])
+        Task {
+            let outcome = await store.buy(product.id)
+            isBuyingProduct = false
+            switch outcome {
+            case .success: SFX.play(.coin)
+            case .pending: storeMessage = "Waiting for approval"
+            case .cancelled: break
+            case .failed: storeMessage = "The purchase did not go through"
+            }
         }
     }
 
     private func buy(_ item: ShopItem) {
         // Wear a new purchase right away, since that is what people want to see.
         if progress.buy(item) {
+            Analytics.log(.shopItemBought, props: ["productId": .string(item.id), "kind": .string(item.category.rawValue), "coins": .number(Double(item.price))])
             progress.equip(item)
             SFX.play(.coin)
             showUnlocked(AchievementStore.shared.evaluate().map(\.title))

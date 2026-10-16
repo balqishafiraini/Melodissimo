@@ -23,6 +23,8 @@ final class EchoViewModel: ObservableObject {
         case yourTurn(progress: Int)
         case roundCleared
         case mistake
+        /// Out of hearts with a revive on offer: waiting for the player to continue or give up.
+        case awaitingContinue
         case won
         case lost
     }
@@ -45,6 +47,8 @@ final class EchoViewModel: ObservableObject {
     static let pauseAfterMistake = 0.8
 
     let config: EchoConfig
+    /// The run's revive state, or `nil` when the run can't be revived.
+    let reviveRun: ReviveRun?
 
     @Published private(set) var phase: Phase = .ready
     @Published private(set) var hearts: Int
@@ -68,10 +72,12 @@ final class EchoViewModel: ObservableObject {
     private let soundStopper: (String) -> Void
 
     init(config: EchoConfig,
+         reviveRun: ReviveRun? = nil,
          songs: [[Int]] = SongLibrary.all.map(\.keyIds),
          soundPlayer: @escaping (String) -> Void = { playSound(key: $0) },
          soundStopper: @escaping (String) -> Void = { stopSound(key: $0) }) {
         self.config = config
+        self.reviveRun = reviveRun
         self.pool = config.pool.isEmpty ? NoteCatalog.whiteKeyIDs : config.pool
         self.songs = songs
         self.hearts = config.hearts
@@ -86,7 +92,9 @@ final class EchoViewModel: ObservableObject {
 
     /// Hearts left when the stage is cleared, 0 otherwise.
     var stars: Int {
-        phase == .won ? min(max(hearts, 0), 3) : 0
+        guard phase == .won else { return 0 }
+        let earned = min(max(hearts, 0), 3)
+        return reviveRun?.cappedStars(earned) ?? earned
     }
 
     /// Length of the phrase for the round being played.
@@ -122,7 +130,7 @@ final class EchoViewModel: ObservableObject {
             emit(.wrong, keyId: keyId)
             hearts = max(0, hearts - 1)
             if hearts == 0 {
-                phase = .lost
+                phase = reviveRun.map { $0.options.isEmpty } == false ? .awaitingContinue : .lost
             } else {
                 phase = .mistake
                 resumeAt = now + EchoViewModel.pauseAfterMistake
@@ -139,9 +147,28 @@ final class EchoViewModel: ObservableObject {
             if now >= resumeAt { beginRound(now: now) }
         case .mistake:
             if now >= resumeAt { beginPlayback(now: now) }   // same phrase again
-        case .ready, .yourTurn, .won, .lost:
+        case .ready, .yourTurn, .awaitingContinue, .won, .lost:
             break
         }
+    }
+
+    // MARK: Revive
+
+    /// Continues after the hearts ran out: pays, restores hearts and replays the same phrase. `false`, changing
+    /// nothing, when it isn't offered or can't be paid.
+    @discardableResult
+    func revive(_ source: ReviveSource, now: CFTimeInterval) -> Bool {
+        guard phase == .awaitingContinue, let run = reviveRun, run.perform(source) else { return false }
+        hearts = run.rules.heartsRestored
+        phase = .mistake
+        resumeAt = now + EchoViewModel.pauseAfterMistake
+        return true
+    }
+
+    /// The player chose not to continue.
+    func giveUp() {
+        guard phase == .awaitingContinue else { return }
+        phase = .lost
     }
 
     // MARK: Rounds and playback

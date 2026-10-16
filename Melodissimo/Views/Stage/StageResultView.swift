@@ -28,7 +28,7 @@ struct StageResultView: View {
         if isDaily { return "Daily Challenge" }
         switch result.request.kind {
         case .song(let songId, _, _, _, _, _):
-            return LocalizedStringKey(SongLibrary.song(id: songId)?.title ?? "")
+            return LocalizedStringKey(SongLibrary.song(id: songId)?.displayTitle ?? "")
         case .battle(let config):
             return config.isBoss ? "Boss Battle" : "Note Battle"
         case .classic(let levelNo):

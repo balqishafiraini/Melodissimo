@@ -1,0 +1,68 @@
+{
+  "products": [
+    {
+      "id": "melodissimo.bundle.starter",
+      "type": "consumable",
+      "grants": {
+        "coins": 500,
+        "items": {
+          "boost_heart": 5
+        }
+      },
+      "oncePerPlayer": true,
+      "order": 0
+    },
+    {
+      "id": "melodissimo.coins.small",
+      "type": "consumable",
+      "grants": {
+        "coins": 300
+      },
+      "order": 1
+    },
+    {
+      "id": "melodissimo.coins.medium",
+      "type": "consumable",
+      "grants": {
+        "coins": 1100
+      },
+      "order": 2,
+      "badge": "popular"
+    },
+    {
+      "id": "melodissimo.coins.large",
+      "type": "consumable",
+      "grants": {
+        "coins": 3000
+      },
+      "order": 3,
+      "badge": "bestValue"
+    },
+    {
+      "id": "melodissimo.plus.monthly",
+      "type": "autoRenewable",
+      "group": "plus",
+      "unlocks": [
+        "pack:*"
+      ],
+      "order": 100
+    },
+    {
+      "id": "melodissimo.plus.yearly",
+      "type": "autoRenewable",
+      "group": "plus",
+      "unlocks": [
+        "pack:*"
+      ],
+      "order": 101
+    },
+    {
+      "id": "melodissimo.pack.daerah_sumatra",
+      "type": "nonConsumable",
+      "unlocks": [
+        "pack:daerah-sumatra"
+      ],
+      "order": 110
+    }
+  ]
+}

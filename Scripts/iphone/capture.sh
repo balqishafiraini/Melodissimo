@@ -6,6 +6,7 @@
 # Environment:
 #   SEED=1      fill the mid-game profile (-qaSeed YES); without it the profile is whatever the simulator holds
 #   LANG_ID=1   render Indonesian instead of English
+#   LANG_CODE=ms  render any language (a BCP-47 code such as ms, ja, pt-BR); overrides LANG_ID
 #   WAIT=<s>    fixed wait after the first non-blank frame (default 3)
 #   EXTRA=...   more launch arguments, e.g. EXTRA="-qaSong halo-halo-bandung"
 #   BUNDLE_ID   defaults to com.balqishafiraini.Melodissimo
@@ -34,7 +35,9 @@ default_names=(
 )
 if [ "$#" -gt 0 ]; then names=("$@"); else names=("${default_names[@]}"); fi
 
-if [ "${LANG_ID:-0}" = "1" ]; then
+if [ -n "${LANG_CODE:-}" ]; then
+    language_args=(-AppleLanguages "(${LANG_CODE})" -AppleLocale "${LANG_CODE//-/_}")
+elif [ "${LANG_ID:-0}" = "1" ]; then
     language_args=(-AppleLanguages "(id)" -AppleLocale id_ID)
 else
     language_args=(-AppleLanguages "(en)" -AppleLocale en_US)

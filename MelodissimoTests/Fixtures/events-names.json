@@ -1,0 +1,18 @@
+{
+  "names": [
+    "app_open",
+    "stage_start",
+    "stage_end",
+    "song_perform_end",
+    "shop_buy_coins",
+    "paywall_view",
+    "purchase_success",
+    "purchase_pending",
+    "revive_used",
+    "coins_purchased",
+    "shop_item_bought",
+    "content_activated",
+    "content_verify_failed",
+    "update_prompt_shown"
+  ]
+}

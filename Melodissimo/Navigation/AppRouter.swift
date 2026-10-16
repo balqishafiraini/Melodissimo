@@ -34,6 +34,14 @@ enum Route: Hashable {
     case learnHub
     /// Spend coins on keyboard skins, note skins and outfits.
     case shop
+    /// The shop opened at the coin packs (the coin badge, and "not enough coins" on the Continue sheet).
+    case shopCoins
+    /// The song packs on sale (behind the `packStore` flag).
+    case packStore
+    /// The purchase screen of one pack.
+    case paywall(packId: String)
+    /// The Melodissimo Plus subscription screen.
+    case plus
     /// Note speed, key labels, audio timing and reset.
     case settings
 }
