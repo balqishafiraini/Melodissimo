@@ -37,6 +37,11 @@ struct BundleBaseline: ContentBaseline {
     }
 }
 
+extension Notification.Name {
+    /// Posted on the main thread whenever the active pack changes, so caches built from it (songs, charts) are dropped.
+    static let contentStoreDidActivate = Notification.Name("melodissimo.contentStoreDidActivate")
+}
+
 final class ContentStore: ObservableObject {
 
     static let shared = ContentStore()
@@ -53,6 +58,7 @@ final class ContentStore: ObservableObject {
     private let lock = NSLock()
     private var active: Loaded?
     private var baselinePack: Loaded?
+    private var activeCDN: URL?
 
     init(root: URL = ContentStore.defaultRoot,
          baseline: ContentBaseline = BundleBaseline(),
@@ -78,6 +84,11 @@ final class ContentStore: ObservableObject {
     /// Reads the active downloaded pack (verifying its signature again, which is cheap) and the baseline. A pack that
     /// fails verification is ignored, so the baseline is used instead.
     func loadActive() {
+        // A release downloaded last time is activated now: launch is a safe moment (no song is playing).
+        if let staged = readPointer(stagedPointer), loadDownloaded(version: staged.version) != nil {
+            _ = writeActivePointer(staged.version, cdnBase: staged.cdnBase)
+            try? FileManager.default.removeItem(at: stagedPointer)
+        }
         let loadedActive = readActive()
         let loadedBaseline = readBaseline()
         lock.withLock {
@@ -94,11 +105,22 @@ final class ContentStore: ObservableObject {
         return Loaded(manifest: manifest)
     }
 
+    /// `active.json` and `staged.json`: which version, and the CDN it came from (to fetch audio on demand later).
+    private struct Pointer: Codable {
+        let version: Int
+        let cdnBase: String?
+    }
+
+    private func readPointer(_ url: URL) -> Pointer? {
+        (try? Data(contentsOf: url)).flatMap { try? JSONDecoder().decode(Pointer.self, from: $0) }
+    }
+
     private func readActive() -> Loaded? {
-        struct Pointer: Decodable { let version: Int }
-        guard let pointerData = try? Data(contentsOf: activePointer),
-              let version = (try? JSONDecoder().decode(Pointer.self, from: pointerData))?.version,
-              let loaded = loadDownloaded(version: version) else { return nil }
+        guard let pointer = readPointer(activePointer), let loaded = loadDownloaded(version: pointer.version) else {
+            lock.withLock { activeCDN = nil }
+            return nil
+        }
+        lock.withLock { activeCDN = pointer.cdnBase.flatMap(URL.init(string:)) }
         return loaded
     }
 
@@ -113,21 +135,87 @@ final class ContentStore: ObservableObject {
     }
 
     /// Makes a downloaded version the active one (the caller has verified and staged it).
-    func activate(version: Int) -> Bool {
-        guard let loaded = loadDownloaded(version: version) else { return false }
-        do {
-            try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
-            try JSONEncoder().encode(["version": version]).write(to: activePointer, options: .atomic)
-        } catch {
-            return false
+    func activate(version: Int, cdnBase: URL? = nil) -> Bool {
+        guard let loaded = loadDownloaded(version: version), writeActivePointer(version, cdnBase: cdnBase?.absoluteString) else { return false }
+        lock.withLock {
+            active = loaded
+            activeCDN = cdnBase
         }
-        lock.withLock { active = loaded }
         notifyChange()
         return true
     }
 
+    private func writeActivePointer(_ version: Int, cdnBase: String?) -> Bool {
+        do {
+            try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+            try JSONEncoder().encode(Pointer(version: version, cdnBase: cdnBase)).write(to: activePointer, options: .atomic)
+            // Downloaded content is not part of the player's backup: it can always be fetched again.
+            var values = URLResourceValues()
+            values.isExcludedFromBackup = true
+            var folder = root
+            try? folder.setResourceValues(values)
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    /// The version of the active downloaded pack, if any.
+    var activeVersion: Int? { lock.withLock { active?.manifest.contentVersion } }
+
     private func notifyChange() {
-        if Thread.isMainThread { objectWillChange.send() } else { DispatchQueue.main.async { self.objectWillChange.send() } }
+        let post = {
+            self.objectWillChange.send()
+            NotificationCenter.default.post(name: .contentStoreDidActivate, object: self)
+        }
+        if Thread.isMainThread { post() } else { DispatchQueue.main.async(execute: post) }
+    }
+
+    // MARK: Staging
+
+    private var stagedPointer: URL { root.appendingPathComponent("staged.json") }
+
+    /// A release that is downloaded and verified but not yet in use. It is activated at the next launch, or by
+    /// `activateStagedIfIdle()` when Home is showing and no song is playing (`BACKEND_PLAN.md` §3.4 invariant 4).
+    var stagedVersion: Int? { readPointer(stagedPointer)?.version }
+
+    func markStaged(version: Int, cdnBase: URL? = nil) {
+        try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        try? JSONEncoder().encode(Pointer(version: version, cdnBase: cdnBase?.absoluteString)).write(to: stagedPointer, options: .atomic)
+    }
+
+    /// Activates the staged release when nothing is playing. Returns whether the pack changed.
+    @discardableResult
+    func activateStagedIfIdle(isIdle: Bool = !PlaySession.isActive) -> Bool {
+        guard isIdle, let pointer = readPointer(stagedPointer), pointer.version != activeVersion else { return false }
+        guard activate(version: pointer.version, cdnBase: pointer.cdnBase.flatMap(URL.init(string:))) else { return false }
+        try? FileManager.default.removeItem(at: stagedPointer)
+        return true
+    }
+
+    // MARK: Garbage collection
+
+    /// Deletes downloaded manifests older than the two newest (and the active one) and every asset none of the kept
+    /// manifests refers to. Run once per launch, off the main thread.
+    func collectGarbage() {
+        let fm = FileManager.default
+        let files = (try? fm.contentsOfDirectory(at: manifestsDirectory, includingPropertiesForKeys: nil)) ?? []
+        let versions = files.compactMap { Int($0.deletingPathExtension().lastPathComponent) }
+            .filter { $0 >= 0 && files.contains(manifestsDirectory.appendingPathComponent("\($0).json")) }
+        var keep = Set(versions.sorted(by: >).prefix(2))
+        if let active = activeVersion { keep.insert(active) }
+        if let staged = stagedVersion { keep.insert(staged) }
+        for v in Set(versions).subtracting(keep) {
+            try? fm.removeItem(at: manifestsDirectory.appendingPathComponent("\(v).json"))
+            try? fm.removeItem(at: manifestsDirectory.appendingPathComponent("\(v).json.sig"))
+        }
+        var referenced = Set<String>()
+        for v in keep {
+            guard let manifest = loadDownloaded(version: v)?.manifest else { continue }
+            for asset in manifest.assets.values { referenced.insert("\(asset.sha256).\(asset.fileExtension)") }
+        }
+        let stored = (try? fm.contentsOfDirectory(at: assetsDirectory, includingPropertiesForKeys: nil)) ?? []
+        for file in stored where !referenced.contains(file.lastPathComponent) { try? fm.removeItem(at: file) }
     }
 
     // MARK: Reading
@@ -162,6 +250,13 @@ final class ContentStore: ObservableObject {
             return baseline.assetURL(sha256: asset.sha256, fileExtension: asset.fileExtension)
         }
         return nil
+    }
+
+    /// The asset's manifest entry and the CDN to download it from, for an asset of the active pack that isn't on disk.
+    func assetAndBase(forKey key: String) -> (ManifestAsset, URL)? {
+        let (pack, cdn) = lock.withLock { (active, activeCDN) }
+        guard let asset = pack?.manifest.assets[key], let base = cdn ?? BackendEnvironment.cdnBaseURL else { return nil }
+        return (asset, base)
     }
 
     /// Whether an asset is available to read right now.

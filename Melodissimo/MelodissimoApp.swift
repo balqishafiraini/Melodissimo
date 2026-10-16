@@ -26,7 +26,15 @@ struct MelodissimoApp: App {
         // from Home's first appearance.
         CloudSync.shared.start()
         // Cached flags, tuning and update policy at once; a refresh in the background (never blocks launch).
-        Task { @MainActor in BootstrapService.shared.start() }
+        ContentStore.shared.loadActive()
+        DispatchQueue.global(qos: .utility).async { ContentStore.shared.collectGarbage() }
+        Task { @MainActor in
+            BootstrapService.shared.onContent = { info in
+                guard let info else { return }
+                Task { await ContentSync.shared.sync(to: info) }
+            }
+            BootstrapService.shared.start()
+        }
         // Listen for store transactions from launch, so a purchase is never missed.
         Task { @MainActor in StoreService.shared.start() }
     }

@@ -55,6 +55,8 @@ struct DashboardView: View {
             .toolbar(.hidden, for: .navigationBar)
             .onAppear(perform: startFirstStageIfNeeded)
             .onAppear(perform: showSoftUpdateIfDue)
+            // Home is showing and no song is playing: a downloaded content release may go live now.
+            .onAppear { ContentStore.shared.activateStagedIfIdle() }
             .onChange(of: bootstrap.directive) { _ in showSoftUpdateIfDue() }
             .sheet(isPresented: $isShowingSoftUpdate) {
                 SoftUpdateSheet(info: bootstrap.current?.update) { isShowingSoftUpdate = false }

@@ -55,6 +55,8 @@ final class BootstrapService: ObservableObject {
     private var fetchedAt: Date?
     private var isRefreshing = false
     private var observer: NSObjectProtocol?
+    /// Called after each successful refresh with the release the server names (nil when none is compatible).
+    var onContent: ((Bootstrap.ContentInfo?) -> Void)?
 
     init(makeClient: @escaping () -> APIClient = { APIClient() },
          cacheURL: URL = BootstrapService.defaultCacheURL,
@@ -115,6 +117,7 @@ final class BootstrapService: ObservableObject {
         fetchedAt = stamp
         save(CachedBootstrap(fetchedAt: stamp, bootstrap: fresh))
         apply(fresh)
+        onContent?(fresh.content)
     }
 
     // MARK: State
