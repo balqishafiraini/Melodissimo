@@ -25,6 +25,8 @@ struct MelodissimoApp: App {
         // Mirror progress to iCloud (a no-op unless `OnlineServices.isEnabled`). Game Center signs in later,
         // from Home's first appearance.
         CloudSync.shared.start()
+        // Cached flags, tuning and update policy at once; a refresh in the background (never blocks launch).
+        Task { @MainActor in BootstrapService.shared.start() }
         // Listen for store transactions from launch, so a purchase is never missed.
         Task { @MainActor in StoreService.shared.start() }
     }

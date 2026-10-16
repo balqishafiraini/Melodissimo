@@ -24,8 +24,8 @@ enum FlagKey: String, CaseIterable {
 }
 
 enum FeatureFlags {
-    /// The latest flags from the bootstrap. `BootstrapService` sets this; tests set it directly.
-    static var source: () -> [String: Bool] = { [:] }
+    /// The latest flags from the bootstrap (`LiveConfig`, set by `BootstrapService`); tests replace it.
+    static var source: () -> [String: Bool] = { LiveConfig.flags }
 
     static func isOn(_ key: FlagKey) -> Bool {
         source()[key.rawValue] ?? key.defaultValue

@@ -8,8 +8,8 @@ import Foundation
 /// Numbers the server can change without an app update (coin rewards, revive prices, …). Every accessor takes a code
 /// default; a missing key, a value of the wrong type or one outside the allowed range gives the default.
 enum Tuning {
-    /// The latest tuning values from the bootstrap. `BootstrapService` sets this; tests set it directly.
-    static var source: () -> [String: JSONValue] = { [:] }
+    /// The latest tuning values from the bootstrap (`LiveConfig`, set by `BootstrapService`); tests replace it.
+    static var source: () -> [String: JSONValue] = { LiveConfig.tuning }
 
     static func int(_ key: String, default fallback: Int, range: ClosedRange<Int> = 0...1_000_000) -> Int {
         guard case .number(let value)? = source()[key], value == value.rounded(), value.isFinite,
