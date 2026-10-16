@@ -27,7 +27,7 @@ struct ShopView: View {
                 tabs
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: Sizing.isPhone ? 10 : 20) {
-                        ForEach(ShopCatalog.items(in: category)) { item in
+                        ForEach(ShopCatalog.visibleItems(in: category, owned: progress.purchasedShopItemIds)) { item in
                             card(for: item)
                         }
                     }
@@ -80,7 +80,7 @@ struct ShopView: View {
 
     private var tabs: some View {
         HStack(spacing: Sizing.s(14)) {
-            ForEach(ShopCategory.allCases, id: \.self) { tab in
+            ForEach(ShopCatalog.visibleCategories(owned: progress.purchasedShopItemIds), id: \.self) { tab in
                 SoundButton {
                     category = tab
                 } label: {
@@ -101,6 +101,7 @@ struct ShopView: View {
         case .keyboard: return "Keyboard"
         case .notes: return "Notes"
         case .outfit: return "Outfit"
+        case .boost: return "Boosts"
         }
     }
 
@@ -143,6 +144,9 @@ struct ShopView: View {
                 .padding(6)
                 .frame(width: 190)
                 .background(RoundedRectangle(cornerRadius: 16).fill(Color.softBlue.opacity(0.6)))
+        case .boost:
+            AssetImage(name: item.bundledArt?.preview ?? "", fallbackEmoji: "❤️")
+                .padding(6)
         }
     }
 

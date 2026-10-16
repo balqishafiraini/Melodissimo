@@ -6,7 +6,11 @@ final class WalletInventoryTests: XCTestCase {
     private var suiteName = ""
     private var defaults: UserDefaults!
     private var progress: ProgressStore!
-    private let heart = ShopItem(id: "boost_heart", category: .outfit, name: "Heart", price: 50)
+    private let heart: ShopItem = {
+        var item = ShopItem(id: "boost_heart", category: .boost, name: "Heart", price: 50)
+        item.kind = .consumable
+        return item
+    }()
 
     override func setUp() {
         super.setUp()

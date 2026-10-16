@@ -1,0 +1,305 @@
+{
+  "items": [
+    {
+      "id": "keyboard_navy",
+      "category": "keyboard",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Navy",
+        "en": "Navy"
+      },
+      "price": {
+        "coins": 0
+      },
+      "order": 0,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "keyboard_batik",
+      "category": "keyboard",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Merah Batik",
+        "en": "Merah Batik"
+      },
+      "price": {
+        "coins": 100
+      },
+      "colors": [
+        "#7B241C",
+        "#D35400"
+      ],
+      "order": 10,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "keyboard_forest",
+      "category": "keyboard",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Hijau Hutan",
+        "en": "Hijau Hutan"
+      },
+      "price": {
+        "coins": 150
+      },
+      "colors": [
+        "#145A32",
+        "#229954"
+      ],
+      "order": 20,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "keyboard_sea",
+      "category": "keyboard",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Biru Laut",
+        "en": "Biru Laut"
+      },
+      "price": {
+        "coins": 150
+      },
+      "colors": [
+        "#1A5276",
+        "#2E86C1"
+      ],
+      "order": 30,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "keyboard_gold",
+      "category": "keyboard",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Emas",
+        "en": "Emas"
+      },
+      "price": {
+        "coins": 300
+      },
+      "colors": [
+        "#B7950B",
+        "#D4AC0D"
+      ],
+      "order": 40,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "notes_default",
+      "category": "notes",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Bawaan",
+        "en": "Default"
+      },
+      "price": {
+        "coins": 0
+      },
+      "order": 50,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "notes_rainbow",
+      "category": "notes",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Pelangi",
+        "en": "Pelangi"
+      },
+      "price": {
+        "coins": 200
+      },
+      "order": 60,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "notes_neon",
+      "category": "notes",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Neon",
+        "en": "Neon"
+      },
+      "price": {
+        "coins": 250
+      },
+      "order": 70,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "outfit_none",
+      "category": "outfit",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Bawaan",
+        "en": "Default"
+      },
+      "price": {
+        "coins": 0
+      },
+      "order": 80,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "outfit_bow",
+      "category": "outfit",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Bow",
+        "en": "Bow"
+      },
+      "price": {
+        "coins": 100
+      },
+      "order": 90,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "outfit_glasses",
+      "category": "outfit",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Glasses",
+        "en": "Glasses"
+      },
+      "price": {
+        "coins": 150
+      },
+      "order": 100,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "outfit_headphones",
+      "category": "outfit",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Headphone",
+        "en": "Headphone"
+      },
+      "price": {
+        "coins": 200
+      },
+      "order": 110,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "outfit_sunglasses",
+      "category": "outfit",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Sunglasses",
+        "en": "Sunglasses"
+      },
+      "price": {
+        "coins": 200
+      },
+      "order": 120,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "outfit_scarf",
+      "category": "outfit",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Syal Batik",
+        "en": "Syal Batik"
+      },
+      "price": {
+        "coins": 250
+      },
+      "order": 130,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "outfit_flowers",
+      "category": "outfit",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Flower Crown",
+        "en": "Flower Crown"
+      },
+      "price": {
+        "coins": 250
+      },
+      "order": 140,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "outfit_crown",
+      "category": "outfit",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Crown",
+        "en": "Crown"
+      },
+      "price": {
+        "coins": 300
+      },
+      "order": 150,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "outfit_blangkon",
+      "category": "outfit",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Blangkon",
+        "en": "Blangkon"
+      },
+      "price": {
+        "coins": 350
+      },
+      "order": 160,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "outfit_conductor",
+      "category": "outfit",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Conductor",
+        "en": "Conductor"
+      },
+      "price": {
+        "coins": 400
+      },
+      "order": 170,
+      "minAppBuild": 1,
+      "status": "live"
+    },
+    {
+      "id": "outfit_royal",
+      "category": "outfit",
+      "kind": "cosmetic",
+      "name": {
+        "id": "Crown Glasses",
+        "en": "Crown Glasses"
+      },
+      "price": {
+        "coins": 500
+      },
+      "order": 180,
+      "minAppBuild": 1,
+      "status": "live"
+    }
+  ]
+}

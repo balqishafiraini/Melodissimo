@@ -11,7 +11,7 @@ final class ShopCatalogTests: XCTestCase {
     }
 
     func testEveryCategoryHasExactlyOneFreeDefault() {
-        for category in ShopCategory.allCases {
+        for category in ShopCategory.equippable {
             let defaults = ShopCatalog.items(in: category).filter(\.isDefault)
             XCTAssertEqual(defaults.count, 1, category.rawValue)
             XCTAssertEqual(ShopCatalog.defaultItem(for: category), defaults.first)
@@ -131,7 +131,7 @@ final class ShopPurchaseTests: XCTestCase {
     private func item(_ id: String) -> ShopItem { ShopCatalog.item(id: id)! }
 
     func testDefaultsAreOwnedAndWornFromTheStart() {
-        for category in ShopCategory.allCases {
+        for category in ShopCategory.equippable {
             let standard = ShopCatalog.defaultItem(for: category)
             XCTAssertTrue(progress.owns(standard))
             XCTAssertEqual(progress.equippedItem(category), standard)
