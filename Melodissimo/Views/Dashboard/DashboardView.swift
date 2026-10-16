@@ -15,10 +15,15 @@ struct DashboardView: View {
     /// Set when the pre-play test has just finished: Home takes the new player straight to the first stage.
     var startsFirstStage = false
     @State private var hasStartedFirstStage = false
+    @ObservedObject private var bootstrap = BootstrapService.shared
+    @State private var isShowingSoftUpdate = false
 
     var body: some View {
         NavigationStack(path: $router.path) {
             VStack(spacing: Sizing.s(20)) {
+                if let maintenance = bootstrap.maintenance, maintenance.blocksPlay != true {
+                    MaintenanceBanner(info: maintenance)
+                }
                 topBar
                 tourCard
                 Spacer(minLength: 0)
@@ -49,6 +54,11 @@ struct DashboardView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear(perform: startFirstStageIfNeeded)
+            .onAppear(perform: showSoftUpdateIfDue)
+            .onChange(of: bootstrap.directive) { _ in showSoftUpdateIfDue() }
+            .sheet(isPresented: $isShowingSoftUpdate) {
+                SoftUpdateSheet(info: bootstrap.current?.update) { isShowingSoftUpdate = false }
+            }
             .onAppear { GameCenter.shared.authenticate() }
             #if DEBUG
             .onAppear { QARoutes.applyLaunchRoute(to: router) }
@@ -61,6 +71,18 @@ struct DashboardView: View {
         }
         .environmentObject(router)
         .playSessionSystemUI()
+    }
+
+    // MARK: Soft update
+
+    /// Asks for a recommended update on Home, at most once per recommended build per three days.
+    private func showSoftUpdateIfDue() {
+        guard bootstrap.directive == .soft, let recommended = bootstrap.current?.update?.policy?.recommendedBuild else { return }
+        let key = UpdateGate.softKey(recommendedBuild: recommended)
+        let last = UserDefaults.standard.object(forKey: key) as? Date
+        guard UpdateGate.shouldShowSoft(lastShown: last, now: Date()) else { return }
+        UserDefaults.standard.set(Date(), forKey: key)
+        isShowingSoftUpdate = true
     }
 
     // MARK: First stage
