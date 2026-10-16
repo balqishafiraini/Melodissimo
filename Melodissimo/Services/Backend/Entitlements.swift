@@ -42,12 +42,15 @@ final class Entitlements: ObservableObject {
     private struct Cache: Codable {
         var products: [OwnedProduct]
         var plus: PlusStatus
+        /// What the backend says the player owns (bought on another device or platform).
+        var server: [OwnedProduct]?
     }
 
     private let defaults: UserDefaults
     private let now: () -> Date
     private var products: [OwnedProduct]
     private var storedPlus: PlusStatus
+    private var serverProducts: [OwnedProduct] = []
 
     init(defaults: UserDefaults = .standard, now: @escaping () -> Date = Date.init) {
         self.defaults = defaults
@@ -55,6 +58,7 @@ final class Entitlements: ObservableObject {
         if let data = defaults.data(forKey: Self.cacheKey), let cache = try? JSONDecoder().decode(Cache.self, from: data) {
             products = cache.products
             storedPlus = cache.plus
+            serverProducts = cache.server ?? []
         } else {
             products = []
             storedPlus = .none
@@ -65,18 +69,25 @@ final class Entitlements: ObservableObject {
     /// answered yet (an offline launch after the plan lapsed).
     var ownedProductIds: Set<String> {
         let current = now()
-        return Set(products.filter { $0.expiresAt.map { $0 > current } ?? true }.map(\.productId))
+        return Set((products + serverProducts).filter { $0.expiresAt.map { $0 > current } ?? true }.map(\.productId))
     }
 
     /// The Plus status, corrected for an end date that has passed.
     var plusStatus: PlusStatus {
+        let local: PlusStatus
         switch storedPlus {
         case .active(let renews):
-            if let renews, renews < now(), !ownedProductIds.contains(where: Self.isPlusProduct) { return .expired }
-            return storedPlus
+            local = (renews.map { $0 < now() } ?? false) && !ownedProductIds.contains(where: Self.isPlusProduct) ? .expired : storedPlus
         default:
-            return storedPlus
+            local = storedPlus
         }
+        if local.isActive { return local }
+        // Plus bought on another device or platform counts here too.
+        let current = now()
+        if let remote = serverProducts.filter({ Self.isPlusProduct($0.productId) && ($0.expiresAt.map { $0 > current } ?? true) }).max(by: { ($0.expiresAt ?? .distantFuture) < ($1.expiresAt ?? .distantFuture) }) {
+            return .active(renews: remote.expiresAt)
+        }
+        return local
     }
 
     var isPlusActive: Bool { plusStatus.isActive }
@@ -92,7 +103,21 @@ final class Entitlements: ObservableObject {
             objectWillChange.send()
         }
         if Thread.isMainThread { change() } else { DispatchQueue.main.async(execute: change) }
-        if let data = try? JSONEncoder().encode(Cache(products: products, plus: plus)) {
+        persist(products: products, plus: plus, server: serverProducts)
+    }
+
+    /// Adds what the backend knows the player owns (union with what StoreKit says) and caches it.
+    func applyServer(products server: [OwnedProduct]) {
+        let change = { [self] in
+            serverProducts = server
+            objectWillChange.send()
+        }
+        if Thread.isMainThread { change() } else { DispatchQueue.main.async(execute: change) }
+        persist(products: products, plus: storedPlus, server: server)
+    }
+
+    private func persist(products: [OwnedProduct], plus: PlusStatus, server: [OwnedProduct]) {
+        if let data = try? JSONEncoder().encode(Cache(products: products, plus: plus, server: server)) {
             defaults.set(data, forKey: Self.cacheKey)
         }
     }

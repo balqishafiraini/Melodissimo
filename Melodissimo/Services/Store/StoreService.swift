@@ -145,6 +145,8 @@ final class StoreService: ObservableObject {
     @discardableResult
     private func handle(_ result: VerificationResult<Transaction>) async -> Bool {
         guard case .verified(let transaction) = result else { return false }
+        // Tell the backend about it (a no-op unless the player has an account); StoreKit stays the authority here.
+        Task { await ServerPurchases().report(signedTransaction: result.jwsRepresentation) }
         // An id this build doesn't know may belong to a newer catalog: leave it unfinished so that build can grant it.
         guard let product = ProductCatalog.product(id: transaction.productID) else { return false }
         if product.isConsumable {
@@ -172,8 +174,10 @@ final class StoreService: ObservableObject {
         for await result in Transaction.currentEntitlements {
             guard case .verified(let transaction) = result, transaction.revocationDate == nil else { continue }
             owned.append(OwnedProduct(productId: transaction.productID, expiresAt: transaction.expirationDate))
+            Task { await ServerPurchases().report(signedTransaction: result.jwsRepresentation) }
         }
         entitlements.apply(products: owned, plus: await plusStatus(owned: owned))
+        await ServerPurchases().refresh(entitlements: entitlements, progress: progress)
     }
 
     private func plusStatus(owned: [OwnedProduct]) async -> PlusStatus {

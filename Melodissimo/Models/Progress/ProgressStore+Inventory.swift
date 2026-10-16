@@ -53,4 +53,12 @@ extension ProgressStore {
         addToInventory(item.id, count: count, maxStack: maxStack)
         return true
     }
+
+    /// Brings back what the server's ledger says was bought with real money (after a reinstall or on another device): each
+    /// total only ever goes up, so this never takes anything away.
+    func restorePurchased(coins: Int, items: [String: Int]) {
+        if coins > coinsPurchasedTotal { defaults.set(coins, forKey: "coins_purchasedTotal") }
+        for (id, count) in items where count > defaults.integer(forKey: gainedKey(id)) { defaults.set(count, forKey: gainedKey(id)) }
+        objectWillChange.send()
+    }
 }
