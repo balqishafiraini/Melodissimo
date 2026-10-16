@@ -38,11 +38,18 @@ final class ShopCatalogDataTests: XCTestCase {
 
     // MARK: Bundled data
 
-    func testTheBundledCatalogHasTheSameIdsPricesAndColoursAsBefore() {
-        XCTAssertEqual(ShopCatalog.items.map(\.id), legacy.map(\.id))
-        XCTAssertEqual(ShopCatalog.items.map(\.price), legacy.map(\.price))
-        XCTAssertEqual(ShopCatalog.items.map(\.colors), legacy.map(\.colors))
-        XCTAssertTrue(ShopCatalog.items.allSatisfy { $0.kind == .cosmetic && $0.status == .live })
+    func testTheBundledCatalogHasTheSameIdsPricesAndColoursAsBefore() throws {
+        let cosmetics = ShopCatalog.items.filter { $0.kind == .cosmetic }
+        XCTAssertEqual(cosmetics.map(\.id), legacy.map(\.id))
+        XCTAssertEqual(cosmetics.map(\.price), legacy.map(\.price))
+        XCTAssertEqual(cosmetics.map(\.colors), legacy.map(\.colors))
+        XCTAssertTrue(ShopCatalog.items.allSatisfy { $0.status == .live })
+        // Hearts were added with the Nyawa section.
+        let heart = try XCTUnwrap(ShopCatalog.item(id: "boost_heart"))
+        XCTAssertEqual(heart.kind, .consumable)
+        XCTAssertEqual(heart.price, 50)
+        XCTAssertEqual(heart.maxStack, 99)
+        XCTAssertEqual(heart.category, .boost)
     }
 
     func testDefaultsAreNamedInBothLanguages() {
@@ -133,6 +140,10 @@ final class ShopCatalogDataTests: XCTestCase {
     }
 
     func testACategoryWithNothingToShowGetsNoTab() {
+        let originalItems = ShopCatalog.items
+        defer { ShopCatalog.source = FixedSource(items: originalItems) }
+        XCTAssertEqual(ShopCatalog.visibleCategories(owned: []), [.keyboard, .notes, .outfit, .boost])
+        ShopCatalog.source = FixedSource(items: ShopCatalog.items.filter { $0.category != .boost })
         XCTAssertEqual(ShopCatalog.visibleCategories(owned: []), [.keyboard, .notes, .outfit])
     }
 

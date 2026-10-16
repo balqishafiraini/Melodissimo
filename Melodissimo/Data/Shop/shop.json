@@ -343,6 +343,25 @@
         "preview": "alpanica_outfit_royal",
         "overlay": "alpanica_acc_royal"
       }
+    },
+    {
+      "id": "boost_heart",
+      "category": "boost",
+      "kind": "consumable",
+      "name": {
+        "id": "Nyawa",
+        "en": "Heart"
+      },
+      "price": {
+        "coins": 50
+      },
+      "maxStack": 99,
+      "bundledArt": {
+        "preview": "icon_heart"
+      },
+      "order": 300,
+      "minAppBuild": 1,
+      "status": "live"
     }
   ]
 }

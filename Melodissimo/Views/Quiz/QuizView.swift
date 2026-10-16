@@ -44,7 +44,7 @@ struct QuizView: View {
                 ContinueSheet(options: run.options,
                               onRevive: { viewModel.revive($0, now: CACurrentMediaTime()) },
                               onGiveUp: { viewModel.giveUp() },
-                              onNeedCoins: { router.push(.shop) })
+                              onNeedCoins: { router.push(.shopCoins) })
             }
         }
         .playScreen()

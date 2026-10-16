@@ -197,7 +197,6 @@
 "Shop" = "Toko";
 "Keyboard" = "Tuts";
 "Outfit" = "Busana";
-"Boosts" = "Penguat";
 "Default" = "Bawaan";
 "Buy" = "Beli";
 "Equip" = "Pakai";
@@ -356,3 +355,16 @@
 "Get coins" = "Ambil koin";
 "Free revive (Plus)" = "Lanjut gratis (Plus)";
 "Give up" = "Menyerah";
+"Hearts" = "Nyawa";
+"Sale" = "Diskon";
+"New" = "Baru";
+"Ends today" = "Berakhir hari ini";
+"Ends in %lld days" = "Berakhir dalam %lld hari";
+"You have %lld" = "Kamu punya %lld";
+"%lld coins" = "%lld koin";
+"+ %lld hearts" = "+ %lld nyawa";
+"Popular" = "Populer";
+"Best value" = "Paling hemat";
+"Special" = "Spesial";
+"Waiting for approval" = "Menunggu persetujuan";
+"The purchase did not go through" = "Pembelian tidak berhasil";

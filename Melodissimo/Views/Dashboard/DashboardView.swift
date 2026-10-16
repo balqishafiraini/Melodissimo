@@ -104,7 +104,11 @@ struct DashboardView: View {
             }
             #endif
 
-            CoinBadge()
+            SoundButton {
+                router.push(.shopCoins)
+            } label: {
+                CoinBadge()
+            }
             iconButton("bag.fill", label: "Shop", fill: Color.yellow, tint: Color.darkGreen) {
                 router.push(.shop)
             }
@@ -292,6 +296,8 @@ struct DashboardView: View {
             LearnHubView()
         case .shop:
             ShopView()
+        case .shopCoins:
+            ShopView(startAtCoins: true)
         case .settings:
             SettingsView()
         case .chartRecorder:

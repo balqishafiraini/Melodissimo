@@ -20,6 +20,7 @@ final class ShopCatalogTests: XCTestCase {
 
     func testPricesFollowThePlan() {
         let prices = Dictionary(uniqueKeysWithValues: ShopCatalog.items.map { ($0.id, $0.price) })
+        XCTAssertEqual(prices["boost_heart"], 50)
         XCTAssertEqual(prices["keyboard_batik"], 100)
         XCTAssertEqual(prices["keyboard_forest"], 150)
         XCTAssertEqual(prices["keyboard_sea"], 150)
@@ -34,7 +35,7 @@ final class ShopCatalogTests: XCTestCase {
     }
 
     func testTheWholeShopCost() {
-        let total = ShopCatalog.items.reduce(0) { $0 + $1.price }
+        let total = ShopCatalog.items.filter { $0.kind == .cosmetic }.reduce(0) { $0 + $1.price }
         XCTAssertEqual(total, 3_850)
     }
 
