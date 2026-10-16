@@ -26,6 +26,8 @@ struct MelodissimoApp: App {
         // from Home's first appearance.
         CloudSync.shared.start()
         // Cached flags, tuning and update policy at once; a refresh in the background (never blocks launch).
+        // Melodissimo Plus members get the free revive; the entitlement is cached, so it works offline too.
+        Revive.isPlusMember = { Entitlements.shared.isPlusActive }
         ContentStore.shared.loadActive()
         DispatchQueue.global(qos: .utility).async { ContentStore.shared.collectGarbage() }
         Task { @MainActor in

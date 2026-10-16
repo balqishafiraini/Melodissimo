@@ -122,7 +122,7 @@ final class ShopFromContentTests: XCTestCase {
     func testProductsComeFromTheReleaseAndFallBackToTheBundledFile() throws {
         let s = try store(shopJSON: "[]", productsJSON: #"[{"id": "melodissimo.plus.monthly", "type": "autoRenewable", "unlocks": ["pack:*"]}]"#)
         XCTAssertEqual(s.products.map(\.id), ["melodissimo.plus.monthly"])
-        XCTAssertEqual(ProductCatalog.bundled().count, 4)
+        XCTAssertEqual(ProductCatalog.bundled().count, 7)
         ProductCatalog.override = nil
         XCTAssertFalse(ProductCatalog.products.isEmpty, "baseline or bundled products are always there")
     }

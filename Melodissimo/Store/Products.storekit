@@ -81,6 +81,26 @@
       "productID": "melodissimo.coins.large",
       "referenceName": "Large Coin Pack",
       "type": "Consumable"
+    },
+    {
+      "displayPrice": "79000",
+      "familyShareable": false,
+      "internalID": "6F000005",
+      "localizations": [
+        {
+          "description": "One-time pack of songs from Sumatra",
+          "displayName": "Songs of Sumatra",
+          "locale": "en"
+        },
+        {
+          "description": "Paket lagu dari Sumatra",
+          "displayName": "Lagu Daerah Sumatra",
+          "locale": "id"
+        }
+      ],
+      "productID": "melodissimo.pack.daerah_sumatra",
+      "referenceName": "Songs of Sumatra",
+      "type": "NonConsumable"
     }
   ],
   "settings": {
@@ -92,7 +112,77 @@
     "_storefront": "IDN",
     "_storeKitErrors": []
   },
-  "subscriptionGroups": [],
+  "subscriptionGroups": [
+    {
+      "id": "21000001",
+      "localizations": [],
+      "name": "Melodissimo Plus",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "29000",
+          "familyShareable": true,
+          "groupNumber": 1,
+          "internalID": "6F000006",
+          "introductoryOffer": {
+            "internalID": "6F0000061",
+            "paymentMode": "free",
+            "subscriptionPeriod": "P1W"
+          },
+          "localizations": [
+            {
+              "description": "Melodissimo Plus (monthly)",
+              "displayName": "Melodissimo Plus (monthly)",
+              "locale": "en"
+            },
+            {
+              "description": "Melodissimo Plus (bulanan)",
+              "displayName": "Melodissimo Plus (bulanan)",
+              "locale": "id"
+            }
+          ],
+          "productID": "melodissimo.plus.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Plus monthly",
+          "subscriptionGroupID": "21000001",
+          "type": "RecurringSubscription",
+          "winbackOffers": []
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "249000",
+          "familyShareable": true,
+          "groupNumber": 1,
+          "internalID": "6F000007",
+          "introductoryOffer": {
+            "internalID": "6F0000071",
+            "paymentMode": "free",
+            "subscriptionPeriod": "P1W"
+          },
+          "localizations": [
+            {
+              "description": "Melodissimo Plus (yearly)",
+              "displayName": "Melodissimo Plus (yearly)",
+              "locale": "en"
+            },
+            {
+              "description": "Melodissimo Plus (tahunan)",
+              "displayName": "Melodissimo Plus (tahunan)",
+              "locale": "id"
+            }
+          ],
+          "productID": "melodissimo.plus.yearly",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Plus yearly",
+          "subscriptionGroupID": "21000001",
+          "type": "RecurringSubscription",
+          "winbackOffers": []
+        }
+      ]
+    }
+  ],
   "version": {
     "major": 3,
     "minor": 0

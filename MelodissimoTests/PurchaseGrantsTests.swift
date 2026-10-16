@@ -86,11 +86,14 @@ final class PurchaseGrantsTests: XCTestCase {
 
     // MARK: Bundled products
 
-    func testTheBundledProductsAreTheCoinPacksAndTheStarterBundle() {
+    func testTheBundledProductsAreTheCoinPacksTheStarterBundlePlusAndTheFirstPack() {
         let products = ProductCatalog.bundled()
         XCTAssertEqual(products.map(\.id), ["melodissimo.bundle.starter", "melodissimo.coins.small",
-                                            "melodissimo.coins.medium", "melodissimo.coins.large"])
-        XCTAssertEqual(products.map { $0.grants?.coins }, [500, 300, 1100, 3000])
+                                            "melodissimo.coins.medium", "melodissimo.coins.large",
+                                            "melodissimo.plus.monthly", "melodissimo.plus.yearly", "melodissimo.pack.daerah_sumatra"])
+        XCTAssertEqual(products.filter(\.isConsumable).map { $0.grants?.coins }, [500, 300, 1100, 3000])
+        XCTAssertEqual(products.first { $0.id == "melodissimo.plus.monthly" }?.unlocks, ["pack:*"])
+        XCTAssertEqual(products.first { $0.id == "melodissimo.pack.daerah_sumatra" }?.type, "nonConsumable")
         XCTAssertEqual(ProductCatalog.product(id: "melodissimo.bundle.starter")?.grants?.items["boost_heart"], 5)
         XCTAssertTrue(products.first { $0.id == "melodissimo.bundle.starter" }!.oncePerPlayer)
     }
@@ -115,7 +118,10 @@ final class PurchaseGrantsTests: XCTestCase {
             .appendingPathComponent("Melodissimo/Store/Products.storekit")
         let data = try Data(contentsOf: url)
         let json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
-        let ids = (json["products"] as? [[String: Any]] ?? []).compactMap { $0["productID"] as? String }
+        let single = (json["products"] as? [[String: Any]] ?? []).compactMap { $0["productID"] as? String }
+        let subscriptions = (json["subscriptionGroups"] as? [[String: Any]] ?? [])
+            .flatMap { $0["subscriptions"] as? [[String: Any]] ?? [] }.compactMap { $0["productID"] as? String }
+        let ids = single + subscriptions
         XCTAssertEqual(Set(ids), Set(ProductCatalog.bundled().map(\.id)))
     }
 }

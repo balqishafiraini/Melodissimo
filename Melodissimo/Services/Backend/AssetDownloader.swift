@@ -47,6 +47,8 @@ struct AssetDownloader {
             } catch let error as ContentError {
                 throw error
             } catch {
+                // A sibling download failed and cancelled this one: stop at once, don't retry.
+                if Task.isCancelled || (error as? URLError)?.code == .cancelled { throw CancellationError() }
                 guard attempt < Self.backoff.count else { throw ContentError.download((error as NSError).localizedDescription) }
                 await sleep(Self.backoff[attempt])
                 attempt += 1

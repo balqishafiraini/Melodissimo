@@ -358,6 +358,32 @@
       "id": "melodissimo.coins.large",
       "order": 3,
       "type": "consumable"
+    },
+    {
+      "group": "plus",
+      "id": "melodissimo.plus.monthly",
+      "order": 100,
+      "type": "autoRenewable",
+      "unlocks": [
+        "pack:*"
+      ]
+    },
+    {
+      "group": "plus",
+      "id": "melodissimo.plus.yearly",
+      "order": 101,
+      "type": "autoRenewable",
+      "unlocks": [
+        "pack:*"
+      ]
+    },
+    {
+      "id": "melodissimo.pack.daerah_sumatra",
+      "order": 110,
+      "type": "nonConsumable",
+      "unlocks": [
+        "pack:daerah-sumatra"
+      ]
     }
   ],
   "schemaVersion": 1,

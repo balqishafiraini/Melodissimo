@@ -15,6 +15,7 @@ struct SettingsView: View {
     @State private var isTestingMicrophone = false
     /// Observed so a flag change from the server redraws this screen.
     @ObservedObject private var bootstrap = BootstrapService.shared
+    @ObservedObject private var entitlements = Entitlements.shared
     @State private var isConfirmingReset = false
     @State private var isReallyConfirmingReset = false
     @State private var didReset = false
@@ -40,7 +41,9 @@ struct SettingsView: View {
                                 soundCard
                                 audioCard
                                 resetCard
-                                aboutCard
+                                plusCard
+                                plusCard
+                            aboutCard
                             }
                         }
                         .padding(.vertical, 4)
@@ -360,6 +363,59 @@ struct SettingsView: View {
         progress.resetProgress()
         AchievementStore.shared.reload()
         didReset = true
+    }
+
+    // MARK: Melodissimo Plus
+
+    /// Subscription status with Manage and Restore. Hidden until the pack store is switched on (`packStore` flag).
+    @ViewBuilder
+    private var plusCard: some View {
+        if FeatureFlags.isOn(.packStore) {
+            card("Melodissimo Plus") {
+                Text(Self.plusStatusText(entitlements.plusStatus))
+                    .font(Font.headline)
+                    .foregroundColor(Color.darkGreen)
+                HStack(spacing: Sizing.isPhone ? 6 : 12) {
+                    SoundButton {
+                        Task { await StoreService.shared.manageSubscriptions() }
+                    } label: {
+                        Text("Manage subscription")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: Sizing.tap(60))
+                            .background(Color.yellow)
+                            .foregroundColor(Color.darkGreen)
+                            .cornerRadius(Sizing.s(18))
+                            .font(Font.headline)
+                    }
+                    SoundButton {
+                        Task { await StoreService.shared.restore() }
+                    } label: {
+                        Text("Restore purchases")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: Sizing.tap(60))
+                            .background(Color.softBlue.opacity(0.5))
+                            .foregroundColor(Color.darkGreen)
+                            .cornerRadius(Sizing.s(18))
+                            .font(Font.headline)
+                    }
+                }
+            }
+        }
+    }
+
+    static func plusStatusText(_ status: PlusStatus) -> LocalizedStringKey {
+        switch status {
+        case .none: return "Not subscribed"
+        case .active(let renews):
+            guard let renews else { return "Plus is active" }
+            return "Plus renews on \(renews.formatted(date: .abbreviated, time: .omitted))"
+        case .gracePeriod: return "Plus is active, but a payment needs attention"
+        case .expired: return "Plus has ended"
+        }
     }
 
     // MARK: About

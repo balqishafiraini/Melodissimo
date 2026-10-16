@@ -9,6 +9,7 @@
 
 import Foundation
 import StoreKit
+import UIKit
 
 /// How a purchase ended, for the UI.
 enum PurchaseOutcome: Hashable {
@@ -29,10 +30,12 @@ final class StoreService: ObservableObject {
     @Published private(set) var isLoading = false
 
     private let progress: ProgressStore
+    private let entitlements: Entitlements
     private var updatesTask: Task<Void, Never>?
 
-    init(progress: ProgressStore = .shared) {
+    init(progress: ProgressStore = .shared, entitlements: Entitlements = .shared) {
         self.progress = progress
+        self.entitlements = entitlements
     }
 
     /// Whether the store is used at all: not in unit tests' offline runs, and not when the backend switch is off.
@@ -49,6 +52,7 @@ final class StoreService: ObservableObject {
             }
         }
         Task { await loadProducts() }
+        Task { await refreshEntitlements() }
         // The App Store country decides which packs and prices are offered. Kept for the `X-Storefront` header.
         Task { [weak self] in
             await self?.refreshStorefront()
@@ -96,14 +100,78 @@ final class StoreService: ObservableObject {
         }
     }
 
-    /// Verifies one transaction, grants it once and finishes it. Returns whether the purchase is now settled.
+    /// Asks the store to sync purchases (the "Restore" button), then re-reads what the player owns.
+    func restore() async {
+        try? await AppStore.sync()
+        await refreshEntitlements()
+    }
+
+    /// Opens the system sheet to manage or cancel the Plus subscription.
+    func manageSubscriptions() async {
+        guard let scene = UIApplication.shared.connectedScenes.first(where: { $0 is UIWindowScene }) as? UIWindowScene else { return }
+        try? await AppStore.showManageSubscriptions(in: scene)
+    }
+
+    /// Verifies one transaction and settles it: a consumable is granted once, then finished; a pack or subscription updates
+    /// what the player owns, then is finished. Returns whether the purchase is now settled.
     @discardableResult
     private func handle(_ result: VerificationResult<Transaction>) async -> Bool {
         guard case .verified(let transaction) = result else { return false }
         // An id this build doesn't know may belong to a newer catalog: leave it unfinished so that build can grant it.
-        guard let product = ProductCatalog.product(id: transaction.productID), product.isConsumable else { return false }
-        PurchaseGrants.apply(transactionId: String(transaction.id), product: product, to: progress)
+        guard let product = ProductCatalog.product(id: transaction.productID) else { return false }
+        if product.isConsumable {
+            // A refunded consumable is not granted.
+            guard transaction.revocationDate == nil else {
+                await transaction.finish()
+                return true
+            }
+            PurchaseGrants.apply(transactionId: String(transaction.id), product: product, to: progress)
+        } else {
+            await refreshEntitlements()
+        }
         await transaction.finish()
         return true
+    }
+
+    // MARK: Entitlements
+
+    /// Reads `Transaction.currentEntitlements` (verified, not revoked; a subscription appears only while valid) and the
+    /// Plus subscription's status, and gives them to `Entitlements`.
+    func refreshEntitlements() async {
+        var owned: [OwnedProduct] = []
+        for await result in Transaction.currentEntitlements {
+            guard case .verified(let transaction) = result, transaction.revocationDate == nil else { continue }
+            owned.append(OwnedProduct(productId: transaction.productID, expiresAt: transaction.expirationDate))
+        }
+        entitlements.apply(products: owned, plus: await plusStatus(owned: owned))
+    }
+
+    private func plusStatus(owned: [OwnedProduct]) async -> PlusStatus {
+        let plusProducts = ProductCatalog.products.filter { Entitlements.isPlusProduct($0.id) }.map(\.id)
+        guard !plusProducts.isEmpty else { return .none }
+        if storeProducts.isEmpty { await loadProducts() }
+        guard let subscription = plusProducts.compactMap({ storeProducts[$0]?.subscription }).first,
+              let statuses = try? await subscription.status,
+              let status = statuses.first(where: { s in
+                  guard case .verified(let t) = s.transaction else { return false }
+                  return plusProducts.contains(t.productID)
+              }) else {
+            return owned.contains { Entitlements.isPlusProduct($0.productId) } ? .active(renews: nil) : .none
+        }
+        switch status.state {
+        case .subscribed:
+            var renews: Date?
+            if case .verified(let info) = status.renewalInfo { renews = info.renewalDate }
+            if renews == nil, case .verified(let t) = status.transaction { renews = t.expirationDate }
+            return .active(renews: renews)
+        case .inGracePeriod, .inBillingRetryPeriod:
+            return .gracePeriod
+        case .expired:
+            return .expired
+        case .revoked:
+            return .none
+        default:
+            return .none
+        }
     }
 }

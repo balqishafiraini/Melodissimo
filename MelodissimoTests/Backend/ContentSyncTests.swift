@@ -2,6 +2,15 @@ import CryptoKit
 import XCTest
 @testable import Melodissimo
 
+/// Collects the backoff delays the downloader asked for (downloads run on several tasks at once).
+private final class WaitRecorder {
+    private let lock = NSLock()
+    private var stored: [UInt64] = []
+    var values: [UInt64] { lock.withLock { stored } }
+    func add(_ delay: UInt64) { lock.withLock { stored.append(delay) } }
+    func reset() { lock.withLock { stored = [] } }
+}
+
 final class ContentSyncTests: XCTestCase {
 
     private var dir: URL!
@@ -13,6 +22,8 @@ final class ContentSyncTests: XCTestCase {
     private var served: [String: Data] = [:]
     private var requested: [String] = []
     private var failuresLeft: [String: Int] = [:]
+    /// The stub answers from several threads at once (downloads run three at a time), so shared state needs a lock.
+    private let handlerLock = NSLock()
 
     override func setUpWithError() throws {
         StubURLProtocol.reset()
@@ -22,6 +33,8 @@ final class ContentSyncTests: XCTestCase {
         requested = []
         failuresLeft = [:]
         StubURLProtocol.handler = { [unowned self] request in
+            handlerLock.lock()
+            defer { handlerLock.unlock() }
             let path = request.url!.path
             requested.append(path)
             if let left = failuresLeft[path], left > 0 {
@@ -188,21 +201,21 @@ final class ContentSyncTests: XCTestCase {
         let release = publish(version: 3)
         let chartPath = "/assets/\(ManifestVerifier.sha256Hex(of: Data("chart-3".utf8))).json"
         failuresLeft[chartPath] = 2
-        var waits: [UInt64] = []
-        let downloader = AssetDownloader(session: StubURLProtocol.session(), sleep: { waits.append($0) })
+        let recorder = WaitRecorder()
+        let downloader = AssetDownloader(session: StubURLProtocol.session(), sleep: { recorder.add($0) })
         let ok = await ContentSync(store: store, downloader: downloader, verifier: verifier, supportedSchema: 1, build: { 57 }).sync(to: release.info)
         XCTAssertTrue(ok)
-        XCTAssertEqual(waits, [1_000_000_000, 4_000_000_000])
+        XCTAssertEqual(recorder.values, [1_000_000_000, 4_000_000_000])
 
         served.removeValue(forKey: chartPath)
-        waits = []
+        recorder.reset()
         try? FileManager.default.removeItem(at: store.assetsDirectory)
         try? FileManager.default.removeItem(at: store.manifestsDirectory)
         store.markStaged(version: 0)
         try? FileManager.default.removeItem(at: dir.appendingPathComponent("Content/staged.json"))
         let failed = await ContentSync(store: store, downloader: downloader, verifier: verifier, supportedSchema: 1, build: { 57 }).sync(to: release.info)
         XCTAssertFalse(failed)
-        XCTAssertEqual(waits, [], "404 is final")
+        XCTAssertEqual(recorder.values, [], "404 is final")
     }
 
     func testAudioIsFetchedOnDemandAndVerified() async throws {
