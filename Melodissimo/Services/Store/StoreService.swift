@@ -49,6 +49,18 @@ final class StoreService: ObservableObject {
             }
         }
         Task { await loadProducts() }
+        // The App Store country decides which packs and prices are offered. Kept for the `X-Storefront` header.
+        Task { [weak self] in
+            await self?.refreshStorefront()
+            for await storefront in Storefront.updates {
+                Market.storefront = storefront.countryCode
+                self?.objectWillChange.send()
+            }
+        }
+    }
+
+    private func refreshStorefront() async {
+        if let storefront = await Storefront.current { Market.storefront = storefront.countryCode }
     }
 
     /// Loads the products named in the catalog.

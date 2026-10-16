@@ -35,6 +35,7 @@ struct StoreProduct: Codable, Hashable, Identifiable {
     var badge: String? = nil
     var group: String? = nil
     var unlocks: [String] = []
+    var markets: Markets? = nil
 
     var isConsumable: Bool { type == "consumable" }
 
@@ -60,6 +61,7 @@ struct StoreProduct: Codable, Hashable, Identifiable {
         badge = try c.decodeIfPresent(String.self, forKey: .badge)
         group = try c.decodeIfPresent(String.self, forKey: .group)
         unlocks = try c.decodeIfPresent([String].self, forKey: .unlocks) ?? []
+        markets = try c.decodeIfPresent(Markets.self, forKey: .markets)
     }
 }
 
@@ -101,7 +103,11 @@ enum ProductCatalog {
     }
 
     /// The coin packs and bundles for sale, hiding one-per-player products already bought.
-    static func consumablesOnSale(granted ledger: PurchaseLedger) -> [StoreProduct] {
-        products.filter { $0.isConsumable && !($0.oncePerPlayer && ledger.hasGranted(productId: $0.id)) }
+    static func consumablesOnSale(granted ledger: PurchaseLedger,
+                                  storefront: String? = Market.storefront, deviceCountry: String? = Market.deviceCountry) -> [StoreProduct] {
+        products.filter {
+            $0.isConsumable && !($0.oncePerPlayer && ledger.hasGranted(productId: $0.id))
+                && Markets.allows($0.markets, storefront: storefront, deviceCountry: deviceCountry)
+        }
     }
 }

@@ -33,7 +33,7 @@ struct ClientHeaders: Equatable {
     static let supportedSchemaVersion = 1
 
     /// The headers for this app, this install and the player's languages.
-    static func current(contentVersion: Int = 0, storefront: String = "", defaults: UserDefaults = .standard,
+    static func current(contentVersion: Int = 0, storefront: String = Market.storefront, defaults: UserDefaults = .standard,
                         bundle: Bundle = .main, languages: [String] = Locale.preferredLanguages) -> ClientHeaders {
         ClientHeaders(version: bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
                       build: Int(bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "") ?? 0,

@@ -104,7 +104,16 @@ enum SongLibrary {
     }
 
     private static func buildAll() -> [Song] {
-        let remote = contentStore.songs
+        // Songs and their packs are filtered by country; the free `core` pack is worldwide. (Owned packs, Task B7, are
+        // exempt: what a player has is never taken away.)
+        let packs = Dictionary(uniqueKeysWithValues: contentStore.packs.map { ($0.id, $0) })
+        let storefront = Market.storefront, device = Market.deviceCountry
+        let remote = Markets.featuredFirst(
+            contentStore.songs.filter { song in
+                Markets.allows(song.markets, storefront: storefront, deviceCountry: device)
+                    && Markets.allows(packs[song.packId]?.markets, storefront: storefront, deviceCountry: device)
+            },
+            markets: { $0.markets ?? packs[$0.packId]?.markets }, storefront: storefront, deviceCountry: device)
         guard !remote.isEmpty else { return legacyAll }
         let legacy = Dictionary(uniqueKeysWithValues: legacyAll.map { ($0.id, $0) })
         let songs: [Song] = remote.compactMap { entry in

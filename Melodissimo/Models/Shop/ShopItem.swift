@@ -62,6 +62,8 @@ struct ShopItem: Identifiable, Hashable {
     var art: ShopArtNames? = nil
     var minAppBuild: Int = 0
     var status: ShopItemStatus = .live
+    /// Where the item is offered; `nil` means worldwide (`BACKEND_PLAN.md` §4.10).
+    var markets: Markets? = nil
 
     var isDefault: Bool { price == 0 && kind == .cosmetic }
 
@@ -102,7 +104,7 @@ struct ShopItem: Identifiable, Hashable {
 extension ShopItem: Decodable {
     private enum CodingKeys: String, CodingKey {
         case id, category, kind, name, price, colors, order, tags, availableFrom, availableUntil
-        case plusOnly, maxStack, bundledArt, art, minAppBuild, status
+        case plusOnly, maxStack, bundledArt, art, minAppBuild, status, markets
     }
 
     private struct Price: Decodable { let coins: Int }
@@ -142,5 +144,6 @@ extension ShopItem: Decodable {
         art = try c.decodeIfPresent(ShopArtNames.self, forKey: .art)
         minAppBuild = try c.decodeIfPresent(Int.self, forKey: .minAppBuild) ?? 0
         status = try raw(.status, ShopItemStatus.self, default: .live)
+        markets = try c.decodeIfPresent(Markets.self, forKey: .markets)
     }
 }

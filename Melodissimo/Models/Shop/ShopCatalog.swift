@@ -95,11 +95,15 @@ enum ShopCatalog {
     /// disappears (free defaults count as owned).
     static func visibleItems(in category: ShopCategory, owned: Set<String>,
                              now: Date = Date(), build: Int = currentBuild,
-                             artIsAvailable: (ShopItem) -> Bool = { hasArt($0) }) -> [ShopItem] {
-        items(in: category).filter { item in
+                             artIsAvailable: (ShopItem) -> Bool = { hasArt($0) },
+                             storefront: String? = Market.storefront, deviceCountry: String? = Market.deviceCountry) -> [ShopItem] {
+        let shown = items(in: category).filter { item in
             guard artIsAvailable(item) else { return false }
-            return item.isDefault || owned.contains(item.id) || isOnSale(item, now: now, build: build)
+            if item.isDefault || owned.contains(item.id) { return true }
+            return isOnSale(item, now: now, build: build)
+                && Markets.allows(item.markets, storefront: storefront, deviceCountry: deviceCountry)
         }
+        return Markets.featuredFirst(shown, markets: \.markets, storefront: storefront, deviceCountry: deviceCountry)
     }
 
     /// Whether an item can be drawn: it has art in the app (`bundledArt`), no downloaded art to wait for, or all of its
@@ -117,7 +121,11 @@ enum ShopCatalog {
 
     /// Categories that have something to show.
     static func visibleCategories(owned: Set<String>, now: Date = Date(), build: Int = currentBuild,
-                                  artIsAvailable: (ShopItem) -> Bool = { hasArt($0) }) -> [ShopCategory] {
-        ShopCategory.allCases.filter { !visibleItems(in: $0, owned: owned, now: now, build: build, artIsAvailable: artIsAvailable).isEmpty }
+                                  artIsAvailable: (ShopItem) -> Bool = { hasArt($0) },
+                                  storefront: String? = Market.storefront, deviceCountry: String? = Market.deviceCountry) -> [ShopCategory] {
+        ShopCategory.allCases.filter {
+            !visibleItems(in: $0, owned: owned, now: now, build: build, artIsAvailable: artIsAvailable,
+                          storefront: storefront, deviceCountry: deviceCountry).isEmpty
+        }
     }
 }
