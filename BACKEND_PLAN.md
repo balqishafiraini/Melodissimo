@@ -637,7 +637,7 @@ Goal: everything the shop sells is described by data with the **same shape as th
 ### Phase B2 — Backend skeleton
 
 #### Task B2.1 — Worker + tooling + CI
-- [ ] done
+- [x] done
 - **Touches:** `api/**`, root lint/prettier config, `.github/workflows/ci.yml`.
 - Hono app with `GET /health` → `{ ok: true, env, commit }`. `wrangler.toml` with `[env.staging]` and `[env.production]`, bindings `DB` (D1), `LIVE` (KV), `CDN` (R2), var `ENV_NAME`, secret `ADMIN_TOKEN`.
 - Middleware: `clientInfo` (parses §4.1 headers; a missing build counts as 0), request id, JSON error handler (`{ error: { code, message } }`, no stack traces outside dev). No CORS.
@@ -928,6 +928,7 @@ _(Executors record decisions, deviations and the user's answers to §1 here.)_
 - **2026-10-16, E5:** the `iap_granted` ledger holds `<productId>:<transactionId>` entries (not bare transaction ids) so `oncePerPlayer` can be answered from one key; it still merges as a union. A transaction whose product id this build doesn't know is left **unfinished** so a newer build can grant it. Paid inventory grants ignore the stack limit. The `.storekit` file is wired into the Debug scheme (`Melodissimo/Store/Products.storekit`, IDN storefront, prices Rp 15.000 / 49.000 / 119.000 / 15.000). StoreKit flows (buy, kill before finish, Ask to Buy, failure) are **not exercised yet**: they need a manual pass with the Debug scheme.
 - **2026-10-16, E6:** `Route.shopCoins` opens the shop at the Coins tab (coin badge on Home, the badge in the shop, the Continue sheet). `boost_heart` (50 coins, max 99) was added to `shop.json`. Tabs are data-driven (`ShopTab`); the `coinStore` flag hook comes with B5.5, and `plusOnly` badges with B7.3. Seen in the simulator: the shop opens with the new tabs; iPhone layout and buying flows are not checked by hand.
 - **2026-10-16, B1.2:** `git lfs` was installed with `brew install git-lfs` (hooks set in the backend repo only, `git lfs install --local`). The `mdm` package exists now (`tools/mdm`, run with `pnpm mdm …`, paths on the command line are relative to where it was run). 5 of the 16 songs have no `Notasi` sheet image in the app (`api-kemerdekaan`, `bangun-pemudi-pemuda`, `bhinneka-tunggal-ika`, `gugur-bunga`, `mars-harapan-bangsa`), so their `sheet.png` is absent: the sheet is optional in the contract and `mdm content import-ios` reports them instead of failing. `content/packs.json` and `products.json` use the `{ packs: [] }` / `{ products: [] }` wrapper shapes.
+- **2026-10-16, B2.1:** Worker, middleware, ESLint/Prettier and CI are in `melodissimo-backend`; `pnpm -r lint && pnpm -r typecheck && pnpm -r test` is green. Vitest is pinned to `~3.0` for `@cloudflare/vitest-pool-workers@0.8`. `wrangler.toml` has placeholder ids (`FILL_ME_*`) for staging and production. **B2.2 is half done:** `api/scripts/provision.md` and `deploy.yml` are written; **the user still has to run the provisioning** (the checkbox for B2.2 stays open until `https://api-staging.<domain>/health` answers).
 - **2026-10-15, test baseline:** `SongChartTests.testAllSixteenSongsLoadAChartMatchingTheirMelody` ("Indonesia Raya: chart keys differ from the melody") already fails on a clean checkout of `27ef748`. It is not caused by Phase E work.
 
 - **2026-10-15, D2:** no Kids Category; keep age rating 4+ in Music/Education.
