@@ -4,6 +4,12 @@
 <dict>
 	<key>MelodissimoOnlineServices</key>
 	<true/>
+	<key>MelodissimoBackendEnabled</key>
+	<true/>
+	<key>MelodissimoAPIBaseURL</key>
+	<string>$(MELODISSIMO_API_BASE)</string>
+	<key>MelodissimoCDNBaseURL</key>
+	<string>$(MELODISSIMO_CDN_BASE)</string>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>

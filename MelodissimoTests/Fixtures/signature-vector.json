@@ -1,0 +1,6 @@
+{
+  "description": "Ed25519 test vector made with a throwaway key. The app and mdm both verify it.",
+  "publicKey": "JKmo3zrWDNa1iQe2sSZRLTc/mvvZZC+X4mkr2mbOjV4=",
+  "messageBase64": "eyJjb250ZW50VmVyc2lvbiI6MSwibm90ZSI6InRlc3QgdmVjdG9yIC0gdGhyb3dhd2F5IGtleSJ9Cg==",
+  "signatureBase64": "y16n22ZQD5THrIpU1Erfzqh5YHpvWrCsl2KP0BuSELdPHUOLy1H/eESPfseDAx1neCuk/Zzm4vOZGU922urbCw=="
+}

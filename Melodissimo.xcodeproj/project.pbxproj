@@ -362,6 +362,8 @@
 		FAD89D112AC86E2C0019A99D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MELODISSIMO_API_BASE = "https://api-staging.example.invalid";
+				MELODISSIMO_CDN_BASE = "https://cdn-staging.example.invalid";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Melodissimo/Melodissimo.entitlements;
@@ -401,6 +403,8 @@
 		FAD89D122AC86E2C0019A99D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MELODISSIMO_API_BASE = "https://api.example.invalid";
+				MELODISSIMO_CDN_BASE = "https://cdn.example.invalid";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Melodissimo/Melodissimo.entitlements;
