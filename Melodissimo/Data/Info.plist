@@ -6,6 +6,8 @@
 	<true/>
 	<key>MelodissimoBackendEnabled</key>
 	<true/>
+	<key>MelodissimoEnvironment</key>
+	<string>$(MELODISSIMO_ENV)</string>
 	<key>MelodissimoAPIBaseURL</key>
 	<string>$(MELODISSIMO_API_BASE)</string>
 	<key>MelodissimoCDNBaseURL</key>

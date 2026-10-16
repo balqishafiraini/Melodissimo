@@ -168,6 +168,14 @@ final class APIClientTests: XCTestCase {
         XCTAssertFalse(BackendEnvironment.isPlaceholder(try XCTUnwrap(URL(string: "https://api.melodissimo.app"))))
     }
 
+    func testTheEnvironmentNameIsDevOnlyWhenSaidSo() {
+        XCTAssertEqual(BackendEnvironment.parseName("DEV"), "DEV")
+        XCTAssertEqual(BackendEnvironment.parseName(" dev "), "DEV")
+        XCTAssertEqual(BackendEnvironment.parseName("PROD"), "PROD")
+        XCTAssertEqual(BackendEnvironment.parseName("$(MELODISSIMO_ENV)"), "PROD")
+        XCTAssertEqual(BackendEnvironment.parseName(nil), "PROD")
+    }
+
     func testTheInstallIdIsCreatedOnceAndKept() {
         let suite = "InstallID-\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite)!

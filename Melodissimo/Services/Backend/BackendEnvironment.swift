@@ -5,8 +5,9 @@
 //  Where the app's own backend lives and whether it may be called at all. Separate from `OnlineServices`
 //  (Game Center and iCloud).
 //
-//  Info.plist keys (filled from the build settings `MELODISSIMO_API_BASE` / `MELODISSIMO_CDN_BASE`, Debug → staging,
-//  Release → production): `MelodissimoAPIBaseURL`, `MelodissimoCDNBaseURL`, `MelodissimoBackendEnabled` (default YES).
+//  Info.plist keys (filled from the build settings `MELODISSIMO_API_BASE` / `MELODISSIMO_CDN_BASE` / `MELODISSIMO_ENV`,
+//  Debug → DEV (backend staging), Release → PROD (backend production)): `MelodissimoAPIBaseURL`, `MelodissimoCDNBaseURL`,
+//  `MelodissimoEnvironment`, `MelodissimoBackendEnabled` (default YES).
 //  Debug builds also read the launch arguments `-apiBase <url>` and `-qaBackend NO`, so the QA scripts in
 //  `Scripts/iphone/` run offline and deterministic.
 //
@@ -38,6 +39,17 @@ enum BackendEnvironment {
     static var cdnBaseURL: URL? {
         parseBaseURL(Bundle.main.object(forInfoDictionaryKey: "MelodissimoCDNBaseURL"))
     }
+
+    /// `DEV` (Debug, backend staging) or `PROD` (Release, backend production). Anything unexpected counts as `PROD`.
+    static var name: String {
+        parseName(Bundle.main.object(forInfoDictionaryKey: "MelodissimoEnvironment"))
+    }
+
+    static func parseName(_ value: Any?) -> String {
+        (value as? String)?.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == "DEV" ? "DEV" : "PROD"
+    }
+
+    static var isDev: Bool { name == "DEV" }
 
     /// Whether the app talks to the backend: switched on in Info.plist (default yes), not turned off with `-qaBackend NO`,
     /// and pointing at a real address.
