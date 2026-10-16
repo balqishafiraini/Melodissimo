@@ -96,14 +96,22 @@ enum ShopCatalog {
     static func visibleItems(in category: ShopCategory, owned: Set<String>,
                              now: Date = Date(), build: Int = currentBuild,
                              artIsAvailable: (ShopItem) -> Bool = { hasArt($0) },
-                             storefront: String? = Market.storefront, deviceCountry: String? = Market.deviceCountry) -> [ShopItem] {
+                             storefront: String? = Market.storefront, deviceCountry: String? = Market.deviceCountry,
+                             plusAvailable: Bool = FeatureFlags.isOn(.packStore)) -> [ShopItem] {
         let shown = items(in: category).filter { item in
             guard artIsAvailable(item) else { return false }
             if item.isDefault || owned.contains(item.id) { return true }
+            // Plus-only items appear once Plus can be offered (the pack store is on); they are never shown "broken".
+            if item.plusOnly && !plusAvailable { return false }
             return isOnSale(item, now: now, build: build)
                 && Markets.allows(item.markets, storefront: storefront, deviceCountry: deviceCountry)
         }
         return Markets.featuredFirst(shown, markets: \.markets, storefront: storefront, deviceCountry: deviceCountry)
+    }
+
+    /// Whether the player can buy an item now: a Plus-only item needs an active Plus subscription. Owning it is forever.
+    static func canBuy(_ item: ShopItem, isPlus: Bool) -> Bool {
+        !item.plusOnly || isPlus
     }
 
     /// Whether an item can be drawn: it has art in the app (`bundledArt`), no downloaded art to wait for, or all of its
@@ -122,10 +130,11 @@ enum ShopCatalog {
     /// Categories that have something to show.
     static func visibleCategories(owned: Set<String>, now: Date = Date(), build: Int = currentBuild,
                                   artIsAvailable: (ShopItem) -> Bool = { hasArt($0) },
-                                  storefront: String? = Market.storefront, deviceCountry: String? = Market.deviceCountry) -> [ShopCategory] {
+                                  storefront: String? = Market.storefront, deviceCountry: String? = Market.deviceCountry,
+                                  plusAvailable: Bool = FeatureFlags.isOn(.packStore)) -> [ShopCategory] {
         ShopCategory.allCases.filter {
             !visibleItems(in: $0, owned: owned, now: now, build: build, artIsAvailable: artIsAvailable,
-                          storefront: storefront, deviceCountry: deviceCountry).isEmpty
+                          storefront: storefront, deviceCountry: deviceCountry, plusAvailable: plusAvailable).isEmpty
         }
     }
 }

@@ -22,6 +22,7 @@ struct ShopView: View {
     @ObservedObject private var bootstrap = BootstrapService.shared
     /// Observed so art that finishes downloading makes its items appear.
     @ObservedObject private var content = ContentStore.shared
+    @ObservedObject private var entitlements = Entitlements.shared
 
     @State private var tab: ShopTab
     @State private var itemToBuy: ShopItem?
@@ -209,10 +210,18 @@ struct ShopView: View {
         .overlay(alignment: .topTrailing) { tagBadge(for: item) }
     }
 
-    /// "New" and "Sale" for items that carry those tags. `plusOnly` items show no badge until Plus exists (Task B7.3).
+    /// "Sale" and "New" for items that carry those tags, and "Plus" on Plus-only items.
     @ViewBuilder
     private func tagBadge(for item: ShopItem) -> some View {
-        if item.tags.contains("sale") || item.tags.contains("new") {
+        if item.plusOnly {
+            Text("Plus")
+                .font(.caption.bold())
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Capsule().fill(Color.darkGreen))
+                .foregroundColor(.white)
+                .padding(8)
+        } else if item.tags.contains("sale") || item.tags.contains("new") {
             Text(item.tags.contains("sale") ? "Sale" : "New")
                 .font(.caption.bold())
                 .padding(.horizontal, 10)
@@ -264,6 +273,19 @@ struct ShopView: View {
                 progress.equip(item)
             } label: {
                 Text("Equip")
+                    .frame(maxWidth: .infinity)
+                    .frame(height: Sizing.tap(52))
+                    .background(Color.darkGreen)
+                    .foregroundColor(.white)
+                    .cornerRadius(Sizing.s(16))
+                    .font(.headline)
+            }
+        } else if !ShopCatalog.canBuy(item, isPlus: entitlements.isPlusActive) {
+            // Plus-only: members buy it with coins as usual; everyone else is shown the Plus screen.
+            SoundButton {
+                router.push(.plus)
+            } label: {
+                Text("Get Plus")
                     .frame(maxWidth: .infinity)
                     .frame(height: Sizing.tap(52))
                     .background(Color.darkGreen)

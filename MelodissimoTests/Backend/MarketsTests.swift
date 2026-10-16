@@ -96,3 +96,40 @@ final class MarketsTests: XCTestCase {
         XCTAssertEqual(ProductCatalog.consumablesOnSale(granted: ledger, storefront: "JPN", deviceCountry: nil).map(\.id), ["melodissimo.coins.small"])
     }
 }
+
+final class PlusOnlyShopTests: XCTestCase {
+
+    private struct Fixed: ShopCatalogSource { let items: [ShopItem] }
+
+    private func catalog() -> (ShopItem, ShopItem) {
+        var vip = ShopItem(id: "outfit_vip", category: .outfit, name: "VIP", price: 200)
+        vip.plusOnly = true
+        return (ShopItem(id: "outfit_none", category: .outfit, name: "Default", price: 0), vip)
+    }
+
+    func testAPlusOnlyItemNeedsPlusToBuyButOwningItIsForever() {
+        let (_, vip) = catalog()
+        XCTAssertFalse(ShopCatalog.canBuy(vip, isPlus: false))
+        XCTAssertTrue(ShopCatalog.canBuy(vip, isPlus: true))
+        XCTAssertTrue(ShopCatalog.canBuy(ShopItem(id: "outfit_x", category: .outfit, name: "X", price: 5), isPlus: false))
+    }
+
+    func testPlusOnlyItemsAppearOnlyWhenPlusCanBeOfferedOrAlreadyOwned() {
+        let (base, vip) = catalog()
+        let original = ShopCatalog.source
+        defer { ShopCatalog.source = original }
+        ShopCatalog.source = Fixed(items: [base, vip])
+        func ids(plus: Bool, owned: Set<String> = []) -> [String] {
+            ShopCatalog.visibleItems(in: .outfit, owned: owned, build: 99, artIsAvailable: { _ in true },
+                                     storefront: "IDN", deviceCountry: nil, plusAvailable: plus).map(\.id)
+        }
+        XCTAssertEqual(ids(plus: false), ["outfit_none"])
+        XCTAssertEqual(ids(plus: true), ["outfit_none", "outfit_vip"])
+        XCTAssertEqual(ids(plus: false, owned: ["outfit_vip"]), ["outfit_none", "outfit_vip"], "an owned item is never taken away")
+    }
+
+    func testThePlusOnlyFlagDecodesFromTheCatalog() throws {
+        let data = Data(#"{"items": [{"id": "outfit_vip", "category": "outfit", "name": {"en": "VIP"}, "price": {"coins": 200}, "plusOnly": true}]}"#.utf8)
+        XCTAssertTrue(try XCTUnwrap(ShopCatalog.decode(data).first).plusOnly)
+    }
+}
